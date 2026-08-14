@@ -1,0 +1,10 @@
+.next
+node_modules
+data/catalog.json
+data/brands.json
+data/taxonomy.json
+reports
+public/logos
+design
+CLAUDE.md
+docs
