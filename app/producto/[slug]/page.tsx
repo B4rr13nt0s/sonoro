@@ -1,0 +1,144 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+
+import { ProductGallery } from "@/components/media/ProductGallery";
+import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
+import { getProduct, listProducts } from "@/lib/catalog/index.ts";
+import type { Producto } from "@/lib/catalog/index.ts";
+
+// El catálogo entero es data estática generada en build (scripts/import-catalog.ts
+// → data/catalog.json) — todo slug válido se conoce de antemano, igual que
+// las categorías. Cualquier slug fuera de esta lista es 404 real, no una
+// página armada al vuelo.
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const productos: Producto[] = [];
+  let page = 1;
+  // listProducts pagina — hay que agotar todas las páginas, nunca asumir que
+  // el catálogo completo cabe en el pageSize por defecto del adaptador.
+  for (;;) {
+    const { items, total } = await listProducts({ page });
+    productos.push(...items);
+    if (productos.length >= total) break;
+    page += 1;
+  }
+  return productos.map((producto) => ({ slug: producto.slug }));
+}
+
+export async function generateMetadata(props: PageProps<"/producto/[slug]">): Promise<Metadata> {
+  const { slug } = await props.params;
+  const producto = await getProduct(slug);
+  if (!producto) return {};
+
+  return {
+    title: `${producto.nombre} — Sonoro`,
+    description: producto.descripcionCorta,
+  };
+}
+
+export default async function ProductoPage(props: PageProps<"/producto/[slug]">) {
+  const { slug } = await props.params;
+  const producto = await getProduct(slug);
+  if (!producto) notFound();
+
+  // specsDestacadas es SIEMPRE 3 (ProductoSchema lo exige) — el "Código" es
+  // la cuarta tarjeta, derivado de sku, no vive en el arreglo (CLAUDE.md §
+  // Esquema de producto). specsDestacadas y specsFicha se pintan en el
+  // orden del arreglo, sin reordenar.
+  const tarjetas = [...producto.specsDestacadas, { etiqueta: "Código", valor: producto.sku }];
+  const cuota = calcularCuotaCents(producto.precioCents, 6);
+
+  return (
+    <div className="flex flex-col">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_440px]">
+        <div className="flex flex-col gap-2.5 px-6 py-8 sm:px-12 lg:py-8 lg:pr-6 lg:pl-12">
+          <ProductGallery imagenes={producto.imagenes} nombre={producto.nombre} />
+        </div>
+
+        <div className="flex flex-col gap-5 px-6 pb-8 sm:px-12 lg:pt-11 lg:pr-12 lg:pb-8 lg:pl-6">
+          {/* CLAUDE.md § Breadcrumbs: "en ficha de producto terminan en la
+              marca, no en el nombre del producto". */}
+          <div className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">
+            Inicio / {producto.categoria} / {producto.marca}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <h1 className="text-40 leading-[1.1] font-semibold tracking-[-0.03em]">
+              {producto.nombre}
+            </h1>
+            <div className="text-texto-secundario text-[16px]">{producto.descripcionCorta}</div>
+          </div>
+
+          <div className="flex flex-col gap-1 pt-1">
+            <div className="text-34 font-semibold tracking-[-0.03em]">
+              {formatQ(producto.precioCents)}
+            </div>
+            <div className="text-texto-secundario text-[14px]">
+              o {formatQ(cuota)} al mes × 6 · IVA incluido
+            </div>
+          </div>
+
+          {/* Las variantes no son selectores (CLAUDE.md § reglas): tamaño e
+              impedancia se muestran como datos junto al Código, nunca como
+              opciones desplegables — este producto YA es el D2 de 12", no
+              hay nada que elegir aquí. */}
+          <div className="grid grid-cols-2 gap-2.5 pt-1">
+            {tarjetas.map((spec) => (
+              <div
+                key={spec.etiqueta}
+                className="rounded-field border-borde-tarjeta flex flex-col gap-1 border px-4.5 py-4"
+              >
+                <div className="text-texto-terciario font-mono text-[10px] tracking-[0.14em] uppercase">
+                  {spec.etiqueta}
+                </div>
+                <div className="text-[17px] font-semibold tracking-[-0.01em]">{spec.valor}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              className="bg-negro flex-1 rounded-full px-6 py-3.75 text-center text-[16px] text-white"
+            >
+              Agregar al carrito
+            </button>
+          </div>
+
+          <div className="border-borde-nav text-texto-secundario flex flex-col gap-2.5 border-t pt-5 text-[14px]">
+            <div className="flex justify-between gap-4">
+              <span>Envío gratis a todo el país</span>
+              <span className="text-negro">24 a 72 horas</span>
+            </div>
+            <div className="flex justify-between gap-4">
+              <span>Pagos</span>
+              <span className="text-negro">Hasta 6 pagos precio contado.</span>
+            </div>
+          </div>
+          <div className="text-texto-terciario font-mono text-[11px]">
+            Aplican restricciones según destino y volumen del pedido.
+          </div>
+        </div>
+      </div>
+
+      <section className="bg-negro flex flex-col gap-10 px-6 py-14 text-white sm:px-12 sm:py-20">
+        <h2 className="text-34 font-semibold tracking-[-0.025em]">Ficha técnica</h2>
+        <div className="grid grid-cols-1 gap-x-16 sm:grid-cols-2">
+          {producto.specsFicha.map((spec) => (
+            <div
+              key={spec.etiqueta}
+              className="border-borde-sobre-negro flex justify-between gap-6 border-t py-4 text-[15px]"
+            >
+              <span className="text-texto-sobre-negro">{spec.etiqueta}</span>
+              <span>{spec.valor}</span>
+            </div>
+          ))}
+        </div>
+        <div className="font-mono text-[11px] text-[#6e6e72]">
+          Datos publicados por el fabricante.
+        </div>
+      </section>
+    </div>
+  );
+}
