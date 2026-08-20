@@ -4,15 +4,33 @@ import { z } from "zod";
 // estos mismos patrones en vez de definir los suyos, o la validación defensiva
 // del importador y la del esquema se desincronizan.
 //
-// SKU_REGEX se infiere de los únicos ejemplos que da el proyecto — SQ12-D2, PRX60C
-// (CLAUDE.md § Modelo de conversión) y 6X9-2 (docs/PLAN.md § Validaciones
-// defensivas) — no hay una regla de formato escrita explícitamente en CLAUDE.md.
-// Mayúsculas y dígitos, en uno o más grupos separados por guion.
-export const SKU_REGEX = /^[A-Z0-9]+(-[A-Z0-9]+)*$/;
+// El sku es el código del fabricante tal como lo publica cada marca, sin
+// normalizar — no una convención propia de Sonoro. Admite mayúsculas, dígitos,
+// y espacio, punto o guion como separadores internos (nunca dobles, ni al
+// inicio ni al final). Debe coincidir exactamente con el código que aparece en
+// la factura del distribuidor y en las publicaciones del fabricante, porque
+// viaja tal cual al cliente como «Código» y en los mensajes de WhatsApp.
+export const SKU_REGEX = /^[A-Z0-9]+([ .\-][A-Z0-9]+)*$/;
 
 // slug: minúsculas, sin acentos, solo guiones como separador. Es lo que hace
 // cumplir la regla de inmutabilidad de URL (CLAUDE.md § Esquema de producto).
 export const SLUG_REGEX = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+// Detecta valores de sku corrompidos por coerción de tipos de una hoja de
+// cálculo (fecha o notación científica) — separado de SKU_REGEX a propósito:
+// "2024-06-09" cumple la FORMA de SKU_REGEX (dígitos y guiones) y aun así es
+// un valor corrompido. La regex valida forma; esta función detecta corrupción.
+// Ninguna sustituye a la otra.
+const FORMATOS_MANGEADOS = [
+  /^\d{4}-\d{2}-\d{2}$/, // fecha ISO: 2024-06-09
+  /^\d{1,2}-[A-Za-z]{3}$/, // fecha corta: 9-Jun
+  /^\d{1,2}\/\d{1,2}\/\d{2,4}$/, // fecha con barras: 9/6/2024
+  /^\d+(\.\d+)?E[+-]?\d+$/, // notación científica: 1.2E+05
+];
+
+export function pareceValorMangeado(sku: string): boolean {
+  return FORMATOS_MANGEADOS.some((regex) => regex.test(sku));
+}
 
 // Spec: arreglo ORDENADO de {etiqueta, valor}, no objeto — el orden es decisión
 // editorial y debe preservarse (CLAUDE.md § Esquema de producto).

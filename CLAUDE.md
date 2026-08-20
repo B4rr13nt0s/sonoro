@@ -111,6 +111,7 @@ activo             boolean
 
 `Spec = { etiqueta: string; valor: string }` — **arreglo ordenado, no objeto.** El orden en que aparecen es decisión editorial y debe respetarse.
 
+- **El `sku` es el código del fabricante tal como lo publica cada marca, sin normalizar** — no una convención propia de Sonoro. Se permiten mayúsculas, dígitos, y espacio, punto o guion como separadores internos (`ACX 165`, `MJP800.4`, `SQ12-D2`), nunca dobles ni al inicio o al final. Debe coincidir exactamente con el código de la factura del distribuidor, porque viaja tal cual al cliente como «Código» y en los mensajes de WhatsApp.
 - **Precios almacenados en centavos enteros.** Nunca `float`.
 - **No guardar precio base sin IVA.** Si se necesita, se deriva.
 - La ficha técnica cierra siempre con «Datos publicados por el fabricante.»
@@ -208,7 +209,7 @@ En los SVG el texto sigue siendo texto. Antes de imprenta o bordado, convertir a
 - Paginación con URLs indexables (`?page=2`), no scroll infinito.
 - Breadcrumbs: en ficha de producto terminan en la **marca**, no en el nombre del producto (`Inicio / Subwoofers / Sonoro`).
 
-Las seis categorías del nav son: Bocinas, Subwoofers, Amplificadores, Pantallas, Kits, Insonorización.
+Las seis categorías del nav son: Bocinas, Subwoofers, Amplificadores, Receptores, Kits, Insonorización.
 
 ---
 
