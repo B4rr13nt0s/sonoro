@@ -200,12 +200,20 @@ Si una hoja convierte un SKU `6X9-2` en fecha, ese SKU genera un slug mangeado; 
 
 El importador, antes que nada:
 
-- [ ] Valida cada `sku` contra regex explícita y **aborta** si parece fecha (`2024-06-09`, `9-Jun`) o notación científica (`1.2E+05`)
-- [ ] Rechaza precios que lleguen como texto
-- [ ] Compara con el import anterior y alerta si un SKU perdió ceros iniciales (`0450` → `450`)
-- [ ] Alerta si un `slug` ya publicado cambió — siempre es error, o exige un 301 deliberado
+- [x] Valida cada `sku` contra regex explícita y **aborta** si parece fecha (`2024-06-09`, `9-Jun`) o notación científica (`1.2E+05`)
+- [x] Rechaza precios que lleguen como texto
+- [x] Compara con el import anterior y alerta si un SKU perdió ceros iniciales (`0450` → `450`)
+- [x] Alerta si un `slug` ya publicado cambió — siempre es error, o exige un 301 deliberado
 
 **Listo cuando:** `npm run import:catalog` produce un `catalog.json` validado, con `import-errors.md` vacío o revisado.
+
+**Verificado — 2026-08-20.** Las cuatro pruebas de sabotaje pasaron sobre `scripts/import-catalog.ts`:
+1. `sku` con formato de fecha (`2024-06-09`) → abortó, sin escribir ningún archivo de salida.
+2. Precio como texto (`Q 2,450.00`) → abortó (con comillas, por el chequeo de formato de precio; sin comillas, la coma ya rompe el parseo del CSV — abortó también, más arriba en el pipeline).
+3. Columna `precio` renombrada a `precio_final` → abortó por contrato de encabezados.
+4. Cambio de precio real en el CSV → `reports/price-diff.md` mostró el sku, precio anterior y precio nuevo.
+
+Ninguna pasó en silencio. El CSV se restauró a su estado original entre cada prueba (verificado con `git diff --stat`, sin cambios reales).
 
 ---
 

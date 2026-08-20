@@ -11,6 +11,7 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "test": "node --no-warnings --test \"**/*.test.ts\"",
+    "import:catalog": "tsx scripts/import-catalog.ts",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -23,6 +24,7 @@
     ]
   },
   "dependencies": {
+    "csv-parse": "^5.6.0",
     "next": "16.3.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -41,6 +43,7 @@
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }

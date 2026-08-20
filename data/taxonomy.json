@@ -1,0 +1,32 @@
+[
+  {
+    "nombre": "Amplificadores",
+    "slug": "amplificadores",
+    "cantidadProductos": 2
+  },
+  {
+    "nombre": "Bocinas",
+    "slug": "bocinas",
+    "cantidadProductos": 3
+  },
+  {
+    "nombre": "Insonorización",
+    "slug": "insonorizacion",
+    "cantidadProductos": 1
+  },
+  {
+    "nombre": "Kits",
+    "slug": "kits",
+    "cantidadProductos": 1
+  },
+  {
+    "nombre": "Receptores",
+    "slug": "receptores",
+    "cantidadProductos": 2
+  },
+  {
+    "nombre": "Subwoofers",
+    "slug": "subwoofers",
+    "cantidadProductos": 1
+  }
+]

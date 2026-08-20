@@ -1,0 +1,654 @@
+[
+  {
+    "sku": "DMH-AP6650BT",
+    "slug": "pioneer-dmh-ap6650bt",
+    "nombre": "Receptor multimedia 9\" DMH-AP6650BT",
+    "marca": "Pioneer",
+    "categoria": "Receptores",
+    "descripcionCorta": "Receptor multimedia de 9 pulgadas con Apple CarPlay y Android Auto inalámbricos",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Pantalla",
+        "valor": "9\" WSVGA capacitiva"
+      },
+      {
+        "etiqueta": "Conectividad",
+        "valor": "CarPlay y Android Auto inalámbricos"
+      },
+      {
+        "etiqueta": "Salidas preamp",
+        "valor": "3 pares (4 V)"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Pantalla",
+        "valor": "9\" WSVGA capacitiva, 1,024 × 600 px"
+      },
+      {
+        "etiqueta": "Formato",
+        "valor": "Chasis de panel plano no DIN, sin mecanismo"
+      },
+      {
+        "etiqueta": "Potencia de salida",
+        "valor": "50 W × 4 (máx.)"
+      },
+      {
+        "etiqueta": "Conectividad",
+        "valor": "Apple CarPlay y Android Auto inalámbricos o por cable, Bluetooth y Wi-Fi"
+      },
+      {
+        "etiqueta": "Salidas preamp",
+        "valor": "3 pares de alto voltaje (4 V)"
+      },
+      {
+        "etiqueta": "Ecualizador",
+        "valor": "Gráfico de 13 bandas"
+      },
+      {
+        "etiqueta": "Procesador",
+        "valor": "DSP AKM AK7604 de 64 bits"
+      },
+      {
+        "etiqueta": "USB",
+        "valor": "USB 2.0 con carga rápida de 1.5 A"
+      },
+      {
+        "etiqueta": "Espejeo",
+        "valor": "WebLink Cast, navegador web y YouTube"
+      },
+      {
+        "etiqueta": "Entrada de cámara",
+        "valor": "Cámara de reversa con guías de estacionamiento"
+      }
+    ],
+    "precioCents": 400000,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": true,
+    "activo": true
+  },
+  {
+    "sku": "MVH-S325BT",
+    "slug": "pioneer-mvh-s325bt",
+    "nombre": "Receptor digital MVH-S325BT",
+    "marca": "Pioneer",
+    "categoria": "Receptores",
+    "descripcionCorta": "Receptor digital sin mecanismo con doble Bluetooth, Spotify y USB",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Formato",
+        "valor": "1 DIN sin mecanismo"
+      },
+      {
+        "etiqueta": "Conectividad",
+        "valor": "Doble Bluetooth, USB y AUX"
+      },
+      {
+        "etiqueta": "Salidas preamp",
+        "valor": "1 par (2 V)"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Formato",
+        "valor": "1 DIN sin mecanismo (no reproduce CD)"
+      },
+      {
+        "etiqueta": "Potencia de salida",
+        "valor": "50 W × 4 (máx.), amplificador MOSFET"
+      },
+      {
+        "etiqueta": "Salidas preamp",
+        "valor": "1 par (2.0 V)"
+      },
+      {
+        "etiqueta": "Ecualizador",
+        "valor": "Gráfico de 13 bandas (31 con la app Pioneer Smart Sync)"
+      },
+      {
+        "etiqueta": "Convertidor D/A",
+        "valor": "24 bits"
+      },
+      {
+        "etiqueta": "Conectividad",
+        "valor": "Doble Bluetooth para 2 teléfonos, USB frontal, AUX 3.5 mm"
+      },
+      {
+        "etiqueta": "Reproducción",
+        "valor": "MP3, WMA, WAV, AAC y FLAC vía USB"
+      },
+      {
+        "etiqueta": "Apps",
+        "valor": "Spotify, Pioneer Smart Sync y Siri Eyes Free"
+      },
+      {
+        "etiqueta": "Alineación de tiempo",
+        "valor": "Manual"
+      },
+      {
+        "etiqueta": "Sintonizador",
+        "valor": "AM/FM con RDS"
+      }
+    ],
+    "precioCents": 82500,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": true,
+    "activo": true
+  },
+  {
+    "sku": "ACX 165",
+    "slug": "focal-acx-165",
+    "nombre": "Auditor ACX 165 - Coaxiales 6.5\"",
+    "marca": "Focal",
+    "categoria": "Bocinas",
+    "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 2 vías",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Tamaño",
+        "valor": "6.5\" (16.5 cm)"
+      },
+      {
+        "etiqueta": "Configuración",
+        "valor": "Coaxial de 2 vías"
+      },
+      {
+        "etiqueta": "Potencia RMS",
+        "valor": "60 W"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Potencia RMS",
+        "valor": "60 W"
+      },
+      {
+        "etiqueta": "Potencia máxima",
+        "valor": "120 W"
+      },
+      {
+        "etiqueta": "Impedancia",
+        "valor": "4 Ω"
+      },
+      {
+        "etiqueta": "Tamaño",
+        "valor": "16.5 cm (6.5\")"
+      },
+      {
+        "etiqueta": "Sensibilidad",
+        "valor": "91.5 dB (2.83 V / 1 m)"
+      },
+      {
+        "etiqueta": "Respuesta en frecuencia",
+        "valor": "60 Hz – 21 kHz (±3 dB)"
+      },
+      {
+        "etiqueta": "Configuración",
+        "valor": "Coaxial de 2 vías con crossover integrado"
+      },
+      {
+        "etiqueta": "Tweeter",
+        "valor": "Domo invertido de mylar"
+      },
+      {
+        "etiqueta": "Membrana",
+        "valor": "Polipropileno con suspensión de butilo y motor de ferrita"
+      },
+      {
+        "etiqueta": "Incluye",
+        "valor": "Rejillas de ABS y de malla"
+      }
+    ],
+    "precioCents": 72500,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": true,
+    "activo": true
+  },
+  {
+    "sku": "COR-S124D",
+    "slug": "kbt-cor-s124d",
+    "nombre": "Subwoofer Coronel 12\" doble bobina de perfil plano",
+    "marca": "KBT",
+    "categoria": "Subwoofers",
+    "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm de la línea Coronel, perfil plano para espacios reducidos",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Diámetro",
+        "valor": "12\" (30 cm)"
+      },
+      {
+        "etiqueta": "Impedancia",
+        "valor": "Doble bobina de 4 Ω"
+      },
+      {
+        "etiqueta": "Línea",
+        "valor": "Coronel"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Diámetro",
+        "valor": "30 cm (12\")"
+      },
+      {
+        "etiqueta": "Impedancia",
+        "valor": "Doble bobina de 4 Ω + 4 Ω"
+      },
+      {
+        "etiqueta": "Línea",
+        "valor": "Coronel"
+      },
+      {
+        "etiqueta": "Configuración",
+        "valor": "Doble bobina: permite cablear a 2 Ω o a 8 Ω según el amplificador"
+      },
+      {
+        "etiqueta": "Perfil",
+        "valor": "Plano, de baja profundidad de montaje para instalaciones bajo asiento"
+      },
+      {
+        "etiqueta": "Construcción",
+        "valor": "Cono de papel moldeado térmicamente con estructura grado militar"
+      }
+    ],
+    "precioCents": 135000,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": false,
+    "activo": true
+  },
+  {
+    "sku": "MJP800.4",
+    "slug": "memphis-mjp800-4",
+    "nombre": "Amplificador MJP800.4 - 4 canales",
+    "marca": "Memphis",
+    "categoria": "Amplificadores",
+    "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Canales",
+        "valor": "4 canales"
+      },
+      {
+        "etiqueta": "Potencia RMS",
+        "valor": "800 W @ 2 Ω"
+      },
+      {
+        "etiqueta": "Clase",
+        "valor": "D"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Canales",
+        "valor": "4 canales"
+      },
+      {
+        "etiqueta": "Potencia RMS",
+        "valor": "125 W × 4 @ 4 Ω · 200 W × 4 @ 2 Ω"
+      },
+      {
+        "etiqueta": "Puenteado",
+        "valor": "400 W × 2 @ 4 Ω"
+      },
+      {
+        "etiqueta": "Clase",
+        "valor": "D"
+      },
+      {
+        "etiqueta": "Distorsión armónica (THD)",
+        "valor": "Menor a 1 %"
+      },
+      {
+        "etiqueta": "Relación señal/ruido",
+        "valor": "Mayor a 80 dB"
+      },
+      {
+        "etiqueta": "Respuesta en frecuencia",
+        "valor": "10 Hz – 25 kHz"
+      },
+      {
+        "etiqueta": "Crossover",
+        "valor": "Butterworth variable de 12 dB/oct con refuerzo de EQ de 0, 6 o 12 dB"
+      },
+      {
+        "etiqueta": "Sensibilidad de entrada",
+        "valor": "400 mV – 7.5 V bajo nivel · 3 V – 20 V alto nivel"
+      },
+      {
+        "etiqueta": "Dimensiones",
+        "valor": "8.7\" × 7.5\" × 2\" (221 × 191 × 51 mm)"
+      }
+    ],
+    "precioCents": 300000,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": true,
+    "activo": true
+  },
+  {
+    "sku": "4GKIT",
+    "slug": "memphis-4gkit",
+    "nombre": "Kit de instalación calibre 4",
+    "marca": "Memphis",
+    "categoria": "Kits",
+    "descripcionCorta": "Kit completo de cableado calibre 4 en cobre libre de oxígeno con portafusible ANL",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Calibre",
+        "valor": "4 AWG"
+      },
+      {
+        "etiqueta": "Material",
+        "valor": "Cobre 100 % libre de oxígeno"
+      },
+      {
+        "etiqueta": "Contenido",
+        "valor": "Corriente, tierra, remoto, 2 RCA y fusible"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Calibre",
+        "valor": "4 AWG, medida real bajo norma"
+      },
+      {
+        "etiqueta": "Material del conductor",
+        "valor": "Cobre 100 % libre de oxígeno"
+      },
+      {
+        "etiqueta": "Longitud del cable de corriente",
+        "valor": "17 ft (5.2 m), naranja esmerilado"
+      },
+      {
+        "etiqueta": "Cable de tierra",
+        "valor": "3 ft (0.9 m), calibre 4, negro esmerilado"
+      },
+      {
+        "etiqueta": "Cable remoto",
+        "valor": "17 ft (5.2 m), calibre 18, azul"
+      },
+      {
+        "etiqueta": "Cables RCA incluidos",
+        "valor": "Dos interconexiones de 17 ft y 2 canales"
+      },
+      {
+        "etiqueta": "Portafusible",
+        "valor": "Bloque de fusible tipo ANL"
+      },
+      {
+        "etiqueta": "Recomendado para",
+        "valor": "Amplificadores PRX800.1V2, PRX1000.1V2, PRX1500.1V2 y PRX800.5V2"
+      }
+    ],
+    "precioCents": 110000,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": true,
+    "activo": true
+  },
+  {
+    "sku": "CLASSIC LITE BK",
+    "slug": "soundskins-classic-lite-bk",
+    "nombre": "Classic Lite - Negro",
+    "marca": "SoundSkins",
+    "categoria": "Insonorización",
+    "descripcionCorta": "Lámina insonorizante de perfil ultradelgado con 4.7 metros cuadrados de cobertura",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Material",
+        "valor": "Butilo con foil"
+      },
+      {
+        "etiqueta": "Espesor",
+        "valor": "0.050\" (1.3 mm)"
+      },
+      {
+        "etiqueta": "Cobertura",
+        "valor": "50.58 pies² (4.7 m²)"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Material",
+        "valor": "Butilo de hule con foil de aluminio, acabado negro"
+      },
+      {
+        "etiqueta": "Espesor",
+        "valor": "0.050\" (1.3 mm), el más delgado de la línea"
+      },
+      {
+        "etiqueta": "Cobertura",
+        "valor": "50.58 pies² (4.7 m²)"
+      },
+      {
+        "etiqueta": "Presentación",
+        "valor": "Kit de láminas"
+      },
+      {
+        "etiqueta": "Aplicación",
+        "valor": "Paneles donde el espacio o el peso son críticos"
+      }
+    ],
+    "precioCents": 97500,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": true,
+    "activo": true
+  },
+  {
+    "sku": "STAGE2 634",
+    "slug": "jbl-stage2-634",
+    "nombre": "Stage2 634 - Coaxiales 6.5\" 3 vías",
+    "marca": "JBL",
+    "categoria": "Bocinas",
+    "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 3 vías",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Tamaño",
+        "valor": "6.5\" (160 mm)"
+      },
+      {
+        "etiqueta": "Configuración",
+        "valor": "Coaxial de 3 vías"
+      },
+      {
+        "etiqueta": "Potencia RMS",
+        "valor": "40 W"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Potencia RMS",
+        "valor": "40 W"
+      },
+      {
+        "etiqueta": "Potencia máxima",
+        "valor": "250 W"
+      },
+      {
+        "etiqueta": "Impedancia",
+        "valor": "4 Ω"
+      },
+      {
+        "etiqueta": "Tamaño",
+        "valor": "160 mm (6.5\")"
+      },
+      {
+        "etiqueta": "Sensibilidad",
+        "valor": "91 dB (2.83 V)"
+      },
+      {
+        "etiqueta": "Respuesta en frecuencia",
+        "valor": "55 Hz – 20 kHz"
+      },
+      {
+        "etiqueta": "Configuración",
+        "valor": "Coaxial de 3 vías"
+      },
+      {
+        "etiqueta": "Cono",
+        "valor": "Polipropileno moldeado por inyección (IMPP)"
+      },
+      {
+        "etiqueta": "Tweeter",
+        "valor": "Domo balanceado de PEI"
+      },
+      {
+        "etiqueta": "Contenido",
+        "valor": "Par de bocinas con rejillas"
+      }
+    ],
+    "precioCents": 62500,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": true,
+    "activo": true
+  },
+  {
+    "sku": "R2-300X4",
+    "slug": "rockford-fosgate-r2-300x4",
+    "nombre": "Prime R2-300X4 - 4 canales",
+    "marca": "Rockford Fosgate",
+    "categoria": "Amplificadores",
+    "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Canales",
+        "valor": "4 canales"
+      },
+      {
+        "etiqueta": "Potencia RMS",
+        "valor": "300 W"
+      },
+      {
+        "etiqueta": "Clase",
+        "valor": "D de rango completo"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Canales",
+        "valor": "4 canales"
+      },
+      {
+        "etiqueta": "Potencia RMS",
+        "valor": "50 W × 4 @ 4 Ω · 75 W × 4 @ 2 Ω · 150 W × 2 @ 4 Ω puenteado"
+      },
+      {
+        "etiqueta": "Potencia total",
+        "valor": "300 W"
+      },
+      {
+        "etiqueta": "Clase",
+        "valor": "D de rango completo"
+      },
+      {
+        "etiqueta": "Crossover",
+        "valor": "Butterworth 12 dB/oct, 50 – 250 Hz LP/AP/HP"
+      },
+      {
+        "etiqueta": "Punch EQ",
+        "valor": "No"
+      },
+      {
+        "etiqueta": "Relación señal/ruido",
+        "valor": "> 70 dB"
+      },
+      {
+        "etiqueta": "Voltaje de operación",
+        "valor": "9 – 16 V CC"
+      },
+      {
+        "etiqueta": "Fusible recomendado",
+        "valor": "60 A"
+      },
+      {
+        "etiqueta": "Dimensiones",
+        "valor": "255 × 173 × 49 mm"
+      }
+    ],
+    "precioCents": 200000,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": false,
+    "activo": true
+  },
+  {
+    "sku": "XED62",
+    "slug": "cerwin-vega-xed62",
+    "nombre": "Bocinas XED62 6.5\"",
+    "marca": "Cerwin Vega",
+    "categoria": "Bocinas",
+    "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Tamaño",
+        "valor": "6.5\" (16.5 cm)"
+      },
+      {
+        "etiqueta": "Configuración",
+        "valor": "Coaxial de 2 vías"
+      },
+      {
+        "etiqueta": "Potencia RMS",
+        "valor": "35 W"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Potencia RMS",
+        "valor": "35 W por bocina"
+      },
+      {
+        "etiqueta": "Potencia máxima",
+        "valor": "300 W por bocina"
+      },
+      {
+        "etiqueta": "Impedancia",
+        "valor": "4 Ω"
+      },
+      {
+        "etiqueta": "Tamaño",
+        "valor": "16.5 cm (6.5\")"
+      },
+      {
+        "etiqueta": "Sensibilidad",
+        "valor": "94 dB"
+      },
+      {
+        "etiqueta": "Configuración",
+        "valor": "Coaxial de 2 vías con crossover interno"
+      },
+      {
+        "etiqueta": "Cono",
+        "valor": "Polipropileno"
+      },
+      {
+        "etiqueta": "Tweeter",
+        "valor": "Domo balanceado de metal piezoeléctrico de 3/4\""
+      },
+      {
+        "etiqueta": "Incluye",
+        "valor": "Rejillas"
+      }
+    ],
+    "precioCents": 35000,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": true,
+    "activo": true
+  }
+]
