@@ -12,12 +12,15 @@ const adapter: CatalogAdapter = staticAdapter;
 export const getProduct = adapter.getProduct;
 export const listProducts = adapter.listProducts;
 export const listBrands = adapter.listBrands;
+export const listCategories = adapter.listCategories;
 
 export type {
   Brand,
+  Categoria,
   Disponibilidad,
   Imagen,
   Moneda,
+  Orden,
   Producto,
   ProductFilters,
   Spec,

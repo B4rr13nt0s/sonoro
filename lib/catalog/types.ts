@@ -96,10 +96,30 @@ export const BrandSchema = z.object({
 export type Brand = z.infer<typeof BrandSchema>;
 export const BrandsSchema = z.array(BrandSchema);
 
+// Misma forma que Brand — data/taxonomy.json la emite igual. Tipo aparte
+// (no un alias de Brand) porque una categoría y una marca no son la misma
+// noción de dominio aunque hoy compartan estructura.
+export const CategoriaSchema = z.object({
+  nombre: z.string(),
+  slug: z.string(),
+  cantidadProductos: z.number().int().nonnegative(),
+});
+export type Categoria = z.infer<typeof CategoriaSchema>;
+export const CategoriasSchema = z.array(CategoriaSchema);
+
+export const OrdenSchema = z.enum(["precio_asc", "precio_desc"]);
+export type Orden = z.infer<typeof OrdenSchema>;
+
 // Filtros de listProducts. CLAUDE.md § Rutas menciona query params como
 // ?marca=memphis&precio_max=200000 y paginación con ?page=2 — estos campos
 // son la traducción directa de eso. No están definidos campo por campo en
 // CLAUDE.md; es la forma mínima que cubre lo que Rutas ya describe.
+//
+// `orden` es opcional y SIN default aquí a propósito: si el adaptador
+// asumiera un orden por defecto, cambiaría el orden de listados que no piden
+// orden explícito (p. ej. "Los más vendidos" en el inicio). El default de
+// "precio ascendente" que muestra /catalogo/[categoria] es una decisión de
+// esa página, no del catálogo.
 export type ProductFilters = {
   categoria?: string;
   marca?: string;
@@ -107,6 +127,7 @@ export type ProductFilters = {
   destacado?: boolean;
   precioMinCents?: number;
   precioMaxCents?: number;
+  orden?: Orden;
   page?: number; // 1-indexado, default 1
   pageSize?: number; // default: ver adapters/static.ts
 };
@@ -117,6 +138,9 @@ export type ProductFilters = {
 // se entera (CLAUDE.md § Fuente de verdad).
 export interface CatalogAdapter {
   getProduct(slug: string): Promise<Producto | null>;
-  listProducts(filters: ProductFilters): Promise<{ items: Producto[]; total: number }>;
+  listProducts(
+    filters: ProductFilters,
+  ): Promise<{ items: Producto[]; total: number; page: number; pageSize: number }>;
   listBrands(): Promise<Brand[]>;
+  listCategories(): Promise<Categoria[]>;
 }

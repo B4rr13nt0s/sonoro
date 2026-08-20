@@ -57,6 +57,35 @@ test("listProducts: page fuera de rango devuelve items vacíos, no un error", as
   assert.deepEqual(items, []);
 });
 
+test("listProducts: sin orden no reordena — respeta el orden del catálogo", async () => {
+  const sinOrden = await staticAdapter.listProducts({});
+  const conAsc = await staticAdapter.listProducts({ orden: "precio_asc" });
+  assert.notDeepEqual(
+    sinOrden.items.map((p) => p.sku),
+    conAsc.items.map((p) => p.sku),
+  );
+});
+
+test("listProducts: orden precio_asc ordena de menor a mayor precio", async () => {
+  const { items } = await staticAdapter.listProducts({ orden: "precio_asc" });
+  for (let i = 1; i < items.length; i++) {
+    assert.ok(items[i].precioCents >= items[i - 1].precioCents);
+  }
+});
+
+test("listProducts: orden precio_desc ordena de mayor a menor precio", async () => {
+  const { items } = await staticAdapter.listProducts({ orden: "precio_desc" });
+  for (let i = 1; i < items.length; i++) {
+    assert.ok(items[i].precioCents <= items[i - 1].precioCents);
+  }
+});
+
+test("listProducts: devuelve page y pageSize junto con items y total", async () => {
+  const resultado = await staticAdapter.listProducts({ page: 2, pageSize: 4 });
+  assert.equal(resultado.page, 2);
+  assert.equal(resultado.pageSize, 4);
+});
+
 test("listBrands: devuelve las marcas distintas con su conteo", async () => {
   const brands = await staticAdapter.listBrands();
   assert.equal(brands.length, 8);
@@ -64,8 +93,17 @@ test("listBrands: devuelve las marcas distintas con su conteo", async () => {
   assert.equal(pioneer?.cantidadProductos, 2);
 });
 
+test("listCategories: devuelve las seis categorías con su conteo", async () => {
+  const categorias = await staticAdapter.listCategories();
+  assert.equal(categorias.length, 6);
+  const bocinas = categorias.find((c) => c.slug === "bocinas");
+  assert.equal(bocinas?.nombre, "Bocinas");
+  assert.equal(bocinas?.cantidadProductos, 3);
+});
+
 test("las firmas son asíncronas: devuelven una Promise", () => {
   assert.ok(staticAdapter.getProduct("x") instanceof Promise);
   assert.ok(staticAdapter.listProducts({}) instanceof Promise);
   assert.ok(staticAdapter.listBrands() instanceof Promise);
+  assert.ok(staticAdapter.listCategories() instanceof Promise);
 });
