@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Placeholder } from "@/components/media/Placeholder";
+import { ProductImage } from "@/components/media/ProductImage";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import type { Producto } from "@/lib/catalog/index.ts";
 
@@ -18,7 +18,7 @@ export function ProductCard({ producto }: { producto: Producto }) {
       href={`/producto/${producto.slug}`}
       className="rounded-card border-borde-tarjeta flex flex-col overflow-hidden border bg-white"
     >
-      <Placeholder label={`FOTO — ${producto.nombre}`} className="h-[170px]" />
+      <ProductImage imagenes={producto.imagenes} nombre={producto.nombre} className="h-[200px]" />
       <div className="flex flex-col gap-1.5 p-5">
         <div className="text-texto-terciario font-mono text-[10px] tracking-[0.14em] uppercase">
           {producto.categoria}

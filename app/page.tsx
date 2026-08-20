@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import { ProductCard } from "@/components/catalog/ProductCard";
-import { Placeholder } from "@/components/media/Placeholder";
+import { ProductGrid } from "@/components/catalog/ProductGrid";
+import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { listBrands, listProducts } from "@/lib/catalog/index.ts";
 
 const CATEGORIAS_DESTACADAS = [
@@ -93,7 +93,7 @@ export default async function Home() {
           Hasta 6 pagos precio contado · Envíos gratis a todo el país, aplican restricciones ·
           Producto original
         </div>
-        <Placeholder
+        <PlaceholderImage
           label="FOTO — subwoofer y amplificador sobre fondo negro, luz dura"
           className="mt-7 h-[220px] w-full items-end rounded-t-2xl sm:h-[320px] lg:h-[470px]"
         />
@@ -126,7 +126,7 @@ export default async function Home() {
                   {categoria.descripcion}
                 </div>
               </div>
-              <Placeholder label={categoria.foto} dark={categoria.dark} className="flex-1" />
+              <PlaceholderImage label={categoria.foto} dark={categoria.dark} className="flex-1" />
             </Link>
           ))}
         </div>
@@ -143,11 +143,7 @@ export default async function Home() {
               Precios en quetzales, IVA incluido
             </span>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {destacados.map((producto) => (
-              <ProductCard key={producto.sku} producto={producto} />
-            ))}
-          </div>
+          <ProductGrid productos={destacados} />
         </section>
       ) : null}
 
