@@ -24,3 +24,24 @@ export function buildCatalogHref(categoriaSlug: string, estado: CatalogQueryStat
   const search = query.toString();
   return `/catalogo/${categoriaSlug}${search ? `?${search}` : ""}`;
 }
+
+// Misma idea que buildCatalogHref, para /marcas/[marca]: ahí el filtro
+// secundario es categoría en vez de marca. Son dos funciones cortas en vez
+// de una genérica porque cada una documenta su propia ruta y sus propios
+// query params — más legible que una abstracción con un parámetro "campo".
+export type MarcaQueryState = {
+  categoria?: string; // slug de categoría
+  orden?: Orden;
+  page?: number;
+};
+
+export function buildMarcaHref(marcaSlug: string, estado: MarcaQueryState): string {
+  const query = new URLSearchParams();
+
+  if (estado.categoria) query.set("categoria", estado.categoria);
+  if (estado.orden && estado.orden !== "precio_asc") query.set("orden", estado.orden);
+  if (estado.page && estado.page > 1) query.set("page", String(estado.page));
+
+  const search = query.toString();
+  return `/marcas/${marcaSlug}${search ? `?${search}` : ""}`;
+}

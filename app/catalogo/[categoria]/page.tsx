@@ -114,11 +114,11 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
       <section className="px-6 pb-16 sm:px-12 sm:pb-22">
         <ProductGrid productos={items} />
         <Pagination
-          categoriaSlug={categoriaSlug}
-          marcaActual={marcaSlug}
-          orden={orden}
           paginaActual={page}
           totalPaginas={totalPaginas}
+          hrefPara={(pagina) =>
+            buildCatalogHref(categoriaSlug, { marca: marcaSlug, orden, page: pagina })
+          }
         />
       </section>
     </div>

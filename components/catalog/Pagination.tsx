@@ -1,43 +1,34 @@
 import Link from "next/link";
 
-import { buildCatalogHref } from "@/lib/catalog/href.ts";
-import type { Orden } from "@/lib/catalog/index.ts";
-
 // CLAUDE.md § Rutas: "Paginación con URLs indexables (?page=2), no scroll
 // infinito." Cada número es un <Link> real — indexable, compartible, y el
 // botón atrás del navegador funciona porque no hay estado de cliente
 // gobernando qué página se ve.
+//
+// No sabe nada de catálogo, marca ni categoría — recibe `hrefPara(pagina)`
+// ya armado por quien la usa (buildCatalogHref, buildMarcaHref, o lo que
+// haga falta), así sirve para cualquier listado paginado del sitio.
 type PaginationProps = {
-  categoriaSlug: string;
-  marcaActual?: string;
-  orden: Orden;
   paginaActual: number;
   totalPaginas: number;
+  hrefPara: (pagina: number) => string;
 };
 
-export function Pagination({
-  categoriaSlug,
-  marcaActual,
-  orden,
-  paginaActual,
-  totalPaginas,
-}: PaginationProps) {
+export function Pagination({ paginaActual, totalPaginas, hrefPara }: PaginationProps) {
   if (totalPaginas <= 1) return null;
 
-  const href = (pagina: number) =>
-    buildCatalogHref(categoriaSlug, { marca: marcaActual, orden, page: pagina });
   const paginas = Array.from({ length: totalPaginas }, (_, indice) => indice + 1);
 
   return (
     <nav aria-label="Paginación" className="flex items-center justify-center gap-2 pt-10">
-      <ControlPagina href={href(paginaActual - 1)} deshabilitado={paginaActual <= 1}>
+      <ControlPagina href={hrefPara(paginaActual - 1)} deshabilitado={paginaActual <= 1}>
         ‹ Anterior
       </ControlPagina>
       <div className="flex items-center gap-1.5">
         {paginas.map((pagina) => (
           <Link
             key={pagina}
-            href={href(pagina)}
+            href={hrefPara(pagina)}
             aria-current={pagina === paginaActual ? "page" : undefined}
             className={`flex h-9 w-9 items-center justify-center rounded-full text-[13px] ${
               pagina === paginaActual
@@ -49,7 +40,7 @@ export function Pagination({
           </Link>
         ))}
       </div>
-      <ControlPagina href={href(paginaActual + 1)} deshabilitado={paginaActual >= totalPaginas}>
+      <ControlPagina href={hrefPara(paginaActual + 1)} deshabilitado={paginaActual >= totalPaginas}>
         Siguiente ›
       </ControlPagina>
     </nav>

@@ -3,8 +3,7 @@ import { notFound } from "next/navigation";
 
 import { ProductGallery } from "@/components/media/ProductGallery";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
-import { getProduct, listProducts } from "@/lib/catalog/index.ts";
-import type { Producto } from "@/lib/catalog/index.ts";
+import { getProduct, listAllProducts } from "@/lib/catalog/index.ts";
 
 // El catálogo entero es data estática generada en build (scripts/import-catalog.ts
 // → data/catalog.json) — todo slug válido se conoce de antemano, igual que
@@ -13,16 +12,7 @@ import type { Producto } from "@/lib/catalog/index.ts";
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const productos: Producto[] = [];
-  let page = 1;
-  // listProducts pagina — hay que agotar todas las páginas, nunca asumir que
-  // el catálogo completo cabe en el pageSize por defecto del adaptador.
-  for (;;) {
-    const { items, total } = await listProducts({ page });
-    productos.push(...items);
-    if (productos.length >= total) break;
-    page += 1;
-  }
+  const productos = await listAllProducts();
   return productos.map((producto) => ({ slug: producto.slug }));
 }
 
