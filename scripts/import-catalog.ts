@@ -25,6 +25,7 @@ import { fileURLToPath } from "node:url";
 import { parse } from "csv-parse/sync";
 
 import { pareceValorMangeado, ProductoSchema, type Producto } from "../lib/catalog/types.ts";
+import { formatQ } from "../lib/format/precio.ts";
 import { precioACents } from "./precio.ts";
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -383,17 +384,6 @@ function agruparPor(productos: Producto[], selector: (p: Producto) => string): G
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
 }
 
-// Formato de precio SOLO para este reporte de build — no es una de las tres
-// superficies (UI/WhatsApp/OG) que CLAUDE.md obliga a pasar por formatQ, que
-// además todavía no existe en lib/format/. No se exporta ni se reutiliza.
-function formatQReporte(cents: number): string {
-  const signo = cents < 0 ? "-" : "";
-  const absoluto = Math.abs(cents);
-  const entero = Math.floor(absoluto / 100).toLocaleString("en-US");
-  const decimal = String(absoluto % 100).padStart(2, "0");
-  return `${signo}Q ${entero}.${decimal}`;
-}
-
 function generarImportErrorsMd(errores: ErrorFila[], alertas: string[]): string {
   const lineas: string[] = ["# Errores de importación", ""];
   if (errores.length === 0) {
@@ -425,7 +415,7 @@ function generarPriceDiffMd(diffs: DiffPrecio[], sinCatalogoAnterior: boolean): 
   } else {
     for (const diff of diffs) {
       lineas.push(
-        `- ${diff.sku} (${diff.nombre}): ${formatQReporte(diff.antesCents)} → ${formatQReporte(diff.despuesCents)}`,
+        `- ${diff.sku} (${diff.nombre}): ${formatQ(diff.antesCents)} → ${formatQ(diff.despuesCents)}`,
       );
     }
   }
