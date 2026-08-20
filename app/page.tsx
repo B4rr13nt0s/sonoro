@@ -1,69 +1,218 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+import { ProductCard } from "@/components/catalog/ProductCard";
+import { Placeholder } from "@/components/media/Placeholder";
+import { listBrands, listProducts } from "@/lib/catalog/index.ts";
+
+const CATEGORIAS_DESTACADAS = [
+  {
+    slug: "subwoofers",
+    nombre: "Subwoofers y cajas",
+    descripcion: 'De 8 a 15", bobina simple y doble, con cajas selladas y ventiladas.',
+    foto: 'FOTO — sub 12" tres cuartos',
+    span: true,
+    dark: false,
+  },
+  {
+    slug: "receptores",
+    nombre: "Receptores",
+    descripcion: 'CarPlay y Android Auto sin cables, de 7" a 10", con cámara de reversa.',
+    foto: 'FOTO — pantalla 9"',
+    span: false,
+    dark: true,
+  },
+  {
+    slug: "bocinas",
+    nombre: "Bocinas",
+    descripcion: 'Coaxiales y de componentes, de 4" a 6×9".',
+    foto: 'FOTO — bocina 6×9"',
+    span: false,
+    dark: false,
+  },
+  {
+    slug: "amplificadores",
+    nombre: "Amplificadores y cable",
+    descripcion: "Mono, 4 y 5 canales. Kits de 0 a 8 AWG.",
+    foto: "FOTO — amplificador de 4 canales",
+    span: false,
+    dark: false,
+  },
+  {
+    slug: "insonorizacion",
+    nombre: "Insonorización",
+    descripcion: "Láminas butílicas para puertas, piso y cajuela.",
+    foto: "FOTO — lámina butílica en puerta",
+    span: false,
+    dark: false,
+  },
+] as const;
+
+const CARACTERISTICAS = [
+  {
+    numero: "01",
+    titulo: "Diversidad de gamas",
+    texto: "Contamos con un catálogo amplio que se ajusta a lo que buscas.",
+  },
+  {
+    numero: "02",
+    titulo: "Ficha técnica completa",
+    texto: "Potencia RMS, impedancia y medidas de cada equipo, tal como los publica el fabricante.",
+  },
+  {
+    numero: "03",
+    titulo: "Envíos gratis a todo el país",
+    texto: "Entrega de 24 a 72 horas. Aplican restricciones según destino y volumen del pedido.",
+  },
+] as const;
+
+export default async function Home() {
+  const [{ items: destacados }, marcas] = await Promise.all([
+    listProducts({ destacado: true, pageSize: 4 }),
+    listBrands(),
+  ]);
+
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex w-full max-w-3xl flex-1 flex-col items-center justify-between bg-white px-16 py-32 sm:items-start dark:bg-black">
-        <Image
-          className="h-5 w-[100px] dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="flex flex-col">
+      {/* Hero */}
+      <section className="flex flex-col items-center gap-6 px-6 pt-16 text-center sm:px-12 sm:pt-24">
+        <h1 className="text-44 sm:text-64 lg:text-82 max-w-[900px] leading-[1.05] font-semibold tracking-[-0.025em] text-balance sm:leading-[1.03] sm:tracking-[-0.03em] lg:leading-[1.02] lg:tracking-[-0.035em]">
+          Tu carro ya suena,
+          <br />
+          pero podría escucharse mejor.
+        </h1>
+        <p className="text-texto-secundario max-w-[620px] text-[17px] leading-[1.45] sm:text-[21px]">
+          Bocinas, subwoofers, amplificadores, receptores, kits, insonorización y accesorios. Envíos
+          a toda Guatemala.
+        </p>
+        <div className="flex gap-3.5 pt-1.5 text-[15px]">
+          <Link href="/catalogo/subwoofers" className="bg-negro rounded-full px-6 py-3 text-white">
+            Ver catálogo
+          </Link>
+        </div>
+        <div className="text-texto-terciario px-4 font-mono text-[11px] tracking-[0.06em]">
+          Hasta 6 pagos precio contado · Envíos gratis a todo el país, aplican restricciones ·
+          Producto original
+        </div>
+        <Placeholder
+          label="FOTO — subwoofer y amplificador sobre fondo negro, luz dura"
+          className="mt-7 h-[220px] w-full items-end rounded-t-2xl sm:h-[320px] lg:h-[470px]"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl leading-10 font-semibold tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+      </section>
+
+      {/* Categorías */}
+      <section className="flex flex-col gap-9 px-6 py-16 sm:px-12 sm:py-22">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <h2 className="text-34 sm:text-40 font-semibold tracking-[-0.025em]">Categorías</h2>
+          <Link href="/catalogo/subwoofers" className="text-texto-secundario text-[15px]">
+            Ver toda la tienda →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {CATEGORIAS_DESTACADAS.map((categoria) => (
+            <Link
+              key={categoria.slug}
+              href={`/catalogo/${categoria.slug}`}
+              className={`rounded-card-lg flex h-[300px] flex-col justify-between gap-2 p-8 ${
+                categoria.dark ? "bg-negro text-white" : "bg-fondo-alt text-negro"
+              } ${categoria.span ? "sm:col-span-2" : ""}`}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <div className="flex flex-col gap-2">
+                <div className="text-26 font-semibold tracking-[-0.02em]">{categoria.nombre}</div>
+                <div
+                  className={`max-w-[400px] text-[15px] ${
+                    categoria.dark ? "text-texto-sobre-negro" : "text-texto-secundario"
+                  }`}
+                >
+                  {categoria.descripcion}
+                </div>
+              </div>
+              <Placeholder label={categoria.foto} dark={categoria.dark} className="flex-1" />
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Los más vendidos */}
+      {destacados.length > 0 ? (
+        <section className="bg-fondo-alt flex flex-col gap-7 px-6 py-16 sm:px-12">
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.025em]">
+              Los más vendidos
+            </h2>
+            <span className="text-texto-terciario font-mono text-[12px]">
+              Precios en quetzales, IVA incluido
+            </span>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {destacados.map((producto) => (
+              <ProductCard key={producto.sku} producto={producto} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {/* Producto original */}
+      <section className="bg-negro flex flex-col gap-12 px-6 py-16 text-white sm:px-12 sm:py-24">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <h2 className="text-26 sm:text-38 lg:text-44 max-w-[620px] font-semibold tracking-[-0.03em]">
+            Producto original, precio y stock a la vista.
+          </h2>
+          <p className="text-texto-sobre-negro max-w-[380px] text-[17px] leading-[1.55]">
+            Vendemos equipo nuevo de marcas autorizadas, buscando siempre ofrecer lo mejor.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="bg-foreground text-background flex h-12 w-full items-center justify-center gap-2 rounded-full px-5 transition-colors hover:bg-[#383838] md:w-[158px] dark:hover:bg-[#ccc]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="h-[14px] w-4 dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] md:w-[158px] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="border-borde-sobre-negro grid grid-cols-1 gap-8 border-t pt-2 sm:grid-cols-3 sm:gap-10">
+          {CARACTERISTICAS.map((caracteristica) => (
+            <div key={caracteristica.numero} className="flex flex-col gap-2.5 pt-6">
+              <div className="font-mono text-[12px] text-[#6e6e72]">{caracteristica.numero}</div>
+              <div className="text-22 font-semibold tracking-[-0.02em]">
+                {caracteristica.titulo}
+              </div>
+              <div className="text-texto-sobre-negro text-[15px] leading-[1.55]">
+                {caracteristica.texto}
+              </div>
+            </div>
+          ))}
         </div>
-      </main>
+      </section>
+
+      {/* Marcas */}
+      <section className="flex flex-col gap-8 px-6 pt-16 pb-16 sm:px-12 sm:pt-22 sm:pb-20">
+        <div className="text-texto-terciario font-mono text-[12px] tracking-[0.18em] uppercase">
+          Marcas que vendemos
+        </div>
+        <div className="flex flex-wrap gap-3.5">
+          {marcas.map((marca) => (
+            <Link
+              key={marca.slug}
+              href={`/marcas/${marca.slug}`}
+              className="border-borde-pildora rounded-full border px-6.5 py-3 text-[17px] text-[#2c2c2a]"
+            >
+              {marca.nombre}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Consulta / comparador */}
+      <section className="flex flex-col gap-4 px-6 pb-16 sm:flex-row sm:px-12 sm:pb-24">
+        <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
+          <div className="text-26 font-semibold tracking-[-0.025em]">Consulta existencias</div>
+          <div className="text-texto-secundario text-[15px] leading-[1.55]">
+            Escríbenos el modelo que buscas y te confirmamos disponibilidad y precio del día.
+          </div>
+          <span className="mt-auto pt-5 text-[15px]">Escríbenos por WhatsApp →</span>
+        </div>
+        <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
+          <div className="text-26 font-semibold tracking-[-0.025em]">
+            Comparador de especificaciones
+          </div>
+          <div className="text-texto-secundario text-[15px] leading-[1.55]">
+            Pon dos o tres equipos lado a lado y revisa sus fichas técnicas completas.
+          </div>
+          <span className="mt-auto pt-5 text-[15px]">Abrir comparador →</span>
+        </div>
+      </section>
     </div>
   );
 }

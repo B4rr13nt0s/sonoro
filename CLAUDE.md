@@ -245,9 +245,24 @@ Las nueve páginas HTML viven en `design/` como **referencia de solo lectura**. 
 
 Son un prototipo visual, no una aplicación: los botones son `<span>` o `<a>` sin lógica, no hay estados de hover, foco, error ni carga, y no hay diseño móvil.
 
+Estas páginas funcionan como PLANTILLAS, no páginas individuales:
+
+  catalogo-subwoofers.html  → plantilla de /catalogo/[categoria], para las
+                              seis categorías
+  marca-memphis.html        → plantilla de /marcas/[marca], para las diez marcas
+  producto-sq12-d2.html     → plantilla de /producto/[slug], para todos los SKUs
+
+Nunca se duplica el archivo por categoría, marca o producto: se construye una
+ruta dinámica con generateStaticParams.
+
+El producto y la marca del handoff son UN CASO, no el caso general. La
+plantilla no puede asumir el conteo de specs (varía de 4 a 10), qué etiquetas
+existen (varían por categoría), ni cuántos productos tiene una marca. Debe
+renderizar lo que traigan los datos.
+
 `design/checkout.html` está **descartado**. Se conserva solo como referencia visual para el futuro transaccional; no se implementa nada de él.
 
-Faltan por diseñar: carrito vacío, búsqueda sin resultados, confirmación de pedido, estados de hover y foco, todo el móvil, y las plantillas de listado de las otras cinco categorías (duplicar `catalogo-subwoofers.html`).
+Faltan por diseñar: carrito vacío, búsqueda sin resultados, confirmación de pedido, estados de hover y foco, y todo el móvil.
 
 ---
 
@@ -259,3 +274,13 @@ No inventes valores para estos puntos. Si el trabajo los necesita, pregunta.
 - **«Envíos gratis a todo el país»** — compromiso de negocio heredado del handoff, sin confirmar. Es caro si se sostiene sin condiciones.
 - **Redondeo de la cuota.** Este documento fija `Math.ceil` al centavo (`Q 408.34`). El handoff mostraba `Q 408.33`, que suma Q 2,449.98 en seis pagos. Si el negocio prefiere 408.33, cambiar aquí y definir que la última cuota absorbe la diferencia.
 - **Datos supuestos en el handoff, todos por confirmar:** precios, conteos de producto, países de origen de las marcas, teléfono, correo y dirección.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
