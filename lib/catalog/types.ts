@@ -81,3 +81,42 @@ export const ProductoSchema = z
     path: ["precioAntesCents"],
   });
 export type Producto = z.infer<typeof ProductoSchema>;
+
+// Arreglo completo — lo usa el adaptador estático para validar
+// data/catalog.json en cuanto lo lee, no solo su forma de fila individual.
+export const CatalogoSchema = z.array(ProductoSchema);
+
+// { nombre, slug, cantidadProductos } — la misma forma que emite
+// scripts/import-catalog.ts en data/brands.json.
+export const BrandSchema = z.object({
+  nombre: z.string(),
+  slug: z.string(),
+  cantidadProductos: z.number().int().nonnegative(),
+});
+export type Brand = z.infer<typeof BrandSchema>;
+export const BrandsSchema = z.array(BrandSchema);
+
+// Filtros de listProducts. CLAUDE.md § Rutas menciona query params como
+// ?marca=memphis&precio_max=200000 y paginación con ?page=2 — estos campos
+// son la traducción directa de eso. No están definidos campo por campo en
+// CLAUDE.md; es la forma mínima que cubre lo que Rutas ya describe.
+export type ProductFilters = {
+  categoria?: string;
+  marca?: string;
+  disponibilidad?: Disponibilidad;
+  destacado?: boolean;
+  precioMinCents?: number;
+  precioMaxCents?: number;
+  page?: number; // 1-indexado, default 1
+  pageSize?: number; // default: ver adapters/static.ts
+};
+
+// Contrato que cualquier fuente del catálogo debe cumplir. Hoy lo implementa
+// adapters/static.ts (JSON local); una fuente remota futura implementa el
+// mismo contrato — lib/catalog/index.ts cambia una línea, ningún componente
+// se entera (CLAUDE.md § Fuente de verdad).
+export interface CatalogAdapter {
+  getProduct(slug: string): Promise<Producto | null>;
+  listProducts(filters: ProductFilters): Promise<{ items: Producto[]; total: number }>;
+  listBrands(): Promise<Brand[]>;
+}
