@@ -84,7 +84,7 @@ export function SiteHeader() {
             aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuAbierto}
             onClick={() => setMenuAbierto((abierto) => !abierto)}
-            className="flex h-8 w-8 flex-none items-center justify-center"
+            className="flex h-11 w-11 flex-none items-center justify-center"
           >
             <MenuIcon abierto={menuAbierto} />
           </button>
@@ -169,7 +169,7 @@ function CartLink() {
   return (
     <Link
       href="/carrito"
-      className={`bg-negro rounded-full px-4 py-[7px] text-[13px] text-white ${
+      className={`bg-negro rounded-full px-4 py-3 text-[13px] text-white lg:py-[7px] ${
         animar ? "animate-cart-pop" : ""
       }`}
     >

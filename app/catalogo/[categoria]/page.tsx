@@ -118,7 +118,7 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
           />
           <Link
             href={buildCatalogHref(categoriaSlug, { marca: marcaSlug, orden: ordenSiguiente })}
-            className="border-negro bg-negro rounded-full border px-4.5 py-2 text-white"
+            className="border-negro bg-negro rounded-full border px-4.5 py-3 text-white lg:py-2"
           >
             {labelOrden}
           </Link>

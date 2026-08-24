@@ -41,18 +41,27 @@ export function LegalPage({ etiqueta, titulo, actualizado, intro, secciones }: L
           página, esto reparte el contenido en todo el ancho de página
           disponible sin dejar líneas de texto absurdamente largas. */}
       <section className="grid grid-cols-1 gap-x-14 gap-y-10 px-6 py-12 sm:grid-cols-2 sm:px-12 sm:py-16">
-        {secciones.map((seccion) => (
-          <div key={seccion.titulo} className="flex flex-col gap-3">
-            <h2 className="text-22 sm:text-26 font-semibold tracking-[-0.02em]">
-              {seccion.titulo}
-            </h2>
-            {seccion.parrafos.map((parrafo, i) => (
-              <p key={i} className="text-texto-secundario text-[16px] leading-[1.65]">
-                {parrafo}
-              </p>
-            ))}
-          </div>
-        ))}
+        {secciones.map((seccion, i) => {
+          // Con número impar de secciones, la última queda sola en la
+          // columna izquierda con la derecha vacía — en vez de dejarla
+          // huérfana, ocupa las dos columnas.
+          const esUltimaHuerfana = secciones.length % 2 !== 0 && i === secciones.length - 1;
+          return (
+            <div
+              key={seccion.titulo}
+              className={`flex flex-col gap-3 ${esUltimaHuerfana ? "sm:col-span-2" : ""}`}
+            >
+              <h2 className="text-22 sm:text-26 font-semibold tracking-[-0.02em]">
+                {seccion.titulo}
+              </h2>
+              {seccion.parrafos.map((parrafo, j) => (
+                <p key={j} className="text-texto-secundario text-[16px] leading-[1.65]">
+                  {parrafo}
+                </p>
+              ))}
+            </div>
+          );
+        })}
       </section>
 
       <section className="border-borde-nav flex flex-wrap gap-5 border-t px-6 py-10 sm:px-12">

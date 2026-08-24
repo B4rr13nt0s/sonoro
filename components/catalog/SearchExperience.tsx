@@ -131,7 +131,7 @@ export function SearchExperience({ productos }: { productos: Producto[] }) {
                     setCategoriaActiva(null);
                     setVisibles(INCREMENTO);
                   }}
-                  className={`rounded-full border px-4.5 py-2 ${
+                  className={`rounded-full border px-4.5 py-3 lg:py-2 ${
                     !categoriaActiva
                       ? "border-negro bg-negro text-white"
                       : "border-borde-pildora text-texto-nav"
@@ -147,7 +147,7 @@ export function SearchExperience({ productos }: { productos: Producto[] }) {
                       setCategoriaActiva(categoria);
                       setVisibles(INCREMENTO);
                     }}
-                    className={`rounded-full border px-4.5 py-2 ${
+                    className={`rounded-full border px-4.5 py-3 lg:py-2 ${
                       categoriaActiva === categoria
                         ? "border-negro bg-negro text-white"
                         : "border-borde-pildora text-texto-nav"
@@ -165,7 +165,7 @@ export function SearchExperience({ productos }: { productos: Producto[] }) {
                     </span>
                   </button>
                 ))}
-                <span className="border-negro bg-negro rounded-full border px-4.5 py-2 text-white">
+                <span className="border-negro bg-negro rounded-full border px-4.5 py-3 text-white lg:py-2">
                   Ordenar: relevancia
                 </span>
               </div>

@@ -120,7 +120,7 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
         <div className="flex flex-wrap items-center gap-2.5 text-[13px]">
           <Link
             href={buildMarcaHref(marcaSlug, { orden })}
-            className={`rounded-full border px-4.5 py-2 ${
+            className={`rounded-full border px-4.5 py-3 lg:py-2 ${
               !categoriaSlugParam
                 ? "border-negro bg-negro text-white"
                 : "border-borde-pildora text-texto-nav"
@@ -132,7 +132,7 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
             <Link
               key={categoria.slug}
               href={buildMarcaHref(marcaSlug, { categoria: categoria.slug, orden })}
-              className={`rounded-full border px-4.5 py-2 ${
+              className={`rounded-full border px-4.5 py-3 lg:py-2 ${
                 categoria.slug === categoriaSlugParam
                   ? "border-negro bg-negro text-white"
                   : "border-borde-pildora text-texto-nav"
@@ -146,7 +146,7 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
               categoria: categoriaSlugParam,
               orden: ordenSiguiente,
             })}
-            className="border-negro bg-negro rounded-full border px-4.5 py-2 text-white"
+            className="border-negro bg-negro rounded-full border px-4.5 py-3 text-white lg:py-2"
           >
             {labelOrden}
           </Link>

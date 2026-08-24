@@ -10,7 +10,7 @@ const ENLACES_LEGALES = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-borde-nav flex flex-col items-center gap-4 border-t px-6 py-10 text-center sm:flex-row sm:items-center sm:justify-between sm:px-12 sm:text-left">
+    <footer className="border-borde-nav flex flex-col items-center gap-4 border-t px-6 py-10 text-center sm:px-12 lg:flex-row lg:items-center lg:justify-between lg:text-left">
       <Link href="/" className="flex items-center gap-[11px]">
         <Monogram className="rounded-footer-mark h-[34px] w-[34px]" />
         <span className="flex flex-col gap-0.5">

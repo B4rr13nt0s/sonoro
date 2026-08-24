@@ -118,7 +118,7 @@ function CartLineItem({
               type="button"
               aria-label={`Quitar una unidad de ${item.nombreSnapshot}`}
               onClick={() => onSetQty(item.qty - 1)}
-              className="text-texto-secundario flex h-[38px] w-[38px] items-center justify-center text-[16px]"
+              className="text-texto-secundario flex h-11 w-11 items-center justify-center text-[16px] lg:h-[38px] lg:w-[38px]"
             >
               −
             </button>
@@ -127,12 +127,16 @@ function CartLineItem({
               type="button"
               aria-label={`Agregar una unidad de ${item.nombreSnapshot}`}
               onClick={() => onSetQty(item.qty + 1)}
-              className="flex h-[38px] w-[38px] items-center justify-center text-[16px]"
+              className="flex h-11 w-11 items-center justify-center text-[16px] lg:h-[38px] lg:w-[38px]"
             >
               +
             </button>
           </div>
-          <button type="button" onClick={onRemove} className="text-texto-secundario text-[14px]">
+          <button
+            type="button"
+            onClick={onRemove}
+            className="text-texto-secundario px-2 py-3 text-[14px] lg:p-0"
+          >
             Quitar
           </button>
         </div>
