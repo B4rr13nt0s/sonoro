@@ -19,19 +19,32 @@ export async function generateStaticParams() {
   return marcas.map((marca) => ({ marca: marca.slug }));
 }
 
+function primeroDeQuery(valor: string | string[] | undefined): string | undefined {
+  return Array.isArray(valor) ? valor[0] : valor;
+}
+
 export async function generateMetadata(props: PageProps<"/marcas/[marca]">): Promise<Metadata> {
   const { marca: marcaSlug } = await props.params;
+  const searchParams = await props.searchParams;
   const marca = (await listBrands()).find((m) => m.slug === marcaSlug);
   if (!marca) return {};
 
-  return {
-    title: `${marca.nombre} — Sonoro`,
-    description: `Catálogo de ${marca.nombre} en Sonoro: equipo de audio para carro con envíos a toda Guatemala.`,
-  };
-}
+  const categoriaSlug = primeroDeQuery(searchParams.categoria);
+  const paginaParam = Number(primeroDeQuery(searchParams.page));
+  const page = Number.isFinite(paginaParam) && paginaParam >= 1 ? paginaParam : 1;
+  // Mismo criterio que /catalogo/[categoria]: canonical sin `orden`, con
+  // categoria/page preservados.
+  const canonical = buildMarcaHref(marcaSlug, { categoria: categoriaSlug, page });
 
-function primeroDeQuery(valor: string | string[] | undefined): string | undefined {
-  return Array.isArray(valor) ? valor[0] : valor;
+  const title = `${marca.nombre} — Sonoro`;
+  const description = `Catálogo de ${marca.nombre} en Sonoro: equipo de audio para carro con envíos a toda Guatemala.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical },
+  };
 }
 
 export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {

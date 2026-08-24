@@ -9,6 +9,10 @@ import { CarritoView } from "@/components/cart/CarritoView";
 export const metadata: Metadata = {
   title: "Carrito — Sonoro",
   description: "Revisa tu carrito y pide por WhatsApp.",
+  alternates: { canonical: "/carrito" },
+  // Carrito es sesión/localStorage — sin valor de indexación, y su
+  // contenido cambia por visitante (CLAUDE.md § Modelo de conversión).
+  robots: { index: false, follow: false },
 };
 
 export default function CarritoPage() {

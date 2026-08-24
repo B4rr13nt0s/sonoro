@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+// Herramienta interna de referencia visual — no es una ruta de CLAUDE.md §
+// Rutas, no debe indexarse.
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
+
 const COLORES = [
   { nombre: "negro", uso: "Negro / texto / botones", hex: "#0B0B0C" },
   { nombre: "blanco", uso: "Blanco", hex: "#FFFFFF" },

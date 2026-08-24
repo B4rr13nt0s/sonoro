@@ -4,9 +4,14 @@ import Link from "next/link";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { listBrands } from "@/lib/catalog/index.ts";
 
+const TITULO = "Marcas — Sonoro";
+const DESCRIPCION = "Las marcas de audio para carro que vende Sonoro en Guatemala.";
+
 export const metadata: Metadata = {
-  title: "Marcas — Sonoro",
-  description: "Las marcas de audio para carro que vende Sonoro en Guatemala.",
+  title: TITULO,
+  description: DESCRIPCION,
+  alternates: { canonical: "/marcas" },
+  openGraph: { title: TITULO, description: DESCRIPCION, url: "/marcas" },
 };
 
 export default async function MarcasPage() {

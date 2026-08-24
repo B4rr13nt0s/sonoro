@@ -3,9 +3,14 @@ import type { Metadata } from "next";
 import { SearchExperience } from "@/components/catalog/SearchExperience";
 import { listAllProducts } from "@/lib/catalog/index.ts";
 
+const TITULO = "Buscar — Sonoro";
+const DESCRIPCION = "Busca en el catálogo de Sonoro por nombre, marca o código.";
+
 export const metadata: Metadata = {
-  title: "Buscar — Sonoro",
-  description: "Busca en el catálogo de Sonoro por nombre, marca o código.",
+  title: TITULO,
+  description: DESCRIPCION,
+  alternates: { canonical: "/buscar" },
+  openGraph: { title: TITULO, description: DESCRIPCION, url: "/buscar" },
 };
 
 // CLAUDE.md § Rutas: /buscar existe como ruta, pero la búsqueda en sí es del

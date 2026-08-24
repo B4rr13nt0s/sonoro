@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { listBrands, listProducts } from "@/lib/catalog/index.ts";
+import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
+import { buildLocalBusinessJsonLd } from "@/lib/seo/business.ts";
 
 const CATEGORIAS_DESTACADAS = [
   {
@@ -73,6 +75,10 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col">
+      {/* JSON-LD LocalBusiness: va en inicio, no en cada página — es la
+          entidad del sitio completo, no de esta ruta en particular. */}
+      <script {...jsonLdScriptProps(buildLocalBusinessJsonLd())} />
+
       {/* Hero */}
       <section className="flex flex-col items-center gap-6 px-6 pt-16 text-center sm:px-12 sm:pt-24">
         <h1 className="text-44 sm:text-64 lg:text-82 max-w-[900px] leading-[1.05] font-semibold tracking-[-0.025em] text-balance sm:leading-[1.03] sm:tracking-[-0.03em] lg:leading-[1.02] lg:tracking-[-0.035em]">

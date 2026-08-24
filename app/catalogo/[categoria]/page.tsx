@@ -28,21 +28,35 @@ export async function generateStaticParams() {
   return categorias.map((categoria) => ({ categoria: categoria.slug }));
 }
 
+function primeroDeQuery(valor: string | string[] | undefined): string | undefined {
+  return Array.isArray(valor) ? valor[0] : valor;
+}
+
 export async function generateMetadata(
   props: PageProps<"/catalogo/[categoria]">,
 ): Promise<Metadata> {
   const { categoria: categoriaSlug } = await props.params;
+  const searchParams = await props.searchParams;
   const categoria = (await listCategories()).find((c) => c.slug === categoriaSlug);
   if (!categoria) return {};
 
-  return {
-    title: `${categoria.nombre} — Sonoro`,
-    description: `Compra ${categoria.nombre.toLowerCase()} para audio de carro en Guatemala. Envíos a todo el país.`,
-  };
-}
+  const marcaSlug = primeroDeQuery(searchParams.marca);
+  const paginaParam = Number(primeroDeQuery(searchParams.page));
+  const page = Number.isFinite(paginaParam) && paginaParam >= 1 ? paginaParam : 1;
+  // Canonical propio, sin `orden`: el orden de precio no cambia el
+  // contenido, así que no debe fragmentar el canonical. `marca`/`page` sí
+  // se preservan — CLAUDE.md § Rutas los declara "rastreables por Google".
+  const canonical = buildCatalogHref(categoriaSlug, { marca: marcaSlug, page });
 
-function primeroDeQuery(valor: string | string[] | undefined): string | undefined {
-  return Array.isArray(valor) ? valor[0] : valor;
+  const title = `${categoria.nombre} — Sonoro`;
+  const description = `Compra ${categoria.nombre.toLowerCase()} para audio de carro en Guatemala. Envíos a todo el país.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical },
+  };
 }
 
 export default async function CategoriaPage(props: PageProps<"/catalogo/[categoria]">) {

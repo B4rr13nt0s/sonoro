@@ -4,10 +4,15 @@ import { MarcasScroller } from "@/components/catalog/MarcasScroller";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { listBrands } from "@/lib/catalog/index.ts";
 
+const TITULO = "Nosotros — Sonoro";
+const DESCRIPCION =
+  "Sonoro importa de forma directa equipo de audio para carro a Guatemala. Vendemos únicamente equipo — la instalación la hace el taller de tu preferencia.";
+
 export const metadata: Metadata = {
-  title: "Nosotros — Sonoro",
-  description:
-    "Sonoro importa de forma directa equipo de audio para carro a Guatemala. Vendemos únicamente equipo — la instalación la hace el taller de tu preferencia.",
+  title: TITULO,
+  description: DESCRIPCION,
+  alternates: { canonical: "/nosotros" },
+  openGraph: { title: TITULO, description: DESCRIPCION, url: "/nosotros" },
 };
 
 export default async function NosotrosPage() {

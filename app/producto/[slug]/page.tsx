@@ -6,6 +6,8 @@ import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { ProductGallery } from "@/components/media/ProductGallery";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import { getProduct, listAllProducts, listCategories } from "@/lib/catalog/index.ts";
+import { buildProductJsonLd } from "@/lib/seo/product.ts";
+import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
 
 // El catálogo entero es data estática generada en build (scripts/import-catalog.ts
 // → data/catalog.json) — todo slug válido se conoce de antemano, igual que
@@ -33,9 +35,16 @@ export async function generateMetadata(props: PageProps<"/producto/[slug]">): Pr
     };
   }
 
+  const canonical = `/producto/${slug}`;
+  const title = `${producto.nombre} — Sonoro`;
+
   return {
-    title: `${producto.nombre} — Sonoro`,
+    title,
     description: producto.descripcionCorta,
+    alternates: { canonical },
+    // Sin `openGraph.images`: el opengraph-image.tsx colocado en esta misma
+    // carpeta ya inyecta esas etiquetas — fijarlas a mano las duplicaría.
+    openGraph: { title, description: producto.descripcionCorta, url: canonical },
   };
 }
 
@@ -92,6 +101,7 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
 
   return (
     <div className="flex flex-col">
+      <script {...jsonLdScriptProps(buildProductJsonLd(producto))} />
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_440px]">
         <div className="flex flex-col gap-2.5 px-6 py-8 sm:px-12 lg:py-8 lg:pr-6 lg:pl-12">
           <ProductGallery imagenes={producto.imagenes} nombre={producto.nombre} />

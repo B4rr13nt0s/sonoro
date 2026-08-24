@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { CartProvider } from "@/lib/cart/index.ts";
 import type { CatalogoSku } from "@/lib/cart/index.ts";
 import { listAllProducts } from "@/lib/catalog/index.ts";
+import { SITE_URL } from "@/lib/seo/site.ts";
 
 import "./globals.css";
 
@@ -21,10 +22,22 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+const DESCRIPCION_SITIO =
+  "Bocinas, subwoofers, amplificadores, receptores, kits, insonorización y accesorios. Envíos a toda Guatemala.";
+
 export const metadata: Metadata = {
+  metadataBase: SITE_URL,
   title: "Sonoro — Equipo de audio para carro",
-  description:
-    "Bocinas, subwoofers, amplificadores, receptores, kits, insonorización y accesorios. Envíos a toda Guatemala.",
+  description: DESCRIPCION_SITIO,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Sonoro — Equipo de audio para carro",
+    description: DESCRIPCION_SITIO,
+    url: "/",
+    siteName: "Sonoro",
+    locale: "es_GT",
+    type: "website",
+  },
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
