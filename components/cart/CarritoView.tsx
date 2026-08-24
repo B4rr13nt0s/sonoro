@@ -17,6 +17,7 @@ import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import { useCart, type CartItem } from "@/lib/cart/index.ts";
 import { buildOrderMessage, buildOrderRef, buildWhatsAppUrl } from "@/lib/whatsapp/index.ts";
+import { buildQuoteLogRequest, sendQuoteLog } from "@/lib/quoteLog/index.ts";
 
 export function CarritoView() {
   const { items, createdAt, subtotalCents, itemCount, hydrated, setQty, removeItem } = useCart();
@@ -198,6 +199,16 @@ function OrderSummary({
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => {
+          // docs/PLAN.md § 6.4: se dispara y se olvida — nunca se espera
+          // esta llamada ni se le deja frenar la apertura de WhatsApp
+          // (CLAUDE.md: "El cliente dispara la petición y abre WhatsApp
+          // sin esperar la respuesta"). Por eso no hay preventDefault ni
+          // await: el navegador sigue con la navegación del <a> normal.
+          sendQuoteLog(
+            buildQuoteLogRequest({ items, ref, subtotalCents, userAgent: navigator.userAgent }),
+          );
+        }}
         className="bg-negro mt-1 rounded-full px-6 py-4 text-center text-[16px] text-white"
       >
         Pedir por WhatsApp
