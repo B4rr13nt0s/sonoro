@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Monogram } from "./Monogram";
+import { useCart } from "@/lib/cart/index.ts";
 
 // CLAUDE.md § Rutas: "Las seis categorías del nav son: Bocinas, Subwoofers,
 // Amplificadores, Receptores, Kits, Insonorización." — coincide con
@@ -23,10 +24,6 @@ const ENLACES_SECUNDARIOS = [
   { href: "/nosotros", nombre: "Nosotros" },
   { href: "/buscar", nombre: "Buscar" },
 ] as const;
-
-// Sin carrito implementado todavía (lib/cart/ vacío) — 0 hasta que exista
-// estado real. El contador solo se dibuja cuando hay artículos.
-const CART_ITEM_COUNT = 0;
 
 function esEnlaceActivo(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -138,12 +135,46 @@ export function SiteHeader() {
 }
 
 function CartLink() {
+  // useCart() exige un <CartProvider> arriba (lo monta app/layout.tsx) —
+  // itemCount es 0 hasta hidratar, así que el contador no parpadea con un
+  // número viejo de otra sesión antes de leer localStorage.
+  const { itemCount, hydrated } = useCart();
+  const [animar, setAnimar] = useState(false);
+  const itemCountAnterior = useRef(itemCount);
+  const yaHidrato = useRef(false);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    // La primera vez que `hydrated` pasa a true, itemCount puede saltar de
+    // 0 a N de golpe (un carrito ya existente cargado de localStorage) —
+    // eso no es "se acaba de agregar un producto", así que solo se
+    // sincroniza la referencia, sin animar.
+    if (!yaHidrato.current) {
+      yaHidrato.current = true;
+      itemCountAnterior.current = itemCount;
+      return;
+    }
+
+    if (itemCount > itemCountAnterior.current) {
+      setAnimar(true);
+      const timeout = setTimeout(() => setAnimar(false), 400);
+      itemCountAnterior.current = itemCount;
+      return () => clearTimeout(timeout);
+    }
+
+    itemCountAnterior.current = itemCount;
+  }, [itemCount, hydrated]);
+
   return (
-    <Link href="/carrito" className="bg-negro rounded-full px-4 py-[7px] text-[13px] text-white">
+    <Link
+      href="/carrito"
+      className={`bg-negro rounded-full px-4 py-[7px] text-[13px] text-white ${
+        animar ? "animate-cart-pop" : ""
+      }`}
+    >
       Carrito
-      {CART_ITEM_COUNT > 0 ? (
-        <span className="text-texto-sobre-negro"> {CART_ITEM_COUNT}</span>
-      ) : null}
+      {itemCount > 0 ? <span className="text-texto-sobre-negro ml-2.5">{itemCount}</span> : null}
     </Link>
   );
 }

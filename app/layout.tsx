@@ -3,6 +3,9 @@ import { Bakbak_One, JetBrains_Mono } from "next/font/google";
 
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { CartProvider } from "@/lib/cart/index.ts";
+import type { CatalogoSku } from "@/lib/cart/index.ts";
+import { listAllProducts } from "@/lib/catalog/index.ts";
 
 import "./globals.css";
 
@@ -24,16 +27,30 @@ export const metadata: Metadata = {
     "Bocinas, subwoofers, amplificadores, receptores, kits, insonorización y accesorios. Envíos a toda Guatemala.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // CartProvider corre en el navegador y no puede leer el catálogo (el
+  // adaptador de lib/catalog usa el filesystem) — este Server Component se
+  // lo trae una vez, igual que /buscar hace con SearchExperience, y le pasa
+  // solo lo que reconcile() necesita, no el Producto completo.
+  const productos = await listAllProducts();
+  const catalogo: CatalogoSku[] = productos.map((p) => ({
+    sku: p.sku,
+    activo: p.activo,
+    disponibilidad: p.disponibilidad,
+    precioCents: p.precioCents,
+  }));
+
   return (
     <html
       lang="es"
       className={`${bakbakOne.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <SiteHeader />
-        <main className="flex flex-1 flex-col">{children}</main>
-        <SiteFooter />
+        <CartProvider catalogo={catalogo}>
+          <SiteHeader />
+          <main className="flex flex-1 flex-col">{children}</main>
+          <SiteFooter />
+        </CartProvider>
       </body>
     </html>
   );

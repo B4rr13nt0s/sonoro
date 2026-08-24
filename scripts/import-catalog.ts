@@ -33,6 +33,13 @@ const RUTA_CSV = path.join(RAIZ, "data", "source", "productos.csv");
 const RUTA_CATALOG = path.join(RAIZ, "data", "catalog.json");
 const RUTA_BRANDS = path.join(RAIZ, "data", "brands.json");
 const RUTA_TAXONOMY = path.join(RAIZ, "data", "taxonomy.json");
+// Lee esto proxy.ts para el 410 de /producto/[slug] — un arreglo plano de
+// slugs en vez del catálogo completo, porque esa ruta corre en cada
+// petición y no tiene por qué resolver 10+ productos con specs completas
+// solo para mirar un booleano. Los slugs inactivos se conocen en tiempo de
+// build (CLAUDE.md § Mantenimiento del catálogo: activo = FALSO, nunca se
+// borra la fila), así que no hay razón para leer el catálogo entero ahí.
+const RUTA_INACTIVE_SLUGS = path.join(RAIZ, "data", "inactive-slugs.json");
 const RUTA_IMPORT_ERRORS = path.join(RAIZ, "reports", "import-errors.md");
 const RUTA_PRICE_DIFF = path.join(RAIZ, "reports", "price-diff.md");
 
@@ -183,6 +190,10 @@ function main(): void {
 
   const brands = agruparPor(productosValidos, (p) => p.marca);
   const taxonomy = agruparPor(productosValidos, (p) => p.categoria);
+  const inactiveSlugs = productosValidos
+    .filter((p) => !p.activo)
+    .map((p) => p.slug)
+    .sort();
 
   mkdirSync(path.dirname(RUTA_CATALOG), { recursive: true });
   mkdirSync(path.dirname(RUTA_IMPORT_ERRORS), { recursive: true });
@@ -190,6 +201,7 @@ function main(): void {
   writeFileSync(RUTA_CATALOG, JSON.stringify(productosValidos, null, 2) + "\n");
   writeFileSync(RUTA_BRANDS, JSON.stringify(brands, null, 2) + "\n");
   writeFileSync(RUTA_TAXONOMY, JSON.stringify(taxonomy, null, 2) + "\n");
+  writeFileSync(RUTA_INACTIVE_SLUGS, JSON.stringify(inactiveSlugs, null, 2) + "\n");
   writeFileSync(RUTA_IMPORT_ERRORS, generarImportErrorsMd(errores, alertas));
   writeFileSync(RUTA_PRICE_DIFF, generarPriceDiffMd(diffPrecios, !huboCatalogoAnterior));
 

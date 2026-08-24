@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { ProductGallery } from "@/components/media/ProductGallery";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
-import { getProduct, listAllProducts } from "@/lib/catalog/index.ts";
+import { getProduct, listAllProducts, listCategories } from "@/lib/catalog/index.ts";
 
 // El catálogo entero es data estática generada en build (scripts/import-catalog.ts
 // → data/catalog.json) — todo slug válido se conoce de antemano, igual que
@@ -21,6 +23,16 @@ export async function generateMetadata(props: PageProps<"/producto/[slug]">): Pr
   const producto = await getProduct(slug);
   if (!producto) return {};
 
+  // activo === false: proxy.ts ya fuerza el status 410 para esta URL — acá
+  // solo evitamos que Google indexe el título/descripción del producto
+  // como si siguiera a la venta.
+  if (!producto.activo) {
+    return {
+      title: "Producto ya no disponible — Sonoro",
+      robots: { index: false, follow: false },
+    };
+  }
+
   return {
     title: `${producto.nombre} — Sonoro`,
     description: producto.descripcionCorta,
@@ -31,6 +43,45 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
   const { slug } = await props.params;
   const producto = await getProduct(slug);
   if (!producto) notFound();
+
+  // activo === false (CLAUDE.md § Mantenimiento del catálogo): la fila
+  // nunca se borra, así que el slug sigue existiendo y sigue
+  // pre-renderizado — pero no es un 404. proxy.ts pone el status en 410;
+  // esta rama solo decide qué HTML se manda con ese status.
+  if (!producto.activo) {
+    const categorias = await listCategories();
+    const categoriaSlug = categorias.find((c) => c.nombre === producto.categoria)?.slug;
+
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-24 text-center">
+        <div className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">
+          Producto ya no disponible
+        </div>
+        <h1 className="text-40 max-w-[520px] font-semibold tracking-[-0.03em]">
+          {producto.nombre} ya no está a la venta
+        </h1>
+        <p className="text-texto-secundario max-w-[440px] text-[17px]">
+          Este producto dejó de venderse en Sonoro. Puede seguir viendo el resto del catálogo.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          {categoriaSlug ? (
+            <Link
+              href={`/catalogo/${categoriaSlug}`}
+              className="bg-negro rounded-full px-6 py-3.75 text-[16px] text-white"
+            >
+              Ver {producto.categoria}
+            </Link>
+          ) : null}
+          <Link
+            href="/"
+            className="border-borde-tarjeta rounded-full border px-6 py-3.75 text-[16px]"
+          >
+            Ir a Inicio
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // specsDestacadas es SIEMPRE 3 (ProductoSchema lo exige) — el "Código" es
   // la cuarta tarjeta, derivado de sku, no vive en el arreglo (CLAUDE.md §
@@ -88,12 +139,7 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              className="bg-negro flex-1 rounded-full px-6 py-3.75 text-center text-[16px] text-white"
-            >
-              Agregar al carrito
-            </button>
+            <AddToCartButton producto={producto} />
           </div>
 
           <div className="border-borde-nav text-texto-secundario flex flex-col gap-2.5 border-t pt-5 text-[14px]">

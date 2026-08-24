@@ -51,6 +51,23 @@
   --spacing-section-y-sm: 88px;
   --spacing-section-y-lg: 96px;
   --spacing-grid-gap: 16px;
+
+  /* Animación de la pastilla "Carrito" del nav al agregar un producto
+   * (components/layout/SiteHeader.tsx) — un solo "pop" de escala, nada de
+   * rebote ni color: consistente con "Sin degradados. Sin sombras." */
+  --animate-cart-pop: cart-pop 0.4s ease-out;
+}
+
+@keyframes cart-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 body {

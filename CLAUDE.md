@@ -135,6 +135,17 @@ listBrands(): Promise<Brand[]>
 
 El importador **aborta** si un `sku` parece fecha o notación científica, si un precio llega como texto, o si el contrato de encabezados no calza. Alerta si un `slug` ya publicado cambió.
 
+### Mantenimiento del catálogo
+
+- Quitar un producto es activo = FALSO. NUNCA borrar la fila: rompe carritos
+  guardados y la trazabilidad de pedidos enviados.
+- disponibilidad = 'agotado' es para faltantes temporales; activo = FALSO es
+  para descontinuados.
+- sku y slug son permanentes. Un cambio de slug exige redirección 301
+  permanente en next.config, que nunca se borra.
+- Agregar una categoría nueva es un cambio de código, no solo de datos:
+  requiere actualizar esta lista y el nav.
+
 ---
 
 ## Sistema visual
