@@ -17,6 +17,18 @@ const DOMINIOS_NO_CANONICOS = [
 ];
 
 const nextConfig: NextConfig = {
+  // lib/catalog/adapters/static.ts lee data/*.json con fs.readFile, en una
+  // ruta calculada en tiempo de ejecución (path.join(fileURLToPath(...),
+  // "..", "..", "..")) — el rastreador de archivos de Vercel
+  // (@vercel/nft) no logra seguir esa construcción dinámica y no empaqueta
+  // esos JSON en las funciones serverless. No falla local (next start
+  // corre contra el repo completo, no un paquete mínimo) ni en rutas
+  // estáticas (se leen en build time, cuando sí hay filesystem completo) —
+  // solo en rutas dinámicas (ƒ) desplegadas, en runtime real. `/*` cubre
+  // cualquier ruta dinámica actual o futura que use lib/catalog.
+  outputFileTracingIncludes: {
+    "/*": ["data/*.json"],
+  },
   async redirects() {
     return DOMINIOS_NO_CANONICOS.map((host) => ({
       source: "/:path*",
