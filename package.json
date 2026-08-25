@@ -11,6 +11,7 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "test": "node --no-warnings --test \"**/*.test.ts\"",
+    "test:e2e": "playwright test",
     "import:catalog": "tsx scripts/import-catalog.ts",
     "prepare": "husky"
   },
@@ -31,6 +32,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^20",
