@@ -98,19 +98,15 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
         <div className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">
           Inicio / Marcas / {marca.nombre}
         </div>
-        <div className="flex flex-col items-start gap-6 lg:flex-row lg:items-center">
+        <div className="flex flex-col items-center gap-6">
+          {/* El nombre sigue en el DOM como h1 (semántica/SEO — coincide con
+              el <title> de generateMetadata) pero visualmente oculto: el
+              logo va centrado y solo, sin el nombre escrito a la par. */}
+          <h1 className="sr-only">{marca.nombre}</h1>
           <PlaceholderImage
             label={`LOGO — ${marca.nombre}`}
-            className="h-[160px] w-full items-center justify-center lg:h-[220px] lg:w-[380px]"
+            className="h-[160px] w-full max-w-[380px] items-center justify-center lg:h-[220px]"
           />
-          <div className="flex flex-col gap-3">
-            <h1 className="text-40 sm:text-56 leading-[1.05] font-semibold tracking-[-0.035em]">
-              {marca.nombre}
-            </h1>
-            {/* Descripción de marca: sin dato real (Brand solo trae nombre,
-                slug, cantidadProductos). No se inventa una biografía de cada
-                marca — ver nota en el resumen del turno. */}
-          </div>
         </div>
       </section>
 

@@ -24,6 +24,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "csv-parse/sync";
 
+import { CATEGORIAS_SITIO } from "../lib/catalog/categorias.ts";
 import { pareceValorMangeado, ProductoSchema, type Producto } from "../lib/catalog/types.ts";
 import { formatQ } from "../lib/format/precio.ts";
 import { precioACents } from "./precio.ts";
@@ -188,8 +189,29 @@ function main(): void {
 
   const diffPrecios = calcularDiffPrecios(catalogoAnterior, productosValidos);
 
-  const brands = agruparPor(productosValidos, (p) => p.marca);
-  const taxonomy = agruparPor(productosValidos, (p) => p.categoria);
+  // Solo activos: un producto con activo=FALSE no aparece en ningún listado
+  // de cara al cliente (listProducts/listAllProducts siempre pasan
+  // activo: true — lib/catalog/types.ts § ProductFilters), así que su
+  // conteo tampoco debe sumar en brands.json/taxonomy.json. Antes se
+  // agrupaba sobre productosValidos completo: una marca o categoría con
+  // productos inactivos mostraba "N productos" en /marcas y en la ficha de
+  // marca/categoría mientras la rejilla de abajo mostraba menos, un
+  // desfase real (ej. Cerwin Vega: CAK42 activo + XED62 inactivo → decía
+  // "2 productos" y solo listaba 1).
+  const productosActivos = productosValidos.filter((p) => p.activo);
+
+  const brands = agruparPor(productosActivos, (p) => p.marca);
+  // Categorías: lista fija de CATEGORIAS_SITIO, no agrupada dinámicamente
+  // como las marcas — CLAUDE.md § Rutas las trata como un enum de negocio
+  // fijo, no como algo que el catálogo descubre. Así una categoría sin
+  // productos todavía (p. ej. recién agregada) sigue generando su ruta
+  // estática con 0 productos y el grid vacío de ProductGrid, en vez de
+  // desaparecer de taxonomy.json y devolver 404.
+  const taxonomy = CATEGORIAS_SITIO.map(({ nombre, slug }) => ({
+    nombre,
+    slug,
+    cantidadProductos: productosActivos.filter((p) => p.categoria === nombre).length,
+  }));
   const inactiveSlugs = productosValidos
     .filter((p) => !p.activo)
     .map((p) => p.slug)

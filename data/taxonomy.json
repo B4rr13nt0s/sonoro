@@ -1,22 +1,17 @@
 [
   {
-    "nombre": "Amplificadores",
-    "slug": "amplificadores",
+    "nombre": "Bocinas",
+    "slug": "bocinas",
     "cantidadProductos": 2
   },
   {
-    "nombre": "Bocinas",
-    "slug": "bocinas",
-    "cantidadProductos": 3
-  },
-  {
-    "nombre": "Insonorización",
-    "slug": "insonorizacion",
+    "nombre": "Subwoofers",
+    "slug": "subwoofers",
     "cantidadProductos": 1
   },
   {
-    "nombre": "Kits",
-    "slug": "kits",
+    "nombre": "Amplificadores",
+    "slug": "amplificadores",
     "cantidadProductos": 2
   },
   {
@@ -25,8 +20,23 @@
     "cantidadProductos": 2
   },
   {
-    "nombre": "Subwoofers",
-    "slug": "subwoofers",
+    "nombre": "Kits",
+    "slug": "kits",
+    "cantidadProductos": 2
+  },
+  {
+    "nombre": "Insonorización",
+    "slug": "insonorizacion",
     "cantidadProductos": 1
+  },
+  {
+    "nombre": "Equalizadores",
+    "slug": "equalizadores",
+    "cantidadProductos": 0
+  },
+  {
+    "nombre": "Accesorios",
+    "slug": "accesorios",
+    "cantidadProductos": 0
   }
 ]

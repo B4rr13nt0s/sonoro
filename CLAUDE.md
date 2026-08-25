@@ -220,7 +220,7 @@ En los SVG el texto sigue siendo texto. Antes de imprenta o bordado, convertir a
 - Paginación con URLs indexables (`?page=2`), no scroll infinito.
 - Breadcrumbs: en ficha de producto terminan en la **marca**, no en el nombre del producto (`Inicio / Subwoofers / Sonoro`).
 
-Las seis categorías del nav son: Bocinas, Subwoofers, Amplificadores, Receptores, Kits, Insonorización.
+Las ocho categorías del nav son: Bocinas, Subwoofers, Amplificadores, Receptores, Kits, Insonorización, Equalizadores, Accesorios.
 
 ---
 

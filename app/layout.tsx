@@ -8,6 +8,10 @@ import { CartProvider } from "@/lib/cart/index.ts";
 import type { CatalogoSku } from "@/lib/cart/index.ts";
 import { listAllProducts } from "@/lib/catalog/index.ts";
 import { SITE_URL } from "@/lib/seo/site.ts";
+// Solo por su efecto de validación al importarse (ver lib/whatsapp/config.ts):
+// falla el build en Production si NEXT_PUBLIC_WHATSAPP_NUMBER no está
+// definida, en vez de dejar pasar un botón "Pedir por WhatsApp" roto.
+import "@/lib/whatsapp/config.ts";
 
 import "./globals.css";
 

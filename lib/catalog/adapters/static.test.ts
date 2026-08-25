@@ -112,12 +112,27 @@ test("listBrands: devuelve las marcas distintas con su conteo", async () => {
   assert.equal(pioneer?.cantidadProductos, 2);
 });
 
-test("listCategories: devuelve las seis categorías con su conteo", async () => {
+test("listBrands: el conteo solo cuenta productos activos (Cerwin Vega: CAK42 activo + XED62 inactivo → 1, no 2)", async () => {
+  const brands = await staticAdapter.listBrands();
+  const cerwinVega = brands.find((b) => b.slug === "cerwin-vega");
+  assert.equal(cerwinVega?.cantidadProductos, 1);
+});
+
+test("listCategories: devuelve las ocho categorías con su conteo", async () => {
   const categorias = await staticAdapter.listCategories();
-  assert.equal(categorias.length, 6);
+  assert.equal(categorias.length, 8);
   const bocinas = categorias.find((c) => c.slug === "bocinas");
   assert.equal(bocinas?.nombre, "Bocinas");
-  assert.equal(bocinas?.cantidadProductos, 3);
+  // Solo activos: ACX 165 y STAGE2 634 (XED62 está inactivo).
+  assert.equal(bocinas?.cantidadProductos, 2);
+});
+
+test("listCategories: una categoría sin productos todavía sigue apareciendo, con conteo 0", async () => {
+  const categorias = await staticAdapter.listCategories();
+  const equalizadores = categorias.find((c) => c.slug === "equalizadores");
+  const accesorios = categorias.find((c) => c.slug === "accesorios");
+  assert.equal(equalizadores?.cantidadProductos, 0);
+  assert.equal(accesorios?.cantidadProductos, 0);
 });
 
 test("las firmas son asíncronas: devuelven una Promise", () => {

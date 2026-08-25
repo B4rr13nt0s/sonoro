@@ -16,7 +16,12 @@ import { useEffect, useMemo, useRef } from "react";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import { useCart, type CartItem } from "@/lib/cart/index.ts";
-import { buildOrderMessage, buildOrderRef, buildWhatsAppUrl } from "@/lib/whatsapp/index.ts";
+import {
+  buildOrderMessage,
+  buildOrderRef,
+  buildWhatsAppUrl,
+  WHATSAPP_NUMBER,
+} from "@/lib/whatsapp/index.ts";
 import { buildQuoteLogRequest, sendQuoteLog } from "@/lib/quoteLog/index.ts";
 import { trackEvent } from "@/lib/analytics/track.ts";
 
@@ -183,7 +188,7 @@ function OrderSummary({
     const cartUrl =
       typeof window !== "undefined" ? `${window.location.origin}/carrito` : "/carrito";
     const mensaje = buildOrderMessage({ items, ref, cartUrl });
-    return buildWhatsAppUrl(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "", mensaje);
+    return buildWhatsAppUrl(WHATSAPP_NUMBER, mensaje);
   }, [items, ref]);
 
   return (

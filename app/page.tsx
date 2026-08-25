@@ -5,6 +5,12 @@ import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { listBrands, listProducts } from "@/lib/catalog/index.ts";
 import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
 import { buildLocalBusinessJsonLd } from "@/lib/seo/business.ts";
+import { buildWhatsAppUrl, WHATSAPP_NUMBER } from "@/lib/whatsapp/index.ts";
+
+// Mensaje genérico (no depende de un carrito, a diferencia de
+// CarritoView) — solo consulta de existencia, sin lenguaje de asesoría ni
+// instalación (CLAUDE.md § reglas 1 y 2).
+const MENSAJE_CONSULTA_EXISTENCIAS = "Hola Sonoro, quiero consultar disponibilidad de un producto.";
 
 const CATEGORIAS_DESTACADAS = [
   {
@@ -205,7 +211,14 @@ export default async function Home() {
           <div className="text-texto-secundario text-[15px] leading-[1.55]">
             Escríbenos el modelo que buscas y te confirmamos disponibilidad y precio del día.
           </div>
-          <span className="mt-auto pt-5 text-[15px]">Escríbenos por WhatsApp →</span>
+          <a
+            href={buildWhatsAppUrl(WHATSAPP_NUMBER, MENSAJE_CONSULTA_EXISTENCIAS)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-auto pt-5 text-[15px]"
+          >
+            Escríbenos por WhatsApp →
+          </a>
         </div>
         <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
           <div className="text-26 font-semibold tracking-[-0.025em]">

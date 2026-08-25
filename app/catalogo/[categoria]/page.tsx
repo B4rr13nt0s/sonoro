@@ -9,14 +9,26 @@ import { buildCatalogHref } from "@/lib/catalog/href.ts";
 import { listBrands, listCategories, listProducts } from "@/lib/catalog/index.ts";
 import type { Orden } from "@/lib/catalog/index.ts";
 
-// Copy propia de la ficha de categoría (párrafo bajo el h1). Solo
-// Subwoofers tiene texto en el handoff (design/catalogo-subwoofers.html);
-// para las otras cinco categorías no hay copy aprobado — CLAUDE.md § reglas:
-// "si una sección se ve vacía es un problema de layout, no falta de
-// contenido", así que se omite el párrafo en vez de inventarlo.
+// Copy propia de la ficha de categoría (párrafo bajo el h1). Solo Subwoofers
+// tenía texto en el handoff (design/catalogo-subwoofers.html); el resto
+// sigue el mismo tono: una frase factual sobre qué hace el producto, sin
+// criterio de instalación ni de asesoría (CLAUDE.md § reglas 1 y 2).
 const DESCRIPCIONES: Partial<Record<string, string>> = {
+  bocinas:
+    "La bocina reproduce el rango medio y agudo: voces, instrumentos y detalle. Vienen coaxiales, de dos vías en un solo cuerpo, o de componentes, con el tweeter aparte del woofer.",
   subwoofers:
     "El subwoofer reproduce las frecuencias más bajas, las que una bocina normal no alcanza: es lo que da cuerpo y golpe a la música.",
+  amplificadores:
+    "El amplificador entrega la potencia que la unidad principal no alcanza a dar: más volumen limpio, sin distorsión, para bocinas y subwoofers.",
+  receptores:
+    "El receptor reemplaza la unidad principal de fábrica: pantalla, CarPlay o Android Auto, y las salidas para conectar el resto del sistema.",
+  kits: "El kit trae el cableado completo — corriente, tierra, señal — calibrado para la potencia del equipo que va a alimentar.",
+  insonorizacion:
+    "La lámina de insonorización se adhiere a la carrocería y reduce la vibración y el ruido que entra por la puerta, el piso o la cajuela.",
+  equalizadores:
+    "El ecualizador ajusta el balance de frecuencias del sistema antes de que llegue a las bocinas, banda por banda.",
+  accesorios:
+    "Piezas complementarias del sistema — conectores, capacitores, controles remotos — que no encajan en el resto de categorías.",
 };
 
 // Solo estas seis rutas existen — CLAUDE.md § Rutas. Cualquier otro valor

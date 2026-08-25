@@ -6,18 +6,12 @@ import { useEffect, useRef, useState } from "react";
 
 import { Monogram } from "./Monogram";
 import { useCart } from "@/lib/cart/index.ts";
+import { CATEGORIAS_SITIO } from "@/lib/catalog/categorias.ts";
 
-// CLAUDE.md § Rutas: "Las seis categorías del nav son: Bocinas, Subwoofers,
-// Amplificadores, Receptores, Kits, Insonorización." — coincide con
-// data/taxonomy.json y con las categorías reales del catálogo importado.
-const CATEGORIAS = [
-  { slug: "bocinas", nombre: "Bocinas" },
-  { slug: "subwoofers", nombre: "Subwoofers" },
-  { slug: "amplificadores", nombre: "Amplificadores" },
-  { slug: "receptores", nombre: "Receptores" },
-  { slug: "kits", nombre: "Kits" },
-  { slug: "insonorizacion", nombre: "Insonorización" },
-] as const;
+// CLAUDE.md § Rutas — lista compartida con scripts/import-catalog.ts
+// (lib/catalog/categorias.ts), así que el nav y data/taxonomy.json nunca
+// se desincronizan.
+const CATEGORIAS = CATEGORIAS_SITIO;
 
 const ENLACES_SECUNDARIOS = [
   { href: "/marcas", nombre: "Marcas" },
