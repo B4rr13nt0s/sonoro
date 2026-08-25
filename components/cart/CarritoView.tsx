@@ -11,16 +11,31 @@
 // design/checkout.html (CLAUDE.md § reglas).
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import { useCart, type CartItem } from "@/lib/cart/index.ts";
 import { buildOrderMessage, buildOrderRef, buildWhatsAppUrl } from "@/lib/whatsapp/index.ts";
 import { buildQuoteLogRequest, sendQuoteLog } from "@/lib/quoteLog/index.ts";
+import { trackEvent } from "@/lib/analytics/track.ts";
 
 export function CarritoView() {
   const { items, createdAt, subtotalCents, itemCount, hydrated, setQty, removeItem } = useCart();
+
+  // Una sola vez por carrito con contenido — mismo patrón de ref-guard que
+  // CartLink en SiteHeader.tsx usa para su animación, para no disparar
+  // open_quote en cada re-render (p. ej. al cambiar una cantidad).
+  const yaDisparado = useRef(false);
+  useEffect(() => {
+    if (!hydrated || items.length === 0 || yaDisparado.current) return;
+    yaDisparado.current = true;
+    trackEvent("open_quote", {
+      value: subtotalCents / 100,
+      currency: "GTQ",
+      items_count: itemCount,
+    });
+  }, [hydrated, items.length, subtotalCents, itemCount]);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -212,6 +227,11 @@ function OrderSummary({
           sendQuoteLog(
             buildQuoteLogRequest({ items, ref, subtotalCents, userAgent: navigator.userAgent }),
           );
+          trackEvent("whatsapp_click", {
+            value: subtotalCents / 100,
+            currency: "GTQ",
+            ref,
+          });
         }}
         className="bg-negro mt-1 rounded-full px-6 py-4 text-center text-[16px] text-white"
       >

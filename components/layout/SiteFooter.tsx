@@ -8,6 +8,20 @@ const ENLACES_LEGALES = [
   { href: "/legal/garantias", nombre: "Garantías" },
 ] as const;
 
+// Ciudad y teléfono vienen de las mismas env vars que ya usa
+// lib/seo/business.ts para el JSON-LD LocalBusiness — sin confirmar
+// todavía (CLAUDE.md § Decisiones abiertas), así que cada segmento se omite
+// si su variable no está definida, en vez de mostrar un placeholder falso
+// como "+502 0000 0000".
+function lineaDeContacto(): string {
+  const segmentos = [
+    process.env.BUSINESS_ADDRESS_LOCALITY,
+    "Envíos gratis a todo el país",
+    process.env.BUSINESS_PHONE,
+  ].filter((segmento): segmento is string => Boolean(segmento));
+  return segmentos.join(" · ");
+}
+
 export function SiteFooter() {
   return (
     <footer className="border-borde-nav flex flex-col items-center gap-4 border-t px-6 py-10 text-center sm:px-12 lg:flex-row lg:items-center lg:justify-between lg:text-left">
@@ -33,9 +47,7 @@ export function SiteFooter() {
           </Link>
         ))}
       </nav>
-      <span className="text-texto-terciario font-mono text-[11px]">
-        Ciudad de Guatemala · Envíos a todo el país · +502 0000 0000
-      </span>
+      <span className="text-texto-terciario font-mono text-[11px]">{lineaDeContacto()}</span>
     </footer>
   );
 }

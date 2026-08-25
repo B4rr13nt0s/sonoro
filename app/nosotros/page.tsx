@@ -71,17 +71,22 @@ export default async function NosotrosPage() {
       <section className="flex flex-col gap-4 px-6 pb-16 sm:flex-row sm:px-12 sm:pb-24">
         <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
           <div className="text-26 font-semibold tracking-[-0.025em]">Visítanos</div>
-          {/* Dirección, horario: sin dato real confirmado (CLAUDE.md §
-              Decisiones abiertas). No se inventan — ver nota en el resumen
-              del turno. */}
+          {/* Dirección: sin dato real confirmado (CLAUDE.md § Decisiones
+              abiertas) — lee BUSINESS_ADDRESS_LOCALITY (misma env var que
+              lib/seo/business.ts) en vez de un placeholder falso; sin
+              configurar, dice explícitamente que falta, no inventa nada. */}
           <div className="text-texto-secundario text-[15px] leading-[1.6]">
-            Ciudad de Guatemala.
+            {process.env.BUSINESS_ADDRESS_LOCALITY
+              ? `${process.env.BUSINESS_ADDRESS_LOCALITY}.`
+              : "Dirección por confirmar."}
           </div>
           <span className="text-texto-terciario mt-auto pt-5 text-[15px]">Mapa próximamente</span>
         </div>
         <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
           <div className="text-26 font-semibold tracking-[-0.025em]">Escríbenos</div>
-          <div className="text-texto-secundario text-[15px] leading-[1.6]">+502 0000 0000</div>
+          <div className="text-texto-secundario text-[15px] leading-[1.6]">
+            {process.env.BUSINESS_PHONE ?? "Teléfono por confirmar."}
+          </div>
           <span className="text-texto-terciario mt-auto pt-5 text-[15px]">
             WhatsApp próximamente
           </span>

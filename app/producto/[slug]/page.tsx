@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
+import { ViewProductTracker } from "@/components/analytics/ViewProductTracker";
 import { ProductGallery } from "@/components/media/ProductGallery";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import { getProduct, listAllProducts, listCategories } from "@/lib/catalog/index.ts";
@@ -102,6 +103,11 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
   return (
     <div className="flex flex-col">
       <script {...jsonLdScriptProps(buildProductJsonLd(producto))} />
+      <ViewProductTracker
+        sku={producto.sku}
+        nombre={producto.nombre}
+        precioCents={producto.precioCents}
+      />
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_440px]">
         <div className="flex flex-col gap-2.5 px-6 py-8 sm:px-12 lg:py-8 lg:pr-6 lg:pl-12">
           <ProductGallery imagenes={producto.imagenes} nombre={producto.nombre} />

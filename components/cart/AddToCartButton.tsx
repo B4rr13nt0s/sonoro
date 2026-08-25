@@ -5,6 +5,7 @@
 // propio Client Component para no convertir la página entera en cliente.
 import { useCart } from "@/lib/cart/index.ts";
 import type { Producto } from "@/lib/catalog/index.ts";
+import { trackEvent } from "@/lib/analytics/track.ts";
 
 export function AddToCartButton({ producto }: { producto: Producto }) {
   const { addItem } = useCart();
@@ -12,7 +13,7 @@ export function AddToCartButton({ producto }: { producto: Producto }) {
   return (
     <button
       type="button"
-      onClick={() =>
+      onClick={() => {
         addItem({
           sku: producto.sku,
           qty: 1,
@@ -20,8 +21,15 @@ export function AddToCartButton({ producto }: { producto: Producto }) {
           currency: producto.moneda,
           nombreSnapshot: producto.nombre,
           imagenSnapshot: producto.imagenes[0]?.url ?? null,
-        })
-      }
+        });
+        trackEvent("add_to_quote", {
+          item_id: producto.sku,
+          item_name: producto.nombre,
+          price: producto.precioCents / 100,
+          currency: "GTQ",
+          quantity: 1,
+        });
+      }}
       className="bg-negro flex-1 cursor-pointer rounded-full px-6 py-3.75 text-center text-[16px] text-white transition-transform duration-150 ease-out hover:scale-[1.02] active:scale-95"
     >
       Agregar al carrito

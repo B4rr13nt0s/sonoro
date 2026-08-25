@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bakbak_One, JetBrains_Mono } from "next/font/google";
 
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { CartProvider } from "@/lib/cart/index.ts";
@@ -59,6 +60,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${bakbakOne.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        <GoogleAnalytics />
         <CartProvider catalogo={catalogo}>
           <SiteHeader />
           <main className="flex flex-1 flex-col">{children}</main>
