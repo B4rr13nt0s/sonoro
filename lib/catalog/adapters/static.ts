@@ -73,6 +73,7 @@ async function listProducts(
       return false;
     }
     if (filters.destacado !== undefined && p.destacado !== filters.destacado) return false;
+    if (filters.activo !== undefined && p.activo !== filters.activo) return false;
     if (filters.precioMinCents !== undefined && p.precioCents < filters.precioMinCents) {
       return false;
     }

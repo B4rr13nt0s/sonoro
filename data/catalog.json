@@ -644,7 +644,69 @@
         "valor": "Rejillas"
       }
     ],
-    "precioCents": 35000,
+    "precioCents": 37500,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": true,
+    "activo": false
+  },
+  {
+    "sku": "CAK42",
+    "slug": "cerwin-vega-cak42",
+    "nombre": "Kit de amplificador CAK42 - Calibre 4, 2 canales",
+    "marca": "Cerwin Vega",
+    "categoria": "Kits",
+    "descripcionCorta": "Kit completo de cableado calibre 4 en cobre libre de oxígeno para amplificador de 2 canales",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Calibre",
+        "valor": "4"
+      },
+      {
+        "etiqueta": "Material",
+        "valor": "Cobre libre de oxígeno (OFC)"
+      },
+      {
+        "etiqueta": "Contenido",
+        "valor": "Corriente, tierra, remoto y RCA"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Calibre",
+        "valor": "4"
+      },
+      {
+        "etiqueta": "Material del conductor",
+        "valor": "Cobre libre de oxígeno (OFC)"
+      },
+      {
+        "etiqueta": "Longitud del cable de corriente",
+        "valor": "17 ft (5.2 m), rojo mate con terminal de ojo"
+      },
+      {
+        "etiqueta": "Cable de tierra",
+        "valor": "3 ft (0.9 m), negro mate con terminal de ojo"
+      },
+      {
+        "etiqueta": "Cable remoto",
+        "valor": "17 ft (5.2 m), calibre 18"
+      },
+      {
+        "etiqueta": "Cables RCA incluidos",
+        "valor": "17 ft (5.2 m), 2 canales, serie Vega"
+      },
+      {
+        "etiqueta": "Portafusible",
+        "valor": "Incluido"
+      },
+      {
+        "etiqueta": "Capacidad recomendada",
+        "valor": "Sistemas de hasta 1,200 W"
+      }
+    ],
+    "precioCents": 50000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
     "imagenes": [],

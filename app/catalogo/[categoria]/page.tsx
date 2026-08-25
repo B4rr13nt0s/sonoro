@@ -84,6 +84,7 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
   const { items, total, page, pageSize } = await listProducts({
     categoria: categoria.nombre,
     marca: marcaNombre,
+    activo: true,
     orden,
     page: paginaSolicitada,
   });

@@ -8,7 +8,7 @@ import { absoluteUrl } from "@/lib/seo/site.ts";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [productos, marcas, categorias] = await Promise.all([
-    listAllProducts(),
+    listAllProducts({ activo: true }),
     listBrands(),
     listCategories(),
   ]);
@@ -35,16 +35,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  // activo === false: la fila nunca se borra (CLAUDE.md § Mantenimiento del
-  // catálogo), pero no debe seguir apareciendo en el sitemap — proxy.ts ya
-  // fuerza 410 en esas URLs.
-  const productoEntries: MetadataRoute.Sitemap = productos
-    .filter((producto) => producto.activo)
-    .map((producto) => ({
-      url: absoluteUrl(`/producto/${producto.slug}`),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    }));
+  // activo: true ya filtra los productos dados de baja (CLAUDE.md §
+  // Mantenimiento del catálogo: la fila nunca se borra, solo se marca
+  // inactiva) — proxy.ts fuerza 410 en esas URLs, no deben seguir en el
+  // sitemap.
+  const productoEntries: MetadataRoute.Sitemap = productos.map((producto) => ({
+    url: absoluteUrl(`/producto/${producto.slug}`),
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
 
   return [...estaticas, ...categoriaEntries, ...marcaEntries, ...productoEntries];
 }

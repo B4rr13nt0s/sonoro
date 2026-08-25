@@ -37,7 +37,12 @@ export function SiteHeader() {
   return (
     <header className="border-borde-nav sticky top-0 z-40 border-b bg-white">
       <div className="mx-auto flex h-15 max-w-[1280px] items-center gap-10 px-6 sm:px-12">
-        <Link href="/" className="flex flex-none items-center" onClick={cerrarMenu}>
+        <Link
+          href="/"
+          aria-label="Inicio"
+          className="flex flex-none items-center"
+          onClick={cerrarMenu}
+        >
           <Monogram className="rounded-nav-mark h-8 w-8" />
         </Link>
 

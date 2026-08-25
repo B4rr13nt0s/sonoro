@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 // y se lo pasa al Client Component; el filtrado, orden y "sin resultados"
 // pasan en el navegador, sin ida y vuelta al servidor.
 export default async function BuscarPage() {
-  const productos = await listAllProducts();
+  const productos = await listAllProducts({ activo: true });
 
   return <SearchExperience productos={productos} />;
 }

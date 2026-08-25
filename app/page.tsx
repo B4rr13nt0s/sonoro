@@ -69,7 +69,7 @@ const CARACTERISTICAS = [
 
 export default async function Home() {
   const [{ items: destacados }, marcas] = await Promise.all([
-    listProducts({ destacado: true, pageSize: 4 }),
+    listProducts({ destacado: true, activo: true, pageSize: 4 }),
     listBrands(),
   ]);
 
@@ -166,7 +166,9 @@ export default async function Home() {
         <div className="border-borde-sobre-negro grid grid-cols-1 gap-8 border-t pt-2 sm:grid-cols-3 sm:gap-10">
           {CARACTERISTICAS.map((caracteristica) => (
             <div key={caracteristica.numero} className="flex flex-col gap-2.5 pt-6">
-              <div className="font-mono text-[12px] text-[#6e6e72]">{caracteristica.numero}</div>
+              <div className="text-texto-sobre-negro font-mono text-[12px]">
+                {caracteristica.numero}
+              </div>
               <div className="text-22 font-semibold tracking-[-0.02em]">
                 {caracteristica.titulo}
               </div>

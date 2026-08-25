@@ -80,6 +80,25 @@ test("listProducts: orden precio_desc ordena de mayor a menor precio", async () 
   }
 });
 
+test("listProducts: activo: true solo devuelve productos activos", async () => {
+  const { items } = await staticAdapter.listProducts({ activo: true });
+  assert.ok(items.every((p) => p.activo === true));
+});
+
+test("listProducts: activo: false solo devuelve productos inactivos", async () => {
+  const { items } = await staticAdapter.listProducts({ activo: false });
+  assert.ok(items.every((p) => p.activo === false));
+});
+
+test("listProducts: sin especificar activo, no filtra por ese campo — activo:true + activo:false = sin filtro", async () => {
+  const sinFiltro = await staticAdapter.listProducts({});
+  const soloActivos = await staticAdapter.listProducts({ activo: true });
+  const soloInactivos = await staticAdapter.listProducts({ activo: false });
+  // Prueba que la partición es exacta (ni se pierde ni se duplica nada),
+  // sin depender de cuántos productos inactivos haya hoy en el catálogo.
+  assert.equal(sinFiltro.total, soloActivos.total + soloInactivos.total);
+});
+
 test("listProducts: devuelve page y pageSize junto con items y total", async () => {
   const resultado = await staticAdapter.listProducts({ page: 2, pageSize: 4 });
   assert.equal(resultado.page, 2);

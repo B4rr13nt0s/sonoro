@@ -3,6 +3,7 @@ node_modules
 data/catalog.json
 data/brands.json
 data/taxonomy.json
+data/inactive-slugs.json
 reports
 public/logos
 design

@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "node --no-warnings --test \"**/*.test.ts\"",
     "test:e2e": "playwright test",
     "import:catalog": "tsx scripts/import-catalog.ts",

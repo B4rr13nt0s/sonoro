@@ -120,11 +120,29 @@ export type Orden = z.infer<typeof OrdenSchema>;
 // orden explícito (p. ej. "Los más vendidos" en el inicio). El default de
 // "precio ascendente" que muestra /catalogo/[categoria] es una decisión de
 // esa página, no del catálogo.
+//
+// `activo` sigue el mismo criterio — SIN default aquí, cada llamador dice
+// qué quiere. Toda página de cara al cliente (catálogo, marca, inicio,
+// /buscar) debe pasar `activo: true` explícito: un producto con
+// activo=false salió de venta (CLAUDE.md § Mantenimiento del catálogo) y no
+// debe aparecer en ningún listado ni en resultados de búsqueda. Hay
+// exactamente dos llamadores que a propósito NO filtran (necesitan el
+// catálogo completo, inactivos incluidos):
+//   - generateStaticParams de app/producto/[slug]/page.tsx: si no
+//     pre-renderiza la página del producto inactivo, proxy.ts no tiene qué
+//     reescribir a 410 y la URL cae en un 404 genérico en vez de la
+//     página "ya no disponible".
+//   - CartProvider en app/layout.tsx: reconcile() (lib/cart/reconcile.ts)
+//     necesita distinguir "el sku ya no existe" de "el sku existe pero
+//     está inactivo" para reportarle al usuario la razón correcta por la
+//     que se quitó una línea de su carrito — con el catálogo ya filtrado,
+//     ambos casos se ven idénticos.
 export type ProductFilters = {
   categoria?: string;
   marca?: string;
   disponibilidad?: Disponibilidad;
   destacado?: boolean;
+  activo?: boolean;
   precioMinCents?: number;
   precioMaxCents?: number;
   orden?: Orden;

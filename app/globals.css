@@ -12,7 +12,13 @@
   --color-borde-tarjeta: #ececea;
   --color-borde-pildora: #e4e4e0;
   --color-texto-secundario: #6b6b67;
-  --color-texto-terciario: #9c9c97;
+  /* Oscurecido de #9C9C97 a #6E6E6E — el original daba 2.75:1 contra blanco
+   * y 2.53:1 contra fondo-alt (Lighthouse: color-contrast, exige 4.5:1). A
+   * este tamaño de fuente (10-12px, texto pequeño) no hay excepción de
+   * "texto grande" en WCAG AA que permita mantenerlo más claro. Queda
+   * apenas más claro que texto-secundario (#6B6B67) — es lo más parecido al
+   * tono original que WCAG permite. */
+  --color-texto-terciario: #6e6e6e;
   --color-texto-sobre-negro: #a1a1a6;
   --color-borde-sobre-negro: #232326;
 

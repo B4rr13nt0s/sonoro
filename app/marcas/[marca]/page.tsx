@@ -60,7 +60,7 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
   // — un pill de categoría sin productos sería un filtro que siempre da
   // "sin resultados". Se ordenan según el orden canónico del sitio, no el
   // orden en que aparecen en el JSON.
-  const productosDeLaMarca = await listAllProducts({ marca: marca.nombre });
+  const productosDeLaMarca = await listAllProducts({ marca: marca.nombre, activo: true });
   const nombresPresentes = new Set(productosDeLaMarca.map((p) => p.categoria));
   const categoriasDisponibles = todasLasCategorias.filter((c) => nombresPresentes.has(c.nombre));
 
@@ -83,6 +83,7 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
   const { items, total, page, pageSize } = await listProducts({
     marca: marca.nombre,
     categoria: categoriaNombre,
+    activo: true,
     orden,
     page: paginaSolicitada,
   });
