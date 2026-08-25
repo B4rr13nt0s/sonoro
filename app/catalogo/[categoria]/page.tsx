@@ -25,7 +25,7 @@ const DESCRIPCIONES: Partial<Record<string, string>> = {
   kits: "El kit trae el cableado completo — corriente, tierra, señal — calibrado para la potencia del equipo que va a alimentar.",
   insonorizacion:
     "La lámina de insonorización se adhiere a la carrocería y reduce la vibración y el ruido que entra por la puerta, el piso o la cajuela.",
-  equalizadores:
+  ecualizadores:
     "El ecualizador ajusta el balance de frecuencias del sistema antes de que llegue a las bocinas, banda por banda.",
   accesorios:
     "Piezas complementarias del sistema — conectores, capacitores, controles remotos — que no encajan en el resto de categorías.",

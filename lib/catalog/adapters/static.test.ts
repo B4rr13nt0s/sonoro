@@ -1,7 +1,26 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 
 import { staticAdapter } from "./static.ts";
+import type { Producto } from "../types.ts";
+
+// Conteos derivados de data/catalog.json real, no números fijos — el
+// catálogo hoy tiene 10 productos de prueba + 2 de Cerwin Vega (uno
+// inactivo, para probar el filtro de activo), pero pronto crece con el
+// catálogo real (CLAUDE.md § Fuente de verdad). Un total hardcodeado se
+// desincroniza cada vez que se importa una fila nueva — estas pruebas
+// deben seguir pasando sin tocarlas cuando eso pase.
+const RUTA_CATALOGO_REAL = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../../data/catalog.json",
+);
+const CATALOGO_REAL: Producto[] = JSON.parse(readFileSync(RUTA_CATALOGO_REAL, "utf-8"));
+const TOTAL_CATALOGO = CATALOGO_REAL.length;
+const TOTAL_BOCINAS = CATALOGO_REAL.filter((p) => p.categoria === "Bocinas").length;
+const TOTAL_MEMPHIS = CATALOGO_REAL.filter((p) => p.marca === "Memphis").length;
 
 test("getProduct: devuelve el producto por slug", async () => {
   const producto = await staticAdapter.getProduct("pioneer-dmh-ap6650bt");
@@ -14,34 +33,42 @@ test("getProduct: null si el slug no existe", async () => {
   assert.equal(producto, null);
 });
 
-test("listProducts: sin filtros devuelve todo el catálogo con su total real", async () => {
-  const { items, total } = await staticAdapter.listProducts({});
-  assert.equal(total, 10);
-  assert.equal(items.length, 10); // 10 < pageSize por defecto, cabe en una página
+test("listProducts: sin filtros devuelve el total real del catálogo", async () => {
+  const { total } = await staticAdapter.listProducts({});
+  assert.equal(total, TOTAL_CATALOGO);
+});
+
+test("listProducts: con pageSize suficiente, items.length cubre el total", async () => {
+  const { items } = await staticAdapter.listProducts({ pageSize: TOTAL_CATALOGO });
+  assert.equal(items.length, TOTAL_CATALOGO);
 });
 
 test("listProducts: filtra por categoria", async () => {
   const { items, total } = await staticAdapter.listProducts({ categoria: "Bocinas" });
-  assert.equal(total, 3);
+  assert.equal(total, TOTAL_BOCINAS);
   assert.ok(items.every((p) => p.categoria === "Bocinas"));
 });
 
 test("listProducts: filtra por marca", async () => {
   const { items, total } = await staticAdapter.listProducts({ marca: "Memphis" });
-  assert.equal(total, 2);
+  assert.equal(total, TOTAL_MEMPHIS);
   assert.ok(items.every((p) => p.marca === "Memphis"));
 });
 
 test("listProducts: pagina sin solaparse y sin perder el total real", async () => {
-  const pagina1 = await staticAdapter.listProducts({ page: 1, pageSize: 4 });
-  const pagina2 = await staticAdapter.listProducts({ page: 2, pageSize: 4 });
-  const pagina3 = await staticAdapter.listProducts({ page: 3, pageSize: 4 });
+  const pageSize = 4;
+  const pagina1 = await staticAdapter.listProducts({ page: 1, pageSize });
+  const pagina2 = await staticAdapter.listProducts({ page: 2, pageSize });
+  const pagina3 = await staticAdapter.listProducts({ page: 3, pageSize });
 
-  assert.equal(pagina1.total, 10);
-  assert.equal(pagina2.total, 10);
-  assert.equal(pagina1.items.length, 4);
-  assert.equal(pagina2.items.length, 4);
-  assert.equal(pagina3.items.length, 2); // resto: 10 - 4 - 4
+  const restantes = (pagina: number) =>
+    Math.max(0, Math.min(pageSize, TOTAL_CATALOGO - pagina * pageSize));
+
+  assert.equal(pagina1.total, TOTAL_CATALOGO);
+  assert.equal(pagina2.total, TOTAL_CATALOGO);
+  assert.equal(pagina1.items.length, restantes(0));
+  assert.equal(pagina2.items.length, restantes(1));
+  assert.equal(pagina3.items.length, restantes(2));
 
   const skusPagina1 = pagina1.items.map((p) => p.sku);
   const skusPagina2 = pagina2.items.map((p) => p.sku);
@@ -52,8 +79,11 @@ test("listProducts: pagina sin solaparse y sin perder el total real", async () =
 });
 
 test("listProducts: page fuera de rango devuelve items vacíos, no un error", async () => {
-  const { items, total } = await staticAdapter.listProducts({ page: 99, pageSize: 4 });
-  assert.equal(total, 10);
+  const { items, total } = await staticAdapter.listProducts({
+    page: TOTAL_CATALOGO + 100,
+    pageSize: 4,
+  });
+  assert.equal(total, TOTAL_CATALOGO);
   assert.deepEqual(items, []);
 });
 
@@ -129,9 +159,9 @@ test("listCategories: devuelve las ocho categorías con su conteo", async () => 
 
 test("listCategories: una categoría sin productos todavía sigue apareciendo, con conteo 0", async () => {
   const categorias = await staticAdapter.listCategories();
-  const equalizadores = categorias.find((c) => c.slug === "equalizadores");
+  const ecualizadores = categorias.find((c) => c.slug === "ecualizadores");
   const accesorios = categorias.find((c) => c.slug === "accesorios");
-  assert.equal(equalizadores?.cantidadProductos, 0);
+  assert.equal(ecualizadores?.cantidadProductos, 0);
   assert.equal(accesorios?.cantidadProductos, 0);
 });
 

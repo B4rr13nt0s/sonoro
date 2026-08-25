@@ -14,6 +14,6 @@ export const CATEGORIAS_SITIO = [
   { slug: "receptores", nombre: "Receptores" },
   { slug: "kits", nombre: "Kits" },
   { slug: "insonorizacion", nombre: "Insonorización" },
-  { slug: "equalizadores", nombre: "Equalizadores" },
+  { slug: "ecualizadores", nombre: "Ecualizadores" },
   { slug: "accesorios", nombre: "Accesorios" },
 ] as const;
