@@ -2,41 +2,41 @@
   {
     "nombre": "Cerwin Vega",
     "slug": "cerwin-vega",
-    "cantidadProductos": 1
+    "cantidadProductos": 43
   },
   {
     "nombre": "Focal",
     "slug": "focal",
-    "cantidadProductos": 1
+    "cantidadProductos": 7
   },
   {
     "nombre": "JBL",
     "slug": "jbl",
-    "cantidadProductos": 1
+    "cantidadProductos": 4
   },
   {
     "nombre": "KBT",
     "slug": "kbt",
-    "cantidadProductos": 1
+    "cantidadProductos": 74
   },
   {
     "nombre": "Memphis",
     "slug": "memphis",
-    "cantidadProductos": 2
+    "cantidadProductos": 111
   },
   {
     "nombre": "Pioneer",
     "slug": "pioneer",
-    "cantidadProductos": 2
+    "cantidadProductos": 15
   },
   {
     "nombre": "Rockford Fosgate",
     "slug": "rockford-fosgate",
-    "cantidadProductos": 1
+    "cantidadProductos": 57
   },
   {
     "nombre": "SoundSkins",
     "slug": "soundskins",
-    "cantidadProductos": 1
+    "cantidadProductos": 10
   }
 ]
