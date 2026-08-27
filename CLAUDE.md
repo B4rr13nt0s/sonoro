@@ -233,8 +233,6 @@ Las ocho categorías del nav son: Bocinas, Subwoofers, Amplificadores, Receptore
 
 ### Imágenes
 
-**No hay fotografías de producto en el lanzamiento.** Todo el catálogo sale con placeholders.
-
 El placeholder es un **estado de renderizado, no un dato**:
 
 ```
@@ -242,11 +240,28 @@ imagenes: []    →  placeholder
 imagenes: [..]  →  fotos
 ```
 
-Nunca escribir rutas de placeholder en el catálogo. Cuando lleguen las fotos, es solo un cambio de datos, cero código.
+Nunca escribir rutas de placeholder en el catálogo. Un producto sin fotos sigue con `imagenes: []` hasta que existan archivos que le correspondan — cero cambio de código cuando lleguen.
 
 Patrón del handoff, adoptado tal cual: rayas diagonales `repeating-linear-gradient(135deg, #EFEFEC 0 10px, #F7F7F5 10px 20px)` con etiqueta mono describiendo la foto (`FOTO — sub 12" tres cuartos`, `LOGO — Memphis`). Sobre negro: `#16161A` / `#1D1D22`. Al reemplazar por `<img>`, conservar la altura del contenedor.
 
-Como no hay fotos, **las imágenes OG se generan dinámicamente** con `ImageResponse`: fondo de marca + nombre + precio + logo. Sin esto, cada enlace compartido por WhatsApp —el canal principal— se vería vacío.
+Como no hay fotos de todas las marcas todavía, **las imágenes OG se generan dinámicamente** con `ImageResponse`: fondo de marca + nombre + precio + logo. Sin esto, cada enlace compartido por WhatsApp —el canal principal— se vería vacío.
+
+#### Pipeline de fotos por SKU
+
+Los archivos van en `public/productos/`, con el nombre `SKU_vista.ext`:
+
+```
+SRX62_frontal.jpg
+SRX62_lateral.jpg
+ACX 165_frontal.jpg      ← el sku se escribe tal cual (con su espacio interno)
+```
+
+- **Formatos:** `jpg`, `jpeg`, `png`, `webp`. Cualquier otra extensión se ignora y se reporta.
+- El **primer** `_` del nombre separa sku de vista — nunca ambiguo, porque `SKU_REGEX` (`lib/catalog/types.ts`) no admite `_` dentro de un sku. La vista puede traer sus propios guiones bajos (`SRX62_tres_cuartos.jpg` → vista `tres_cuartos`).
+- `scripts/import-catalog.ts` escanea la carpeta en cada corrida de `npm run import:catalog` y arma `imagenes` por sku emparejando con `lib/catalog/photos.ts` (lógica pura, testeada en `photos.test.ts`). Ningún componente cambia — `ProductImage`/`ProductGallery` ya leen `imagenes` tal cual venga.
+- Las fotos de un mismo sku quedan **ordenadas alfabéticamente por vista** (`frontal` < `lateral` < `trasera` ya cae en ese orden en español) — esa es la que sale ampliada por defecto en la ficha. Para forzar cuál va primero, nombrar la vista para que ordene primero.
+- Un archivo que no matchea ningún sku (typo de sku o de vista, extensión no soportada, sin `_`) **no aborta el import** — se reporta como alerta en `reports/import-errors.md`, igual que un slug que cambió. Nunca se adivina cuál sku es.
+- `alt` se genera automático como `"{nombre del producto} — {vista}"`.
 
 ---
 

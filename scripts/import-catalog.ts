@@ -18,13 +18,20 @@
 // Nota: el paso 5 de §2.3 (unir content/productos/{sku}.mdx) no está
 // implementado todavía — la carpeta está vacía y ProductoSchema no tiene un
 // campo para contenido largo. Punto de extensión deliberadamente pendiente.
+//
+// Fotos (CLAUDE.md § Imágenes): public/productos/ se escanea buscando
+// archivos "SKU_vista.ext" — lib/catalog/photos.ts hace el emparejamiento
+// puro, este archivo solo aporta el filesystem. Un producto sin archivos
+// que matcheen su sku sigue con imagenes: [] (placeholder), cero cambio de
+// comportamiento — "cuando lleguen las fotos, es solo un cambio de datos".
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "csv-parse/sync";
 
 import { CATEGORIAS_SITIO } from "../lib/catalog/categorias.ts";
+import { construirImagenes, emparejarFotosConSkus } from "../lib/catalog/photos.ts";
 import { pareceValorMangeado, ProductoSchema, type Producto } from "../lib/catalog/types.ts";
 import { formatQ } from "../lib/format/precio.ts";
 import { precioACents } from "./precio.ts";
@@ -34,6 +41,7 @@ const RUTA_CSV = path.join(RAIZ, "data", "source", "productos.csv");
 const RUTA_CATALOG = path.join(RAIZ, "data", "catalog.json");
 const RUTA_BRANDS = path.join(RAIZ, "data", "brands.json");
 const RUTA_TAXONOMY = path.join(RAIZ, "data", "taxonomy.json");
+const RUTA_FOTOS = path.join(RAIZ, "public", "productos");
 // Lee esto proxy.ts para el 410 de /producto/[slug] — un arreglo plano de
 // slugs en vez del catálogo completo, porque esa ruta corre en cada
 // petición y no tiene por qué resolver 10+ productos con specs completas
@@ -179,12 +187,38 @@ function main(): void {
     productosValidos.push(parseo.data);
   });
 
+  // public/productos/ puede no existir aún (repo fresco, antes de la
+  // primera foto) — se trata como carpeta vacía, no como error: es el
+  // mismo estado que "todavía no hay fotos", ya cubierto por imagenes: [].
+  // Archivos punto (.gitkeep, .DS_Store de macOS) son bookkeeping del
+  // filesystem, no fotos con typo — se descartan antes de reportar nada,
+  // no cuentan como alerta.
+  const nombresFotos = existsSync(RUTA_FOTOS)
+    ? readdirSync(RUTA_FOTOS).filter((nombre) => !nombre.startsWith("."))
+    : [];
+  const skusValidos = new Set(productosValidos.map((p) => p.sku));
+  const resultadoFotos = emparejarFotosConSkus(nombresFotos, skusValidos);
+  for (const producto of productosValidos) {
+    producto.imagenes = construirImagenes(
+      resultadoFotos.porSku.get(producto.sku) ?? [],
+      producto.nombre,
+      "/productos",
+    );
+  }
+  const productosConFotos = productosValidos.filter((p) => p.imagenes.length > 0).length;
+
   const catalogoAnterior: Producto[] = existsSync(RUTA_CATALOG)
     ? (JSON.parse(readFileSync(RUTA_CATALOG, "utf-8")) as Producto[])
     : [];
   const huboCatalogoAnterior = existsSync(RUTA_CATALOG);
 
-  const alertas = detectarAlertas(catalogoAnterior, productosValidos);
+  // Un archivo de foto que no matchea ningún sku es casi siempre un typo
+  // (de sku o de vista) — se reporta junto a las demás alertas de
+  // integridad de datos, nunca se ignora en silencio.
+  const alertas = [
+    ...detectarAlertas(catalogoAnterior, productosValidos),
+    ...resultadoFotos.ignorados,
+  ];
   alertas.forEach((alerta) => console.warn(`⚠ ALERTA: ${alerta}`));
 
   const diffPrecios = calcularDiffPrecios(catalogoAnterior, productosValidos);
@@ -229,6 +263,9 @@ function main(): void {
 
   console.log(
     `Importación completa: ${productosValidos.length} válido(s), ${errores.length} rechazado(s), ${alertas.length} alerta(s).`,
+  );
+  console.log(
+    `Fotos: ${productosConFotos} producto(s) con foto(s), ${resultadoFotos.ignorados.length} archivo(s) de public/productos/ ignorado(s).`,
   );
 }
 
