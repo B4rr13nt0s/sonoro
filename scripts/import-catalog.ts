@@ -267,6 +267,21 @@ function main(): void {
   console.log(
     `Fotos: ${productosConFotos} producto(s) con foto(s), ${resultadoFotos.ignorados.length} archivo(s) de public/productos/ ignorado(s).`,
   );
+
+  // Toda fila rechazada bloquea el build (npm run build = import:catalog &&
+  // next build), no solo un ABORT total — "mejor no actualizar que publicar
+  // un catálogo roto" aplica igual a una fila individual que a un contrato
+  // de encabezados roto. Los archivos de salida ya se escribieron arriba
+  // (a diferencia de abortar(), que no escribe nada): con exitCode ≠ 0 el
+  // deploy de Vercel no llega a publicarse de todas formas, así que dejar
+  // catalog.json y reports/import-errors.md en el filesystem local solo
+  // ayuda a diagnosticar qué falló, sin ningún riesgo de que se publique.
+  if (errores.length > 0) {
+    console.error(
+      `✘ ${errores.length} fila(s) rechazada(s) — ver reports/import-errors.md. El build no continúa.`,
+    );
+    process.exitCode = 1;
+  }
 }
 
 function abortar(motivos: string[]): void {
