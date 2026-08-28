@@ -2,7 +2,7 @@
   {
     "sku": "DMH-G225BT",
     "slug": "pioneer-dmh-g225bt",
-    "nombre": "Receptor multimedia 6.2\" DMH-G225BT",
+    "nombre": "Pantalla de 6.2\" DMH-G225BT",
     "marca": "Pioneer",
     "categoria": "Receptores",
     "descripcionCorta": "Receptor multimedia doble DIN con pantalla táctil y Bluetooth",
@@ -72,7 +72,7 @@
   {
     "sku": "DMH-A375BT",
     "slug": "pioneer-dmh-a375bt",
-    "nombre": "Receptor multimedia 7\" DMH-A375BT",
+    "nombre": "Pantalla de 7\" DMH-A375BT",
     "marca": "Pioneer",
     "categoria": "Receptores",
     "descripcionCorta": "Receptor multimedia doble DIN con pantalla capacitiva de 7 pulgadas, WebLink Cast y doble entrada de cámara",
@@ -142,7 +142,7 @@
   {
     "sku": "DMH-AP6650BT",
     "slug": "pioneer-dmh-ap6650bt",
-    "nombre": "Receptor multimedia 9\" DMH-AP6650BT",
+    "nombre": "Pantalla de 9\" DMH-AP6650BT",
     "marca": "Pioneer",
     "categoria": "Receptores",
     "descripcionCorta": "Receptor multimedia de 9 pulgadas con Apple CarPlay y Android Auto inalámbricos",
@@ -212,7 +212,7 @@
   {
     "sku": "DMH-Z5150BT",
     "slug": "pioneer-dmh-z5150bt",
-    "nombre": "Receptor multimedia 7\" DMH-Z5150BT",
+    "nombre": "Pantalla de 7\" DMH-Z5150BT",
     "marca": "Pioneer",
     "categoria": "Receptores",
     "descripcionCorta": "Receptor multimedia de 7 pulgadas con Apple CarPlay, Android Auto y salidas de alto voltaje",
@@ -282,7 +282,7 @@
   {
     "sku": "DMH-Z5350BT",
     "slug": "pioneer-dmh-z5350bt",
-    "nombre": "Receptor multimedia 6.8\" DMH-Z5350BT",
+    "nombre": "Pantalla de 6.8\" DMH-Z5350BT",
     "marca": "Pioneer",
     "categoria": "Receptores",
     "descripcionCorta": "Receptor multimedia capacitivo de 6.8 pulgadas con Apple CarPlay y Android Auto por cable",
@@ -340,7 +340,7 @@
   {
     "sku": "DMH-Z6350BT",
     "slug": "pioneer-dmh-z6350bt",
-    "nombre": "Receptor multimedia 6.8\" DMH-Z6350BT con Alexa",
+    "nombre": "Pantalla de 6.8\" DMH-Z6350BT con Alexa",
     "marca": "Pioneer",
     "categoria": "Receptores",
     "descripcionCorta": "Receptor multimedia de 6.8 pulgadas con CarPlay inalámbrico, Alexa integrada y audio de alta resolución",
@@ -410,7 +410,7 @@
   {
     "sku": "DMH-ZS9350BT",
     "slug": "pioneer-dmh-zs9350bt",
-    "nombre": "Receptor multimedia 9\" DMH-ZS9350BT Audiophile",
+    "nombre": "Pantalla de 9\" DMH-ZS9350BT Audiophile",
     "marca": "Pioneer",
     "categoria": "Receptores",
     "descripcionCorta": "Receptor multimedia de 9 pulgadas tipo pantalla separada con DSP de 52 bits y componentes grado audiófilo",
@@ -480,7 +480,7 @@
   {
     "sku": "DMH-A5650BT",
     "slug": "pioneer-dmh-a5650bt",
-    "nombre": "Receptor multimedia 6.8\" DMH-A5650BT",
+    "nombre": "Pantalla de 6.8\" DMH-A5650BT",
     "marca": "Pioneer",
     "categoria": "Receptores",
     "descripcionCorta": "Receptor multimedia de 6.8 pulgadas con Apple CarPlay, Android Auto y ajuste de sonido de 3 vías",
@@ -962,10 +962,10 @@
   {
     "sku": "TS-R6951S",
     "slug": "pioneer-ts-r6951s",
-    "nombre": "Bocinas coaxiales 6x9\" TS-R6951S",
+    "nombre": "Bocinas coaxiales de 6x9\" TS-R6951S",
     "marca": "Pioneer",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de bocinas coaxiales de 6x9 pulgadas de 3 vías para reemplazo de fábrica",
+    "descripcionCorta": "Par de bocinas coaxiales de 6x9 pulgadas de 3 vías",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -1016,10 +1016,10 @@
   {
     "sku": "TS-R1651S",
     "slug": "pioneer-ts-r1651s",
-    "nombre": "Bocinas coaxiales 6.5\" 3 vías TS-R1651S",
+    "nombre": "Bocinas coaxiales  de 6.5\" TS-R1651S",
     "marca": "Pioneer",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 3 vías para reemplazo de fábrica",
+    "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 3 vías",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -1086,7 +1086,7 @@
   {
     "sku": "TS-T110",
     "slug": "pioneer-ts-t110",
-    "nombre": "Tweeters TS-T110",
+    "nombre": "Tweeters de 7/8\" TS-T110",
     "marca": "Pioneer",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de tweeters de montaje en superficie con crossover incluido",
@@ -1156,7 +1156,7 @@
   {
     "sku": "165 AS3",
     "slug": "focal-165-as3",
-    "nombre": "Access 165 AS3 - Componentes 6.5\" 3 vías",
+    "nombre": "Componente Access de 6.5\" 165 AS3",
     "marca": "Focal",
     "categoria": "Bocinas",
     "descripcionCorta": "Juego de componentes de 6.5 pulgadas de 3 vías con crossover pasivo",
@@ -1226,7 +1226,7 @@
   {
     "sku": "165 AS",
     "slug": "focal-165-as",
-    "nombre": "Access 165 AS - Componentes 6.5\"",
+    "nombre": "Componente Access de 6.5\" 165 AS",
     "marca": "Focal",
     "categoria": "Bocinas",
     "descripcionCorta": "Juego de componentes de 6.5 pulgadas de 2 vías con crossover pasivo",
@@ -1296,7 +1296,7 @@
   {
     "sku": "165 AC",
     "slug": "focal-165-ac",
-    "nombre": "Access 165 AC - Coaxiales 6.5\"",
+    "nombre": "Bocinas coaxiales de 6.5\" Access 165 AC",
     "marca": "Focal",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 2 vías",
@@ -1366,7 +1366,7 @@
   {
     "sku": "ASE 165",
     "slug": "focal-ase-165",
-    "nombre": "Auditor ASE 165 - Componentes 6.5\"",
+    "nombre": "Componente Auditor de 6.5\" ASE 165",
     "marca": "Focal",
     "categoria": "Bocinas",
     "descripcionCorta": "Juego de componentes de 6.5 pulgadas con tweeter de montaje ajustable",
@@ -1436,7 +1436,7 @@
   {
     "sku": "ACX 165",
     "slug": "focal-acx-165",
-    "nombre": "Auditor ACX 165 - Coaxiales 6.5\"",
+    "nombre": "Bocinas coaxiales Auditor de 6.5\" ACX 165",
     "marca": "Focal",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 2 vías",
@@ -1506,7 +1506,7 @@
   {
     "sku": "ACX 130",
     "slug": "focal-acx-130",
-    "nombre": "Auditor ACX 130 - Coaxiales 5.25\"",
+    "nombre": "Bocinas coaxiales Auditor de 5.25\" ACX 130",
     "marca": "Focal",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 5.25 pulgadas de 2 vías",
@@ -1576,7 +1576,7 @@
   {
     "sku": "ACX 100",
     "slug": "focal-acx-100",
-    "nombre": "Auditor ACX 100 - Coaxiales 4\"",
+    "nombre": "Bocinas coaxiales Auditor de 4\" ACX 100",
     "marca": "Focal",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 4 pulgadas de 2 vías",
@@ -1646,7 +1646,7 @@
   {
     "sku": "CM-3000X5",
     "slug": "kbt-cm-3000x5",
-    "nombre": "Amplificador marino CM-3000X5 - 5 canales IP68",
+    "nombre": "Amplificador marino de 5 canales CM-3000X5",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador marino de 5 canales con certificación IP68 para sistema completo con subwoofer",
@@ -1696,7 +1696,7 @@
   {
     "sku": "CM-1500X1",
     "slug": "kbt-cm-1500x1",
-    "nombre": "Amplificador marino CM-1500X1 - Monoblock clase D IP68",
+    "nombre": "Amplificador marino monoblock CM-1500X1",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador marino monoblock clase D con certificación IP68 para embarcaciones y todoterreno",
@@ -1750,7 +1750,7 @@
   {
     "sku": "CM-1200X4",
     "slug": "kbt-cm-1200x4",
-    "nombre": "Amplificador marino CM-1200X4 - 4 canales IP68",
+    "nombre": "Amplificador marino de 4 canales CM-1200X4",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador marino de 4 canales con certificación IP68 para embarcaciones y todoterreno",
@@ -1800,7 +1800,7 @@
   {
     "sku": "COR-3K",
     "slug": "kbt-cor-3k",
-    "nombre": "Amplificador Coronel COR-3K - Monoblock clase D",
+    "nombre": "Amplificador Coronel monoblock COR-3K",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D de rango completo con 3,000 W RMS a 1 ohm",
@@ -1870,7 +1870,7 @@
   {
     "sku": "COR-1.2K",
     "slug": "kbt-cor-1-2k",
-    "nombre": "Amplificador Coronel COR-1.2K - Monoblock clase D",
+    "nombre": "Amplificador Coronel monoblock COR-1.2K",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D de rango completo de la línea Coronel",
@@ -1924,7 +1924,7 @@
   {
     "sku": "COR-1.2K4",
     "slug": "kbt-cor-1-2k4",
-    "nombre": "Amplificador Coronel COR-1.2K4 - 4 canales clase D",
+    "nombre": "Amplificador Coronel de 4 canales COR-1.2K4",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales clase D de rango completo de la línea Coronel",
@@ -1978,7 +1978,7 @@
   {
     "sku": "D5-1500MD",
     "slug": "kbt-d5-1500md",
-    "nombre": "Amplificador Delta D5-1500MD - 5 canales clase D",
+    "nombre": "Amplificador Delta  de 5 canales D5-1500MD",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 5 canales clase D con 360 W RMS por par en puente",
@@ -2040,7 +2040,7 @@
   {
     "sku": "D1-2500MD",
     "slug": "kbt-d1-2500md",
-    "nombre": "Amplificador Delta D1-2500MD - Monoblock clase D",
+    "nombre": "Amplificador Delta monoblock D1-2500MD",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D con 800 W RMS a 1 ohm y control remoto de ganancia",
@@ -2110,7 +2110,7 @@
   {
     "sku": "D1-1500MD",
     "slug": "kbt-d1-1500md",
-    "nombre": "Amplificador Delta D1-1500MD - Monoblock clase D",
+    "nombre": "Amplificador Delta monoblock D1-1500MD",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D con 600 W RMS a 1 ohm y control remoto de ganancia",
@@ -2180,7 +2180,7 @@
   {
     "sku": "D4-1500MD",
     "slug": "kbt-d4-1500md",
-    "nombre": "Amplificador Delta D4-1500MD - 4 canales clase D",
+    "nombre": "Amplificador Delta de 4 canales D4-1500MD",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales clase D con 450 W RMS por par en puente",
@@ -2238,7 +2238,7 @@
   {
     "sku": "D4-1000MD",
     "slug": "kbt-d4-1000md",
-    "nombre": "Amplificador Delta D4-1000MD - 4 canales clase D",
+    "nombre": "Amplificador Delta de 4 canales D4-1000MD",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales clase D con 300 W RMS por par en puente",
@@ -2296,7 +2296,7 @@
   {
     "sku": "TNT-3000.1",
     "slug": "kbt-tnt-3000-1",
-    "nombre": "Amplificador Lieutenant TNT-3000.1 - Monoblock clase D",
+    "nombre": "Amplificador Lieutenant monoblock TNT-3000.1",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D de la línea Lieutenant para subwoofer",
@@ -2350,7 +2350,7 @@
   {
     "sku": "TNT-1600.1",
     "slug": "kbt-tnt-1600-1",
-    "nombre": "Amplificador Lieutenant TNT-1600.1 - Monoblock clase D",
+    "nombre": "Amplificador Lieutenant monoblock TNT-1600.1",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D de la línea Lieutenant para subwoofer",
@@ -2404,7 +2404,7 @@
   {
     "sku": "TNT-1600.4",
     "slug": "kbt-tnt-1600-4",
-    "nombre": "Amplificador Lieutenant TNT-1600.4 - 4 canales",
+    "nombre": "Amplificador Lieutenant de 4 canales TNT-1600.4",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales de la línea Lieutenant para bocinas",
@@ -2454,7 +2454,7 @@
   {
     "sku": "TNT-1200.4",
     "slug": "kbt-tnt-1200-4",
-    "nombre": "Amplificador Lieutenant TNT-1200.4 - 4 canales",
+    "nombre": "Amplificador Lieutenant de 4 canales TNT-1200.4",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales de la línea Lieutenant para bocinas",
@@ -2504,7 +2504,7 @@
   {
     "sku": "SDR-1200.1",
     "slug": "kbt-sdr-1200-1",
-    "nombre": "Amplificador Soldier SDR-1200.1 - Monoblock clase D",
+    "nombre": "Amplificador Soldier monoblock SDR-1200.1",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D con 600 W RMS a 1 ohm",
@@ -2574,7 +2574,7 @@
   {
     "sku": "SDR-3600.4",
     "slug": "kbt-sdr-3600-4",
-    "nombre": "Amplificador Soldier SDR-3600.4 - 4 canales clase AB",
+    "nombre": "Amplificador Soldier de 4 canales SDR-3600.4",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales clase AB con 90 W RMS por canal a 2 ohm",
@@ -2644,7 +2644,7 @@
   {
     "sku": "SDR-1800.2",
     "slug": "kbt-sdr-1800-2",
-    "nombre": "Amplificador Soldier SDR-1800.2 - 2 canales clase AB",
+    "nombre": "Amplificador Soldier de 2 canales SDR-1800.2",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 2 canales clase AB con 90 W RMS por canal a 2 ohm",
@@ -2714,7 +2714,7 @@
   {
     "sku": "SDR-3600.5",
     "slug": "kbt-sdr-3600-5",
-    "nombre": "Amplificador Soldier SDR-3600.5 - 5 canales",
+    "nombre": "Amplificador Soldier de 5 canales SDR-3600.5",
     "marca": "KBT",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 5 canales para sistema completo con subwoofer",
@@ -2818,7 +2818,7 @@
   {
     "sku": "KSL-10P",
     "slug": "kbt-ksl-10p",
-    "nombre": "Caja amplificada 10\" KSL-10P con subwoofer plano",
+    "nombre": "Caja amplificada de 10\" con subwoofer plano KSL-10P",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Caja porteada de 10 pulgadas con subwoofer plano y amplificador clase D de 300 W integrado",
@@ -2888,7 +2888,7 @@
   {
     "sku": "KSL-8B",
     "slug": "kbt-ksl-8b",
-    "nombre": "Subwoofer plano KSL-8B 8\"",
+    "nombre": "Subwoofer plano de 8\" KSL-8B",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer plano de 8 pulgadas de la línea KSL para espacios reducidos",
@@ -2938,7 +2938,7 @@
   {
     "sku": "COR2-124D",
     "slug": "kbt-cor2-124d",
-    "nombre": "Subwoofer Coronel COR2-124D 12\" doble bobina",
+    "nombre": "Subwoofer Coronel COR2-124D de 12\"",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm de la línea Coronel",
@@ -2988,7 +2988,7 @@
   {
     "sku": "COR1-124D",
     "slug": "kbt-cor1-124d",
-    "nombre": "Subwoofer Coronel COR1-124D 12\" doble bobina",
+    "nombre": "Subwoofer Coronel COR1-124D de 12\"",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm de la línea Coronel",
@@ -3038,7 +3038,7 @@
   {
     "sku": "COR-124D",
     "slug": "kbt-cor-124d",
-    "nombre": "Subwoofer Coronel COR-124D 12\" doble bobina",
+    "nombre": "Subwoofer Coronel COR-124D de 12\"",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm con cono de papel moldeado",
@@ -3108,7 +3108,7 @@
   {
     "sku": "COR-104D",
     "slug": "kbt-cor-104d",
-    "nombre": "Subwoofer Coronel 10\" doble bobina",
+    "nombre": "Subwoofer Coronel de 10\"",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 10 pulgadas de doble bobina de 4 ohm con cono de papel moldeado",
@@ -3166,7 +3166,7 @@
   {
     "sku": "COR-84D",
     "slug": "kbt-cor-84d",
-    "nombre": "Subwoofer Coronel 8\" doble bobina",
+    "nombre": "Subwoofer Coronel de 8\"",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 8 pulgadas de doble bobina de 4 ohm de la línea Coronel",
@@ -3216,7 +3216,7 @@
   {
     "sku": "SDR-124D",
     "slug": "kbt-sdr-124d",
-    "nombre": "Subwoofer Soldier 12\" doble bobina",
+    "nombre": "Subwoofer Soldier de 12\"",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm de la línea Soldier",
@@ -3266,7 +3266,7 @@
   {
     "sku": "SDR-104D",
     "slug": "kbt-sdr-104d",
-    "nombre": "Subwoofer Soldier 10\" doble bobina",
+    "nombre": "Subwoofer Soldier de 10\"",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 10 pulgadas de doble bobina de 4 ohm de la línea Soldier",
@@ -3316,7 +3316,7 @@
   {
     "sku": "COR-S124D",
     "slug": "kbt-cor-s124d",
-    "nombre": "Subwoofer Coronel 12\" doble bobina de perfil plano",
+    "nombre": "Subwoofer Coronel de 12\"",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm de la línea Coronel, perfil plano para espacios reducidos",
@@ -3370,7 +3370,7 @@
   {
     "sku": "COR-S104D",
     "slug": "kbt-cor-s104d",
-    "nombre": "Subwoofer Coronel 10\" doble bobina de perfil plano",
+    "nombre": "Subwoofer Coronel de 10\"",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 10 pulgadas de doble bobina de 4 ohm de la línea Coronel, perfil plano para espacios reducidos",
@@ -3424,7 +3424,7 @@
   {
     "sku": "SGT-S124D",
     "slug": "kbt-sgt-s124d",
-    "nombre": "Subwoofer Sergeant 12\" doble bobina de perfil plano",
+    "nombre": "Subwoofer Sergeant de 12\"",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm de la línea Sergeant, perfil plano para espacios reducidos",
@@ -3482,7 +3482,7 @@
   {
     "sku": "SGT-S104D",
     "slug": "kbt-sgt-s104d",
-    "nombre": "Subwoofer Sergeant 10\" doble bobina de perfil plano",
+    "nombre": "Subwoofer Sergeant de 10\"",
     "marca": "KBT",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 10 pulgadas de doble bobina de 4 ohm de la línea Sergeant, perfil plano para espacios reducidos",
@@ -3536,7 +3536,7 @@
   {
     "sku": "CPT-FR65AW",
     "slug": "kbt-cpt-fr65aw",
-    "nombre": "Rango completo Captain CPT-FR65AW 6.5\" resistente al agua",
+    "nombre": "Bocinas rango completo Captain de 6.5\" CPT-FR65AW",
     "marca": "KBT",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de rango completo de 6.5 pulgadas resistente al agua de la línea Captain",
@@ -3590,7 +3590,7 @@
   {
     "sku": "CPT-MR65",
     "slug": "kbt-cpt-mr65",
-    "nombre": "Medio rango Captain CPT-MR65 6.5\"",
+    "nombre": "Bocinas rango medio Captain de 6.5\" CPT-MR65",
     "marca": "KBT",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6.5 pulgadas de la línea Captain para alta presión sonora",
@@ -3638,9 +3638,9 @@
     "activo": true
   },
   {
-    "sku": "SGT-MR66",
-    "slug": "kbt-sgt-mr66",
-    "nombre": "Medio rango Sergeant SGT-MR66 6.5\"",
+    "sku": "SGT-MR65",
+    "slug": "kbt-sgt-mr65",
+    "nombre": "Bocinas rango medio Sergeant de 6.5\" SGT-MR65",
     "marca": "KBT",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6.5 pulgadas de la línea Sergeant para alta presión sonora",
@@ -3690,7 +3690,7 @@
   {
     "sku": "SDR-MR65",
     "slug": "kbt-sdr-mr65",
-    "nombre": "Medio rango Soldier SDR-MR65 6.5\"",
+    "nombre": "Bocinas rango medio Soldier de 6.5\" SDR-MR65",
     "marca": "KBT",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6.5 pulgadas de la línea Soldier para alta presión sonora",
@@ -3740,7 +3740,7 @@
   {
     "sku": "CPT-165",
     "slug": "kbt-cpt-165",
-    "nombre": "Bocinas Captain CPT-165 6.5\"",
+    "nombre": "Bocinas Captain de 6.5\" CPT-165",
     "marca": "KBT",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas de 6.5 pulgadas de la línea Captain",
@@ -3774,10 +3774,6 @@
       {
         "etiqueta": "Aplicación",
         "valor": "Reemplazo en ubicaciones de fábrica de 6.5 pulgadas"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "Verificar configuración de vías y potencia en la ficha del proveedor"
       }
     ],
     "precioCents": 80000,
@@ -3790,14 +3786,14 @@
   {
     "sku": "CPT-BLT1",
     "slug": "kbt-cpt-blt1",
-    "nombre": "Super Bullet Tweeter CPT-BLT1",
+    "nombre": "Tweeter de punta de bala de 40 mm CPT-BLT1",
     "marca": "KBT",
     "categoria": "Bocinas",
-    "descripcionCorta": "Tweeter tipo bala de diafragma de aluminio con 103 dB de sensibilidad",
+    "descripcionCorta": "Tweeter tipo bala de diafragma de aluminio, 60 W RMS y 103 dB de sensibilidad",
     "specsDestacadas": [
       {
-        "etiqueta": "Configuración",
-        "valor": "Tweeter tipo bala"
+        "etiqueta": "Tamaño",
+        "valor": "40 mm"
       },
       {
         "etiqueta": "Potencia RMS",
@@ -3852,7 +3848,7 @@
   {
     "sku": "KNEO-100B",
     "slug": "kbt-kneo-100b",
-    "nombre": "Tweeter neodimio KNEO-100B de 1\"",
+    "nombre": "Tweeter neodimio de 1\" KNEO-100B",
     "marca": "KBT",
     "categoria": "Bocinas",
     "descripcionCorta": "Tweeter de neodimio con película de titanio, 40 W RMS y 100 dB de sensibilidad",
@@ -3922,7 +3918,7 @@
   {
     "sku": "KBT-110",
     "slug": "kbt-kbt-110",
-    "nombre": "Tweeter KBT-110 de 50 mm",
+    "nombre": "Tweeter de 50 mm KBT-110",
     "marca": "KBT",
     "categoria": "Bocinas",
     "descripcionCorta": "Tweeter de 50 mm con cono de aluminio, 50 W RMS y 100 dB de sensibilidad",
@@ -3984,28 +3980,28 @@
   {
     "sku": "KBT-112",
     "slug": "kbt-kbt-112",
-    "nombre": "Tweeter KBT-112",
+    "nombre": "Tweeter de punta de bala de 44.4 mm KBT-112",
     "marca": "KBT",
     "categoria": "Bocinas",
-    "descripcionCorta": "Tweeter de la línea KBT para complementar el sistema de audio",
+    "descripcionCorta": "Tweeter tipo bala de diafragma de aluminio, 200W RMS y104 dB de sensibilidad",
     "specsDestacadas": [
       {
-        "etiqueta": "Configuración",
-        "valor": "Tweeter"
+        "etiqueta": "Tamaño",
+        "valor": "44.4 mm"
       },
       {
-        "etiqueta": "Impedancia",
-        "valor": "4 Ω"
+        "etiqueta": "Potencia RMS",
+        "valor": "200 W"
       },
       {
-        "etiqueta": "Marca",
-        "valor": "KBT"
+        "etiqueta": "Potencia máxima",
+        "valor": "800 W"
       }
     ],
     "specsFicha": [
       {
         "etiqueta": "Configuración",
-        "valor": "Tweeter"
+        "valor": "Tweeter de montaje en superficie"
       },
       {
         "etiqueta": "Impedancia",
@@ -4016,8 +4012,24 @@
         "valor": "Agregar altas frecuencias a un sistema con bocinas de rango medio"
       },
       {
-        "etiqueta": "Nota",
-        "valor": "Verificar tamaño, potencia y sensibilidad contra la etiqueta del producto"
+        "etiqueta": "Tamaño",
+        "valor": "44.4 mm"
+      },
+      {
+        "etiqueta": "Sensibilidad",
+        "valor": "104 dB"
+      },
+      {
+        "etiqueta": "Respuesta en frecuencia",
+        "valor": "2,000 Hz – 20 kHz"
+      },
+      {
+        "etiqueta": "Diafragma",
+        "valor": "Película de titanio"
+      },
+      {
+        "etiqueta": "Bobina",
+        "valor": "CCAW"
       }
     ],
     "precioCents": 70000,
@@ -4030,14 +4042,14 @@
   {
     "sku": "KT-1A",
     "slug": "kbt-kt-1a",
-    "nombre": "Tweeters KT-1A",
+    "nombre": "Tweeters de 1\" KT-1A",
     "marca": "KBT",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de tweeters de montaje en superficie para complementar el sistema de audio",
     "specsDestacadas": [
       {
         "etiqueta": "Configuración",
-        "valor": "Tweeter"
+        "valor": "1\" (25 mm)"
       },
       {
         "etiqueta": "Montaje",
@@ -4076,7 +4088,7 @@
   {
     "sku": "KBT-S250",
     "slug": "kbt-kbt-s250",
-    "nombre": "Tweeter KBT-S250 de 40 mm",
+    "nombre": "Tweeter de 40 mm KBT-S250",
     "marca": "KBT",
     "categoria": "Bocinas",
     "descripcionCorta": "Tweeter de 40 mm de alta sensibilidad con respuesta hasta 40 kHz",
@@ -4134,14 +4146,14 @@
   {
     "sku": "SGT-100",
     "slug": "kbt-sgt-100",
-    "nombre": "Tweeter Sergeant SGT-100",
+    "nombre": "Tweeter Sergeant de 1\" SGT-100",
     "marca": "KBT",
     "categoria": "Bocinas",
     "descripcionCorta": "Tweeter de la línea Sergeant para sistemas de alta presión sonora",
     "specsDestacadas": [
       {
-        "etiqueta": "Configuración",
-        "valor": "Tweeter"
+        "etiqueta": "Tamaño",
+        "valor": "1\" (25 mm)"
       },
       {
         "etiqueta": "Línea",
@@ -4188,7 +4200,7 @@
   {
     "sku": "KEQ-BOOM",
     "slug": "kbt-keq-boom",
-    "nombre": "Ecualizador KEQ-BOOM con refuerzo de graves",
+    "nombre": "Ecualizador KEQ-BOOM",
     "marca": "KBT",
     "categoria": "Ecualizadores",
     "descripcionCorta": "Ecualizador de preamplificación con control de refuerzo de graves",
@@ -4234,7 +4246,7 @@
   {
     "sku": "KEQS-7",
     "slug": "kbt-keqs-7",
-    "nombre": "Ecualizador gráfico KEQS-7 de 7 bandas con crossover",
+    "nombre": "Ecualizador gráfico de 7 bandas KEQS-7",
     "marca": "KBT",
     "categoria": "Ecualizadores",
     "descripcionCorta": "Ecualizador gráfico de 7 bandas con crossover y salidas RCA de 8 volts",
@@ -4342,7 +4354,7 @@
   {
     "sku": "SDR-48DSPBT",
     "slug": "kbt-sdr-48dspbt",
-    "nombre": "Procesador DSP Soldier SDR-48DSPBT con Bluetooth",
+    "nombre": "Procesador DSP Soldier con Bluetooth SDR-48DSPBT",
     "marca": "KBT",
     "categoria": "Ecualizadores",
     "descripcionCorta": "Procesador digital de señal de 4 entradas y 8 salidas con Bluetooth",
@@ -4442,7 +4454,7 @@
   {
     "sku": "KHL-4",
     "slug": "kbt-khl-4",
-    "nombre": "Convertidor de alta a baja KHL-4 - 2 entradas / 4 salidas",
+    "nombre": "Convertidor de alta a baja KHL-4",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Convertidor de señal de alta a baja de 2 entradas y 4 salidas",
@@ -4492,7 +4504,7 @@
   {
     "sku": "KHL-2",
     "slug": "kbt-khl-2",
-    "nombre": "Convertidor de alta a baja KHL-2 - 2 entradas / 2 salidas",
+    "nombre": "Convertidor de alta a baja KHL-2",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Convertidor de señal de alta a baja de 2 entradas y 2 salidas",
@@ -4542,7 +4554,7 @@
   {
     "sku": "KDB-FH4",
     "slug": "kbt-kdb-fh4",
-    "nombre": "Portafusible y bloque KDB-FH4 - 4 posiciones, entrada 4x0GA / salida 4x4GA",
+    "nombre": "Portafusible y bloque KDB-FH4",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Portafusible y bloque de distribución de cuatro posiciones con entradas calibre 0 y salidas calibre 4",
@@ -4600,7 +4612,7 @@
   {
     "sku": "KDB-FH2",
     "slug": "kbt-kdb-fh2",
-    "nombre": "Portafusible KDB-FH2 - 2 posiciones, entrada 1x0GA / salida 2x4GA",
+    "nombre": "Portafusible KDB-FH2",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Portafusible de dos posiciones con una entrada calibre 0 y dos salidas calibre 4",
@@ -4984,7 +4996,7 @@
   {
     "sku": "RCA-Y1F2MBR",
     "slug": "kbt-rca-y1f2mbr",
-    "nombre": "Adaptador Y RCA - 1 hembra a 2 machos",
+    "nombre": "Adaptador Y de 1 hembra a 2 machos RCA",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Adaptador Y para señal RCA de una entrada hembra a dos salidas macho",
@@ -5030,7 +5042,7 @@
   {
     "sku": "RCA-Y2F1MBR",
     "slug": "kbt-rca-y2f1mbr",
-    "nombre": "Adaptador Y RCA - 2 hembras a 1 macho",
+    "nombre": "Adaptador Y de 2 hembras a 1 macho RCA",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Adaptador Y para señal RCA de dos entradas hembra a una salida macho",
@@ -5076,7 +5088,7 @@
   {
     "sku": "RCA-1MBR",
     "slug": "kbt-rca-1mbr",
-    "nombre": "Cable RCA RCA-1MBR - 1 m",
+    "nombre": "Cable RCA de 1m RCA-1MBR",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de 1 metros con blindaje trenzado",
@@ -5126,7 +5138,7 @@
   {
     "sku": "RCA-2MBR",
     "slug": "kbt-rca-2mbr",
-    "nombre": "Cable RCA RCA-2MBR - 2 m",
+    "nombre": "Cable RCA de 2m RCA-2MBR",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de 2 metros con blindaje trenzado",
@@ -5176,7 +5188,7 @@
   {
     "sku": "RCA-3MBR",
     "slug": "kbt-rca-3mbr",
-    "nombre": "Cable RCA RCA-3MBR - 3 m",
+    "nombre": "Cable RCA de 3m RCA-3MBR",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de 3 metros con blindaje trenzado",
@@ -5226,7 +5238,7 @@
   {
     "sku": "RCA-5MBR",
     "slug": "kbt-rca-5mbr",
-    "nombre": "Cable RCA RCA-5MBR - 5 m",
+    "nombre": "Cable RCA de 5m RCA-5MBR",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de 5 metros con blindaje trenzado",
@@ -5276,7 +5288,7 @@
   {
     "sku": "KEXP-34",
     "slug": "kbt-kexp-34",
-    "nombre": "Funda expandible 3/4\"",
+    "nombre": "Funda expandible 3/4\" KEXP-34",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Funda expandible de 3/4\" para proteger y ordenar el cableado",
@@ -5326,7 +5338,7 @@
   {
     "sku": "KEXP-12BK",
     "slug": "kbt-kexp-12bk",
-    "nombre": "Funda expandible 1/2\" Negro",
+    "nombre": "Funda expandible 1/2\" KEXP-12BK",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Funda expandible de 1/2\" para proteger y ordenar el cableado",
@@ -5376,7 +5388,7 @@
   {
     "sku": "KEXP-14BK",
     "slug": "kbt-kexp-14bk",
-    "nombre": "Funda expandible 1/4\" Negro",
+    "nombre": "Funda expandible 1/4\" KEXP-14BK",
     "marca": "KBT",
     "categoria": "Accesorios",
     "descripcionCorta": "Funda expandible de 1/4\" para proteger y ordenar el cableado",
@@ -5426,18 +5438,18 @@
   {
     "sku": "KCLOTH",
     "slug": "kbt-kcloth",
-    "nombre": "Paño de limpieza KBT",
+    "nombre": "Cinta de tela adhesiva aislante KCLOTH",
     "marca": "KBT",
     "categoria": "Accesorios",
-    "descripcionCorta": "Paño de microfibra para limpieza de pantallas y equipo de audio",
+    "descripcionCorta": "Cinta de tela adhesiva aislante de color negro para envolver cables reduciendo el aislamiento térmico y el ruido.",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
-        "valor": "Paño de limpieza"
+        "valor": "Cinta adhesiva"
       },
       {
         "etiqueta": "Material",
-        "valor": "Microfibra"
+        "valor": "Tela"
       },
       {
         "etiqueta": "Marca",
@@ -5447,19 +5459,19 @@
     "specsFicha": [
       {
         "etiqueta": "Tipo",
-        "valor": "Paño de limpieza"
+        "valor": "Cinta adhesiva"
       },
       {
         "etiqueta": "Material",
-        "valor": "Microfibra"
+        "valor": "Tela"
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Limpieza de pantallas táctiles, frentes de radio y acabados del equipo"
+        "valor": "Aislante para reducir aislamiento térmico y ruido, resistente a altas temperaturas"
       },
       {
-        "etiqueta": "Ventaja",
-        "valor": "No raya la superficie ni deja pelusa"
+        "etiqueta": "Color",
+        "valor": "Negro"
       }
     ],
     "precioCents": 5000,
@@ -5736,75 +5748,9 @@
     "activo": true
   },
   {
-    "sku": "VIV2200.1",
-    "slug": "memphis-viv2200-1",
-    "nombre": "Amplificador VIV2200.1 - Monoblock",
-    "marca": "Memphis",
-    "categoria": "Amplificadores",
-    "descripcionCorta": "Amplificador monoblock clase D de alta potencia para subwoofer",
-    "specsDestacadas": [
-      {
-        "etiqueta": "Canales",
-        "valor": "Monoblock"
-      },
-      {
-        "etiqueta": "Potencia RMS",
-        "valor": "2,200 W @ 1 Ω"
-      },
-      {
-        "etiqueta": "Clase",
-        "valor": "D"
-      }
-    ],
-    "specsFicha": [
-      {
-        "etiqueta": "Canales",
-        "valor": "Monoblock"
-      },
-      {
-        "etiqueta": "Potencia RMS",
-        "valor": "2,200 W @ 1 Ω"
-      },
-      {
-        "etiqueta": "Impedancia mínima",
-        "valor": "1 Ω"
-      },
-      {
-        "etiqueta": "Clase",
-        "valor": "D de rango completo"
-      },
-      {
-        "etiqueta": "Procesamiento",
-        "valor": "DSP con pendientes de crossover de 48 dB/oct (solo pasa bajos)"
-      },
-      {
-        "etiqueta": "Refuerzo de graves",
-        "valor": "Hasta 18 dB con M-Equalization ajustable en nivel, frecuencia y Q"
-      },
-      {
-        "etiqueta": "Control remoto",
-        "valor": "Opcional inalámbrico VIVREMV2"
-      },
-      {
-        "etiqueta": "Acabado",
-        "valor": "Aluminio anodizado cepillado gunmetal con LED de 7 colores seleccionables"
-      },
-      {
-        "etiqueta": "Serie",
-        "valor": "SixFive V2"
-      }
-    ],
-    "precioCents": 950000,
-    "moneda": "GTQ",
-    "disponibilidad": "disponible",
-    "imagenes": [],
-    "destacado": false,
-    "activo": true
-  },
-  {
     "sku": "VIV750.6V2",
     "slug": "memphis-viv750-6v2",
-    "nombre": "Amplificador VIV750.6V2 - 6 canales",
+    "nombre": "Amplificador VIV de 6 canales VIV750.6V2",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 6 canales para sistema multicanal",
@@ -5870,7 +5816,7 @@
   {
     "sku": "VIV1100.1V2",
     "slug": "memphis-viv1100-1v2",
-    "nombre": "Amplificador VIV1100.1V2 - Monoblock",
+    "nombre": "Amplificador VIV monoblock VIV1100.2",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D para subwoofer",
@@ -5936,7 +5882,7 @@
   {
     "sku": "VIV600.4V2",
     "slug": "memphis-viv600-4v2",
-    "nombre": "Amplificador VIV600.4V2 - 4 canales",
+    "nombre": "Amplificador VIV de 4 canales VIV600.4V2",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
@@ -6002,7 +5948,7 @@
   {
     "sku": "VIV400.4V2",
     "slug": "memphis-viv400-4v2",
-    "nombre": "Amplificador VIV400.4V2 - 4 canales",
+    "nombre": "Amplificador VIV de 4 canales VIV400.4V2",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
@@ -6068,7 +6014,7 @@
   {
     "sku": "NANO 10SPX",
     "slug": "memphis-nano-10spx",
-    "nombre": "Subwoofer amplificado NANO 10\" de perfil bajo",
+    "nombre": "Subwoofer amplificado de 10\" NANO 10SPX",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer amplificado de 10 pulgadas en caja compacta para instalación bajo asiento",
@@ -6122,7 +6068,7 @@
   {
     "sku": "M71512",
     "slug": "memphis-m71512",
-    "nombre": "Subwoofer M7 15\" de competencia",
+    "nombre": "Subwoofer M7 de 15\" M71512",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 15 pulgadas de la serie M7 para sistemas de alta presión sonora",
@@ -6168,7 +6114,7 @@
   {
     "sku": "MB1524",
     "slug": "memphis-mb1524",
-    "nombre": "Subwoofer MB 15\" impedancia seleccionable",
+    "nombre": "Subwoofer MB de 15\" MB1524",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 15 pulgadas con impedancia seleccionable de 2 u 4 ohm",
@@ -6238,7 +6184,7 @@
   {
     "sku": "MJM812",
     "slug": "memphis-mjm812",
-    "nombre": "Subwoofer MOJO Mini 8\" impedancia seleccionable",
+    "nombre": "Subwoofer MOJO Mini de 8\" MJM812",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer compacto de 8 pulgadas con impedancia seleccionable de 1 u 2 ohm",
@@ -6288,7 +6234,7 @@
   {
     "sku": "MJM612",
     "slug": "memphis-mjm612",
-    "nombre": "Subwoofer MOJO Mini 6.5\" impedancia seleccionable",
+    "nombre": "Subwoofer MOJO Mini de 6.5\" MJM612",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer compacto de 6.5 pulgadas con impedancia seleccionable de 1 u 2 ohm",
@@ -6338,7 +6284,7 @@
   {
     "sku": "MS60C",
     "slug": "memphis-ms60c",
-    "nombre": "Componentes MClass 6.5\" sobredimensionados",
+    "nombre": "Componentes MClass de 6.5\" MS60C",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Juego de componentes de 6.5 pulgadas sobredimensionados con cono de fibra de carbono",
@@ -6408,7 +6354,7 @@
   {
     "sku": "MS69V",
     "slug": "memphis-ms69v",
-    "nombre": "Bocinas convertibles MClass 6x9\"",
+    "nombre": "Bocinas convertibles MClass de 6x9\" MS69V",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas de 6x9 pulgadas convertibles de coaxial a componentes",
@@ -6478,7 +6424,7 @@
   {
     "sku": "MS60V",
     "slug": "memphis-ms60v",
-    "nombre": "Bocinas convertibles MClass 6.5\" sobredimensionadas",
+    "nombre": "Bocinas convertibles MClass de 6.5\" MS60V",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas de 6.5 pulgadas sobredimensionadas convertibles de coaxial a componentes",
@@ -6540,7 +6486,7 @@
   {
     "sku": "MSA1",
     "slug": "memphis-msa1",
-    "nombre": "Tweeter MClass 1\" de domo de aluminio",
+    "nombre": "Tweeter MClass de 1\" MSA1",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de tweeters de domo de aluminio de 1 pulgada para sistemas de componentes MClass",
@@ -6594,7 +6540,7 @@
   {
     "sku": "MCX57",
     "slug": "memphis-mcx57",
-    "nombre": "Bocinas MClass 5x7\" coaxiales",
+    "nombre": "Bocinas coaxiales MClass de 5x7\" MCX57",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 5x7 pulgadas de la serie MClass",
@@ -6648,7 +6594,7 @@
   {
     "sku": "MS25",
     "slug": "memphis-ms25",
-    "nombre": "Medio rango MClass 2.5\"",
+    "nombre": "Bocinas de rango medio MClass de  2.5\" MS25",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas de medio rango de 2.5 pulgadas con cono de fibra de carbono",
@@ -6710,7 +6656,7 @@
   {
     "sku": "MJP1500.1",
     "slug": "memphis-mjp1500-1",
-    "nombre": "Amplificador MJP1500.1 - Monoblock",
+    "nombre": "Amplificador MOJO Pro monoblock MJP1500.1",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D de alta potencia para subwoofer",
@@ -6780,7 +6726,7 @@
   {
     "sku": "MJP1000.1",
     "slug": "memphis-mjp1000-1",
-    "nombre": "Amplificador MJP1000.1 - Monoblock",
+    "nombre": "Amplificador MOJO Pro monoblock MJP1000.1",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D para subwoofer",
@@ -6842,7 +6788,7 @@
   {
     "sku": "MJP800.4",
     "slug": "memphis-mjp800-4",
-    "nombre": "Amplificador MJP800.4 - 4 canales",
+    "nombre": "Amplificador MOJO Pro de 4 canales MJP800.4",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
@@ -6912,7 +6858,7 @@
   {
     "sku": "MJP1544",
     "slug": "memphis-mjp1544",
-    "nombre": "Subwoofer MJP1544 15\" D4",
+    "nombre": "Subwoofer MOJO Pro de 15\" MJP1544",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 15 pulgadas de doble bobina de 4 ohm",
@@ -6970,7 +6916,7 @@
   {
     "sku": "MJP1244",
     "slug": "memphis-mjp1244",
-    "nombre": "Subwoofer MJP1244 12\" D4",
+    "nombre": "Subwoofer MOJO Pro de 12\" MJP1244",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm",
@@ -7040,7 +6986,7 @@
   {
     "sku": "MJP844",
     "slug": "memphis-mjp844",
-    "nombre": "Subwoofer MJP844 8\" D4",
+    "nombre": "Subwoofer MOJO Pro de 8\" MJP844",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 8 pulgadas de doble bobina de 4 ohm",
@@ -7102,7 +7048,7 @@
   {
     "sku": "MJP6C",
     "slug": "memphis-mjp6c",
-    "nombre": "Juego de componentes MOJO Pro 6.5\" resistente al agua",
+    "nombre": "Juego de componentes MOJO Pro 6.5\" MJP6C",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Juego de componentes de 6.5 pulgadas con tweeters tipo bala y crossovers pasivos",
@@ -7172,7 +7118,7 @@
   {
     "sku": "MJP69",
     "slug": "memphis-mjp69",
-    "nombre": "Medio rango MOJO Pro Neo 6x9\" resistente al agua",
+    "nombre": "Bocinas de medio rango MOJO Pro Neo de 6x9\" MJP69",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6x9 pulgadas con motor de neodimio, resistente al agua",
@@ -7242,7 +7188,7 @@
   {
     "sku": "MJP8",
     "slug": "memphis-mjp8",
-    "nombre": "Medio rango MOJO Pro Neo 8\" resistente al agua",
+    "nombre": "Bocinas de medio rango MOJO Pro Neo de 8\" MJP8",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 8 pulgadas con motor de neodimio, resistente al agua",
@@ -7304,7 +7250,7 @@
   {
     "sku": "MJP6",
     "slug": "memphis-mjp6",
-    "nombre": "Medio rango MOJO Pro Neo 6.5\" resistente al agua",
+    "nombre": "Bocinas de medio rango MOJO Pro Neo de 6.5\" MJP6",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6.5 pulgadas con motor de neodimio, resistente al agua",
@@ -7374,7 +7320,7 @@
   {
     "sku": "MJPT25",
     "slug": "memphis-mjpt25",
-    "nombre": "Tweeter tipo bala MOJO Pro 25 mm",
+    "nombre": "Tweeter tipo bala MOJO Pro de 25 mm MJPT25",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Tweeter tipo bala de 25 mm para sistemas de alta presión sonora",
@@ -7428,7 +7374,7 @@
   {
     "sku": "PRX800.5V2",
     "slug": "memphis-prx800-5v2",
-    "nombre": "Amplificador PRX800.5V2 - 5 canales",
+    "nombre": "Amplificador Power Reference de 5 canales PRX800.5V2",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 5 canales para sistema completo con subwoofer",
@@ -7498,7 +7444,7 @@
   {
     "sku": "PRX1500.1V2",
     "slug": "memphis-prx1500-1v2",
-    "nombre": "Amplificador PRX1500.1V2 - Monoblock",
+    "nombre": "Amplificador Power Reference monoblock PRX1500.1V2",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D de alta potencia para subwoofer",
@@ -7568,7 +7514,7 @@
   {
     "sku": "PRX1000.1V2",
     "slug": "memphis-prx1000-1v2",
-    "nombre": "Amplificador PRX1000.1V2 - Monoblock",
+    "nombre": "Amplificador Power Reference monoblock PRX1000.1V2",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D para subwoofer",
@@ -7638,7 +7584,7 @@
   {
     "sku": "PRX500.4V2",
     "slug": "memphis-prx500-4v2",
-    "nombre": "Amplificador PRX500.4V2 - 4 canales",
+    "nombre": "Amplificador Power Reference de 4 canales PRX500.4V2",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
@@ -7708,7 +7654,7 @@
   {
     "sku": "PRXE12DFT",
     "slug": "memphis-prxe12dft",
-    "nombre": "Cajón cargado PRX doble 12\" con LED RGB",
+    "nombre": "Cajón Power Reference doble de 12\" PRXE12DFT",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Cajón ventilado con dos subwoofers de 12 pulgadas e impedancia seleccionable",
@@ -7766,7 +7712,7 @@
   {
     "sku": "PRXE12SFT",
     "slug": "memphis-prxe12sft",
-    "nombre": "Cajón cargado PRX sencillo 12\" con LED RGB",
+    "nombre": "Cajón Power Reference singular de 12\" PRXE12SFT",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Cajón ventilado con un subwoofer de 12 pulgadas e impedancia seleccionable",
@@ -7824,7 +7770,7 @@
   {
     "sku": "PRXS1224",
     "slug": "memphis-prxs1224",
-    "nombre": "Subwoofer Power Reference Slim 12\" impedancia seleccionable",
+    "nombre": "Subwoofer Slim Power Reference de 12\" PRXS1224",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de perfil delgado con impedancia seleccionable de 2 u 4 ohm",
@@ -7882,7 +7828,7 @@
   {
     "sku": "PRXS1024",
     "slug": "memphis-prxs1024",
-    "nombre": "Subwoofer Power Reference Slim 10\" impedancia seleccionable",
+    "nombre": "Subwoofer Slim Power Reference de 10\" PRXS1024",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 10 pulgadas de perfil delgado con impedancia seleccionable de 2 u 4 ohm",
@@ -7952,10 +7898,10 @@
   {
     "sku": "PRXL12FT",
     "slug": "memphis-prxl12ft",
-    "nombre": "Subwoofer Power Reference 12\" Tri-Flex con LED RGB",
+    "nombre": "Subwoofer Power Reference de 12\" PRXL12FT",
     "marca": "Memphis",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 12 pulgadas con triple bobina seleccionable y iluminación RGB",
+    "descripcionCorta": "Subwoofer de 12 pulgadas Tri-Flex con triple bobina seleccionable y iluminación RGB",
     "specsDestacadas": [
       {
         "etiqueta": "Diámetro",
@@ -8002,10 +7948,10 @@
   {
     "sku": "PRXL10FT",
     "slug": "memphis-prxl10ft",
-    "nombre": "Subwoofer Power Reference 10\" Tri-Flex con LED RGB",
+    "nombre": "Subwoofer Power Reference de 10\" PRXL10FT",
     "marca": "Memphis",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 10 pulgadas con triple bobina seleccionable e iluminación RGB",
+    "descripcionCorta": "Subwoofer de 10 pulgadas Tri-Flex con triple bobina seleccionable e iluminación RGB",
     "specsDestacadas": [
       {
         "etiqueta": "Diámetro",
@@ -8052,10 +7998,10 @@
   {
     "sku": "PRX12FT",
     "slug": "memphis-prx12ft",
-    "nombre": "Subwoofer Power Reference 12\" Tri-Flex",
+    "nombre": "Subwoofer Power Reference de 12\" PRX12FT",
     "marca": "Memphis",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 12 pulgadas con triple bobina seleccionable a 1, 2 o 4 ohm",
+    "descripcionCorta": "Subwoofer de 12 pulgadas Tri-Flex con triple bobina seleccionable a 1, 2 o 4 ohm",
     "specsDestacadas": [
       {
         "etiqueta": "Diámetro",
@@ -8106,10 +8052,10 @@
   {
     "sku": "PRX10FT",
     "slug": "memphis-prx10ft",
-    "nombre": "Subwoofer Power Reference 10\" Tri-Flex",
+    "nombre": "Subwoofer Power Reference de 10\" PRX10FT",
     "marca": "Memphis",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 10 pulgadas con triple bobina seleccionable a 1, 2 o 4 ohm",
+    "descripcionCorta": "Subwoofer de 10 pulgadas Tri-Flex con triple bobina seleccionable a 1, 2 o 4 ohm",
     "specsDestacadas": [
       {
         "etiqueta": "Diámetro",
@@ -8160,7 +8106,7 @@
   {
     "sku": "PRX824V2",
     "slug": "memphis-prx824v2",
-    "nombre": "Subwoofer Power Reference 8\" impedancia seleccionable",
+    "nombre": "Subwoofer Power Reference de 8\" PRX824V2",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 8 pulgadas con impedancia seleccionable de 2 u 4 ohm mediante Flex Plug",
@@ -8214,7 +8160,7 @@
   {
     "sku": "PRX624",
     "slug": "memphis-prx624",
-    "nombre": "Subwoofer Power Reference 6.5\" impedancia seleccionable",
+    "nombre": "Subwoofer Power Reference de 6.5\" PRX624",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer compacto de 6.5 pulgadas con impedancia seleccionable de 2 u 4 ohm",
@@ -8284,7 +8230,7 @@
   {
     "sku": "PRX60C",
     "slug": "memphis-prx60c",
-    "nombre": "Componentes Power Reference 6.5\" sobredimensionados",
+    "nombre": "Componentes Power Reference de 6.5\" PRX60C",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Juego de componentes de 6.5 pulgadas sobredimensionados con tweeters de 1 pulgada",
@@ -8354,7 +8300,7 @@
   {
     "sku": "PRX6903",
     "slug": "memphis-prx6903",
-    "nombre": "Bocinas Power Reference 6x9\" 3 vías",
+    "nombre": "Bocinas coaxiales Power Reference de 6x9\" PRX6903",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6x9 pulgadas de 3 vías con tweeter giratorio",
@@ -8424,7 +8370,7 @@
   {
     "sku": "PRX603",
     "slug": "memphis-prx603",
-    "nombre": "Bocinas Power Reference 6.5\" 3 vías",
+    "nombre": "Bocinas coaxiales Power Reference de 6.5\" PRX603",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 3 vías con tweeter giratorio",
@@ -8494,7 +8440,7 @@
   {
     "sku": "PRX57",
     "slug": "memphis-prx57",
-    "nombre": "Bocinas Power Reference 5x7\"",
+    "nombre": "Bocinas coaxiales Power Reference de 5x7\" PRX57",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 5x7 pulgadas de 2 vías con tweeter giratorio",
@@ -8564,7 +8510,7 @@
   {
     "sku": "PRX5",
     "slug": "memphis-prx5",
-    "nombre": "Bocinas Power Reference 5.25\"",
+    "nombre": "Bocinas coaxiales Power Reference 5.25\" PRX5",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 5.25 pulgadas de 2 vías con tweeter giratorio",
@@ -8618,10 +8564,10 @@
   {
     "sku": "PRXP4",
     "slug": "memphis-prxp4",
-    "nombre": "Bocinas Power Reference 4\" Point Source",
+    "nombre": "Bocinas Point Source Power Reference de 4\" PRXP4",
     "marca": "Memphis",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de bocinas de 4 pulgadas de 2 vías con tweeter de fuente puntual",
+    "descripcionCorta": "Par de bocinas Point Source de 4 pulgadas de 2 vías con tweeter de fuente puntual",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -8676,10 +8622,10 @@
   {
     "sku": "PRXP3",
     "slug": "memphis-prxp3",
-    "nombre": "Bocinas Power Reference 3.5\" Point Source",
+    "nombre": "Bocinas Point Source Power Reference de 3.5\" PRXP3",
     "marca": "Memphis",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de bocinas de 3.5 pulgadas de 2 vías con tweeter de fuente puntual",
+    "descripcionCorta": "Par de bocinas Point Source de 3.5 pulgadas de 2 vías con tweeter de fuente puntual",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -8734,7 +8680,7 @@
   {
     "sku": "PRX27",
     "slug": "memphis-prx27",
-    "nombre": "Bocinas Power Reference 2.75\"",
+    "nombre": "Bocinas coaxiales Power Reference de 2.75\" PRX27",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 2.75 pulgadas de 2 vías para ubicaciones pequeñas de fábrica",
@@ -8796,7 +8742,7 @@
   {
     "sku": "PRX10",
     "slug": "memphis-prx10",
-    "nombre": "Tweeters Power Reference 1\" con crossover",
+    "nombre": "Tweeters Power Reference de 1\" PRX10",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de tweeters de domo PEI de 1 pulgada con crossover de 2 vías incluido",
@@ -8858,7 +8804,7 @@
   {
     "sku": "MFLOWBTK",
     "slug": "memphis-mflowbtk",
-    "nombre": "Módulo Bluetooth Memphis",
+    "nombre": "Bocina Bluetooth MFLOWBTK",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Módulo receptor Bluetooth para agregar audio inalámbrico al sistema",
@@ -8904,7 +8850,7 @@
   {
     "sku": "SRXE12DP",
     "slug": "memphis-srxe12dp",
-    "nombre": "Sistema de bajos doble 12\" con amplificador de 600 W",
+    "nombre": "Cajón amplificado Street Reference doble de 12\" SRXE12DP con amplificador SRX600.1V",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Cajón ventilado con dos subwoofers de 12 pulgadas y amplificador SRX600.1V incluido",
@@ -8966,7 +8912,7 @@
   {
     "sku": "SRXE12SA",
     "slug": "memphis-srxe12sa",
-    "nombre": "Cajón amplificado Street Reference 12\"",
+    "nombre": "Cajón amplificado Street Reference singular de 12\" SRXE12SA",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Cajón ventilado con subwoofer de 12 pulgadas y amplificador de 300 W integrado",
@@ -9020,7 +8966,7 @@
   {
     "sku": "SRX600.1V",
     "slug": "memphis-srx600-1v",
-    "nombre": "Amplificador SRX600.1V - Monoblock",
+    "nombre": "Amplificador Street Reference monoblock SRX600.1V",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D para subwoofer",
@@ -9090,7 +9036,7 @@
   {
     "sku": "SRX300.1V",
     "slug": "memphis-srx300-1v",
-    "nombre": "Amplificador Street Reference SRX300.1V - Monoblock",
+    "nombre": "Amplificador Street Reference monoblock SRX300.1V",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock de 300 W a 2 ohm para subwoofer",
@@ -9144,7 +9090,7 @@
   {
     "sku": "SRX300.4V",
     "slug": "memphis-srx300-4v",
-    "nombre": "Amplificador SRX300.4V - 4 canales",
+    "nombre": "Amplificador Street Reference de 4 canales SRX300.4V",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
@@ -9214,7 +9160,7 @@
   {
     "sku": "SRX1244",
     "slug": "memphis-srx1244",
-    "nombre": "Subwoofer Street Reference 12\" D4",
+    "nombre": "Subwoofer Street Reference de 12\" SRX1244",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm para caja sellada o ventilada",
@@ -9284,7 +9230,7 @@
   {
     "sku": "SRXP69WTV2",
     "slug": "memphis-srxp69wtv2",
-    "nombre": "Coaxial SRX Pro 6x9\" con tweeter de bocina y LED RGB",
+    "nombre": "Bocinas coaxiales SRX Pro de 6x9\" con tweeter de bocina SRXP69WTV2",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina coaxial de 6x9 pulgadas de alta presión sonora con tweeter de bocina y LED RGB",
@@ -9350,7 +9296,7 @@
   {
     "sku": "SRXP82WTV2",
     "slug": "memphis-srxp82wtv2",
-    "nombre": "Coaxial SRX Pro 8\" con tweeter de bocina y LED RGB",
+    "nombre": "Bocinas coaxiales SRX Pro de 8\" con tweeter de bocina SRXP82WTV2",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina coaxial de 8 pulgadas de alta presión sonora con tweeter de bocina y LED RGB",
@@ -9408,7 +9354,7 @@
   {
     "sku": "SRXP62WTV2",
     "slug": "memphis-srxp62wtv2",
-    "nombre": "Coaxial SRX Pro 6.5\" con tweeter de bocina y LED RGB",
+    "nombre": "Bocinas coaxiales SRX Pro de 6.5\" con tweeter de bocina SRXP62WTV2",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina coaxial de 6.5 pulgadas de alta presión sonora con tweeter de bocina y LED RGB",
@@ -9474,7 +9420,7 @@
   {
     "sku": "SRXP62WTX2",
     "slug": "memphis-srxp62wtx2",
-    "nombre": "Coaxial SRX Pro 6.5\" con tweeter de bocina y LED",
+    "nombre": "Bocinas coaxiales SRX Pro de 6.5\" con tweeter de bocina SRXP62WTX2",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocinas coaxiales de 6.5 pulgadas de alta presión sonora con tweeter de bocina y LED RGB",
@@ -9536,7 +9482,7 @@
   {
     "sku": "SRXP62CV2",
     "slug": "memphis-srxp62cv2",
-    "nombre": "Juego de componentes SRX Pro 6.5\"",
+    "nombre": "Componentes SRX Pro de 6.5\" SRXP62CV2",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Juego de componentes de 6.5 pulgadas de alta presión sonora con tweeters de bocina de 4 pulgadas",
@@ -9598,7 +9544,7 @@
   {
     "sku": "SRXP82V2",
     "slug": "memphis-srxp82v2",
-    "nombre": "Medio rango SRX Pro 8\" con LED",
+    "nombre": "Bocinas de medio rango SRX Pro de 8\" SRXP82V2",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 8 pulgadas de alta presión sonora con LED y motor de neodimio",
@@ -9668,7 +9614,7 @@
   {
     "sku": "SRXP62V2",
     "slug": "memphis-srxp62v2",
-    "nombre": "Medio rango SRX Pro 6.5\" con LED RGB",
+    "nombre": "Bocinas de medio rango SRX Pro de 6.5\" SRXP62V2",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6.5 pulgadas de alta presión sonora con LED RGB",
@@ -9738,7 +9684,7 @@
   {
     "sku": "SRXPTV2",
     "slug": "memphis-srxptv2",
-    "nombre": "Tweeters de bocina SRX Pro 4\"",
+    "nombre": "Tweeters de bocina SRX Pro 4\" SRXPTV2",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de tweeters de bocina de 4 pulgadas para sistemas de alta presión sonora",
@@ -9796,7 +9742,7 @@
   {
     "sku": "SRX693V",
     "slug": "memphis-srx693v",
-    "nombre": "Bocinas Street Reference 6x9\" 3 vías",
+    "nombre": "Bocinas coaxiales Street Reference de 6x9\" SRX693V",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6x9 pulgadas de 3 vías con cono de polipropileno y perfil delgado",
@@ -9866,7 +9812,7 @@
   {
     "sku": "SRX572V",
     "slug": "memphis-srx572v",
-    "nombre": "Bocinas SRX572V 5x7\"",
+    "nombre": "Bocinas coaxiales Street Reference de 5x7\" SRX572V",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 5x7 pulgadas",
@@ -9920,7 +9866,7 @@
   {
     "sku": "SRX62V",
     "slug": "memphis-srx62v",
-    "nombre": "Bocinas SRX62V 6.5\"",
+    "nombre": "Bocinas coaxiales Street Reference de 6.5\" SRX62V",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas",
@@ -9990,7 +9936,7 @@
   {
     "sku": "SRX42V",
     "slug": "memphis-srx42v",
-    "nombre": "Bocinas SRX42V 4\"",
+    "nombre": "Bocinas coaxiales Street Reference de 4\" SRX42V",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 4 pulgadas",
@@ -10044,40 +9990,44 @@
   {
     "sku": "SRX1",
     "slug": "memphis-srx1",
-    "nombre": "Control remoto de graves Street Reference",
+    "nombre": "Tweeters Street Reference SRX1",
     "marca": "Memphis",
-    "categoria": "Accesorios",
-    "descripcionCorta": "Control remoto de nivel de graves para amplificadores Memphis de la serie SRX",
+    "categoria": "Bocinas",
+    "descripcionCorta": "Par de tweeters de 1 pulgada con domo de de mylar",
     "specsDestacadas": [
       {
-        "etiqueta": "Tipo",
-        "valor": "Control remoto de graves"
+        "etiqueta": "Tamaño",
+        "valor": "1\" (25 mm)"
       },
       {
-        "etiqueta": "Compatibilidad",
-        "valor": "Amplificadores SRX"
+        "etiqueta": "Montaje",
+        "valor": "En superficie"
       },
       {
-        "etiqueta": "Serie",
-        "valor": "Street Reference"
+        "etiqueta": "Potencia RMS",
+        "valor": "20 W"
       }
     ],
     "specsFicha": [
       {
-        "etiqueta": "Tipo",
-        "valor": "Control remoto de nivel de graves"
+        "etiqueta": "Potencia RMS",
+        "valor": "20 W"
       },
       {
-        "etiqueta": "Compatibilidad",
-        "valor": "Amplificadores Memphis de la serie Street Reference"
+        "etiqueta": "Potencia máxima",
+        "valor": "40 W"
       },
       {
-        "etiqueta": "Función",
-        "valor": "Ajusta el nivel del canal de subwoofer desde el asiento del conductor"
+        "etiqueta": "Impedancia",
+        "valor": "4 Ω"
       },
       {
-        "etiqueta": "Instalación",
-        "valor": "Se conecta al puerto de control remoto del amplificador"
+        "etiqueta": "Tamaño",
+        "valor": "1\" (25 mm)"
+      },
+      {
+        "etiqueta": "Sensibilidad",
+        "valor": "97 dB"
       }
     ],
     "precioCents": 22500,
@@ -10298,7 +10248,7 @@
   {
     "sku": "MX800.4",
     "slug": "memphis-mx800-4",
-    "nombre": "Amplificador powersports MX800.4 - 4 canales",
+    "nombre": "Amplificador powersports de 4 canales MX800.4",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales con certificación IP66 para vehículos utilitarios y motocicletas",
@@ -10368,7 +10318,7 @@
   {
     "sku": "MX400.4",
     "slug": "memphis-mx400-4",
-    "nombre": "Amplificador powersports MX400.4 - 4 canales",
+    "nombre": "Amplificador powersports de 4 canales MX400.4",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales con certificación IP66 para vehículos utilitarios y motocicletas",
@@ -10430,7 +10380,7 @@
   {
     "sku": "MXA46SB28",
     "slug": "memphis-mxa46sb28",
-    "nombre": "Barra de sonido powersports 28\" con Bluetooth y app",
+    "nombre": "Barra de sonido powersports 28\" con Bluetooth y app MXA46SB28",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Barra de sonido amplificada de 28 pulgadas con 8 bocinas, Bluetooth, radio y control por app",
@@ -10500,7 +10450,7 @@
   {
     "sku": "MM84TB",
     "slug": "memphis-mm84tb",
-    "nombre": "Bocinas de torre marinas 8\" line array",
+    "nombre": "Bocinas de torre marinas de 8\" MM84TB",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas de torre de 8 pulgadas tipo line array en acabado negro",
@@ -10554,7 +10504,7 @@
   {
     "sku": "MX63PS",
     "slug": "memphis-mx63ps",
-    "nombre": "Pods powersports MX63PS 6.5\" con LED RGB",
+    "nombre": "Pods powersports de 6.5\" MX63PS",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de pods de 6.5 pulgadas para side-by-side y ATV, con doble tweeter, LED RGB y certificación IP66",
@@ -10624,7 +10574,7 @@
   {
     "sku": "MM1224",
     "slug": "memphis-mm1224",
-    "nombre": "Subwoofer marino MM1224 12\" con LED RGB",
+    "nombre": "Subwoofer marino de 12\" MM1224",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer marino de 12 pulgadas con impedancia seleccionable de 2 u 4 ohm y LED RGB",
@@ -10674,7 +10624,7 @@
   {
     "sku": "MM1024",
     "slug": "memphis-mm1024",
-    "nombre": "Subwoofer marino MM1024 10\" con LED RGB",
+    "nombre": "Subwoofer marino de 10\" MM1024",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer marino de 10 pulgadas con impedancia seleccionable de 2 u 4 ohm y LED RGB",
@@ -10724,7 +10674,7 @@
   {
     "sku": "MXA1044",
     "slug": "memphis-mxa1044",
-    "nombre": "Subwoofer marino MXA1044 10\" con LED RGB",
+    "nombre": "Subwoofer marino de 10\" MXA1044",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer marino de 10 pulgadas de doble bobina de 4 ohm con iluminación RGB integrada",
@@ -10794,7 +10744,7 @@
   {
     "sku": "MXA69L",
     "slug": "memphis-mxa69l",
-    "nombre": "Bocinas marinas MXA69L 6x9\" con LED RGB",
+    "nombre": "Bocinas marinas de 6x9\" MXA69L",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas marinas coaxiales de 6x9 pulgadas con iluminación RGB integrada",
@@ -10864,7 +10814,7 @@
   {
     "sku": "MXA60L",
     "slug": "memphis-mxa60l",
-    "nombre": "Bocinas marinas MXA60L 6.5\" con LED RGB",
+    "nombre": "Bocinas marinas de 6.5\" MXA60L",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas marinas coaxiales de 6.5 pulgadas con iluminación RGB integrada",
@@ -10934,7 +10884,7 @@
   {
     "sku": "MXA602SLB",
     "slug": "memphis-mxa602slb",
-    "nombre": "Bocinas marinas MXA602SLB 6.5\" con LED azul",
+    "nombre": "Bocinas marinas de 6.5\" MXA602SLB",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas marinas coaxiales de 6.5 pulgadas con iluminación LED azul",
@@ -11004,7 +10954,7 @@
   {
     "sku": "MXA8GKIT",
     "slug": "memphis-mxa8gkit",
-    "nombre": "Kit de instalación marino calibre 8",
+    "nombre": "Kit de instalación marino calibre 8 MXA8GKIT",
     "marca": "Memphis",
     "categoria": "Kits",
     "descripcionCorta": "Kit de cableado calibre 8 con cobre estañado para uso marino y powersports",
@@ -11054,7 +11004,7 @@
   {
     "sku": "EQL7",
     "slug": "memphis-eql7",
-    "nombre": "Ecualizador gráfico EQL7 de 7 bandas",
+    "nombre": "Ecualizador gráfico de 7 bandas EQL7",
     "marca": "Memphis",
     "categoria": "Ecualizadores",
     "descripcionCorta": "Ecualizador gráfico de 7 bandas para ajuste de tono del sistema",
@@ -11100,7 +11050,7 @@
   {
     "sku": "MEMBX",
     "slug": "memphis-membx",
-    "nombre": "Control remoto de graves Memphis",
+    "nombre": "Control remoto de graves Memphis MEMBX",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Control remoto de nivel de graves para amplificadores Memphis",
@@ -11192,7 +11142,7 @@
   {
     "sku": "LL6SA",
     "slug": "memphis-ll6sa",
-    "nombre": "Adaptador de nivel de línea LL6SA - 6 canales",
+    "nombre": "Adaptador de nivel de línea de 6 canales LL6SA",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Adaptador de salida de bocina a señal RCA de 6 canales",
@@ -11238,7 +11188,7 @@
   {
     "sku": "4GKIT",
     "slug": "memphis-4gkit",
-    "nombre": "Kit de instalación calibre 4",
+    "nombre": "Kit de instalación calibre 4 4GKIT",
     "marca": "Memphis",
     "categoria": "Kits",
     "descripcionCorta": "Kit completo de cableado calibre 4 en cobre libre de oxígeno con portafusible ANL",
@@ -11300,7 +11250,7 @@
   {
     "sku": "8GKIT",
     "slug": "memphis-8gkit",
-    "nombre": "Kit de instalación calibre 8",
+    "nombre": "Kit de instalación calibre 8 8GKIT",
     "marca": "Memphis",
     "categoria": "Kits",
     "descripcionCorta": "Kit completo de cableado calibre 8 en cobre libre de oxígeno con portafusible AFS",
@@ -11350,7 +11300,7 @@
   {
     "sku": "ETP-17.4",
     "slug": "memphis-etp-17-4",
-    "nombre": "Cable RCA ETP 17 ft - 4 canales",
+    "nombre": "Cable RCA de 4 canales ETP de 17 pies ETP-17.4",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión RCA de 4 canales y 17 pies con par trenzado",
@@ -11408,7 +11358,7 @@
   {
     "sku": "ETP-25",
     "slug": "memphis-etp-25",
-    "nombre": "Cable RCA ETP 25 ft - 2 canales",
+    "nombre": "Cable RCA de 2 canales ETP de 25 pies ETP-25",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión RCA de 2 canales y 25 pies con par trenzado",
@@ -11456,7 +11406,7 @@
         "valor": "Memphis Connection ETP, grado de desempeño"
       }
     ],
-    "precioCents": 30000,
+    "precioCents": 22000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
     "imagenes": [],
@@ -11466,7 +11416,7 @@
   {
     "sku": "ETP-17",
     "slug": "memphis-etp-17",
-    "nombre": "Cable RCA ETP 17 ft - 2 canales",
+    "nombre": "Cable RCA de 2 canales ETP de 17 pies ETP-17",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión RCA de 2 canales y 17 pies con par trenzado",
@@ -11514,7 +11464,7 @@
         "valor": "Memphis Connection ETP, grado de desempeño"
       }
     ],
-    "precioCents": 25000,
+    "precioCents": 27000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
     "imagenes": [],
@@ -11524,7 +11474,7 @@
   {
     "sku": "ETP-7",
     "slug": "memphis-etp-7",
-    "nombre": "Cable RCA ETP 7 ft - 2 canales",
+    "nombre": "Cable RCA de 2 canales ETP de 7 pies ETP-7",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión RCA de 2 canales y 7 pies con par trenzado",
@@ -11582,7 +11532,7 @@
   {
     "sku": "ETP-3",
     "slug": "memphis-etp-3",
-    "nombre": "Cable RCA ETP 3 ft - 2 canales",
+    "nombre": "Cable RCA de 2 canales ETP de 3 pies ETP-3",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión RCA de 2 canales y 3 pies con par trenzado",
@@ -11640,7 +11590,7 @@
   {
     "sku": "ETP-1.5",
     "slug": "memphis-etp-1-5",
-    "nombre": "Cable RCA ETP 1.5 ft - 2 canales",
+    "nombre": "Cable RCA de 2 canales ETP de 1.5 pies ETP-1.5",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión RCA de 2 canales y 1.5 pies con par trenzado",
@@ -11698,7 +11648,7 @@
   {
     "sku": "ETP-YM",
     "slug": "memphis-etp-ym",
-    "nombre": "Adaptador Y ETP - 2 machos a 1 hembra",
+    "nombre": "Adaptador Y ETP de 2 machos a 1 hembra ETP-YM",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Adaptador Y para señal RCA de dos conectores macho a uno hembra",
@@ -11748,7 +11698,7 @@
   {
     "sku": "ETP-YF",
     "slug": "memphis-etp-yf",
-    "nombre": "Adaptador Y ETP - 1 macho a 2 hembras",
+    "nombre": "Adaptador Y ETP de 1 macho a 2 hembras ETP-YF",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Adaptador Y para señal RCA de un conector macho a dos hembras",
@@ -11798,7 +11748,7 @@
   {
     "sku": "UTPF-21.4",
     "slug": "memphis-utpf-21-4",
-    "nombre": "Cable RCA UTPF 21 ft - 4 canales",
+    "nombre": "Cable RCA de 4 canales UTPF 21 pies UTPF-21.4",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión RCA premium de 4 canales y 21 pies con hiper trenzado",
@@ -11860,7 +11810,7 @@
   {
     "sku": "UTPF-17.4",
     "slug": "memphis-utpf-17-4",
-    "nombre": "Cable RCA UTPF 17 ft - 4 canales",
+    "nombre": "Cable RCA de 4 canales UTPF de 17 pies UTPF-17.4",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión RCA premium de 4 canales y 17 pies con hiper trenzado",
@@ -11922,7 +11872,7 @@
   {
     "sku": "UTPF-17",
     "slug": "memphis-utpf-17",
-    "nombre": "Cable RCA UTPF 17 ft - 2 canales",
+    "nombre": "Cable RCA de 2 canales UTPF de 17 pies UTPF-17",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión RCA premium de 2 canales y 17 pies con hiper trenzado",
@@ -11984,7 +11934,7 @@
   {
     "sku": "UTPF-3",
     "slug": "memphis-utpf-3",
-    "nombre": "Cable RCA UTPF 3 ft - 2 canales",
+    "nombre": "Cable RCA de 2 canales UTPF de 3 pies UTPF-3",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión RCA premium de 2 canales y 3 pies con hiper trenzado",
@@ -12046,7 +11996,7 @@
   {
     "sku": "UTPF-35R3",
     "slug": "memphis-utpf-35r3",
-    "nombre": "Cable UTPF 3 ft - 3.5 mm a RCA",
+    "nombre": "Cable UTPF de 3 pies - 3.5 mm a RCA UTPF-35R3",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión premium de 3 pies con plug de 3.5 mm a RCA",
@@ -12100,7 +12050,7 @@
   {
     "sku": "UTPF-35R6",
     "slug": "memphis-utpf-35r6",
-    "nombre": "Cable UTPF 6 ft - 3.5 mm a RCA",
+    "nombre": "Cable UTPF de 6 pies - 3.5 mm a RCA UTPF-35R6",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de interconexión premium de 6 pies con plug de 3.5 mm a RCA",
@@ -12154,7 +12104,7 @@
   {
     "sku": "NPBAT",
     "slug": "memphis-npbat",
-    "nombre": "Batería auxiliar Memphis",
+    "nombre": "Batería auxiliar Memphis NPBAT",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Batería auxiliar para respaldar sistemas de audio de alta demanda",
@@ -12200,7 +12150,7 @@
   {
     "sku": "DBLOCK",
     "slug": "memphis-dblock",
-    "nombre": "Bloque distribuidor de corriente",
+    "nombre": "Bloque distribuidor de corriente DBLOCK",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Bloque distribuidor para repartir corriente entre varios amplificadores",
@@ -12246,7 +12196,7 @@
   {
     "sku": "ANLFB",
     "slug": "memphis-anlfb",
-    "nombre": "Portafusible tipo ANL",
+    "nombre": "Portafusible tipo ANL ANLFB",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Portafusible tipo ANL para la línea principal de corriente",
@@ -12292,7 +12242,7 @@
   {
     "sku": "PEMR1X12",
     "slug": "memphis-pemr1x12",
-    "nombre": "Cajón vacío para subwoofer 12\"",
+    "nombre": "Cajón vacío para subwoofer de 12\" PEMR1X12",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cajón vacío alfombrado para un subwoofer de 12 pulgadas",
@@ -12338,7 +12288,7 @@
   {
     "sku": "PEMR1X10",
     "slug": "memphis-pemr1x10",
-    "nombre": "Cajón vacío para subwoofer 10\"",
+    "nombre": "Cajón vacío para subwoofer de 10\" PEMR1X10",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Cajón vacío alfombrado para un subwoofer de 10 pulgadas",
@@ -12384,7 +12334,7 @@
   {
     "sku": "OEMBKT60",
     "slug": "memphis-oembkt60",
-    "nombre": "Adaptadores de bocina 6.5\" OEMBKT60",
+    "nombre": "Adaptadores de bocina de 6.5\" OEMBKT60",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Par de adaptadores para instalar bocinas de 6.5 pulgadas en ubicaciones de fábrica",
@@ -12434,7 +12384,7 @@
   {
     "sku": "OEMBKT69",
     "slug": "memphis-oembkt69",
-    "nombre": "Adaptadores de bocina 6x9\" OEMBKT69",
+    "nombre": "Adaptadores de bocina de 6x9\" OEMBKT69",
     "marca": "Memphis",
     "categoria": "Accesorios",
     "descripcionCorta": "Par de adaptadores para instalar bocinas de 6x9 pulgadas en ubicaciones de fábrica",
@@ -13028,7 +12978,7 @@
   {
     "sku": "STADIUM 192T",
     "slug": "jbl-stadium-192t",
-    "nombre": "Stadium 192T - Tweeters de domo de aluminio",
+    "nombre": "Tweeters Stadium de 3/4\" STADIUM 192T",
     "marca": "JBL",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de tweeters de domo de aluminio con crossover en línea incluido",
@@ -13098,7 +13048,7 @@
   {
     "sku": "CLUB 6520",
     "slug": "jbl-club-6520",
-    "nombre": "Club 6520 - Coaxiales 6.5\"",
+    "nombre": "Bocinas coaxiales Club de 6.5\" CLUB 6520",
     "marca": "JBL",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 2 vías",
@@ -13168,7 +13118,7 @@
   {
     "sku": "STAGE2 634",
     "slug": "jbl-stage2-634",
-    "nombre": "Stage2 634 - Coaxiales 6.5\" 3 vías",
+    "nombre": "Bocinas coaxiales Stage de 6.5\" STAGE2 634",
     "marca": "JBL",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 3 vías",
@@ -13238,7 +13188,7 @@
   {
     "sku": "STAGE 245F",
     "slug": "jbl-stage-245f",
-    "nombre": "Bocinas coaxiales 4\" Stage2 45F",
+    "nombre": "Bocinas coaxiales de 4\" STAGE2 45F",
     "marca": "JBL",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 4 pulgadas de 2 vías, sin rejilla, para reemplazo de fábrica",
@@ -13296,7 +13246,7 @@
   {
     "sku": "T1S2-10S",
     "slug": "rockford-fosgate-t1s2-10s",
-    "nombre": "Power T1 Slim 10\" 2 Ω para caja sellada",
+    "nombre": "Subwoofer Power T1 Slim de 10\" T1S2-10S",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 10 pulgadas de perfil bajo y bobina simple de 2 ohm, optimizado para caja sellada",
@@ -13366,7 +13316,7 @@
   {
     "sku": "T2652-S",
     "slug": "rockford-fosgate-t2652-s",
-    "nombre": "Power T2 - Componentes 6.5\"",
+    "nombre": "Componentes Power T2 de 6.5\" T2652-S",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Juego de componentes de 6.5 pulgadas con crossover pasivo",
@@ -13436,7 +13386,7 @@
   {
     "sku": "T1650-S",
     "slug": "rockford-fosgate-t1650-s",
-    "nombre": "Power T1 - Componentes 6.5\"",
+    "nombre": "Componentes Power T1 de 6.5\" T1650-S",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Juego de componentes de 6.5 pulgadas con crossover pasivo",
@@ -13506,7 +13456,7 @@
   {
     "sku": "T1693",
     "slug": "rockford-fosgate-t1693",
-    "nombre": "Power T1 - Coaxiales 6x9\" 3 vías",
+    "nombre": "Bocinas coaxiales Power T1 de 6x9\" T1693",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6x9 pulgadas de 3 vías",
@@ -13568,7 +13518,7 @@
   {
     "sku": "T1650",
     "slug": "rockford-fosgate-t1650",
-    "nombre": "Power T1 - Coaxiales 6.5\"",
+    "nombre": "Bocinas coaxiales Power T1 de 6.5\" T1650",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 2 vías",
@@ -13638,7 +13588,7 @@
   {
     "sku": "T1T-S",
     "slug": "rockford-fosgate-t1t-s",
-    "nombre": "Power T1 - Tweeters",
+    "nombre": "Tweeters Power T1 de 1\" T1T-S",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de tweeters con crossover incluido",
@@ -13708,7 +13658,7 @@
   {
     "sku": "P400X4",
     "slug": "rockford-fosgate-p400x4",
-    "nombre": "Punch P400X4 - 4 canales",
+    "nombre": "Amplificador Punch de 4 canales P400X4",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
@@ -13762,7 +13712,7 @@
   {
     "sku": "PBR300X1",
     "slug": "rockford-fosgate-pbr300x1",
-    "nombre": "Punch PBR300X1 - Monoblock compacto",
+    "nombre": "Amplificador Punch monoblock compacto PBR300X1",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock compacto de 300 W RMS a 1 ohm con tecnología Boosted Rail",
@@ -13832,7 +13782,7 @@
   {
     "sku": "PBR400X4D",
     "slug": "rockford-fosgate-pbr400x4d",
-    "nombre": "Punch PBR400X4D - 4 canales compacto",
+    "nombre": "Amplificador Punch de 4 canales compacto PBR400X4D",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales clase D compacto de 400 W RMS con tecnología Boosted Rail",
@@ -13902,7 +13852,7 @@
   {
     "sku": "P3D4-15",
     "slug": "rockford-fosgate-p3d4-15",
-    "nombre": "Punch P3 15\" D4",
+    "nombre": "Subwoofer Punch P3 de 15\" P3D4-15",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 15 pulgadas de doble bobina de 4 ohm",
@@ -13972,7 +13922,7 @@
   {
     "sku": "P3D4-12",
     "slug": "rockford-fosgate-p3d4-12",
-    "nombre": "Punch P3 12\" D4",
+    "nombre": "Subwoofer Punch P3 de 12\" P3D4-12",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm",
@@ -14042,7 +13992,7 @@
   {
     "sku": "P3SD4-12",
     "slug": "rockford-fosgate-p3sd4-12",
-    "nombre": "Punch P3S 12\" D4 perfil bajo",
+    "nombre": "Subwoofer Punch P3S de 12\" P3SD4-12",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de perfil bajo y doble bobina de 4 ohm",
@@ -14112,7 +14062,7 @@
   {
     "sku": "P3SD4-10",
     "slug": "rockford-fosgate-p3sd4-10",
-    "nombre": "Punch P3S 10\" D4 perfil bajo",
+    "nombre": "Subwoofer Punch P3S de 10\" P3SD4-10",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 10 pulgadas de perfil bajo y doble bobina de 4 ohm",
@@ -14174,7 +14124,7 @@
   {
     "sku": "P2D4-12",
     "slug": "rockford-fosgate-p2d4-12",
-    "nombre": "Punch P2 12\" D4",
+    "nombre": "Subwoofer Punch P2 de 12\" P2D4-12",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm",
@@ -14236,7 +14186,7 @@
   {
     "sku": "P1V2-675",
     "slug": "rockford-fosgate-p1v2-675",
-    "nombre": "Punch P1 V2 6.75\" - Coaxiales de 3 vías",
+    "nombre": "Bocinas coaxiales Punch P1 V2 de 6.75\" P1V2-675",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.75 pulgadas de 3 vías con crossover oculto integrado",
@@ -14306,7 +14256,7 @@
   {
     "sku": "P1V2-69",
     "slug": "rockford-fosgate-p1v2-69",
-    "nombre": "Punch P1 V2 6x9\" - Coaxiales de 3 vías",
+    "nombre": "Bocinas coaxiales Punch P1 V2 de 6x9\" P1V2-69",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6x9 pulgadas de 3 vías con crossover oculto integrado",
@@ -14368,7 +14318,7 @@
   {
     "sku": "P1V2-4",
     "slug": "rockford-fosgate-p1v2-4",
-    "nombre": "Punch P1 V2 4\" - Coaxiales",
+    "nombre": "Bocinas coaxiales Punch P1 V2 de 4\" P1V2-4",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 4 pulgadas con crossover oculto integrado",
@@ -14426,7 +14376,7 @@
   {
     "sku": "P165-SE",
     "slug": "rockford-fosgate-p165-se",
-    "nombre": "Punch - Componentes 6.5\"",
+    "nombre": "Componentes Punch de 6.5\" P165-SE",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Juego de componentes de 6.5 pulgadas con crossover pasivo",
@@ -14496,7 +14446,7 @@
   {
     "sku": "P1694",
     "slug": "rockford-fosgate-p1694",
-    "nombre": "Punch P1 - Coaxiales 6x9\" 4 vías",
+    "nombre": "Bocinas coaxiales Punch P1 de 6x9\" P1694",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6x9 pulgadas de 4 vías",
@@ -14566,7 +14516,7 @@
   {
     "sku": "P1650",
     "slug": "rockford-fosgate-p1650",
-    "nombre": "Punch P1 - Coaxiales 6.5\"",
+    "nombre": "Bocinas coaxiales Punch P1 de 6.5\" P1650",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 2 vías",
@@ -14636,7 +14586,7 @@
   {
     "sku": "P1572",
     "slug": "rockford-fosgate-p1572",
-    "nombre": "Punch P1 - Coaxiales 5x7\"",
+    "nombre": "Bocinas coaxiales Punch P1 de 5x7\" P1572",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 5x7 pulgadas de 2 vías",
@@ -14706,7 +14656,7 @@
   {
     "sku": "P142",
     "slug": "rockford-fosgate-p142",
-    "nombre": "Punch P1 - Coaxiales 4\"",
+    "nombre": "Bocinas coaxiales Punch P1 de 4\" P142",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 4 pulgadas de 2 vías",
@@ -14776,7 +14726,7 @@
   {
     "sku": "P1462",
     "slug": "rockford-fosgate-p1462",
-    "nombre": "Punch P1 - Coaxiales 4x6\"",
+    "nombre": "Bocinas coaxiales Punch P1 de 4x6\" P1462",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 4x6 pulgadas de 2 vías",
@@ -14846,7 +14796,7 @@
   {
     "sku": "P1T-S",
     "slug": "rockford-fosgate-p1t-s",
-    "nombre": "Punch P1 - Tweeters",
+    "nombre": "Tweeters Punch P1 de 1\" P1T-S",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de tweeters con crossover incluido",
@@ -14904,7 +14854,7 @@
   {
     "sku": "PPS4-8",
     "slug": "rockford-fosgate-pps4-8",
-    "nombre": "Punch Pro 8\" - Medio rango",
+    "nombre": "Bocinas de medio rango Punch Pro de 8\" PPS4-8",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 8 pulgadas para alta presión sonora",
@@ -14966,7 +14916,7 @@
   {
     "sku": "PPS4-6",
     "slug": "rockford-fosgate-pps4-6",
-    "nombre": "Punch Pro 6.5\" - Medio rango",
+    "nombre": "Bocinas de medio rango Punch Pro de 6.5\" PPS4-6",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6.5 pulgadas para alta presión sonora",
@@ -15036,10 +14986,10 @@
   {
     "sku": "PP4-T",
     "slug": "rockford-fosgate-pp4-t",
-    "nombre": "Punch Pro - Driver de compresión",
+    "nombre": "Tweeters Punch Pro de 1.5\" PP4-T",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
-    "descripcionCorta": "Driver de compresión para sistemas de alta presión sonora",
+    "descripcionCorta": "Tweeters con driver de compresión para sistemas de alta presión sonora",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -15106,7 +15056,7 @@
   {
     "sku": "RFI-16",
     "slug": "rockford-fosgate-rfi-16",
-    "nombre": "Cable RCA RFI-16 - 16 ft, 2 canales",
+    "nombre": "Cable RCA de 2 canales y 16 pies RFI-16",
     "marca": "Rockford Fosgate",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de par trenzado de 16 pies con extremos platinados",
@@ -15168,7 +15118,7 @@
   {
     "sku": "RFI-6",
     "slug": "rockford-fosgate-rfi-6",
-    "nombre": "Cable RCA RFI-6 - 6 ft, 2 canales",
+    "nombre": "Cable RCA de 2 canales y 16 pies RFI-6",
     "marca": "Rockford Fosgate",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de par trenzado de 6 pies con extremos platinados",
@@ -15230,7 +15180,7 @@
   {
     "sku": "RFD4",
     "slug": "rockford-fosgate-rfd4",
-    "nombre": "Bloque distribuidor RFD4 - 1 entrada, 3 salidas",
+    "nombre": "Bloque de distribución de 1 entrada y 3 salidas RFD4",
     "marca": "Rockford Fosgate",
     "categoria": "Accesorios",
     "descripcionCorta": "Bloque distribuidor de latón macizo con una entrada calibre 0 o 4 y tres salidas calibre 4 u 8",
@@ -15292,7 +15242,7 @@
   {
     "sku": "R2-750X5",
     "slug": "rockford-fosgate-r2-750x5",
-    "nombre": "Prime R2-750X5 - 5 canales",
+    "nombre": "Amplificador Prime de 5 canales R2-750X5",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 5 canales para sistema completo con subwoofer",
@@ -15362,7 +15312,7 @@
   {
     "sku": "R2-1200X1",
     "slug": "rockford-fosgate-r2-1200x1",
-    "nombre": "Prime R2-1200X1 - Monoblock",
+    "nombre": "Amplificador Prime monoblock R2-1200X1",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D de alta potencia para subwoofer",
@@ -15432,7 +15382,7 @@
   {
     "sku": "R2-750X1",
     "slug": "rockford-fosgate-r2-750x1",
-    "nombre": "Prime R2-750X1 - Monoblock",
+    "nombre": "Amplificador Prime monoblock R2-750X1",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D para subwoofer",
@@ -15502,7 +15452,7 @@
   {
     "sku": "R2-500X1",
     "slug": "rockford-fosgate-r2-500x1",
-    "nombre": "Prime R2-500X1 - Monoblock",
+    "nombre": "Amplificador Prime monoblock R2-500X1",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D para subwoofer",
@@ -15572,7 +15522,7 @@
   {
     "sku": "R2-250X1",
     "slug": "rockford-fosgate-r2-250x1",
-    "nombre": "Prime R2-250X1 - Monoblock",
+    "nombre": "Amplificador Prime monoblock R2-250X1",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D compacto para subwoofer",
@@ -15642,7 +15592,7 @@
   {
     "sku": "R2-500X4",
     "slug": "rockford-fosgate-r2-500x4",
-    "nombre": "Prime R2-500X4 - 4 canales",
+    "nombre": "Amplificador Prime de 5 canales R2-500X4",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
@@ -15712,7 +15662,7 @@
   {
     "sku": "R2-300X4",
     "slug": "rockford-fosgate-r2-300x4",
-    "nombre": "Prime R2-300X4 - 4 canales",
+    "nombre": "Amplificador Prime de 5 canales R2-300X4",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
@@ -15782,7 +15732,7 @@
   {
     "sku": "R2SD4-12",
     "slug": "rockford-fosgate-r2sd4-12",
-    "nombre": "Prime R2 12\" D4 perfil bajo",
+    "nombre": "Subwoofer Prime R2 de 12\" R2SD4-12",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de perfil bajo y doble bobina de 4 ohm",
@@ -15848,7 +15798,7 @@
   {
     "sku": "R2SD4-10",
     "slug": "rockford-fosgate-r2sd4-10",
-    "nombre": "Prime R2 10\" D4 perfil bajo",
+    "nombre": "Subwoofer Prime R2 de 10\" R2SD4-10",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 10 pulgadas de perfil bajo y doble bobina de 4 ohm",
@@ -15914,7 +15864,7 @@
   {
     "sku": "R165-S",
     "slug": "rockford-fosgate-r165-s",
-    "nombre": "Prime - Componentes 6.5\"",
+    "nombre": "Componentes Prime de 6.5\" R165-S",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Juego de componentes de 6.5 pulgadas con crossover pasivo",
@@ -15972,7 +15922,7 @@
   {
     "sku": "R169X3",
     "slug": "rockford-fosgate-r169x3",
-    "nombre": "Prime - Coaxiales 6x9\" 3 vías",
+    "nombre": "Bocinas coaxiales Prime de 6x9\" R169X3",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6x9 pulgadas de 3 vías",
@@ -16042,7 +15992,7 @@
   {
     "sku": "R165X3",
     "slug": "rockford-fosgate-r165x3",
-    "nombre": "Prime - Coaxiales 6.5\" 3 vías",
+    "nombre": "Bocinas coaxiales Prime de 6.5\" R165X3",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 3 vías",
@@ -16112,7 +16062,7 @@
   {
     "sku": "R1525X2",
     "slug": "rockford-fosgate-r1525x2",
-    "nombre": "Prime - Coaxiales 5.25\" 2 vías",
+    "nombre": "Bocinas coaxiales Prime de 5.25\" R1525X2",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 5.25 pulgadas de 2 vías",
@@ -16182,7 +16132,7 @@
   {
     "sku": "R14X2",
     "slug": "rockford-fosgate-r14x2",
-    "nombre": "Prime - Coaxiales 4\" 2 vías",
+    "nombre": "Bocinas coaxiales Prime de 4\" R14X2",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 4 pulgadas de 2 vías",
@@ -16252,7 +16202,7 @@
   {
     "sku": "R1T-S",
     "slug": "rockford-fosgate-r1t-s",
-    "nombre": "Prime - Tweeters",
+    "nombre": "Tweeters Prime de 1\" R1T-S",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de tweeters con crossover incluido",
@@ -16418,7 +16368,7 @@
   {
     "sku": "M2WL-8HB",
     "slug": "rockford-fosgate-m2wl-8hb",
-    "nombre": "Marine M2 8\" - Bocina de torre con LED, negra",
+    "nombre": "Bocinas de torre Marine M2 de 8\" M2WL-8HB",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de torre marina de 8 pulgadas con iluminación LED, acabado negro",
@@ -16472,7 +16422,7 @@
   {
     "sku": "M2WL-65MB",
     "slug": "rockford-fosgate-m2wl-65mb",
-    "nombre": "Marine M2 6.5\" - Bocina de torre con LED, negra",
+    "nombre": "Bocinas de torre Marine M2 de 6.5\" M2WL-65MB",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de torre marina de 6.5 pulgadas con iluminación LED, acabado negro",
@@ -16572,7 +16522,7 @@
   {
     "sku": "M2D4-10IB",
     "slug": "rockford-fosgate-m2d4-10ib",
-    "nombre": "Marine M2 10\" D4",
+    "nombre": "Subwoofer Marine M2 de 10\" M2D4-10IB",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer marino de 10 pulgadas de doble bobina de 4 ohm",
@@ -16642,7 +16592,7 @@
   {
     "sku": "M5-1500X5",
     "slug": "rockford-fosgate-m5-1500x5",
-    "nombre": "Marine M5-1500X5 - 5 canales",
+    "nombre": "Amplificador Marine de 5 canales M5-1500X5",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador marino de 5 canales resistente a la intemperie",
@@ -16712,7 +16662,7 @@
   {
     "sku": "M2-750X5",
     "slug": "rockford-fosgate-m2-750x5",
-    "nombre": "Marine M2-750X5 - 5 canales",
+    "nombre": "Amplificador Marine  de 5 canales M2-750X5",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador marino de 5 canales resistente a la intemperie",
@@ -16782,7 +16732,7 @@
   {
     "sku": "M2-500X1",
     "slug": "rockford-fosgate-m2-500x1",
-    "nombre": "Marine M2-500X1 - Monoblock",
+    "nombre": "Amplificador Marine monoblock M2-500X1",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador marino monoblock resistente a la intemperie",
@@ -16836,7 +16786,7 @@
   {
     "sku": "M2-300X4",
     "slug": "rockford-fosgate-m2-300x4",
-    "nombre": "Marine M2-300X4 - 4 canales",
+    "nombre": "Amplificador Marine de 4 canales M2-300X4",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador marino de 4 canales resistente a la intemperie",
@@ -16890,7 +16840,7 @@
   {
     "sku": "M2-65B",
     "slug": "rockford-fosgate-m2-65b",
-    "nombre": "Marine M2 - Coaxiales 6.5\"",
+    "nombre": "Bocinas coaxiales Marine de 6.5\" M2",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas marinas coaxiales de 6.5 pulgadas",
@@ -16960,7 +16910,7 @@
   {
     "sku": "M0-65B",
     "slug": "rockford-fosgate-m0-65b",
-    "nombre": "Marine M0 - Coaxiales 6.5\"",
+    "nombre": "Bocinas coaxiales Marine de 6.5\" M0",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas marinas coaxiales de 6.5 pulgadas",
@@ -17232,7 +17182,7 @@
   {
     "sku": "DSP66LCD",
     "slug": "cerwin-vega-dsp66lcd",
-    "nombre": "Procesador DSP66LCD con pantalla LCD",
+    "nombre": "Procesador con pantalla DSP66LCD",
     "marca": "Cerwin Vega",
     "categoria": "Ecualizadores",
     "descripcionCorta": "Procesador digital de señal de 6 entradas y 6 salidas con pantalla LCD de control",
@@ -17286,7 +17236,7 @@
   {
     "sku": "DSP88",
     "slug": "cerwin-vega-dsp88",
-    "nombre": "Procesador DSP88 de 8 canales",
+    "nombre": "Procesador de 8 canales DSP88",
     "marca": "Cerwin Vega",
     "categoria": "Ecualizadores",
     "descripcionCorta": "Procesador digital de señal de 8 entradas y 8 salidas",
@@ -17336,7 +17286,7 @@
   {
     "sku": "VPAS12",
     "slug": "cerwin-vega-vpas12",
-    "nombre": "Subwoofer amplificado VPAS12 12\" con radiador pasivo",
+    "nombre": "Subwoofer amplificado de 12\" VPAS12",
     "marca": "Cerwin Vega",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer amplificado de 12 pulgadas con radiador pasivo para instalación bajo asiento",
@@ -17398,7 +17348,7 @@
   {
     "sku": "VR10",
     "slug": "cerwin-vega-vr10",
-    "nombre": "Subwoofer VR10 10\"",
+    "nombre": "Subwoofer amplificado de 10\" VR10",
     "marca": "Cerwin Vega",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 10 pulgadas de la serie VR para caja sellada o ventilada",
@@ -17448,7 +17398,7 @@
   {
     "sku": "CVP12D4",
     "slug": "cerwin-vega-cvp12d4",
-    "nombre": "Subwoofer CVP12D4 12\" D4",
+    "nombre": "Subwoofer CVP de 12\" CVP12D4",
     "marca": "Cerwin Vega",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm",
@@ -17506,7 +17456,7 @@
   {
     "sku": "CVP10D4",
     "slug": "cerwin-vega-cvp10d4",
-    "nombre": "Subwoofer CVP10D4 10\" D4",
+    "nombre": "Subwoofer CVP de 10\" CVP10D4",
     "marca": "Cerwin Vega",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 10 pulgadas de doble bobina de 4 ohm",
@@ -17568,7 +17518,7 @@
   {
     "sku": "HEDPS69",
     "slug": "cerwin-vega-hedps69",
-    "nombre": "Medio rango HED Pro Style 6x9\"",
+    "nombre": "Bocinas de medio rango HED Pro Style de 6x9\" HEDPS69",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6x9 pulgadas estilo pro para alta presión sonora",
@@ -17622,7 +17572,7 @@
   {
     "sku": "HEDPS65",
     "slug": "cerwin-vega-hedps65",
-    "nombre": "Medio rango HED Pro Style 6.5\"",
+    "nombre": "Bocinas de medio rango HED Pro Style de 6.5\" HEDPS65",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6.5 pulgadas estilo pro para alta presión sonora",
@@ -17676,7 +17626,7 @@
   {
     "sku": "CVPX8",
     "slug": "cerwin-vega-cvpx8",
-    "nombre": "Bocinas CVPX8 8\"",
+    "nombre": "Bocinas CVPX de 8\" CVPX8",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas de rango completo de 8 pulgadas de 2 vías con tweeter de bocina",
@@ -17746,7 +17696,7 @@
   {
     "sku": "CVPX69",
     "slug": "cerwin-vega-cvpx69",
-    "nombre": "Bocinas CVPX69 6x9\"",
+    "nombre": "Bocinas CVPX de 6x9\" CVPX69",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de rango completo de 6x9 pulgadas de 2 vías con tweeter de bocina",
@@ -17816,7 +17766,7 @@
   {
     "sku": "CVPX1",
     "slug": "cerwin-vega-cvpx1",
-    "nombre": "Tweeter de bocina CVPX1 1\"",
+    "nombre": "Tweeter de bocina CVPX de 1\" CVPX1",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Tweeter de bocina de 1 pulgada con diafragma reemplazable y crossover incluido",
@@ -17882,7 +17832,7 @@
   {
     "sku": "HED69P",
     "slug": "cerwin-vega-hed69p",
-    "nombre": "Medio rango HED Pro 6x9\" con tapón de fase",
+    "nombre": "Bocinas de medio rango HED Pro de 6x9\" HED69P",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6x9 pulgadas con diseño cargado por tapón de fase para alta presión sonora",
@@ -17940,7 +17890,7 @@
   {
     "sku": "HED8P",
     "slug": "cerwin-vega-hed8p",
-    "nombre": "Medio rango HED Pro 8\" con tapón de fase",
+    "nombre": "Bocinas de medio rango HED Pro de 8\" HED8P",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 8 pulgadas con diseño cargado por tapón de fase para alta presión sonora",
@@ -17998,7 +17948,7 @@
   {
     "sku": "HED65P",
     "slug": "cerwin-vega-hed65p",
-    "nombre": "Bocinas HED65P 6.5\"",
+    "nombre": "Bocinas de medio rango HED Pro 6.5\" HED65P",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6.5 pulgadas con tapón de fase para alta presión sonora",
@@ -18060,7 +18010,7 @@
   {
     "sku": "CVP69",
     "slug": "cerwin-vega-cvp69",
-    "nombre": "Bocinas CVP69 6x9\"",
+    "nombre": "Bocinas de medio rango CVP de 6x9\" CVP69",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de rango completo de 6x9 pulgadas para sistemas de alta presión sonora",
@@ -18130,7 +18080,7 @@
   {
     "sku": "CVP8",
     "slug": "cerwin-vega-cvp8",
-    "nombre": "Bocinas CVP8 8\"",
+    "nombre": "Bocinas de medio rango CVP de 8\" CVP8",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de rango completo de 8 pulgadas para sistemas de alta presión sonora",
@@ -18192,7 +18142,7 @@
   {
     "sku": "CVP65",
     "slug": "cerwin-vega-cvp65",
-    "nombre": "Bocinas CVP65 6.5\"",
+    "nombre": "Bocinas de medio rango CVP de 6.5\" CVP65",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6.5 pulgadas para sistemas de alta presión sonora",
@@ -18254,7 +18204,7 @@
   {
     "sku": "XED12V2",
     "slug": "cerwin-vega-xed12v2",
-    "nombre": "Subwoofer XED12V2 12\" 4 Ω",
+    "nombre": "Subwoofer XED de 12\" XED12V2",
     "marca": "Cerwin Vega",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de bobina simple de 4 ohm para caja sellada o ventilada",
@@ -18316,7 +18266,7 @@
   {
     "sku": "XED693",
     "slug": "cerwin-vega-xed693",
-    "nombre": "Bocinas XED693 6x9\" 3 vías",
+    "nombre": "Bocinas coaxiales XED de 6x9\" XED693",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6x9 pulgadas de 3 vías",
@@ -18386,7 +18336,7 @@
   {
     "sku": "XED57",
     "slug": "cerwin-vega-xed57",
-    "nombre": "Bocinas XED57 5x7\"",
+    "nombre": "Bocinas coaxiales XED de 5x7\" XED57",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 5x7 pulgadas",
@@ -18448,7 +18398,7 @@
   {
     "sku": "XED62",
     "slug": "cerwin-vega-xed62",
-    "nombre": "Bocinas XED62 6.5\"",
+    "nombre": "Bocinas coaxiales XED de 6.5\" XED62",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas",
@@ -18514,7 +18464,7 @@
   {
     "sku": "XED52",
     "slug": "cerwin-vega-xed52",
-    "nombre": "Bocinas XED52 5.25\"",
+    "nombre": "Bocinas coaxiales XED de 5.25\" XED52",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 5.25 pulgadas",
@@ -18580,7 +18530,7 @@
   {
     "sku": "XED42",
     "slug": "cerwin-vega-xed42",
-    "nombre": "Bocinas XED42 4\"",
+    "nombre": "Bocinas coaxiales XED de 4\" XED42",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 4 pulgadas",
@@ -18734,7 +18684,7 @@
   {
     "sku": "EQP850",
     "slug": "cerwin-vega-eqp850",
-    "nombre": "Ecualizador EQP850 de 5 bandas con procesador de graves",
+    "nombre": "Ecualizador de 5 bandas con procesador de graves EQP850",
     "marca": "Cerwin Vega",
     "categoria": "Ecualizadores",
     "descripcionCorta": "Ecualizador de preamplificación de 5 bandas con procesadores de graves",
@@ -18788,7 +18738,7 @@
   {
     "sku": "EQ780",
     "slug": "cerwin-vega-eq780",
-    "nombre": "Ecualizador paramétrico EQ780 de 7 bandas",
+    "nombre": "Ecualizador paramétrico de 7 bandas EQ780",
     "marca": "Cerwin Vega",
     "categoria": "Ecualizadores",
     "descripcionCorta": "Ecualizador paramétrico de 7 bandas con entrada auxiliar y entrada de alto nivel",
@@ -18842,7 +18792,7 @@
   {
     "sku": "IOEM22",
     "slug": "cerwin-vega-ioem22",
-    "nombre": "Convertidor de línea IOEM22 - 2 canales",
+    "nombre": "Convertidor de línea de 2 canales IOEM22",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Convertidor de salida de bocina a señal RCA de 2 entradas y 2 salidas",
@@ -18888,7 +18838,7 @@
   {
     "sku": "IOEM44",
     "slug": "cerwin-vega-ioem44",
-    "nombre": "Convertidor de línea IOEM44 - 4 canales",
+    "nombre": "Convertidor de línea de 4 canales IOEM44",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Convertidor de salida de bocina a señal RCA de 4 entradas y 4 salidas",
@@ -18934,7 +18884,7 @@
   {
     "sku": "CAK42",
     "slug": "cerwin-vega-cak42",
-    "nombre": "Kit de amplificador CAK42 - Calibre 4, 2 canales",
+    "nombre": "Kit de amplificador de 2 canales calibre 4 CAK42",
     "marca": "Cerwin Vega",
     "categoria": "Kits",
     "descripcionCorta": "Kit completo de cableado calibre 4 en cobre libre de oxígeno para amplificador de 2 canales",
@@ -18996,7 +18946,7 @@
   {
     "sku": "CAK82",
     "slug": "cerwin-vega-cak82",
-    "nombre": "Kit de amplificador CAK82 - Calibre 8, 2 canales",
+    "nombre": "Kit de amplificador de 2 canales calibre 8 CAK82",
     "marca": "Cerwin Vega",
     "categoria": "Kits",
     "descripcionCorta": "Kit completo de cableado calibre 8 en cobre libre de oxígeno para amplificador de 2 canales",
@@ -19050,7 +19000,7 @@
   {
     "sku": "RV417",
     "slug": "cerwin-vega-rv417",
-    "nombre": "Cable RCA RV417 - 4 canales, 17 ft",
+    "nombre": "Cable RCA de 4 canales y 17 pies RV417",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de 4 canales y 17 pies con par trenzado dual",
@@ -19104,7 +19054,7 @@
   {
     "sku": "RV410",
     "slug": "cerwin-vega-rv410",
-    "nombre": "Cable RCA RV410 - 4 canales, 10 ft",
+    "nombre": "Cable RCA de 4 canales y 10 pies RV410",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de 4 canales y 10 pies con par trenzado dual",
@@ -19158,7 +19108,7 @@
   {
     "sku": "RV46",
     "slug": "cerwin-vega-rv46",
-    "nombre": "Cable RCA RV46 - 4 canales, 6 ft",
+    "nombre": "Cable RCA de 4 canales y 6 pies RV46",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de 4 canales y 6 pies con par trenzado dual",
@@ -19212,7 +19162,7 @@
   {
     "sku": "RV17",
     "slug": "cerwin-vega-rv17",
-    "nombre": "Cable RCA RV17 - 2 canales, 17 ft",
+    "nombre": "Cable RCA de 2 canales y 17 pies RV17",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de 2 canales y 17 pies con par trenzado dual",
@@ -19266,7 +19216,7 @@
   {
     "sku": "RV12",
     "slug": "cerwin-vega-rv12",
-    "nombre": "Cable RCA RV12 - 2 canales, 12 ft",
+    "nombre": "Cable RCA de 2 canales y 12 pies RV12",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de 2 canales y 12 pies con par trenzado dual",
@@ -19320,7 +19270,7 @@
   {
     "sku": "RV6",
     "slug": "cerwin-vega-rv6",
-    "nombre": "Cable RCA RV6 - 2 canales, 6 ft",
+    "nombre": "Cable RCA de 2 canales y 6 pies RV6",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de 2 canales y 6 pies con par trenzado dual",
@@ -19374,7 +19324,7 @@
   {
     "sku": "RVY2M",
     "slug": "cerwin-vega-rvy2m",
-    "nombre": "Adaptador Y RCA - 1 hembra a 2 machos",
+    "nombre": "Adaptador Y RCA de 1 hembra a 2 machos RVY2M",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Adaptador Y para señal RCA de una entrada hembra a dos salidas macho",
@@ -19420,7 +19370,7 @@
   {
     "sku": "RVY2F",
     "slug": "cerwin-vega-rvy2f",
-    "nombre": "Adaptador Y RCA - 1 macho a 2 hembras",
+    "nombre": "Adaptador Y RCA de 1 macho a 2 hembras RVY2F",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Adaptador Y para señal RCA de una entrada macho a dos salidas hembra",
@@ -19466,7 +19416,7 @@
   {
     "sku": "ANL1",
     "slug": "cerwin-vega-anl1",
-    "nombre": "Portafusible ANL1",
+    "nombre": "Portafusible tipo ANL",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Portafusible tipo ANL para la línea principal de corriente",
@@ -19512,7 +19462,7 @@
   {
     "sku": "CFANL200",
     "slug": "cerwin-vega-cfanl200",
-    "nombre": "Fusible ANL 200 A",
+    "nombre": "Fusible tipo ANL",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Fusible tipo ANL de 200 amperios para portafusible ANL",
@@ -19558,7 +19508,7 @@
   {
     "sku": "DB124",
     "slug": "cerwin-vega-db124",
-    "nombre": "Bloque distribuidor DB124 - Entrada 1/0, dos salidas 4",
+    "nombre": "Bloque distribuidor de una entrada calibre 0 a dos salidas caibre 4 DB124",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Bloque distribuidor con una entrada calibre 1/0 y dos salidas calibre 4, con reductores para calibre 4 y 8",
@@ -19608,7 +19558,7 @@
   {
     "sku": "DB148",
     "slug": "cerwin-vega-db148",
-    "nombre": "Bloque distribuidor DB148 - Entrada 1/4, salida 4/8",
+    "nombre": "Bloque distribuidor de una entrada calibre 4 a dos salidas caibre 8 DB148",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Bloque distribuidor de corriente con entrada calibre 1 a 4 y salidas calibre 4 a 8",

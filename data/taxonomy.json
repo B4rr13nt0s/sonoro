@@ -2,7 +2,7 @@
   {
     "nombre": "Bocinas",
     "slug": "bocinas",
-    "cantidadProductos": 105
+    "cantidadProductos": 106
   },
   {
     "nombre": "Subwoofers",
@@ -12,7 +12,7 @@
   {
     "nombre": "Amplificadores",
     "slug": "amplificadores",
-    "cantidadProductos": 50
+    "cantidadProductos": 49
   },
   {
     "nombre": "Receptores",
@@ -37,6 +37,6 @@
   {
     "nombre": "Accesorios",
     "slug": "accesorios",
-    "cantidadProductos": 67
+    "cantidadProductos": 66
   }
 ]
