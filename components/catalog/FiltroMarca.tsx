@@ -3,23 +3,28 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-import { buildCatalogHref } from "@/lib/catalog/href.ts";
-import type { Brand, Orden } from "@/lib/catalog/index.ts";
-
 // El valor seleccionado vive en la URL (?marca=slug), no en este componente
 // — lo único que es estado local de verdad es si el menú está abierto o
 // cerrado, que es puramente presentacional.
+//
+// Este es un Client Component (necesita el estado de abierto/cerrado), así
+// que no puede recibir una función (buildCatalogHref/buildProductosHref):
+// Next solo deja cruzar el límite servidor→cliente con datos serializables.
+// Por eso `opciones` ya trae el href resuelto por quien llama — sirve tanto
+// para /catalogo/[categoria] como para /productos sin que este componente
+// sepa nada de rutas.
+export type OpcionMarca = { slug: string; nombre: string; href: string };
+
 type FiltroMarcaProps = {
-  categoriaSlug: string;
-  marcas: Brand[];
+  opciones: OpcionMarca[];
+  hrefTodas: string;
   marcaActual?: string;
-  orden: Orden;
 };
 
-export function FiltroMarca({ categoriaSlug, marcas, marcaActual, orden }: FiltroMarcaProps) {
+export function FiltroMarca({ opciones, hrefTodas, marcaActual }: FiltroMarcaProps) {
   const [abierto, setAbierto] = useState(false);
   const contenedorRef = useRef<HTMLDivElement>(null);
-  const marcaSeleccionada = marcas.find((marca) => marca.slug === marcaActual);
+  const marcaSeleccionada = opciones.find((opcion) => opcion.slug === marcaActual);
 
   useEffect(() => {
     if (!abierto) return;
@@ -46,10 +51,10 @@ export function FiltroMarca({ categoriaSlug, marcas, marcaActual, orden }: Filtr
   // escritorio) — misma lista de opciones, dos contenedores visualmente
   // distintos gateados por CSS (hidden/lg:), igual que el patrón que ya usa
   // SiteHeader para su nav de escritorio vs. su menú móvil.
-  const opciones = (
+  const listaOpciones = (
     <>
       <Link
-        href={buildCatalogHref(categoriaSlug, { orden })}
+        href={hrefTodas}
         onClick={() => setAbierto(false)}
         role="option"
         aria-selected={!marcaActual}
@@ -59,18 +64,18 @@ export function FiltroMarca({ categoriaSlug, marcas, marcaActual, orden }: Filtr
       >
         Todas las marcas
       </Link>
-      {marcas.map((marca) => (
+      {opciones.map((opcion) => (
         <Link
-          key={marca.slug}
-          href={buildCatalogHref(categoriaSlug, { marca: marca.slug, orden })}
+          key={opcion.slug}
+          href={opcion.href}
           onClick={() => setAbierto(false)}
           role="option"
-          aria-selected={marca.slug === marcaActual}
+          aria-selected={opcion.slug === marcaActual}
           className={`px-4 py-3 text-[14px] lg:py-2 ${
-            marca.slug === marcaActual ? "text-negro font-medium" : "text-texto-secundario"
+            opcion.slug === marcaActual ? "text-negro font-medium" : "text-texto-secundario"
           }`}
         >
-          {marca.nombre}
+          {opcion.nombre}
         </Link>
       ))}
     </>
@@ -119,7 +124,7 @@ export function FiltroMarca({ categoriaSlug, marcas, marcaActual, orden }: Filtr
                 ×
               </button>
             </div>
-            <div className="flex flex-col overflow-y-auto py-2">{opciones}</div>
+            <div className="flex flex-col overflow-y-auto py-2">{listaOpciones}</div>
           </div>
 
           {/* Dropdown anclado — ≥lg, sin cambios de comportamiento. */}
@@ -128,7 +133,7 @@ export function FiltroMarca({ categoriaSlug, marcas, marcaActual, orden }: Filtr
             aria-label="Filtrar por marca"
             className="border-borde-tarjeta rounded-card absolute top-full left-0 z-10 mt-2 hidden max-h-72 w-56 flex-col overflow-y-auto border bg-white py-2 lg:flex"
           >
-            {opciones}
+            {listaOpciones}
           </div>
         </>
       ) : null}

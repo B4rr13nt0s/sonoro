@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { Pagination } from "@/components/catalog/Pagination";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { buildMarcaHref } from "@/lib/catalog/href.ts";
 import { listAllProducts, listBrands, listCategories, listProducts } from "@/lib/catalog/index.ts";
@@ -95,9 +96,13 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
   return (
     <div className="flex flex-col">
       <section className="flex flex-col gap-7 px-6 pt-10 sm:px-12 sm:pt-14">
-        <div className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">
-          Inicio / Marcas / {marca.nombre}
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: "Inicio", href: "/" },
+            { label: "Marcas", href: "/marcas" },
+            { label: marca.nombre },
+          ]}
+        />
         <div className="flex flex-col items-center gap-6">
           {/* El nombre sigue en el DOM como h1 (semántica/SEO — coincide con
               el <title> de generateMetadata) pero visualmente oculto: el

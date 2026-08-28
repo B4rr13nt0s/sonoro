@@ -45,3 +45,22 @@ export function buildMarcaHref(marcaSlug: string, estado: MarcaQueryState): stri
   const search = query.toString();
   return `/marcas/${marcaSlug}${search ? `?${search}` : ""}`;
 }
+
+// /productos (destacados): mismo criterio, el único filtro secundario es
+// marca — no hay categoría ni marca "de la ruta" que omitir de la query.
+export type ProductosQueryState = {
+  marca?: string; // slug de marca
+  orden?: Orden;
+  page?: number;
+};
+
+export function buildProductosHref(estado: ProductosQueryState): string {
+  const query = new URLSearchParams();
+
+  if (estado.marca) query.set("marca", estado.marca);
+  if (estado.orden && estado.orden !== "precio_asc") query.set("orden", estado.orden);
+  if (estado.page && estado.page > 1) query.set("page", String(estado.page));
+
+  const search = query.toString();
+  return `/productos${search ? `?${search}` : ""}`;
+}

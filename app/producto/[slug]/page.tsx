@@ -4,9 +4,11 @@ import { notFound } from "next/navigation";
 
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { ViewProductTracker } from "@/components/analytics/ViewProductTracker";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ProductGallery } from "@/components/media/ProductGallery";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
-import { getProduct, listAllProducts, listCategories } from "@/lib/catalog/index.ts";
+import { getProduct, listAllProducts, listBrands, listCategories } from "@/lib/catalog/index.ts";
+import { buildCatalogHref, buildMarcaHref } from "@/lib/catalog/href.ts";
 import { buildProductJsonLd } from "@/lib/seo/product.ts";
 import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
 
@@ -54,14 +56,19 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
   const producto = await getProduct(slug);
   if (!producto) notFound();
 
+  // Se resuelven una sola vez y sirven a las dos ramas de abajo: la de
+  // producto inactivo (link "Ver {categoría}") y la de breadcrumbs del
+  // producto activo (CLAUDE.md § Breadcrumbs: "en ficha de producto
+  // terminan en la marca, no en el nombre del producto").
+  const [categorias, marcas] = await Promise.all([listCategories(), listBrands()]);
+  const categoriaSlug = categorias.find((c) => c.nombre === producto.categoria)?.slug;
+  const marcaSlug = marcas.find((m) => m.nombre === producto.marca)?.slug;
+
   // activo === false (CLAUDE.md § Mantenimiento del catálogo): la fila
   // nunca se borra, así que el slug sigue existiendo y sigue
   // pre-renderizado — pero no es un 404. proxy.ts pone el status en 410;
   // esta rama solo decide qué HTML se manda con ese status.
   if (!producto.activo) {
-    const categorias = await listCategories();
-    const categoriaSlug = categorias.find((c) => c.nombre === producto.categoria)?.slug;
-
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-24 text-center">
         <div className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">
@@ -115,17 +122,28 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
 
         <div className="flex flex-col gap-5 px-6 pb-8 sm:px-12 lg:pt-11 lg:pr-12 lg:pb-8 lg:pl-6">
           {/* CLAUDE.md § Breadcrumbs: "en ficha de producto terminan en la
-              marca, no en el nombre del producto". */}
-          <div className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">
-            Inicio / {producto.categoria} / {producto.marca}
-          </div>
+              marca, no en el nombre del producto" — a diferencia de
+              /catalogo/[categoria] y /marcas/[marca], ningún segmento acá
+              es "la página actual" (esta es la ficha del producto, no la
+              de categoría ni la de marca), así que los tres son
+              navegables. */}
+          <Breadcrumbs
+            items={[
+              { label: "Inicio", href: "/" },
+              {
+                label: producto.categoria,
+                href: categoriaSlug ? buildCatalogHref(categoriaSlug, {}) : undefined,
+              },
+              {
+                label: producto.marca,
+                href: marcaSlug ? buildMarcaHref(marcaSlug, {}) : undefined,
+              },
+            ]}
+          />
 
-          <div className="flex flex-col gap-2">
-            <h1 className="text-40 leading-[1.1] font-semibold tracking-[-0.03em]">
-              {producto.nombre}
-            </h1>
-            <div className="text-texto-secundario text-[16px]">{producto.descripcionCorta}</div>
-          </div>
+          <h1 className="text-40 leading-[1.1] font-semibold tracking-[-0.03em]">
+            {producto.nombre}
+          </h1>
 
           <div className="flex flex-col gap-1 pt-1">
             <div className="text-34 font-semibold tracking-[-0.03em]">
@@ -175,7 +193,12 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
       </div>
 
       <section className="bg-negro flex flex-col gap-10 px-6 py-14 text-white sm:px-12 sm:py-20">
-        <h2 className="text-34 font-semibold tracking-[-0.025em]">Ficha técnica</h2>
+        <div className="flex flex-col gap-3">
+          <h2 className="text-34 font-semibold tracking-[-0.025em]">Ficha técnica</h2>
+          <p className="text-texto-sobre-negro max-w-[620px] text-[16px] leading-[1.55]">
+            {producto.descripcionCorta}
+          </p>
+        </div>
         <div className="grid grid-cols-1 gap-x-16 sm:grid-cols-2">
           {producto.specsFicha.map((spec) => (
             <div

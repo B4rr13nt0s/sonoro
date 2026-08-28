@@ -202,6 +202,7 @@ En los SVG el texto sigue siendo texto. Antes de imprenta o bordado, convertir a
 
 ```
 /                                  Inicio
+/productos                         Productos destacados
 /catalogo/[categoria]              Listado de categoría
 /producto/[slug]                   Ficha de producto
 /marcas                            Índice de marcas
@@ -218,7 +219,7 @@ En los SVG el texto sigue siendo texto. Antes de imprenta o bordado, convertir a
 - **No existe `/instalacion`.** No crearla (regla 1).
 - Filtros y orden en **query params** (`?marca=memphis&precio_max=200000`): URL compartible por WhatsApp y rastreable por Google.
 - Paginación con URLs indexables (`?page=2`), no scroll infinito.
-- Breadcrumbs: en ficha de producto terminan en la **marca**, no en el nombre del producto (`Inicio / Subwoofers / Sonoro`).
+- Breadcrumbs: en ficha de producto terminan en la **marca**, no en el nombre del producto (`Inicio / Subwoofers / Sonoro`). Cada segmento con página real es un link (`components/layout/Breadcrumbs.tsx`) — el último normalmente no lleva link porque es la página actual, salvo en la ficha de producto, donde ningún segmento es la página actual (termina en la marca, no en el producto) y los tres son navegables.
 
 Las ocho categorías del nav son: Bocinas, Subwoofers, Amplificadores, Receptores, Kits, Insonorización, Ecualizadores, Accesorios.
 

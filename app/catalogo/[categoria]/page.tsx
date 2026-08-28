@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { FiltroMarca } from "@/components/catalog/FiltroMarca";
 import { Pagination } from "@/components/catalog/Pagination";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildCatalogHref } from "@/lib/catalog/href.ts";
 import { listBrands, listCategories, listProducts } from "@/lib/catalog/index.ts";
 import type { Orden } from "@/lib/catalog/index.ts";
@@ -109,9 +110,7 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
     <div className="flex flex-col">
       <section className="flex flex-col gap-6 px-6 pt-10 pb-6 sm:flex-row sm:items-end sm:justify-between sm:px-12 sm:pt-14 sm:pb-8">
         <div className="flex flex-col gap-3">
-          <div className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">
-            Inicio / {categoria.nombre}
-          </div>
+          <Breadcrumbs items={[{ label: "Inicio", href: "/" }, { label: categoria.nombre }]} />
           <h1 className="text-34 sm:text-40 lg:text-48 font-semibold tracking-[-0.03em]">
             {categoria.nombre}
           </h1>
@@ -124,10 +123,13 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
 
         <div className="flex flex-wrap items-center gap-2.5 text-[13px]">
           <FiltroMarca
-            categoriaSlug={categoriaSlug}
-            marcas={marcas}
+            opciones={marcas.map((marca) => ({
+              slug: marca.slug,
+              nombre: marca.nombre,
+              href: buildCatalogHref(categoriaSlug, { marca: marca.slug, orden }),
+            }))}
+            hrefTodas={buildCatalogHref(categoriaSlug, { orden })}
             marcaActual={marcaSlug}
-            orden={orden}
           />
           <Link
             href={buildCatalogHref(categoriaSlug, { marca: marcaSlug, orden: ordenSiguiente })}

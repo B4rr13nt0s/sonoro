@@ -97,8 +97,8 @@ export default async function Home() {
           a toda Guatemala.
         </p>
         <div className="flex gap-3.5 pt-1.5 text-[15px]">
-          <Link href="/catalogo/subwoofers" className="bg-negro rounded-full px-6 py-3 text-white">
-            Ver catálogo
+          <Link href="/productos" className="bg-negro rounded-full px-6 py-3 text-white">
+            Ver productos
           </Link>
         </div>
         <div className="text-texto-terciario px-4 font-mono text-[11px] tracking-[0.06em]">
