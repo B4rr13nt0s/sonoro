@@ -317,7 +317,7 @@ Los nueve modelos del carrusel del home (`components/home/ProductCarousel3D.tsx`
 blender --background --python scripts/models3d_v2/subwoofer.py
 ```
 
-Un script por modelo, más `_common.py` con la biblioteca compartida (primitivas, materiales, limpieza de malla, normalización de origen y export). El script escribe directo a `public/models/<id>.glb` y reporta triángulos, dimensiones y peso. `scripts/models3d/` es la **primera versión, superada**: no la uses.
+Un script por modelo, más `_common.py` con la biblioteca compartida (primitivas, materiales, limpieza de malla, normalización de origen y export). El script escribe directo a `public/models/<id>.glb` y reporta triángulos, dimensiones y peso. `scripts/models3d/` es la **primera versión, superada**: no la uses. No está versionada (`.gitignore`); si no la tenés en disco, no hace falta.
 
 ### Convenciones (no negociables)
 

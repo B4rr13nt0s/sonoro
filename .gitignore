@@ -56,3 +56,9 @@ __pycache__/
 # que sirve el sitio. Los que quedan junto a los scripts son sobras de
 # corridas viejas y duplicarían binarios en el historial.
 scripts/models3d*/*.glb
+
+# sonoro — pipeline v1 de modelos 3D, superada por scripts/models3d_v2/.
+# Se conserva en disco como referencia local, pero no se versiona: los
+# scripts vigentes son los de _v2 y tener los dos en el repo invita a
+# regenerar un modelo con el pipeline equivocado.
+scripts/models3d/
