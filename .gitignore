@@ -47,3 +47,12 @@ next-env.d.ts
 
 # sonoro — salida del importador, nunca versionada
 reports/
+
+# sonoro — caché de Python de los scripts de Blender
+__pycache__/
+*.pyc
+
+# sonoro — los .glb los escribe Blender en public/models/, que es la copia
+# que sirve el sitio. Los que quedan junto a los scripts son sobras de
+# corridas viejas y duplicarían binarios en el historial.
+scripts/models3d*/*.glb

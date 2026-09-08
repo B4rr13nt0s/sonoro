@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ProductGrid } from "@/components/catalog/ProductGrid";
+import { ProductCarousel3D } from "@/components/home/ProductCarousel3D";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { listBrands, listProducts } from "@/lib/catalog/index.ts";
 import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
@@ -105,10 +106,7 @@ export default async function Home() {
           Hasta 6 pagos precio contado · Envíos gratis a todo el país, aplican restricciones ·
           Producto original
         </div>
-        <PlaceholderImage
-          label="FOTO — subwoofer y amplificador sobre fondo negro, luz dura"
-          className="mt-7 h-[220px] w-full items-end rounded-t-2xl sm:h-[320px] lg:h-[470px]"
-        />
+        <ProductCarousel3D />
       </section>
 
       {/* Categorías */}

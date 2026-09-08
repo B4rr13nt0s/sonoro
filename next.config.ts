@@ -29,6 +29,24 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/*": ["data/*.json"],
   },
+  // Los .glb de public/models/ y el decoder de Draco de public/draco/ son
+  // inmutables mientras no se regeneren: son binarios de contenido fijo,
+  // no datos del catálogo. Consecuencia que hay que tener presente:
+  // regenerar un modelo EXIGE cambiar el nombre del archivo, porque un
+  // navegador que ya lo cacheó con `immutable` no lo vuelve a pedir nunca
+  // (ver CLAUDE.md § Modelos 3D).
+  async headers() {
+    return [
+      {
+        source: "/models/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        source: "/draco/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+    ];
+  },
   async redirects() {
     return DOMINIOS_NO_CANONICOS.map((host) => ({
       source: "/:path*",

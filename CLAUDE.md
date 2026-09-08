@@ -227,6 +227,7 @@ Las ocho categorías del nav son: Bocinas, Subwoofers, Amplificadores, Receptore
 
 ## Patrones que se repiten
 
+- **Chrome del carrusel 3D:** cada bloque anclado a su esquina, no en una barra: categoría arriba a la izquierda, contador (`2 / 9`) abajo a la izquierda, puntos y flechas abajo a la derecha. Deja libre el centro del cuadro, que es donde vive el producto. Bajo 640 px los puntos se ocultan y quedan solo las flechas.
 - **Nav:** 60px de alto, borde inferior `#EDEDEB`, logo + monograma a la izquierda, categorías al centro, Marcas / Nosotros / Buscar / Carrito a la derecha. El enlace de la página actual va en `#0B0B0C` con `font-weight: 500`.
 - **Pie:** borde superior, logo pequeño a la izquierda, línea de contacto en mono a la derecha.
 - **Tarjeta de producto:** imagen 200px, etiqueta mono con categoría o marca, nombre 17px/600, especificación 14px gris, precio 17px/600, cuota 13px gris.
@@ -303,6 +304,188 @@ No inventes valores para estos puntos. Si el trabajo los necesita, pregunta.
 - **Datos supuestos en el handoff, todos por confirmar:** precios, conteos de producto, países de origen de las marcas, teléfono, correo y dirección.
 
 <!-- BEGIN:nextjs-agent-rules -->
+
+---
+
+## Modelos 3D
+
+Los nueve modelos del carrusel del home (`components/home/ProductCarousel3D.tsx`) son **iconos de categoría**, no SKUs: sin logos, sin texto legible, sin marca. Viven en `public/models/` y se generan con Blender desde `scripts/models3d_v2/`.
+
+### Regenerar un modelo
+
+```bash
+blender --background --python scripts/models3d_v2/subwoofer.py
+```
+
+Un script por modelo, más `_common.py` con la biblioteca compartida (primitivas, materiales, limpieza de malla, normalización de origen y export). El script escribe directo a `public/models/<id>.glb` y reporta triángulos, dimensiones y peso. `scripts/models3d/` es la **primera versión, superada**: no la uses.
+
+### Convenciones (no negociables)
+
+- **Metros, escala real.** Nada de unidades arbitrarias.
+- **Ymin = 0** y **centro XZ en (0,0)**: el modelo apoya en el piso y gira sobre su propio eje. El componente lo baja `-(height · displayScale) / 2` para centrarlo en el cuadro; si un modelo no apoya en 0, queda descolgado.
+- **El NODO del glTF no lleva traslación.** No alcanza con que la malla esté centrada: si el objeto se exporta sin pasar por `normalize_object()` (lo hace `finalize()`), el nodo se lleva la posición que el objeto tenía en la escena de Blender y el modelo aparece a metros del origen. El síntoma es brutal y mudo: **el cuadro se ve vacío**, sin error en consola, porque el modelo carga bien pero queda fuera del frustum. Ya pasó una vez, con un `sound-deadening.glb` reexportado a mano cuyo nodo traía `translation: [-1.26, 2.07, -0.18]`. Verificación de un vistazo:
+
+  ```bash
+  node -e "const b=require('fs').readFileSync('public/models/X.glb');console.log(JSON.parse(b.subarray(20,20+b.readUInt32LE(12)).toString()).nodes)"
+  ```
+
+  Debe imprimir el nodo **sin** campo `translation`.
+- **+Y up.** Blender es Z-up; la conversión la hace el export glTF (`export_yup=True`). **No se rota la malla.**
+- **Draco obligatorio** (`KHR_draco_mesh_compression` en `extensionsRequired`), nivel 6, cuantización de posición 14.
+- **Sin cámaras, sin luces, sin texturas de imagen.** Materiales PBR por valores.
+- 5,000–25,000 triángulos y menos de 300 KB por modelo. Los nueve suman 315 KB.
+- Nombres de objetos y materiales en inglés, kebab-case.
+
+### Paleta de materiales compartida
+
+`PALETTE` en `scripts/models3d_v2/_common.py` — hex, roughness, metallic:
+
+| Material | Hex | Rough | Metal |
+|---|---|---|---|
+| `matte-black` | `#1A1A1A` | 0.85 | 0 |
+| `textured-black` | `#232323` | 0.95 | 0 |
+| `brushed-alu` | `#B8BCC0` | 0.35 | 1 |
+| `chrome` | `#E8EAED` | 0.08 | 1 |
+| `rubber` | `#101010` | 0.98 | 0 |
+| `copper` | `#B87333` | 0.30 | 1 |
+| `screen-glass` | `#0A0C10` | 0.05 | 0 |
+| `accent-orange` | `#FF6A00` | 0.50 | 0 |
+| `cable-red` | `#C41E1E` | 0.90 | 0 |
+| `cable-blue` | `#1B4FA8` | 0.90 | 0 |
+| `cable-white` | `#E6E6E6` | 0.85 | 0 |
+
+`cable-red`, `cable-blue` y `cable-white` **no son colores de acento de marca**: son código de color eléctrico (positivo, remoto, negativo) y solo aparecen en `install-kit` y `rca-cable`. Lo mismo `accent-orange`, que marca conectores. La regla de «sin color de acento» de § Sistema visual sigue aplicando a la interfaz; estos son colores del producto representado.
+
+### El exponente 0.65 de `displayScale`
+
+`lib/models3d.ts` guarda un `displayScale` por modelo, y **está calculado: no lo recalcules ni lo redondees, y no lo sustituyas por auto-fit ni por escala real.**
+
+Entre el más chico (speaker, 165 mm) y el más grande (sound-deadening, 395 mm) hay una relación de 1 a 3. A escala real el speaker ocuparía un tercio del cuadro. Con auto-fit por modelo pasa lo contrario: speaker y subwoofer se verían idénticos pese a medir 165 y 302 mm, y el carrusel dejaría de comunicar tamaño.
+
+`displayScale` es la **escala real elevada a 0.65**, normalizada al modelo más grande: conserva el orden de tamaños y acerca los extremos. Si alguien regenera el manifiesto sin saber del exponente, los tamaños relativos se rompen sin que nada falle ni avise.
+
+`FRAME_RADIUS` (0.2545) y `FRAME_HEIGHT` (0.1965) son el radio y la altura ya escalados del modelo más grande, y de ahí sale el encuadre de cámara. `FRAME_RADIUS` es el radio del **cilindro** que barre el modelo al girar sobre Y — verificado midiendo los vértices de los nueve `.glb` en el navegador. Para comprobarlo no sirve `Box3.setFromObject`: transforma la caja de cada geometría en vez de sus vértices, así que sobre un modelo girado devuelve una caja inflada por la diagonal (hasta √2 de más).
+
+### Cámara del carrusel
+
+El usuario puede **orbitar, acercar y desplazar** el modelo, para ver el detalle del producto:
+
+| | Escritorio | Táctil |
+|---|---|---|
+| Orbitar | arrastre izquierdo | un dedo (tras decidir la intención) |
+| Zoom | rueda del mouse | pellizco |
+| Desplazar | arrastre derecho, medio o Shift | dos dedos |
+
+#### Vista predeterminada
+
+Tres cuartos frontal, evocando la **perspectiva caballera**: azimut 150°, 25° sobre el horizonte (polar 65°, que es como se expresa acá, desde +Y).
+
+No es caballera estricta y no pretende serlo: la caballera es una proyección OBLICUA (cara frontal sin deformar, profundidad a 45° y a escala completa), y eso necesita una cámara ortográfica con cizalladura, no una pose. Se eligió la pose para no tener que cambiar de proyección cada vez que el usuario toma el modelo y lo suelta.
+
+**El azimut es 150° y no 30° porque los `.glb` tienen su frente hacia −Z.** Una cámara en el cuadrante +Z los muestra de espaldas. Por lo mismo, la luz principal va en `(1.6, 2, −1.2)`: dejarla en +Z deja a contraluz justo la cara que se ve.
+
+Pero **ese giro global no alcanza: cada modelo decidió por su cuenta hacia dónde apunta su frente.** Para eso está `giroBase` en el manifiesto, un giro sobre Y por modelo, aplicado sobre la malla sin tocarla. Hoy lo llevan `amplifier`, `head-unit`, `screen`, `equalizer` y `sound-deadening`. Si un producto aparece de espaldas, eso es lo que hay que ajustar — nunca el azimut global, que movería a los nueve.
+
+Cuidado al juzgar «de frente o de espaldas» a ojo: en el ecualizador, los RCA traseros llevan aro `accent-orange` y se parecen bastante a perillas. La fila de controles reales es la de cilindros oscuros del canto frontal.
+
+#### Encuadre: el producto no toca el chrome ni los bordes
+
+`ZOOM_DEFECTO = 1`, o sea la vista predeterminada es exactamente el encuadre calculado — que ya es lo más grande que entra sin rozar nada. Acercarlo más recorta: el margen del encuadre es del 10%, así que por debajo de 0.9 el producto se sale. (Y ojo con leer «85% del zoom máximo» como una fracción del acercamiento: el máximo es `1/ZOOM_MIN` ≈ 2.9×, y **cualquier default por encima del 35% de eso se sale del cuadro**.)
+
+El chrome vive en las ESQUINAS, no en barras completas, así que hay dos maneras de no tocarlo y basta con cumplir una — `useEncuadre` calcula las dos y se queda con la menos exigente:
+
+- **A, por bandas:** usar todo el ancho y quedarse fuera de las franjas de arriba y abajo. Es la que manda en pantallas angostas, donde la etiqueta se come casi todo el ancho.
+- **B, por columna:** usar todo el alto y quedarse en la columna central libre entre los bloques de las esquinas. Es la que manda en escritorio, donde el cuadro es muy ancho y el producto nunca llega a las esquinas.
+
+Con una sola regla no alcanza: la A sola deja el producto ridículamente chico en escritorio, y la B sola es imposible de cumplir en móvil.
+
+Las medidas del chrome (`CHROME_MOVIL`, `CHROME_SM` en `ProductCarousel3D.tsx`) son **constantes, no medidas del DOM**: medir obligaría a releer el layout en cada render, y el resultado cambiaría con el largo del nombre de cada categoría, así que el producto cambiaría de tamaño de un slide a otro. Están tomadas del caso más ancho («Kits de instalación») con aire de sobra. Si se agranda el chrome o se alarga una etiqueta, hay que subirlas.
+
+Por lo mismo el cuadro creció en móvil (220 → 300 px): con el chrome descontado de 220 px quedaban 112 px útiles y el producto salía diminuto.
+
+Al cambiar de producto —con las flechas, con los puntos o por el ciclo— la vista se repone a esta pose **de golpe, sin interpolar**: el deslizamiento entre slides ya está ocurriendo y un segundo movimiento encima se lee como un tirón.
+
+#### El ciclo
+
+Corre siempre mientras el carrusel esté a la vista, y cada producto recorre lo mismo:
+
+```
+espera-previa (5 s)  →  girando (15 s, una vuelta)  →
+espera-final (5 s)   →  siguiente producto  →  espera-previa …
+```
+
+Y si el usuario toma el modelo: `interactuando` → (5 s **desde que suelta**) → `volviendo` (≈0.8 s) → `girando`. O sea, primero se recuperan la vista y el zoom, y recién entonces arranca el giro.
+
+El plan vive en `components/home/ciclo.ts` —sin React ni DOM— y tiene test (`ciclo.test.ts`) que fija el orden de las fases, los 25 s por producto y que el giro sea exactamente una vuelta. El ángulo es **absoluto en función del tiempo**, no un acumulador: así el modelo arranca siempre en 0, termina la vuelta exacta y cambiar de producto no arrastra el ángulo del anterior. Va en negativo porque una rotación positiva sobre +Y lleva la cara frontal hacia la derecha, y el giro pedido va de derecha a izquierda.
+
+`volviendo` es la única fase sin plazo: la corta el rig cuando la interpolación llegó a destino. Un temporizador la cortaría antes o después según cuánto hubiera que desandar.
+
+La cuenta de los 5 s **no corre mientras hay un gesto en curso**. Con un solo aviso en el `pointerdown`, un arrastre lento más largo que ese plazo se cancelaba solo a mitad de camino, y se veía como si el modelo se negara a quedarse donde uno lo dejaba.
+
+#### El bug del riel: por qué el modelo no giraba en horizontal
+
+Los tres slides estaban dentro de un grupo «riel» que **rotaba con el azimut de la cámara**, para que los vecinos quedaran siempre a los costados de la vista. Era un error grave: al orbitar la cámara θ, el riel giraba θ y **el modelo giraba con ella**. Los dos giros se cancelaban y el producto parecía inmóvil en horizontal. El eje vertical no se veía afectado porque el riel solo rota sobre Y — de ahí el síntoma «solo se mueve de arriba a abajo».
+
+Lo insidioso es que **medir el azimut de la cámara no detecta este bug**: el azimut cambia perfectamente. Solo se ve comparando dos capturas del mismo modelo, y con el botón apretado, porque si la cámara alcanza a volver a reposo entre una captura y la otra salen idénticas. Ahora cada slide se coloca por POSICIÓN sobre el eje horizontal de la cámara (`right = (cos az, 0, −sen az)`), sin rotar nada.
+
+#### Estudio sin CDN
+
+La iluminación **no** usa `<Environment preset="studio" />`. Ese preset descarga un HDR de ~1 MB desde `raw.githack.com`: un tercero en el critical path del home, exactamente lo que se evita sirviendo el decoder de Draco en local. En su lugar el entorno se genera en la GPU con cuatro `Lightformer` y `frames={1}` (la escena de luces no se mueve, se cocina una sola vez). Cero peticiones de red — verificado: la única externa que queda en el home es Analytics.
+
+Lo que más pesa en el resultado **no son los focos sino el entorno**, porque un material metálico no tiene color difuso propio: devuelve lo que lo rodea. El gris del ciclorama ES el gris del aluminio.
+
+Dos perillas, en orden de importancia:
+
+- **`<color attach="background">`** — demasiado oscuro y el producto se empasta en negro; demasiado claro y el aluminio sale lavado y plano, casi sin contraste contra el fondo claro del cuadro. Es el primer valor a revisar si algo se ve sucio o apagado.
+- **El plano oscuro de abajo.** Sin él el metal refleja el mismo gris por arriba y por abajo, y sale plano: parece plástico gris, no metal. Con el piso aparece el degradado —claro arriba, oscuro abajo— que es lo que lo hace leer como metal.
+
+El contraste lo ponen los focos, no el gris de fondo: conviene mantener el ciclorama contenido y los `Lightformer` brillantes, que es como se ilumina metal en un estudio de verdad.
+
+#### Cámara propia, sin `OrbitControls`
+
+La cámara la maneja `Camara` en `CarouselCanvas.tsx`. Toda la vista son cinco números —azimut, polar, distancia y el punto de mira— y se recoloca desde ellos en cada frame. `useRotateGesture` no toca nada: traduce punteros y rueda a INCREMENTOS que `Camara` consume y vacía.
+
+Se sacó `OrbitControls` porque tenía tres trampas encadenadas, todas silenciosas:
+
+- **`enableDamping` viene en `true` en drei** (three lo trae en `false`). El delta esférico decae asintóticamente y nunca llega a cero: `update()` dispara `change` para siempre, lo que reiniciaba sin parar la cuenta de inactividad y la cámara no volvía nunca.
+- **Fuerza `touch-action: none`** sobre su `domElement` cada vez que se conecta, robándole al dedo el scroll de la página.
+- **Elegir rama según `(pointer: coarse)`** rompe el portátil con pantalla táctil: reporta puntero grueso, cae en la rama del dedo, y ahí un arrastre vertical del MOUSE se interpreta como scroll. La media query describe el dispositivo, no el gesto; lo que importa es el `pointerType` de cada evento.
+
+Durante un arrastre, `pointermove` y `pointerup` se escuchan en `window`: el gesto no se corta si el cursor sale del cuadro, si React re-renderiza la capa de controles, o si `setPointerCapture` falla.
+
+#### Zoom
+
+**La rueda va enganchada a mano, no por `onWheel` de React.** React registra los listeners de `wheel` en la raíz como PASIVOS, y en un listener pasivo `preventDefault()` no hace nada: el zoom ocurría y la página scrolleaba al mismo tiempo. Con `{ passive: false }` sobre el contenedor, la rueda encima del carrusel hace zoom y nada más. Consecuencia asumida: con el cursor sobre el cuadro la rueda no scrollea la página; hay que salir del cuadro.
+
+El paso es **fijo, 1.5% por evento, mirando solo el signo** de `deltaY`. Escalarlo con la magnitud —lo que hace OrbitControls— salta de tope a tope en un solo tic en los mouse que mandan deltas grandes. Muchos mouse y trackpads mandan varios eventos por muesca, así que el paso tiene que ser chico.
+
+Y el paso es solo la mitad de la historia: la cámara **no salta a la distancia nueva, la persigue** con decaimiento exponencial (`SUAVIZADO_ZOOM`, ~80 ms de constante de tiempo, calculado con el delta real para que a 120 Hz tarde lo mismo que a 60). Por eso la vista lleva dos distancias: la PEDIDA, que mueven la rueda y el regreso a reposo, y la DIBUJADA, que la sigue. Entre el paso chico y el suavizado, cada muesca se ve como movimiento continuo y no como un escalón.
+
+#### Órbita y encuadre
+
+La órbita es **libre en los dos ejes**: azimut sin tope y polar de polo a polo, menos **0.05 rad (≈2.9°) de margen en cada polo**. Ese margen no es cosmético: en el polo exacto la dirección de vista queda paralela al vector «arriba», el producto cruz que arma la base de la cámara da cero y `lookAt` devuelve una matriz con `NaN`. No se ve un tirón, se ve el cuadro vacío.
+
+`distanciaPara(polar)` calcula el encuadre: de canto manda la altura del modelo, desde arriba manda su diámetro, dos veces y media más. Es el punto de partida y el destino al volver, **no una cárcel**: forzar `minDistance = maxDistance` en cada frame encuadra perfecto y anula la rueda por completo. `gap` se calcula contra la distancia máxima alcanzable —la del polo o la del zoom más lejano— o al alejarse aparecen los productos vecinos por los costados.
+
+**Ojo con el primer frame:** el canvas todavía mide 0×0, y sin un piso en el aspecto la distancia sale infinita, con la cámara clavada en el tope lejano. `useEncuadre()` pone ese piso y `Camara` adopta la distancia buena en cuanto hay medidas reales.
+
+### Caché: `immutable` y el nombre del archivo
+
+`next.config.ts` sirve `/models/*` y `/draco/*` con `Cache-Control: public, max-age=31536000, immutable`.
+
+**Consecuencia: regenerar un modelo exige cambiar el nombre del archivo.** Un navegador que ya cacheó `subwoofer.glb` con `immutable` no lo vuelve a pedir nunca — ni con recarga forzada, en varios navegadores. Si no se renombra, hay usuarios viendo la versión vieja por un año.
+
+Por eso cada entrada de `MODELS` en `lib/models3d.ts` tiene un campo **`archivo`** aparte del id: el id (`sound-deadening`) es semántico y permanente, y el archivo lleva la versión (`sound-deadening-2.glb`). Al regenerar se sube el número en los dos lados —el `finalize(obj, "<id>-N")` del script de Blender y el `archivo` del manifiesto— y nada más cambia.
+
+**Si el modelo nuevo cambia de tamaño, hay que recalcular los NUEVE `displayScale`,** porque la normalización cuelga del más grande. Al reemplazar `sound-deadening` (radio 0.2545 → 0.2482) el mayor pasó a ser `rca-cable`, y con él se recalculó todo:
+
+```
+displayScale_i = (diámetro_mayor / diámetro_i) ^ 0.35      // diámetro = 2 · radius
+FRAME_RADIUS   = max(radius_i · displayScale_i)
+FRAME_HEIGHT   = max(height_i · displayScale_i)
+```
+
+El decoder de Draco (`public/draco/`) se copia de `node_modules/three/examples/jsm/libs/draco/gltf/` y se sirve local a propósito: el CDN de Google sería un tercero en el critical path del home. `lib/models3d.ts` exporta `DRACO_DECODER_PATH` y `ProductModel3D` se lo pasa a `useGLTF`; sin ese segundo argumento drei cae al CDN.
 
 # This is NOT the Next.js you know
 

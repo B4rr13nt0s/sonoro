@@ -7,13 +7,15 @@
 // generar taxonomy.json (con cantidadProductos calculado, 0 si la categoría
 // todavía no tiene productos) y SiteHeader.tsx la usa para el nav — ambos
 // quedan sincronizados por construcción.
+// El ORDEN de esta lista es el del nav y el de taxonomy.json: va de lo que
+// más se busca a lo que menos, no alfabético.
 export const CATEGORIAS_SITIO = [
   { slug: "bocinas", nombre: "Bocinas" },
   { slug: "subwoofers", nombre: "Subwoofers" },
   { slug: "amplificadores", nombre: "Amplificadores" },
   { slug: "receptores", nombre: "Receptores" },
+  { slug: "ecualizadores", nombre: "Ecualizadores" },
   { slug: "kits", nombre: "Kits" },
   { slug: "insonorizacion", nombre: "Insonorización" },
-  { slug: "ecualizadores", nombre: "Ecualizadores" },
   { slug: "accesorios", nombre: "Accesorios" },
 ] as const;

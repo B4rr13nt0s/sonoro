@@ -46,6 +46,9 @@ const eslintConfig = defineConfig([
     "data/brands.json",
     "data/taxonomy.json",
     "reports/**",
+    // Decoder de Draco: binario/minificado de terceros copiado de
+    // node_modules/three, no código del proyecto.
+    "public/draco/**",
   ]),
 ]);
 

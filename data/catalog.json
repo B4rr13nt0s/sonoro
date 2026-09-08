@@ -998,10 +998,6 @@
         "valor": "TS-R"
       },
       {
-        "etiqueta": "Aplicación",
-        "valor": "Reemplazo directo en ubicaciones de fábrica de 6x9 pulgadas"
-      },
-      {
         "etiqueta": "Presentación",
         "valor": "Par de bocinas"
       }
@@ -3740,7 +3736,7 @@
   {
     "sku": "CPT-165",
     "slug": "kbt-cpt-165",
-    "nombre": "Bocinas Captain de 6.5\" CPT-165",
+    "nombre": "Bocinas coaxiales Captain de 6.5\" CPT-165",
     "marca": "KBT",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas de 6.5 pulgadas de la línea Captain",
@@ -3750,8 +3746,8 @@
         "valor": "6.5\" (16.5 cm)"
       },
       {
-        "etiqueta": "Impedancia",
-        "valor": "4 Ω"
+        "etiqueta": "Potencia RMS",
+        "valor": "75 W"
       },
       {
         "etiqueta": "Línea",
@@ -3764,16 +3760,16 @@
         "valor": "16.5 cm (6.5\")"
       },
       {
-        "etiqueta": "Impedancia",
-        "valor": "4 Ω"
+        "etiqueta": "Potencia RMS",
+        "valor": "75 W"
       },
       {
         "etiqueta": "Línea",
         "valor": "Captain"
       },
       {
-        "etiqueta": "Aplicación",
-        "valor": "Reemplazo en ubicaciones de fábrica de 6.5 pulgadas"
+        "etiqueta": "Impedancia",
+        "valor": "4 Ω"
       }
     ],
     "precioCents": 80000,
@@ -4048,7 +4044,7 @@
     "descripcionCorta": "Par de tweeters de montaje en superficie para complementar el sistema de audio",
     "specsDestacadas": [
       {
-        "etiqueta": "Configuración",
+        "etiqueta": "Tamaño",
         "valor": "1\" (25 mm)"
       },
       {
@@ -4130,10 +4126,6 @@
       {
         "etiqueta": "Sensibilidad",
         "valor": "Alta"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "Es el único tweeter de 8 Ω de la línea: verificar el cableado antes de combinarlo con los de 4 Ω"
       }
     ],
     "precioCents": 5000,
@@ -4179,11 +4171,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Se combina con los medios SGT-MR66 para armar un sistema de alta presión sonora"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "Verificar tamaño, potencia y sensibilidad contra la etiqueta del producto"
+        "valor": "Se combinan con equipos de media potencia para armar un sistema de alta presión sonora"
       },
       {
         "etiqueta": "Presentación",
@@ -4338,10 +4326,6 @@
       {
         "etiqueta": "Línea",
         "valor": "Sergeant"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "Verificar potencia de salida por canal con la ficha del proveedor antes de publicar"
       }
     ],
     "precioCents": 280000,
@@ -4392,10 +4376,6 @@
       {
         "etiqueta": "Línea",
         "valor": "Soldier"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "Verificar potencia de salida por canal con la ficha del proveedor antes de publicar"
       }
     ],
     "precioCents": 220000,
@@ -4596,10 +4576,6 @@
       {
         "etiqueta": "Aplicación",
         "valor": "Sistemas de alta potencia con varios amplificadores"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "El número del modelo indica las posiciones de fusible, no el calibre del cable"
       }
     ],
     "precioCents": 40000,
@@ -4650,10 +4626,6 @@
       {
         "etiqueta": "Instalación",
         "valor": "Cerca de la batería, en la línea principal de corriente"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "El número del modelo indica las posiciones de fusible, no el calibre del cable"
       }
     ],
     "precioCents": 20000,
@@ -4840,10 +4812,6 @@
       {
         "etiqueta": "Aplicación",
         "valor": "Sistemas de alta potencia con uno o varios amplificadores monoblock"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "El calibre 0 es el indicado cuando el amplificador pide fusible de 150 A o más"
       }
     ],
     "precioCents": 50000,
@@ -5518,10 +5486,6 @@
       {
         "etiqueta": "Contenido",
         "valor": "Par de separadores"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "Verificar grosor exacto con el producto físico"
       }
     ],
     "precioCents": 27500,
@@ -5534,14 +5498,14 @@
   {
     "sku": "KSM-8",
     "slug": "kbt-ksm-8",
-    "nombre": "Conector OEM de bocina KSM-8",
+    "nombre": "Alza para bocinas de 6.5\"",
     "marca": "KBT",
     "categoria": "Accesorios",
-    "descripcionCorta": "Conector OEM de bocina de la serie KSM para conexión sin cortar cables",
+    "descripcionCorta": "Alzas para bocinas de 6.5 pulgadas compatibles con varios modelos de vehículos",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
-        "valor": "Conector OEM de bocina"
+        "valor": "Alza para bocinas de 6.5\""
       },
       {
         "etiqueta": "Serie",
@@ -5555,7 +5519,7 @@
     "specsFicha": [
       {
         "etiqueta": "Tipo",
-        "valor": "Conector OEM de bocina"
+        "valor": "Alza para bocinas de 6.5\""
       },
       {
         "etiqueta": "Serie",
@@ -5563,11 +5527,15 @@
       },
       {
         "etiqueta": "Función",
-        "valor": "Conecta la bocina de reemplazo al arnés de fábrica sin cortar ni empalmar cables"
+        "valor": "Alza diseñada para elevar bocinas de 6.5'' a una altura óptima, lo que mejora la dispersión del sonido y la experiencia auditiva"
       },
       {
-        "etiqueta": "Nota",
-        "valor": "Verificar la aplicación vehicular específica antes de instalar"
+        "etiqueta": "Material",
+        "valor": "Plástico"
+      },
+      {
+        "etiqueta": "Color",
+        "valor": "Negro"
       }
     ],
     "precioCents": 15000,
@@ -6051,11 +6019,7 @@
       },
       {
         "etiqueta": "Ventaja",
-        "valor": "Solución todo en uno para vehículos donde no cabe una caja convencional"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "Verificar potencia y dimensiones contra la etiqueta del producto"
+        "valor": "Solución todo en uno para vehículos donde no cabe una cajón convencional"
       }
     ],
     "precioCents": 460000,
@@ -6071,12 +6035,22 @@
     "nombre": "Subwoofer M7 de 15\" M71512",
     "marca": "Memphis",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 15 pulgadas de la serie M7 para sistemas de alta presión sonora",
+    "descripcionCorta": "Subwoofer de 15 pulgadas de la serie M7 con impedancia seleccionable de 1 o 2 ohm",
     "specsDestacadas": [
       {
         "etiqueta": "Diámetro",
         "valor": "15\" (38 cm)"
       },
+      {
+        "etiqueta": "Potencia RMS",
+        "valor": "750 W"
+      },
+      {
+        "etiqueta": "Potencia máxima",
+        "valor": "1500 W"
+      }
+    ],
+    "specsFicha": [
       {
         "etiqueta": "Serie",
         "valor": "M7"
@@ -6084,9 +6058,7 @@
       {
         "etiqueta": "Aplicación",
         "valor": "Competencia y alta presión"
-      }
-    ],
-    "specsFicha": [
+      },
       {
         "etiqueta": "Diámetro",
         "valor": "38 cm (15\")"
@@ -6100,8 +6072,20 @@
         "valor": "Sistemas de competencia y alta presión sonora"
       },
       {
-        "etiqueta": "Nota",
-        "valor": "Verificar potencia RMS, impedancia y profundidad de montaje contra la etiqueta del producto"
+        "etiqueta": "Potencia RMS",
+        "valor": "750 W"
+      },
+      {
+        "etiqueta": "Potencia máxima",
+        "valor": "1500 W"
+      },
+      {
+        "etiqueta": "Impedancia",
+        "valor": "1Ω / 2Ω"
+      },
+      {
+        "etiqueta": "Sensibilidad",
+        "valor": "86.1 @ 1Ω 86.8 @ 2Ω"
       }
     ],
     "precioCents": 400000,
@@ -8546,10 +8530,6 @@
         "valor": "Giratorio, orientable hacia el oyente para mejorar la imagen sonora"
       },
       {
-        "etiqueta": "Aplicación",
-        "valor": "Reemplazo directo en ubicaciones de fábrica de 5.25 pulgadas"
-      },
-      {
         "etiqueta": "Presentación",
         "valor": "Par de bocinas"
       }
@@ -8662,10 +8642,6 @@
         "valor": "Coaxial de 2 vías con tweeter de fuente puntual (Point Source)"
       },
       {
-        "etiqueta": "Aplicación",
-        "valor": "Ubicaciones pequeñas de fábrica: tablero, pilar A y puertas traseras"
-      },
-      {
         "etiqueta": "Presentación",
         "valor": "Par de bocinas"
       }
@@ -8683,7 +8659,7 @@
     "nombre": "Bocinas coaxiales Power Reference de 2.75\" PRX27",
     "marca": "Memphis",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de bocinas coaxiales de 2.75 pulgadas de 2 vías para ubicaciones pequeñas de fábrica",
+    "descripcionCorta": "Par de bocinas coaxiales de 2.75 pulgadas de 2 vías",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -8722,10 +8698,6 @@
       {
         "etiqueta": "Configuración",
         "valor": "Coaxial de 2 vías"
-      },
-      {
-        "etiqueta": "Aplicación",
-        "valor": "Ubicaciones pequeñas de fábrica: tablero, pilar A y puertas traseras"
       },
       {
         "etiqueta": "Contenido",
@@ -10186,10 +10158,6 @@
       {
         "etiqueta": "Aplicación",
         "valor": "Instalaciones powersports y marinas donde no cabe un radio convencional"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "Verificar compatibilidad con el amplificador o la fuente antes de instalar"
       }
     ],
     "precioCents": 280000,
@@ -10216,11 +10184,15 @@
         "valor": "Selección de fuente y volumen"
       },
       {
-        "etiqueta": "Marca",
-        "valor": "Memphis"
+        "etiqueta": "Protección",
+        "valor": "IP66"
       }
     ],
     "specsFicha": [
+      {
+        "etiqueta": "Marca",
+        "valor": "Memphis"
+      },
       {
         "etiqueta": "Tipo",
         "valor": "Controlador de fuente y volumen"
@@ -10234,8 +10206,8 @@
         "valor": "Sistemas sin radio convencional, comunes en powersports y uso marino"
       },
       {
-        "etiqueta": "Nota",
-        "valor": "Verificar compatibilidad con el amplificador o la fuente antes de instalar"
+        "etiqueta": "Entradas",
+        "valor": "AM/FM. USB, Bluetooth y AUX"
       }
     ],
     "precioCents": 480000,
@@ -13191,7 +13163,7 @@
     "nombre": "Bocinas coaxiales de 4\" STAGE2 45F",
     "marca": "JBL",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de bocinas coaxiales de 4 pulgadas de 2 vías, sin rejilla, para reemplazo de fábrica",
+    "descripcionCorta": "Par de bocinas coaxiales de 4 pulgadas de 2 vías, sin rejilla",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -13230,10 +13202,6 @@
       {
         "etiqueta": "Tweeter",
         "valor": "Domo de PEI de accionamiento perimetral"
-      },
-      {
-        "etiqueta": "Rejilla",
-        "valor": "No incluida; diseño para reemplazo de fábrica"
       }
     ],
     "precioCents": 45000,
@@ -15904,10 +15872,6 @@
         "valor": "Polipropileno inyectado con mica (MIPP)"
       },
       {
-        "etiqueta": "Instalación",
-        "valor": "Directa en ubicación original de fábrica"
-      },
-      {
         "etiqueta": "Contenido",
         "valor": "2 woofers con rejillas, 2 tweeters con crossover integrado y herrajes"
       }
@@ -16285,7 +16249,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Stage 6, la más completa de la línea X317"
+        "valor": "Stage 6"
       },
       {
         "etiqueta": "Contenido",
@@ -16300,8 +16264,8 @@
         "valor": "Componentes Element Ready de grado marino"
       },
       {
-        "etiqueta": "Nota",
-        "valor": "Verificar la aplicación vehicular exacta y el contenido del kit con el proveedor antes de publicar"
+        "etiqueta": "Instalación",
+        "valor": "Diseño Plug-and-Play"
       }
     ],
     "precioCents": 7000000,
@@ -16339,7 +16303,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Stage 4, un nivel debajo del Stage 6"
+        "valor": "Stage 4"
       },
       {
         "etiqueta": "Contenido",
@@ -16354,8 +16318,8 @@
         "valor": "Componentes Element Ready de grado marino"
       },
       {
-        "etiqueta": "Nota",
-        "valor": "Verificar la aplicación vehicular exacta y el contenido del kit con el proveedor antes de publicar"
+        "etiqueta": "Instalación",
+        "valor": "Diseño Plug-and-Play"
       }
     ],
     "precioCents": 4620000,
@@ -17358,8 +17322,8 @@
         "valor": "10\" (25 cm)"
       },
       {
-        "etiqueta": "Serie",
-        "valor": "VR"
+        "etiqueta": "Potencia RMS",
+        "valor": "120 W"
       },
       {
         "etiqueta": "Impedancia",
@@ -17372,6 +17336,14 @@
         "valor": "25 cm (10\")"
       },
       {
+        "etiqueta": "Potencia RMS",
+        "valor": "120 W"
+      },
+      {
+        "etiqueta": "Potencia máxima",
+        "valor": "300 W"
+      },
+      {
         "etiqueta": "Serie",
         "valor": "VR"
       },
@@ -17382,10 +17354,6 @@
       {
         "etiqueta": "Aplicación",
         "valor": "Caja sellada o ventilada, alimentado por amplificador monoblock"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "Verificar potencia y profundidad de montaje contra la etiqueta del producto"
       }
     ],
     "precioCents": 250000,
@@ -17419,15 +17387,15 @@
     "specsFicha": [
       {
         "etiqueta": "Potencia RMS",
-        "valor": "150 W"
+        "valor": "200 W"
       },
       {
         "etiqueta": "Potencia máxima",
-        "valor": "300 W"
+        "valor": "500 W"
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina de 4 Ω, cableable a 2 Ω o a 8 Ω"
+        "valor": "Doble bobina de 4 Ω"
       },
       {
         "etiqueta": "Diámetro",
@@ -17440,10 +17408,6 @@
       {
         "etiqueta": "Aplicación",
         "valor": "Caja sellada o ventilada, compatible con amplificadores monoblock"
-      },
-      {
-        "etiqueta": "Nota",
-        "valor": "Algunos mayoristas publican 200 W RMS / 550 W máx; la ficha oficial de Cerwin Vega indica 150 W / 300 W"
       }
     ],
     "precioCents": 70000,
@@ -17485,7 +17449,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina de 4 Ω, cableable a 2 Ω o a 8 Ω"
+        "valor": "Doble bobina de 4 Ω"
       },
       {
         "etiqueta": "Diámetro",
