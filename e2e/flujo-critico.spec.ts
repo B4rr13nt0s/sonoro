@@ -23,20 +23,32 @@ import { formatQ } from "../lib/format/precio.ts";
 const FECHA_CONGELADA = new Date("2026-01-01T00:00:00.000Z");
 const REF_ESPERADO = "SNR-SIE5N";
 
-// Dos productos reales del catálogo (data/catalog.json), misma marca
-// (Memphis) en categorías distintas — así "buscar + filtrar" tiene sentido:
-// una búsqueda por marca trae resultados de Amplificadores y de Kits.
+// Dos productos reales del catálogo (data/catalog.json), misma marca en
+// categorías distintas — así "buscar + filtrar" tiene sentido: una búsqueda
+// por marca trae resultados de Subwoofers y de Receptores.
+//
+// La marca es PIONEER y no Memphis a propósito. /buscar muestra los
+// resultados de a ocho (INCREMENTO en SearchExperience.tsx) y los ordena por
+// puntaje de texto y luego por relevancia, así que los dos productos tienen
+// que caer en los primeros ocho o el test tendría que ir pulsando "Ver más".
+// Con "memphis" son 110 resultados y el kit caía en el puesto 65; con
+// "pioneer" son 15 y estos dos están en los puestos 3 y 4.
+//
+// Si el catálogo crece y esto vuelve a fallar, el arreglo es elegir una marca
+// con pocos productos que abarque dos categorías, no subir el INCREMENTO.
 const PRODUCTO_1 = {
-  slug: "memphis-mjp800-4",
-  nombre: "Amplificador MJP800.4 - 4 canales",
-  sku: "MJP800.4",
-  precioCents: 300000,
+  slug: "pioneer-ts-w312d4",
+  nombre: 'Subwoofer Champion Series 12" TS-W312D4',
+  sku: "TS-W312D4",
+  categoria: "Subwoofers",
+  precioCents: 80000,
 };
 const PRODUCTO_2 = {
-  slug: "memphis-4gkit",
-  nombre: "Kit de instalación calibre 4",
-  sku: "4GKIT",
-  precioCents: 110000,
+  slug: "pioneer-mvh-x700bt",
+  nombre: "Receptor digital MVH-X700BT",
+  sku: "MVH-X700BT",
+  categoria: "Receptores",
+  precioCents: 135000,
 };
 
 test("buscar, filtrar, agregar dos productos y verificar el mensaje de WhatsApp", async ({
@@ -52,17 +64,20 @@ test("buscar, filtrar, agregar dos productos y verificar el mensaje de WhatsApp"
 
   // 1) Buscar
   await page.goto("/buscar");
-  await page.getByLabel("Buscar en el catálogo").fill("memphis");
+  await page.getByLabel("Buscar en el catálogo").fill("pioneer");
   await page.getByLabel("Buscar en el catálogo").press("Enter");
-  await expect(page.getByRole("heading", { name: "2 resultados" })).toBeVisible();
+  // Sin fijar el número: el conteo crece cada vez que se importa catálogo, y
+  // lo que este paso comprueba es que la búsqueda corrió y trajo resultados
+  // — que los dos productos estén visibles lo verifican las líneas de abajo.
+  await expect(page.getByRole("heading", { name: /^\d+ resultados?$/ })).toBeVisible();
 
   const linkProducto1 = page.getByRole("link", { name: new RegExp(PRODUCTO_1.nombre) });
   const linkProducto2 = page.getByRole("link", { name: new RegExp(PRODUCTO_2.nombre) });
   await expect(linkProducto1).toBeVisible();
   await expect(linkProducto2).toBeVisible();
 
-  // 2) Filtrar por categoría — Amplificadores deja ver solo el producto 1
-  await page.getByRole("button", { name: /^Amplificadores/ }).click();
+  // 2) Filtrar por categoría — Subwoofers deja ver solo el producto 1
+  await page.getByRole("button", { name: new RegExp(`^${PRODUCTO_1.categoria}`) }).click();
   await expect(linkProducto1).toBeVisible();
   await expect(linkProducto2).not.toBeVisible();
 
@@ -80,7 +95,7 @@ test("buscar, filtrar, agregar dos productos y verificar el mensaje de WhatsApp"
   // 4) Buscar de nuevo y agregar el segundo producto — el carrito vive en
   // localStorage, así que sobrevive a la recarga real de page.goto().
   await page.goto("/buscar");
-  await page.getByLabel("Buscar en el catálogo").fill("memphis");
+  await page.getByLabel("Buscar en el catálogo").fill("pioneer");
   await page.getByLabel("Buscar en el catálogo").press("Enter");
   await page.getByRole("link", { name: new RegExp(PRODUCTO_2.nombre) }).click();
   await expect(page.getByRole("heading", { level: 1, name: PRODUCTO_2.nombre })).toBeVisible();
