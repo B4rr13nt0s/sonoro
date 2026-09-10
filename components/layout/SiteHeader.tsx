@@ -40,7 +40,7 @@ export function SiteHeader() {
           <Monogram className="rounded-nav-mark h-8 w-8" />
         </Link>
 
-        <nav className="hidden items-center gap-[30px] text-[13px] lg:flex">
+        <nav className="hidden items-center gap-[30px] text-[13px] xl:flex">
           {CATEGORIAS.map((categoria) => {
             const href = `/catalogo/${categoria.slug}`;
             const activo = esEnlaceActivo(pathname, href);
@@ -58,7 +58,7 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="ml-auto hidden items-center gap-[22px] text-[13px] lg:flex">
+        <div className="ml-auto hidden items-center gap-[22px] text-[13px] xl:flex">
           {ENLACES_SECUNDARIOS.map((enlace) => {
             const activo = esEnlaceActivo(pathname, enlace.href);
             return (
@@ -76,7 +76,21 @@ export function SiteHeader() {
           <CartLink />
         </div>
 
-        <div className="ml-auto flex items-center gap-4 lg:hidden">
+        <div className="ml-auto flex items-center gap-1 xl:hidden">
+          {/* Con 200+ productos la búsqueda es la ruta principal de
+              navegación, no un extra: acá abajo del nav completo tiene que
+              alcanzarse en UN toque. Dentro del menú serían dos, y el menú
+              es justamente lo que colapsa en este rango. Sigue estando
+              «Buscar» en la lista de abajo para quien lo abra. */}
+          <Link
+            href="/buscar"
+            aria-label="Buscar"
+            aria-current={esEnlaceActivo(pathname, "/buscar") ? "page" : undefined}
+            onClick={cerrarMenu}
+            className="flex h-11 w-11 flex-none items-center justify-center"
+          >
+            <SearchIcon />
+          </Link>
           <CartLink />
           <button
             type="button"
@@ -91,7 +105,7 @@ export function SiteHeader() {
       </div>
 
       {menuAbierto ? (
-        <div className="fixed inset-x-0 top-15 bottom-0 z-30 overflow-y-auto bg-white px-6 py-6 lg:hidden">
+        <div className="fixed inset-x-0 top-15 bottom-0 z-30 overflow-y-auto bg-white px-6 py-6 xl:hidden">
           <nav className="flex flex-col">
             {CATEGORIAS.map((categoria) => {
               const href = `/catalogo/${categoria.slug}`;
@@ -168,13 +182,22 @@ function CartLink() {
   return (
     <Link
       href="/carrito"
-      className={`bg-negro rounded-full px-4 py-3 text-[13px] text-white lg:py-[7px] ${
+      className={`bg-negro rounded-full px-4 py-3 text-[13px] text-white xl:py-[7px] ${
         animar ? "animate-cart-pop" : ""
       }`}
     >
       Carrito
       {itemCount > 0 ? <span className="text-texto-sobre-negro ml-2.5">{itemCount}</span> : null}
     </Link>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <circle cx="9" cy="9" r="5.5" stroke="#0B0B0C" strokeWidth="1.5" />
+      <path d="M13.2 13.2L17 17" stroke="#0B0B0C" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
   );
 }
 
