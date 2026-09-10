@@ -2,13 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { OrdenSelector } from "@/components/catalog/OrdenSelector";
 import { Pagination } from "@/components/catalog/Pagination";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
-import { buildMarcaHref } from "@/lib/catalog/href.ts";
-import { listAllProducts, listBrands, listCategories, listProducts } from "@/lib/catalog/index.ts";
-import type { Orden } from "@/lib/catalog/index.ts";
+import { buildMarcaHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
+import {
+  listAllProducts,
+  listBrands,
+  listCategories,
+  listProducts,
+  parseOrden,
+} from "@/lib/catalog/index.ts";
 
 // Todas las marcas son data estática (data/brands.json, generado en build) —
 // igual que categorías y productos, cualquier slug fuera de esta lista es
@@ -76,8 +82,7 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
     ? (categoriaActual?.nombre ?? categoriaSlugParam)
     : undefined;
 
-  const ordenParam = primeroDeQuery(searchParams.orden);
-  const orden: Orden = ordenParam === "precio_desc" ? "precio_desc" : "precio_asc";
+  const orden = parseOrden(searchParams.orden);
   const paginaParam = Number(primeroDeQuery(searchParams.page));
   const paginaSolicitada = Number.isFinite(paginaParam) && paginaParam >= 1 ? paginaParam : 1;
 
@@ -89,9 +94,6 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
     page: paginaSolicitada,
   });
   const totalPaginas = Math.max(1, Math.ceil(total / pageSize));
-
-  const ordenSiguiente: Orden = orden === "precio_asc" ? "precio_desc" : "precio_asc";
-  const labelOrden = orden === "precio_asc" ? "Ordenar: precio ↑" : "Ordenar: precio ↓";
 
   return (
     <div className="flex flex-col">
@@ -143,15 +145,12 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
               {categoria.nombre}
             </Link>
           ))}
-          <Link
-            href={buildMarcaHref(marcaSlug, {
-              categoria: categoriaSlugParam,
-              orden: ordenSiguiente,
-            })}
-            className="border-negro bg-negro rounded-full border px-4.5 py-3 text-white lg:py-2"
-          >
-            {labelOrden}
-          </Link>
+          <OrdenSelector
+            orden={orden}
+            hrefs={hrefsDeOrden((valor) =>
+              buildMarcaHref(marcaSlug, { categoria: categoriaSlugParam, orden: valor }),
+            )}
+          />
         </div>
       </section>
 

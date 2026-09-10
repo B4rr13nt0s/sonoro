@@ -97,6 +97,43 @@ test("listProducts: sin orden no reordena — respeta el orden del catálogo", a
   );
 });
 
+test("listProducts: orden relevancia pone los destacados primero", async () => {
+  // Una sola página no alcanza: con pageSize por defecto los 24 primeros
+  // pueden ser todos destacados y la prueba no vería el corte.
+  const { total } = await staticAdapter.listProducts({ activo: true });
+  const { items } = await staticAdapter.listProducts({
+    activo: true,
+    orden: "relevancia",
+    pageSize: total,
+  });
+
+  const primerNoDestacado = items.findIndex((p) => !p.destacado);
+  if (primerNoDestacado !== -1) {
+    for (const producto of items.slice(primerNoDestacado)) {
+      assert.equal(producto.destacado, false, `${producto.sku} destacado después de uno que no`);
+    }
+  }
+});
+
+test("listProducts: orden relevancia baja de precio dentro de cada bloque", async () => {
+  const { total } = await staticAdapter.listProducts({ activo: true });
+  const { items } = await staticAdapter.listProducts({
+    activo: true,
+    orden: "relevancia",
+    pageSize: total,
+  });
+
+  for (let i = 1; i < items.length; i++) {
+    // El precio solo puede subir al cruzar de destacados a no destacados.
+    if (items[i].destacado === items[i - 1].destacado) {
+      assert.ok(
+        items[i].precioCents <= items[i - 1].precioCents,
+        `${items[i].sku} más caro que ${items[i - 1].sku} dentro del mismo bloque`,
+      );
+    }
+  }
+});
+
 test("listProducts: orden precio_asc ordena de menor a mayor precio", async () => {
   const { items } = await staticAdapter.listProducts({ orden: "precio_asc" });
   for (let i = 1; i < items.length; i++) {

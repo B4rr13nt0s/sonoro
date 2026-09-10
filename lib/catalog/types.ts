@@ -107,8 +107,28 @@ export const CategoriaSchema = z.object({
 export type Categoria = z.infer<typeof CategoriaSchema>;
 export const CategoriasSchema = z.array(CategoriaSchema);
 
-export const OrdenSchema = z.enum(["precio_asc", "precio_desc"]);
+// "relevancia" NO es un puntaje guardado ni un campo del producto: es el
+// comparador de lib/catalog/orden.ts (destacado → precio descendente → sku).
+// Ojo con el homónimo: la "relevancia" de /buscar es otra cosa, un puntaje de
+// coincidencia de texto que depende de la consulta y vive en
+// components/catalog/SearchExperience.tsx.
+export const OrdenSchema = z.enum(["relevancia", "precio_asc", "precio_desc"]);
 export type Orden = z.infer<typeof OrdenSchema>;
+
+// El orden con el que abre un listado si nadie pidió otro. Vive acá y no
+// suelto en cada página porque lib/catalog/href.ts lo necesita para OMITIRLO
+// de la URL: el default no se escribe como query param, así que /marcas/kbt
+// se mantiene limpia y el canonical no se fragmenta.
+export const ORDEN_DEFECTO: Orden = "relevancia";
+
+// Lee el query param `orden` y lo resuelve a un valor válido. Cualquier cosa
+// que no sea del enum —ausente, basura, un valor viejo— cae en el default
+// en vez de romper: son URLs que puede escribir cualquiera.
+export function parseOrden(valor: string | string[] | undefined): Orden {
+  const crudo = Array.isArray(valor) ? valor[0] : valor;
+  const parseo = OrdenSchema.safeParse(crudo);
+  return parseo.success ? parseo.data : ORDEN_DEFECTO;
+}
 
 // Filtros de listProducts. CLAUDE.md § Rutas menciona query params como
 // ?marca=memphis&precio_max=200000 y paginación con ?page=2 — estos campos
@@ -117,9 +137,10 @@ export type Orden = z.infer<typeof OrdenSchema>;
 //
 // `orden` es opcional y SIN default aquí a propósito: si el adaptador
 // asumiera un orden por defecto, cambiaría el orden de listados que no piden
-// orden explícito (p. ej. "Los más vendidos" en el inicio). El default de
-// "precio ascendente" que muestra /catalogo/[categoria] es una decisión de
-// esa página, no del catálogo.
+// orden explícito (p. ej. "Los más vendidos" en el inicio). ORDEN_DEFECTO es
+// el orden con el que abre una PÁGINA de listado, y son esas páginas las que
+// lo pasan explícito; sin `orden`, listProducts devuelve el orden del
+// catálogo tal como venía.
 //
 // `activo` sigue el mismo criterio — SIN default aquí, cada llamador dice
 // qué quiere. Toda página de cara al cliente (catálogo, marca, inicio,

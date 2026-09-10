@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import type { Producto } from "@/lib/catalog/index.ts";
+import { compararRelevancia } from "@/lib/catalog/orden.ts";
 
 const INCREMENTO = 8;
 
@@ -67,10 +68,14 @@ export function SearchExperience({ productos }: { productos: Producto[] }) {
   const resultados = useMemo(() => {
     if (!consulta) return [];
     const q = normalizar(consulta);
+    // El puntaje de texto manda; el desempate usa el mismo criterio que el
+    // orden "relevancia" de los listados (destacado → precio ↓ → sku). Sin él,
+    // los cubos grandes —los de puntaje 30/40/50, donde la consulta apenas
+    // "contiene"— salían en el orden crudo de la hoja de cálculo.
     return productos
       .filter((producto) => coincide(producto, q))
       .map((producto) => ({ producto, puntaje: puntuarRelevancia(producto, q) }))
-      .sort((a, b) => b.puntaje - a.puntaje)
+      .sort((a, b) => b.puntaje - a.puntaje || compararRelevancia(a.producto, b.producto))
       .map((r) => r.producto);
   }, [productos, consulta]);
 

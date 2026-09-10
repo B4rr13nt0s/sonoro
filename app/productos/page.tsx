@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { FiltroMarca } from "@/components/catalog/FiltroMarca";
+import { OrdenSelector } from "@/components/catalog/OrdenSelector";
 import { Pagination } from "@/components/catalog/Pagination";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { buildProductosHref } from "@/lib/catalog/href.ts";
-import { listBrands, listProducts } from "@/lib/catalog/index.ts";
-import type { Orden } from "@/lib/catalog/index.ts";
+import { buildProductosHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
+import { listBrands, listProducts, parseOrden } from "@/lib/catalog/index.ts";
 
 const TITULO = "Productos destacados — Sonoro";
 const DESCRIPCION =
@@ -38,8 +37,7 @@ export default async function ProductosPage(props: PageProps<"/productos">) {
   const searchParams = await props.searchParams;
 
   const marcaSlug = primeroDeQuery(searchParams.marca);
-  const ordenParam = primeroDeQuery(searchParams.orden);
-  const orden: Orden = ordenParam === "precio_desc" ? "precio_desc" : "precio_asc";
+  const orden = parseOrden(searchParams.orden);
   const paginaParam = Number(primeroDeQuery(searchParams.page));
   const paginaSolicitada = Number.isFinite(paginaParam) && paginaParam >= 1 ? paginaParam : 1;
 
@@ -59,9 +57,6 @@ export default async function ProductosPage(props: PageProps<"/productos">) {
     page: paginaSolicitada,
   });
   const totalPaginas = Math.max(1, Math.ceil(total / pageSize));
-
-  const ordenSiguiente: Orden = orden === "precio_asc" ? "precio_desc" : "precio_asc";
-  const labelOrden = orden === "precio_asc" ? "Ordenar: precio ↑" : "Ordenar: precio ↓";
 
   return (
     <div className="flex flex-col">
@@ -85,12 +80,10 @@ export default async function ProductosPage(props: PageProps<"/productos">) {
             hrefTodas={buildProductosHref({ orden })}
             marcaActual={marcaSlug}
           />
-          <Link
-            href={buildProductosHref({ marca: marcaSlug, orden: ordenSiguiente })}
-            className="border-negro bg-negro rounded-full border px-4.5 py-3 text-white lg:py-2"
-          >
-            {labelOrden}
-          </Link>
+          <OrdenSelector
+            orden={orden}
+            hrefs={hrefsDeOrden((valor) => buildProductosHref({ marca: marcaSlug, orden: valor }))}
+          />
         </div>
       </section>
 

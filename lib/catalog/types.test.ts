@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { parse } from "csv-parse/sync";
 
-import { SKU_REGEX, pareceValorMangeado } from "./types.ts";
+import { ORDEN_DEFECTO, SKU_REGEX, pareceValorMangeado, parseOrden } from "./types.ts";
 
 const SKU_VALIDOS = [
   "SQ12-D2",
@@ -77,4 +77,26 @@ test("los sku de data/source/productos.csv pasan SKU_REGEX y ninguno está mange
     assert.match(sku, SKU_REGEX, `sku "${sku}" del CSV no pasa SKU_REGEX`);
     assert.equal(pareceValorMangeado(sku), false, `sku "${sku}" del CSV se marcó como mangeado`);
   }
+});
+
+// parseOrden recibe lo que venga en la URL, o sea cualquier cosa: nunca
+// lanza, siempre resuelve a un valor del enum.
+test("parseOrden: acepta los tres órdenes válidos", () => {
+  assert.equal(parseOrden("relevancia"), "relevancia");
+  assert.equal(parseOrden("precio_asc"), "precio_asc");
+  assert.equal(parseOrden("precio_desc"), "precio_desc");
+});
+
+test("parseOrden: lo que no es del enum cae en el default", () => {
+  assert.equal(parseOrden(undefined), ORDEN_DEFECTO);
+  assert.equal(parseOrden(""), ORDEN_DEFECTO);
+  assert.equal(parseOrden("zzz"), ORDEN_DEFECTO);
+  assert.equal(parseOrden("PRECIO_ASC"), ORDEN_DEFECTO);
+  assert.equal(parseOrden([]), ORDEN_DEFECTO);
+});
+
+test("parseOrden: con el param repetido usa el primero", () => {
+  // ?orden=precio_desc&orden=basura — Next entrega un arreglo.
+  assert.equal(parseOrden(["precio_desc", "basura"]), "precio_desc");
+  assert.equal(parseOrden(["basura", "precio_desc"]), ORDEN_DEFECTO);
 });

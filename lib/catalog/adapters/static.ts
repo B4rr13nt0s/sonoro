@@ -6,6 +6,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { compararRelevancia } from "../orden.ts";
 import {
   BrandsSchema,
   CatalogoSchema,
@@ -85,7 +86,9 @@ async function listProducts(
 
   // Sin `orden`, se conserva el orden del catálogo (ver nota en types.ts) —
   // no hay default aquí, cada llamador decide si le importa el orden.
-  if (filters.orden === "precio_asc") {
+  if (filters.orden === "relevancia") {
+    filtrados.sort(compararRelevancia);
+  } else if (filters.orden === "precio_asc") {
     filtrados.sort((a, b) => a.precioCents - b.precioCents);
   } else if (filters.orden === "precio_desc") {
     filtrados.sort((a, b) => b.precioCents - a.precioCents);

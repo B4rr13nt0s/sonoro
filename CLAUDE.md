@@ -218,6 +218,9 @@ En los SVG el texto sigue siendo texto. Antes de imprenta o bordado, convertir a
 - **No existe `/checkout`.** No crearla.
 - **No existe `/instalacion`.** No crearla (regla 1).
 - Filtros y orden en **query params** (`?marca=memphis&precio_max=200000`): URL compartible por WhatsApp y rastreable por Google.
+- **Los listados abren por «relevancia»:** `destacado` primero, luego precio **descendente**, desempate por `sku`. El precio descendente como criterio secundario pone el equipo antes que los accesorios sin agregar un campo al esquema — con precio ascendente, KBT abría con adaptadores RCA de Q 30 y sus subwoofers caían en la página 3. El comparador vive en `lib/catalog/orden.ts` y desempata por puntos de código, no con `localeCompare`: el orden no puede cambiar entre builds y la salida de ICU varía entre versiones.
+- **El orden por defecto no se escribe en la URL.** `ORDEN_DEFECTO` (`lib/catalog/types.ts`) es el valor que `lib/catalog/href.ts` OMITE, así que `/marcas/kbt` queda limpia y `?orden=precio_asc` solo aparece cuando alguien lo pidió. El canonical excluye `orden` aparte, armándose con el mismo builder sin pasarlo. Si algún día cambia el default, se cambia esa constante — no los tres builders.
+- El orden que ordena el catálogo completo no es el mismo que la «relevancia» de `/buscar`, que es un puntaje de coincidencia de TEXTO dependiente de la consulta (`SearchExperience.tsx`). Ese puntaje manda ahí; el comparador de `orden.ts` solo le rompe los empates.
 - Paginación con URLs indexables (`?page=2`), no scroll infinito.
 - Breadcrumbs: en ficha de producto terminan en la **marca**, no en el nombre del producto (`Inicio / Subwoofers / Sonoro`). Cada segmento con página real es un link (`components/layout/Breadcrumbs.tsx`) — el último normalmente no lleva link porque es la página actual, salvo en la ficha de producto, donde ningún segmento es la página actual (termina en la marca, no en el producto) y los tres son navegables.
 

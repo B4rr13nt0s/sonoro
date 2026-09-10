@@ -1,4 +1,4 @@
-import type { Orden } from "./types.ts";
+import { ORDEN_DEFECTO, OrdenSchema, type Orden } from "./types.ts";
 
 // Construye la URL de /catalogo/[categoria] a partir del ESTADO COMPLETO
 // deseado (no un merge parcial) — CLAUDE.md § Rutas: los filtros y el orden
@@ -16,9 +16,12 @@ export function buildCatalogHref(categoriaSlug: string, estado: CatalogQueryStat
   const query = new URLSearchParams();
 
   if (estado.marca) query.set("marca", estado.marca);
-  // precio_asc es el default de esta página (ver types.ts) — omitirlo
-  // mantiene la URL limpia cuando no se pidió nada fuera de lo normal.
-  if (estado.orden && estado.orden !== "precio_asc") query.set("orden", estado.orden);
+  // El orden por defecto (ORDEN_DEFECTO en types.ts) NO se escribe en la
+  // URL: así /catalogo/bocinas se mantiene limpia mientras no se haya pedido
+  // nada fuera de lo normal, y el canonical —que arma este mismo builder sin
+  // pasar `orden`— no se fragmenta. Los otros órdenes sí aparecen, porque son
+  // un pedido explícito del usuario que debe sobrevivir al compartir la URL.
+  if (estado.orden && estado.orden !== ORDEN_DEFECTO) query.set("orden", estado.orden);
   if (estado.page && estado.page > 1) query.set("page", String(estado.page));
 
   const search = query.toString();
@@ -39,7 +42,7 @@ export function buildMarcaHref(marcaSlug: string, estado: MarcaQueryState): stri
   const query = new URLSearchParams();
 
   if (estado.categoria) query.set("categoria", estado.categoria);
-  if (estado.orden && estado.orden !== "precio_asc") query.set("orden", estado.orden);
+  if (estado.orden && estado.orden !== ORDEN_DEFECTO) query.set("orden", estado.orden);
   if (estado.page && estado.page > 1) query.set("page", String(estado.page));
 
   const search = query.toString();
@@ -58,9 +61,23 @@ export function buildProductosHref(estado: ProductosQueryState): string {
   const query = new URLSearchParams();
 
   if (estado.marca) query.set("marca", estado.marca);
-  if (estado.orden && estado.orden !== "precio_asc") query.set("orden", estado.orden);
+  if (estado.orden && estado.orden !== ORDEN_DEFECTO) query.set("orden", estado.orden);
   if (estado.page && estado.page > 1) query.set("page", String(estado.page));
 
   const search = query.toString();
   return `/productos${search ? `?${search}` : ""}`;
+}
+
+// Resuelve de una vez los href de los tres órdenes, para OrdenSelector.
+//
+// Existe porque OrdenSelector es "use client" (necesita el estado de abierto
+// o cerrado) y una FUNCIÓN no cruza la frontera servidor→cliente: el
+// componente no puede recibir el builder y llamarlo él. Cada ruta le pasa acá
+// su builder con sus propios filtros ya fijados y manda al cliente un objeto
+// plano, que sí es serializable. Mismo criterio que `opciones` en
+// FiltroMarca, que también viaja con el href ya resuelto.
+export function hrefsDeOrden(construir: (orden: Orden) => string): Record<Orden, string> {
+  return Object.fromEntries(
+    OrdenSchema.options.map((orden) => [orden, construir(orden)]),
+  ) as Record<Orden, string>;
 }

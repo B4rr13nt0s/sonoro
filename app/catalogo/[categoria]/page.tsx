@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { OrdenSelector } from "@/components/catalog/OrdenSelector";
 import { FiltroMarca } from "@/components/catalog/FiltroMarca";
 import { Pagination } from "@/components/catalog/Pagination";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { buildCatalogHref } from "@/lib/catalog/href.ts";
-import { listBrands, listCategories, listProducts } from "@/lib/catalog/index.ts";
-import type { Orden } from "@/lib/catalog/index.ts";
+import { buildCatalogHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
+import { listBrands, listCategories, listProducts, parseOrden } from "@/lib/catalog/index.ts";
 
 // Copy propia de la ficha de categoría (párrafo bajo el h1). Solo Subwoofers
 // tenía texto en el handoff (design/catalogo-subwoofers.html); el resto
@@ -81,8 +80,7 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
   if (!categoria) notFound();
 
   const marcaSlug = primeroDeQuery(searchParams.marca);
-  const ordenParam = primeroDeQuery(searchParams.orden);
-  const orden: Orden = ordenParam === "precio_desc" ? "precio_desc" : "precio_asc";
+  const orden = parseOrden(searchParams.orden);
   const paginaParam = Number(primeroDeQuery(searchParams.page));
   const paginaSolicitada = Number.isFinite(paginaParam) && paginaParam >= 1 ? paginaParam : 1;
 
@@ -102,9 +100,6 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
     page: paginaSolicitada,
   });
   const totalPaginas = Math.max(1, Math.ceil(total / pageSize));
-
-  const ordenSiguiente: Orden = orden === "precio_asc" ? "precio_desc" : "precio_asc";
-  const labelOrden = orden === "precio_asc" ? "Ordenar: precio ↑" : "Ordenar: precio ↓";
 
   return (
     <div className="flex flex-col">
@@ -131,12 +126,12 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
             hrefTodas={buildCatalogHref(categoriaSlug, { orden })}
             marcaActual={marcaSlug}
           />
-          <Link
-            href={buildCatalogHref(categoriaSlug, { marca: marcaSlug, orden: ordenSiguiente })}
-            className="border-negro bg-negro rounded-full border px-4.5 py-3 text-white lg:py-2"
-          >
-            {labelOrden}
-          </Link>
+          <OrdenSelector
+            orden={orden}
+            hrefs={hrefsDeOrden((valor) =>
+              buildCatalogHref(categoriaSlug, { marca: marcaSlug, orden: valor }),
+            )}
+          />
         </div>
       </section>
 
