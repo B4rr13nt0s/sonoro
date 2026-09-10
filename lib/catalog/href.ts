@@ -49,6 +49,28 @@ export function buildMarcaHref(marcaSlug: string, estado: MarcaQueryState): stri
   return `/marcas/${marcaSlug}${search ? `?${search}` : ""}`;
 }
 
+// /catalogo (todo el catálogo): mismo criterio que buildCatalogHref, pero
+// sin categoría en la ruta — acá la categoría no está fijada, se ven los
+// productos activos de todas. Es la ruta hermana de /catalogo/[categoria],
+// no su padre: comparten plantilla, orden y paginación, y se diferencian
+// solo en el alcance.
+export type CatalogoCompletoQueryState = {
+  marca?: string; // slug de marca
+  orden?: Orden;
+  page?: number;
+};
+
+export function buildCatalogoCompletoHref(estado: CatalogoCompletoQueryState): string {
+  const query = new URLSearchParams();
+
+  if (estado.marca) query.set("marca", estado.marca);
+  if (estado.orden && estado.orden !== ORDEN_DEFECTO) query.set("orden", estado.orden);
+  if (estado.page && estado.page > 1) query.set("page", String(estado.page));
+
+  const search = query.toString();
+  return `/catalogo${search ? `?${search}` : ""}`;
+}
+
 // /productos (destacados): mismo criterio, el único filtro secundario es
 // marca — no hay categoría ni marca "de la ruta" que omitir de la query.
 export type ProductosQueryState = {

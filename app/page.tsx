@@ -98,7 +98,7 @@ export default async function Home() {
           a toda Guatemala.
         </p>
         <div className="flex gap-3.5 pt-1.5 text-[15px]">
-          <Link href="/productos" className="bg-negro rounded-full px-6 py-3 text-white">
+          <Link href="/catalogo" className="bg-negro rounded-full px-6 py-3 text-white">
             Ver productos
           </Link>
         </div>
@@ -113,7 +113,7 @@ export default async function Home() {
       <section className="flex flex-col gap-9 px-6 py-16 sm:px-12 sm:py-22">
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
           <h2 className="text-34 sm:text-40 font-semibold tracking-[-0.025em]">Categorías</h2>
-          <Link href="/catalogo/subwoofers" className="text-texto-secundario text-[15px]">
+          <Link href="/catalogo" className="text-texto-secundario text-[15px]">
             Ver toda la tienda →
           </Link>
         </div>
@@ -142,13 +142,11 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Los más vendidos */}
+      {/* Destacados */}
       {destacados.length > 0 ? (
         <section className="bg-fondo-alt flex flex-col gap-7 px-6 py-16 sm:px-12">
           <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.025em]">
-              Los más vendidos
-            </h2>
+            <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.025em]">Destacados</h2>
             <span className="text-texto-terciario font-mono text-[12px]">
               Precios en quetzales, IVA incluido
             </span>

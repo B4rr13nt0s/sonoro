@@ -2,7 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { OrdenSchema } from "./types.ts";
-import { buildCatalogHref, buildMarcaHref, buildProductosHref, hrefsDeOrden } from "./href.ts";
+import {
+  buildCatalogHref,
+  buildCatalogoCompletoHref,
+  buildMarcaHref,
+  buildProductosHref,
+  hrefsDeOrden,
+} from "./href.ts";
 
 // Lo que estas pruebas protegen es el REQUISITO DE URL LIMPIA: el orden por
 // defecto no se escribe como query param, así que /marcas/kbt sigue siendo
@@ -62,4 +68,23 @@ test("hrefsDeOrden: cubre todos los valores del enum", () => {
   // falla acá y no con un href undefined en el navegador.
   const hrefs = hrefsDeOrden(() => "/x");
   assert.deepEqual(Object.keys(hrefs).sort(), OrdenSchema.options.slice().sort());
+});
+
+// /catalogo (todo) y /catalogo/[categoria] (una) son rutas hermanas: la
+// primera nunca debe emitir un segmento de categoría, o dejaría de ser el
+// catálogo completo.
+test("buildCatalogoCompletoHref: sin estado es /catalogo limpio", () => {
+  assert.equal(buildCatalogoCompletoHref({}), "/catalogo");
+  assert.equal(buildCatalogoCompletoHref({ orden: "relevancia" }), "/catalogo");
+  assert.equal(buildCatalogoCompletoHref({ page: 1 }), "/catalogo");
+});
+
+test("buildCatalogoCompletoHref: filtro, orden y página van en query, nunca en la ruta", () => {
+  assert.equal(
+    buildCatalogoCompletoHref({ marca: "kbt", orden: "precio_asc", page: 3 }),
+    "/catalogo?marca=kbt&orden=precio_asc&page=3",
+  );
+  // La marca es un filtro, no un tramo de ruta: /catalogo/kbt sería la
+  // categoría "kbt", que no existe.
+  assert.equal(buildCatalogoCompletoHref({ marca: "kbt" }), "/catalogo?marca=kbt");
 });

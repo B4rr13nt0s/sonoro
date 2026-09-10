@@ -15,6 +15,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const estaticas: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
+    // /catalogo es el catálogo completo; /productos son solo los marcados
+    // `destacado`. Por eso /catalogo pesa más.
+    { url: absoluteUrl("/catalogo"), changeFrequency: "weekly", priority: 0.9 },
     { url: absoluteUrl("/productos"), changeFrequency: "weekly", priority: 0.7 },
     { url: absoluteUrl("/marcas"), changeFrequency: "weekly", priority: 0.6 },
     { url: absoluteUrl("/nosotros"), changeFrequency: "yearly", priority: 0.3 },

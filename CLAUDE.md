@@ -112,6 +112,7 @@ activo             boolean
 `Spec = { etiqueta: string; valor: string }` — **arreglo ordenado, no objeto.** El orden en que aparecen es decisión editorial y debe respetarse.
 
 - **El `sku` es el código del fabricante tal como lo publica cada marca, sin normalizar** — no una convención propia de Sonoro. Se permiten mayúsculas, dígitos, y espacio, punto o guion como separadores internos (`ACX 165`, `MJP800.4`, `SQ12-D2`), nunca dobles ni al inicio o al final. Debe coincidir exactamente con el código de la factura del distribuidor, porque viaja tal cual al cliente como «Código» y en los mensajes de WhatsApp.
+- **`destacado` tiene tres efectos concretos, y ninguno es «producto importante» en abstracto:** aparecer en `/productos`, aparecer en la sección **Destacados** de la portada, y ordenar primero en todos los listados (el orden «relevancia», ver § Rutas). Marcar un producto es decidir que salga adelante en esos tres lugares — no una nota editorial sin consecuencia.
 - **Precios almacenados en centavos enteros.** Nunca `float`.
 - **No guardar precio base sin IVA.** Si se necesita, se deriva.
 - La ficha técnica cierra siempre con «Datos publicados por el fabricante.»
@@ -202,6 +203,7 @@ En los SVG el texto sigue siendo texto. Antes de imprenta o bordado, convertir a
 
 ```
 /                                  Inicio
+/catalogo                          Catálogo completo
 /productos                         Productos destacados
 /catalogo/[categoria]              Listado de categoría
 /producto/[slug]                   Ficha de producto
@@ -215,6 +217,10 @@ En los SVG el texto sigue siendo texto. Antes de imprenta o bordado, convertir a
 /legal/garantias
 ```
 
+- **Tres listados distintos, que se confunden fácil:**
+  - `/catalogo` — **todo**: los productos activos de todas las categorías. Es el destino de «Ver productos» del hero y de «Ver toda la tienda →», porque quien los pulsa quiere la tienda, no una selección.
+  - `/catalogo/[categoria]` — **una** categoría. Es la ruta HERMANA de `/catalogo`, no su hija en cuanto a plantilla: comparten orden, paginación y filtros, y se diferencian solo en el alcance.
+  - `/productos` — solo los marcados `destacado` (hoy 72 de 320). No es el catálogo y no debe usarse como si lo fuera.
 - **No existe `/checkout`.** No crearla.
 - **No existe `/instalacion`.** No crearla (regla 1).
 - Filtros y orden en **query params** (`?marca=memphis&precio_max=200000`): URL compartible por WhatsApp y rastreable por Google.

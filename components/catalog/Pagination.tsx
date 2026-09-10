@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { paginasVisibles } from "@/lib/catalog/paginacion.ts";
+
 // CLAUDE.md § Rutas: "Paginación con URLs indexables (?page=2), no scroll
 // infinito." Cada número es un <Link> real — indexable, compartible, y el
 // botón atrás del navegador funciona porque no hay estado de cliente
@@ -17,7 +19,7 @@ type PaginationProps = {
 export function Pagination({ paginaActual, totalPaginas, hrefPara }: PaginationProps) {
   if (totalPaginas <= 1) return null;
 
-  const paginas = Array.from({ length: totalPaginas }, (_, indice) => indice + 1);
+  const paginas = paginasVisibles(paginaActual, totalPaginas);
 
   return (
     // flex-wrap es la red de seguridad: hoy el listado más largo son 5
@@ -40,21 +42,38 @@ export function Pagination({ paginaActual, totalPaginas, hrefPara }: PaginationP
         etiqueta="Anterior"
         flecha="‹"
       />
-      <div className="flex items-center gap-1 sm:gap-1.5">
-        {paginas.map((pagina) => (
-          <Link
-            key={pagina}
-            href={hrefPara(pagina)}
-            aria-current={pagina === paginaActual ? "page" : undefined}
-            className={`flex h-9 w-9 items-center justify-center rounded-full text-[13px] ${
-              pagina === paginaActual
-                ? "bg-negro text-white"
-                : "text-texto-nav hover:text-texto-secundario"
-            }`}
-          >
-            {pagina}
-          </Link>
-        ))}
+      {/* flex-wrap también acá dentro: el wrap del contenedor de afuera
+          trata este bloque como UNA pieza, así que sin esto una lista larga
+          de números no envuelve, se desborda y empuja la página a lo ancho.
+          Con la ventana ya casi nunca hace falta, pero es la red que faltaba. */}
+      <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-1.5">
+        {paginas.map((pagina, indice) =>
+          pagina === "…" ? (
+            // Los saltos no son navegables ni se anuncian: el lector de
+            // pantalla ya tiene «Página N» en cada número y primera/última.
+            <span
+              key={`salto-${indice}`}
+              aria-hidden="true"
+              className="text-texto-terciario flex h-9 items-center justify-center px-0.5 text-[13px]"
+            >
+              …
+            </span>
+          ) : (
+            <Link
+              key={pagina}
+              href={hrefPara(pagina)}
+              aria-label={`Página ${pagina}`}
+              aria-current={pagina === paginaActual ? "page" : undefined}
+              className={`flex h-9 w-9 items-center justify-center rounded-full text-[13px] ${
+                pagina === paginaActual
+                  ? "bg-negro text-white"
+                  : "text-texto-nav hover:text-texto-secundario"
+              }`}
+            >
+              {pagina}
+            </Link>
+          ),
+        )}
       </div>
       <ControlPagina
         href={hrefPara(paginaActual + 1)}
