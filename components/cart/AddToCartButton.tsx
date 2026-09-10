@@ -6,8 +6,17 @@
 import { useCart } from "@/lib/cart/index.ts";
 import type { Producto } from "@/lib/catalog/index.ts";
 import { trackEvent } from "@/lib/analytics/track.ts";
+import { claseBoton, type VarianteBoton } from "@/components/ui/boton.ts";
 
-export function AddToCartButton({ producto }: { producto: Producto }) {
+// `variante` porque en la ficha la jerarquía se INVIERTE cuando el producto
+// está agotado: ahí la acción útil es preguntar, no agregar al carrito.
+export function AddToCartButton({
+  producto,
+  variante = "principal",
+}: {
+  producto: Producto;
+  variante?: VarianteBoton;
+}) {
   const { addItem } = useCart();
 
   return (
@@ -30,7 +39,7 @@ export function AddToCartButton({ producto }: { producto: Producto }) {
           quantity: 1,
         });
       }}
-      className="bg-negro flex-1 cursor-pointer rounded-full px-6 py-3.75 text-center text-[16px] text-white transition-transform duration-150 ease-out hover:scale-[1.02] active:scale-95"
+      className={claseBoton(variante)}
     >
       Agregar al carrito
     </button>

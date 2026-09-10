@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { buildOrderMessage } from "./message.ts";
+import { buildOrderMessage, buildProductInquiryMessage } from "./message.ts";
 import { formatQ } from "../format/precio.ts";
 import type { CartItem } from "../cart/index.ts";
 
@@ -106,4 +106,41 @@ test("buildOrderMessage: exactamente 15 líneas SÍ lista todo (el límite es 'e
   });
   assert.ok(mensaje.includes("(SKU-0)"));
   assert.ok(mensaje.includes("(SKU-14)"));
+});
+
+test("buildProductInquiryMessage: formato exacto, tres líneas", () => {
+  const mensaje = buildProductInquiryMessage({
+    nombre: 'Serie SQ 12" D2',
+    sku: "SQ12-D2",
+    url: "https://sonoro.gt/producto/serie-sq-12-d2",
+  });
+
+  assert.equal(
+    mensaje,
+    [
+      "Hola Sonoro, quiero consultar sobre:",
+      'Serie SQ 12" D2 (SQ12-D2)',
+      "https://sonoro.gt/producto/serie-sq-12-d2",
+    ].join("\n"),
+  );
+  assert.equal(mensaje.split("\n").length, 3);
+});
+
+test("buildProductInquiryMessage: no habla de pedir, ni de precio, ni de instalar", () => {
+  const mensaje = buildProductInquiryMessage({
+    nombre: "Kit de instalación 4 AWG",
+    sku: "ACX 165",
+    url: "https://sonoro.gt/producto/kit-4-awg",
+  });
+
+  // Es una consulta, no un pedido: el mensaje del carrito dice "quiero
+  // pedir" y lleva totales. Este no debe arrastrar nada de eso.
+  assert.ok(!mensaje.includes("quiero pedir"));
+  assert.ok(!mensaje.includes("Subtotal"));
+  assert.ok(!mensaje.includes("Total"));
+  assert.ok(!mensaje.includes("Ref:"));
+  // CLAUDE.md § reglas 1 y 2: Sonoro no instala ni asesora.
+  assert.ok(!/instalamos|asesor|te ayudamos/i.test(mensaje));
+  // El sku va tal cual, con su espacio interno.
+  assert.ok(mensaje.includes("(ACX 165)"));
 });

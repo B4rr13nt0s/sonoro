@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
+import { ConsultarWhatsAppButton } from "@/components/product/ConsultarWhatsAppButton";
 import { ViewProductTracker } from "@/components/analytics/ViewProductTracker";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ProductGallery } from "@/components/media/ProductGallery";
@@ -11,6 +12,7 @@ import { getProduct, listAllProducts, listBrands, listCategories } from "@/lib/c
 import { buildCatalogHref, buildMarcaHref } from "@/lib/catalog/href.ts";
 import { buildProductJsonLd } from "@/lib/seo/product.ts";
 import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
+import { absoluteUrl } from "@/lib/seo/site.ts";
 
 // El catálogo entero es data estática generada en build (scripts/import-catalog.ts
 // → data/catalog.json) — todo slug válido se conoce de antemano, igual que
@@ -55,6 +57,10 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
   const { slug } = await props.params;
   const producto = await getProduct(slug);
   if (!producto) notFound();
+
+  // Agotado invierte la jerarquía de los dos botones de acción: agregar al
+  // carrito algo que no hay no lleva a ninguna parte, y preguntar sí.
+  const agotado = producto.disponibilidad === "agotado";
 
   // Se resuelven una sola vez y sirven a las dos ramas de abajo: la de
   // producto inactivo (link "Ver {categoría}") y la de breadcrumbs del
@@ -172,8 +178,37 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
             ))}
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <AddToCartButton producto={producto} />
+          {/* Con el producto agotado se invierte la jerarquía: agregar al
+              carrito algo que no hay no lleva a ninguna parte, y preguntar
+              sí. Los dos botones siguen presentes en ambos casos; lo que
+              cambia es cuál se lee primero. */}
+          {/* El botón principal va PRIMERO, no solo relleno de negro: el
+              orden del DOM es el que siguen el teclado y el lector de
+              pantalla, así que invertir solo el color dejaría la acción
+              principal en segundo lugar para quien no ve el contraste.
+              Apilados, no lado a lado: la columna de la ficha mide ~370px,
+              así que en dos columnas los dos textos envuelven a dos líneas
+              y el botón principal deja de leerse de un golpe. */}
+          <div className="flex flex-col gap-3 pt-2">
+            {agotado ? (
+              <>
+                <ConsultarWhatsAppButton
+                  producto={producto}
+                  url={absoluteUrl(`/producto/${producto.slug}`)}
+                  variante="principal"
+                />
+                <AddToCartButton producto={producto} variante="secundario" />
+              </>
+            ) : (
+              <>
+                <AddToCartButton producto={producto} variante="principal" />
+                <ConsultarWhatsAppButton
+                  producto={producto}
+                  url={absoluteUrl(`/producto/${producto.slug}`)}
+                  variante="secundario"
+                />
+              </>
+            )}
           </div>
 
           <div className="border-borde-nav text-texto-secundario flex flex-col gap-2.5 border-t pt-5 text-[14px]">

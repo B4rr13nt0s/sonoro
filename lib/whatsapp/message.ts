@@ -44,3 +44,28 @@ function formatearLinea(item: CartItem): string {
   const sufijo = item.qty > 1 ? " c/u" : "";
   return `${item.qty}x ${item.nombreSnapshot} (${item.sku}) — ${precioUnitario}${sufijo}`;
 }
+
+// Consulta por UN producto, desde la ficha. No todo cliente arma un
+// carrito: mucha gente quiere preguntar por una pieza puntual, y hasta
+// ahora la ficha solo ofrecía "Agregar al carrito".
+//
+// Vive acá, junto a buildOrderMessage, y no en el componente: componer el
+// texto que abre wa.me es responsabilidad de este módulo — así los dos
+// mensajes comparten el mismo lugar, el mismo tono y las mismas pruebas.
+//
+// Lleva sku y URL a propósito: el sku es el código que el cliente ya ve en
+// la ficha como «Código» y el que aparece en la factura del distribuidor
+// (CLAUDE.md § Esquema de producto), así que vendedor y cliente hablan del
+// mismo producto sin ambigüedad; la URL le deja al vendedor abrir la ficha
+// sin buscarla.
+export function buildProductInquiryMessage(params: {
+  nombre: string;
+  sku: string;
+  url: string;
+}): string {
+  return [
+    "Hola Sonoro, quiero consultar sobre:",
+    `${params.nombre} (${params.sku})`,
+    params.url,
+  ].join("\n");
+}
