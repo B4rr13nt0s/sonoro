@@ -221,9 +221,12 @@ export default async function Home() {
             Comparador de especificaciones
           </div>
           <div className="text-texto-secundario text-[15px] leading-[1.55]">
-            Pon dos o tres equipos lado a lado y revisa sus fichas técnicas completas.
+            Pon de dos a cuatro equipos de una misma categoría lado a lado y revisa sus fichas
+            técnicas completas.
           </div>
-          <span className="mt-auto pt-5 text-[15px]">Abrir comparador →</span>
+          <Link href="/comparar" className="mt-auto pt-5 text-[15px]">
+            Abrir comparador →
+          </Link>
         </div>
       </section>
     </div>

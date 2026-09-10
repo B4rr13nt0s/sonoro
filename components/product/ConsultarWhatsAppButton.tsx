@@ -7,7 +7,7 @@
 // clic — el <a> navega solo.
 import { trackEvent } from "@/lib/analytics/track.ts";
 import type { Producto } from "@/lib/catalog/index.ts";
-import { claseBoton, type VarianteBoton } from "@/components/ui/boton.ts";
+import { claseBoton, type TamanoBoton, type VarianteBoton } from "@/components/ui/boton.ts";
 import {
   buildProductInquiryMessage,
   buildWhatsAppUrl,
@@ -18,6 +18,7 @@ export function ConsultarWhatsAppButton({
   producto,
   url,
   variante,
+  tamano = "normal",
 }: {
   producto: Producto;
   // URL absoluta de la ficha, resuelta en el servidor: absoluteUrl() lee
@@ -25,6 +26,8 @@ export function ConsultarWhatsAppButton({
   // Componerla acá con location.href traería además los query params.
   url: string;
   variante: VarianteBoton;
+  // "compacto" para las columnas de la tabla comparativa.
+  tamano?: TamanoBoton;
 }) {
   const mensaje = buildProductInquiryMessage({
     nombre: producto.nombre,
@@ -49,7 +52,7 @@ export function ConsultarWhatsAppButton({
           currency: "GTQ",
         });
       }}
-      className={claseBoton(variante)}
+      className={claseBoton(variante, tamano)}
     >
       Consultar por WhatsApp
     </a>

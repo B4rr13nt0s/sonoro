@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
+import { CompararToggle } from "@/components/comparador/CompararToggle";
 import { ConsultarWhatsAppButton } from "@/components/product/ConsultarWhatsAppButton";
 import { ViewProductTracker } from "@/components/analytics/ViewProductTracker";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -224,6 +225,14 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
                 />
               </>
             )}
+          </div>
+
+          <div className="flex">
+            <CompararToggle
+              sku={producto.sku}
+              categoria={producto.categoria}
+              nombre={producto.nombre}
+            />
           </div>
 
           <div className="border-borde-nav text-texto-secundario flex flex-col gap-2.5 border-t pt-5 text-[14px]">

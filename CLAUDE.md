@@ -209,6 +209,7 @@ En los SVG el texto sigue siendo texto. Antes de imprenta o bordado, convertir a
 /producto/[slug]                   Ficha de producto
 /marcas                            Índice de marcas
 /marcas/[marca]                    Página de una marca
+/comparar                          Comparador de especificaciones
 /buscar                            Resultados de búsqueda
 /carrito                           Carrito → WhatsApp
 /nosotros
@@ -221,6 +222,11 @@ En los SVG el texto sigue siendo texto. Antes de imprenta o bordado, convertir a
   - `/catalogo` — **todo**: los productos activos de todas las categorías. Es el destino de «Ver productos» del hero y de «Ver toda la tienda →», porque quien los pulsa quiere la tienda, no una selección.
   - `/catalogo/[categoria]` — **una** categoría. Es la ruta HERMANA de `/catalogo`, no su hija en cuanto a plantilla: comparten orden, paginación y filtros, y se diferencian solo en el alcance.
   - `/productos` — solo los marcados `destacado` (hoy 72 de 320). No es el catálogo y no debe usarse como si lo fuera.
+- **`/comparar` NO ranquea ni recomienda** (regla 2). Señala en qué filas los valores difieren, y eso es un hecho; decir cuál conviene es asesoría. Prohibido marcar un «ganador», ordenar por «mejor valor» o poner insignias tipo «más potente».
+  - Solo compara dentro de **una misma categoría**: un subwoofer contra un cable RCA no significa nada.
+  - Su estado vive en la URL (`?skus=SQ12-D2,COR-S124D`), no en `localStorage`, porque lo que le da valor es que se pueda **compartir por WhatsApp**. Quien abre un enlace ajeno ve lo del enlace y no pierde su propia selección.
+  - `noindex` en la metadata, pero **NO** en el `Disallow` de `robots.ts`: un Disallow impediría que Google llegara a leer el noindex, y la URL está hecha para compartirse.
+  - **El resaltado de diferencias solo cuenta filas donde TODAS las columnas traen dato.** Un hueco no es una diferencia entre productos, es un dato que el fabricante no publica. Contarlo marcaba 17 de 17.1 filas con cuatro subwoofers —el resaltado dejaba de distinguir nada— porque `specsFicha` no tiene vocabulario fijo: Bocinas usa 49 etiquetas distintas entre 106 productos y cada uno lleva 4-10.
 - **No existe `/checkout`.** No crearla.
 - **No existe `/instalacion`.** No crearla (regla 1).
 - Filtros y orden en **query params** (`?marca=memphis&precio_max=200000`): URL compartible por WhatsApp y rastreable por Google.

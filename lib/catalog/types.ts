@@ -147,7 +147,7 @@ export function parseOrden(valor: string | string[] | undefined): Orden {
 // /buscar) debe pasar `activo: true` explícito: un producto con
 // activo=false salió de venta (CLAUDE.md § Mantenimiento del catálogo) y no
 // debe aparecer en ningún listado ni en resultados de búsqueda. Hay
-// exactamente dos llamadores que a propósito NO filtran (necesitan el
+// exactamente TRES llamadores que a propósito NO filtran (necesitan el
 // catálogo completo, inactivos incluidos):
 //   - generateStaticParams de app/producto/[slug]/page.tsx: si no
 //     pre-renderiza la página del producto inactivo, proxy.ts no tiene qué
@@ -158,6 +158,9 @@ export function parseOrden(valor: string | string[] | undefined): Orden {
 //     está inactivo" para reportarle al usuario la razón correcta por la
 //     que se quitó una línea de su carrito — con el catálogo ya filtrado,
 //     ambos casos se ven idénticos.
+//   - app/comparar/page.tsx: por lo mismo, para poder decir "ya no está
+//     disponible" en vez de "no está en el catálogo" cuando un sku del
+//     enlace compartido salió de venta.
 export type ProductFilters = {
   categoria?: string;
   marca?: string;

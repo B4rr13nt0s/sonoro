@@ -16,11 +16,24 @@
 // medidas del handoff (padding 15px, radio 999px).
 export type VarianteBoton = "principal" | "secundario";
 
-const BASE =
-  "flex-1 cursor-pointer rounded-full px-6 py-3.75 text-center text-[16px] transition-transform duration-150 ease-out hover:scale-[1.02] active:scale-95";
+// El tamaño es un eje aparte de la variante, con valor por defecto para no
+// tocar los usos que ya existen. "compacto" existe para las columnas de la
+// tabla comparativa, que en móvil miden 132px: con el padding y el cuerpo de
+// 16px del tamaño normal, «Consultar por WhatsApp» envuelve a tres líneas y
+// los dos botones de una misma columna quedan de distinto alto.
+export type TamanoBoton = "normal" | "compacto";
 
-export function claseBoton(variante: VarianteBoton): string {
+const BASE =
+  "flex-1 cursor-pointer rounded-full text-center transition-transform duration-150 ease-out hover:scale-[1.02] active:scale-95";
+
+const TAMANOS: Record<TamanoBoton, string> = {
+  normal: "px-6 py-3.75 text-[16px]",
+  compacto: "px-3 py-2.5 text-[13px]",
+};
+
+export function claseBoton(variante: VarianteBoton, tamano: TamanoBoton = "normal"): string {
+  const base = `${BASE} ${TAMANOS[tamano]}`;
   return variante === "principal"
-    ? `${BASE} bg-negro text-white`
-    : `${BASE} border-borde-pildora text-negro border bg-white`;
+    ? `${base} bg-negro text-white`
+    : `${base} border-borde-pildora text-negro border bg-white`;
 }
