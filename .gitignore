@@ -62,3 +62,7 @@ scripts/models3d*/*.glb
 # scripts vigentes son los de _v2 y tener los dos en el repo invita a
 # regenerar un modelo con el pipeline equivocado.
 scripts/models3d/
+
+# sonoro — transcripciones de sesión de Claude Code. Se generan en la raíz
+# del proyecto, no son parte del sitio y pesan cientos de KB cada una.
+2[0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9]*.txt
