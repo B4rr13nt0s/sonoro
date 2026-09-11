@@ -17,7 +17,7 @@ export default function TerminosPage() {
     <LegalPage
       etiqueta="Legal"
       titulo="Términos y condiciones"
-      actualizado="Última actualización: 24 de agosto de 2026"
+      actualizado="Última actualización: 11 de septiembre de 2026"
       secciones={[
         {
           titulo: "Qué es Sonoro",
@@ -48,7 +48,7 @@ export default function TerminosPage() {
           titulo: "Envíos",
           parrafos: [
             "Envíos gratis a todo el país. Aplican restricciones según destino y volumen del pedido.",
-            "El tiempo de entrega estimado es de 24 a 72 horas.",
+            "El tiempo de entrega depende del departamento de destino.",
           ],
         },
         {

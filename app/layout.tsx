@@ -4,13 +4,9 @@ import { Bakbak_One, JetBrains_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { AvisoComparadorProvider } from "@/components/comparador/avisoComparador.ts";
-import { BarraComparador } from "@/components/comparador/BarraComparador";
 import { CartProvider } from "@/lib/cart/index.ts";
 import type { CatalogoSku } from "@/lib/cart/index.ts";
 import { listAllProducts } from "@/lib/catalog/index.ts";
-import { ComparadorProvider } from "@/lib/comparador/index.ts";
-import type { CatalogoComparable } from "@/lib/comparador/index.ts";
 import { SITE_URL } from "@/lib/seo/site.ts";
 // Solo por su efecto de validación al importarse (ver lib/whatsapp/config.ts):
 // falla el build en Production si NEXT_PUBLIC_WHATSAPP_NUMBER no está
@@ -55,23 +51,18 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   // lo trae una vez, igual que /buscar hace con SearchExperience, y le pasa
   // solo lo que reconcile() necesita, no el Producto completo.
   const productos = await listAllProducts();
-  // UN SOLO arreglo para los dos providers. React Flight deduplica por
-  // identidad de referencia, así que el segundo consumidor cuesta un puntero
-  // en vez de repetir ~19 KB en el payload de cada página. Ojo: pasarle a uno
-  // de los dos un `.map()` propio "para limpiar los tipos" rompe esa
-  // deduplicación sin que nada avise.
+  // Solo lo que necesita reconcile() del carrito, no el Producto completo.
   //
-  // `satisfies` y no `: CatalogoSku[]` — la anotación borraría `categoria`
-  // del tipo y ComparadorProvider dejaría de compilar; con satisfies se
-  // conserva la comprobación de que la proyección cubre lo que necesita cada
-  // reconcile().
+  // Llevaba también `categoria`, que era lo único que usaba
+  // ComparadorProvider; salió junto con los accesos al comparador (ver abajo).
+  // Si el comparador vuelve, hay que devolver ese campo y su tipo
+  // CatalogoComparable, o el provider no compila.
   const catalogo = productos.map((p) => ({
     sku: p.sku,
     activo: p.activo,
     disponibilidad: p.disponibilidad,
     precioCents: p.precioCents,
-    categoria: p.categoria,
-  })) satisfies (CatalogoSku & CatalogoComparable)[];
+  })) satisfies CatalogoSku[];
 
   return (
     <html
@@ -80,19 +71,20 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col">
         <GoogleAnalytics />
+        {/* El comparador quedó SIN accesos a propósito, no borrado: la
+            ruta /comparar sigue viva y funcionando, y un enlace ya compartido
+            por WhatsApp se sigue abriendo. Lo que se quitó son las tres
+            puertas de entrada — la barra flotante de acá, el botón «Comparar»
+            de la tarjeta y el de la ficha — más la tarjeta del inicio. Para
+            devolverlo: reponer ComparadorProvider + AvisoComparadorProvider
+            alrededor de esto, <BarraComparador /> al final, y los
+            <CompararToggle /> de components/catalog/ProductCard.tsx y
+            app/producto/[slug]/page.tsx. Nada de components/comparador/ ni de
+            lib/comparador/ se tocó. */}
         <CartProvider catalogo={catalogo}>
-          <ComparadorProvider catalogo={catalogo}>
-            <AvisoComparadorProvider>
-              <SiteHeader />
-              <main className="flex flex-1 flex-col">{children}</main>
-              <SiteFooter />
-              {/* La barra es `fixed` y taparía la última fila de la rejilla
-                  y la paginación; el hueco lo reserva ella misma con un
-                  espaciador, para que el layout no dependa de estado de
-                  cliente cuando no hay nada seleccionado. */}
-              <BarraComparador />
-            </AvisoComparadorProvider>
-          </ComparadorProvider>
+          <SiteHeader />
+          <main className="flex flex-1 flex-col">{children}</main>
+          <SiteFooter />
         </CartProvider>
       </body>
     </html>

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
-import { CompararToggle } from "@/components/comparador/CompararToggle";
 import { ConsultarWhatsAppButton } from "@/components/product/ConsultarWhatsAppButton";
 import { ViewProductTracker } from "@/components/analytics/ViewProductTracker";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -227,18 +226,10 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
             )}
           </div>
 
-          <div className="flex">
-            <CompararToggle
-              sku={producto.sku}
-              categoria={producto.categoria}
-              nombre={producto.nombre}
-            />
-          </div>
-
           <div className="border-borde-nav text-texto-secundario flex flex-col gap-2.5 border-t pt-5 text-[14px]">
             <div className="flex justify-between gap-4">
               <span>Envío gratis a todo el país</span>
-              <span className="text-negro">24 a 72 horas</span>
+              <span className="text-negro text-right">Entrega según el departamento</span>
             </div>
             <div className="flex justify-between gap-4">
               <span>Pagos</span>
@@ -265,7 +256,10 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
               className="border-borde-sobre-negro flex justify-between gap-6 border-t py-4 text-[15px]"
             >
               <span className="text-texto-sobre-negro">{spec.etiqueta}</span>
-              <span>{spec.valor}</span>
+              {/* A la derecha también cuando el valor se parte en varias
+                  líneas: con justify-between solo la caja va a la derecha, el
+                  texto de adentro seguía alineado a la izquierda. */}
+              <span className="text-right">{spec.valor}</span>
             </div>
           ))}
         </div>

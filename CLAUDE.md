@@ -331,7 +331,7 @@ No inventes valores para estos puntos. Si el trabajo los necesita, pregunta.
 - **Plazo de garantía.** Está definido el alcance (solo desperfecto de fábrica, se pierde por mal uso o instalación incorrecta) pero **no la duración**. Probablemente varíe por marca, según lo que otorgue cada fabricante. Hasta definirlo, `garantiaMeses` queda vacío y la página de garantías describe alcance y exclusiones sin plazo.
 - **«Envíos gratis a todo el país»** — compromiso de negocio heredado del handoff, sin confirmar. Es caro si se sostiene sin condiciones.
 - **Redondeo de la cuota.** Este documento fija `Math.ceil` al centavo (`Q 408.34`). El handoff mostraba `Q 408.33`, que suma Q 2,449.98 en seis pagos. Si el negocio prefiere 408.33, cambiar aquí y definir que la última cuota absorbe la diferencia.
-- **Datos supuestos en el handoff, todos por confirmar:** precios, conteos de producto, países de origen de las marcas, teléfono, correo y dirección.
+- **Datos supuestos en el handoff, todos por confirmar:** precios, conteos de producto, países de origen de las marcas, teléfono y correo. La dirección ya está confirmada y se muestra en `/nosotros`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

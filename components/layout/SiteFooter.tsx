@@ -1,6 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-
-import { Monogram } from "./Monogram";
 
 const ENLACES_LEGALES = [
   { href: "/legal/terminos", nombre: "Términos" },
@@ -25,16 +24,24 @@ function lineaDeContacto(): string {
 export function SiteFooter() {
   return (
     <footer className="border-borde-nav flex flex-col items-center gap-4 border-t px-6 py-10 text-center sm:px-12 lg:flex-row lg:items-center lg:justify-between lg:text-left">
-      <Link href="/" className="flex items-center gap-[11px]">
-        <Monogram className="rounded-footer-mark h-[34px] w-[34px]" />
-        <span className="flex flex-col gap-0.5">
-          <span className="font-display text-negro text-[21px] leading-[0.84] tracking-[-0.015em]">
-            sonoro
-          </span>
-          <span className="text-texto-secundario font-mono text-[9px] leading-none tracking-[0.22em]">
-            CAR AUDIO
-          </span>
-        </span>
+      {/* El lockup oficial de public/logos/, no reconstruido en código: ya
+          trae la corrección óptica de las dos «s» (CLAUDE.md § El logo).
+          34 px de alto como el monograma que reemplaza; el ancho sale de la
+          proporción del archivo (2480 × 680).
+
+          El PNG y no el SVG: en el SVG el wordmark sigue siendo <text> con
+          Bakbak One por nombre (CLAUDE.md § El logo: "antes de imprenta o
+          bordado, convertir a curvas"), y el navegador lo dibuja con la
+          tipografía que tenga a mano — el logo salía con otra letra. El PNG
+          no depende de ninguna fuente instalada. */}
+      <Link href="/" className="flex items-center">
+        <Image
+          src="/logos/sonoro-lockup-negro.png"
+          alt="Sonoro"
+          width={124}
+          height={34}
+          className="h-[34px] w-auto"
+        />
       </Link>
       <nav className="flex gap-5">
         {ENLACES_LEGALES.map((enlace) => (

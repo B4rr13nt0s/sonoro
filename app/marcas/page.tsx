@@ -35,8 +35,8 @@ export default async function MarcasPage() {
             {titulo}
           </h1>
           <p className="text-texto-secundario max-w-[620px] text-[18px] leading-[1.5] sm:text-[20px]">
-            Cada una cubre una parte del sistema: de la bocina de repuesto al componente de gama
-            alta, del kit de cable a la lámina que silencia la puerta.
+            Nuestra diversidad de marcas nos permite cubrir todo lo que necesitas para mejorar la
+            calidad de sonido de tu vehículo.
           </p>
         </div>
       </section>

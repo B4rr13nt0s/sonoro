@@ -246,7 +246,7 @@ function OrderSummary({
       <div className="border-borde-tarjeta text-texto-secundario flex flex-col gap-2.5 border-t pt-5 text-[14px]">
         <div className="flex justify-between">
           <span>Entrega</span>
-          <span className="text-negro">24 a 72 horas</span>
+          <span className="text-negro">Según el departamento</span>
         </div>
         <div className="flex justify-between">
           <span>Pagos</span>

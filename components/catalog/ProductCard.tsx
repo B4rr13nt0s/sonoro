@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { CompararToggle } from "@/components/comparador/CompararToggle";
 import { ProductImage } from "@/components/media/ProductImage";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import type { Producto } from "@/lib/catalog/index.ts";
@@ -10,16 +9,16 @@ import { etiquetaDisponibilidad } from "@/lib/catalog/disponibilidad.ts";
 // etiqueta mono con categoría o marca, nombre 17px/600, especificación 14px
 // gris, precio 17px/600, cuota 13px gris.
 //
-// La tarjeta SIGUE siendo Server Component. El único pedazo interactivo es
-// CompararToggle, que es su propia isla cliente: poner "use client" acá
-// arrastraría ProductImage, formatQ y la rejilla entera al bundle de las
-// cinco páginas que la usan.
+// La tarjeta es Server Component entera: hoy no le queda nada interactivo.
+// Llevaba un <CompararToggle />, que salió con los accesos al comparador
+// (ver app/layout.tsx).
 //
-// El <Link> ya no envuelve la tarjeta: un <button> dentro de un <a> es HTML
-// inválido. En su lugar el enlace se ESTIRA con `after:absolute after:inset-0`
-// sobre el contenedor relativo, así toda la tarjeta sigue siendo clicable, y
-// el toggle va como hermano con `relative z-10` para quedar por encima de esa
-// capa — si no, el enlace estirado se lo come y no se puede pulsar.
+// El <Link> no envuelve la tarjeta: se ESTIRA con `after:absolute
+// after:inset-0` sobre el contenedor relativo, así toda la tarjeta es
+// clicable. Se deja así —y no envolviendo— porque es lo que permite volver a
+// meter un botón dentro sin romper el HTML: un <button> dentro de un <a> es
+// inválido, y ese botón tiene que ir como hermano con `relative z-10` para
+// quedar por encima de la capa del enlace estirado.
 export function ProductCard({ producto }: { producto: Producto }) {
   const especificacion = producto.specsDestacadas
     .slice(0, 2)
@@ -56,13 +55,6 @@ export function ProductCard({ producto }: { producto: Producto }) {
         <div className="pt-2 text-[17px] font-semibold">{formatQ(producto.precioCents)}</div>
         <div className="text-texto-secundario text-[13px]">
           o {formatQ(calcularCuotaCents(producto.precioCents, 6))} al mes × 6
-        </div>
-        <div className="relative z-10 flex pt-4">
-          <CompararToggle
-            sku={producto.sku}
-            categoria={producto.categoria}
-            nombre={producto.nombre}
-          />
         </div>
       </div>
     </div>

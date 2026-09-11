@@ -8,6 +8,9 @@ const TITULO = "Nosotros — Sonoro";
 const DESCRIPCION =
   "Sonoro importa de forma directa equipo de audio para carro a Guatemala. Vendemos únicamente equipo — la instalación la hace el taller de tu preferencia.";
 
+const DIRECCION =
+  "Km 13.5 Carretera a El Salvador, Calle Real, Puerta Parada, Santa Catarina Pinula, Ofibodegas del Milenio, Bodega 6";
+
 export const metadata: Metadata = {
   title: TITULO,
   description: DESCRIPCION,
@@ -25,12 +28,12 @@ export default async function NosotrosPage() {
           Nosotros
         </div>
         <h1 className="text-44 sm:text-56 lg:text-68 leading-[1.05] font-semibold tracking-[-0.035em] text-balance">
-          Traemos a Guatemala el equipo que antes tocaba encargar afuera.
+          Importamos a Guatemala todo lo que necesitas para que tú no tengas que hacerlo.
         </h1>
         <p className="text-texto-secundario max-w-[700px] text-[18px] leading-[1.5] sm:text-[21px]">
           Sonoro es una empresa de car audio donde importamos marcas de calidad y renombre a nivel
-          internacional, con el objetivo de ofrecer productos que hagan de tus viajes en carro una
-          experiencia excepcional.
+          internacional, con el objetivo de ofrecer productos que hagan que manejar se convierta en
+          una experiencia excepcional.
         </p>
       </section>
 
@@ -54,12 +57,9 @@ export default async function NosotrosPage() {
         <div className="flex flex-col gap-4">
           <h2 className="text-26 sm:text-36 font-semibold tracking-[-0.025em]">Qué vendemos</h2>
           <p className="text-texto-secundario text-[16px] leading-[1.6] sm:text-[17px]">
-            Bocinas, subwoofers, amplificadores, radios y pantallas, kits de cable e insonorización;
-            con varias gamas disponibles, porque no todos los carros ni todos los presupuestos son
-            iguales.
-          </p>
-          <p className="text-texto-secundario text-[16px] leading-[1.6] sm:text-[17px]">
-            Vendemos únicamente equipo. La instalación la hace el taller de tu preferencia.
+            Bocinas, subwoofers, amplificadores, radios, pantallas, ecualizadores, kits de cable,
+            insonorización y accesorios; con varias gamas disponibles para ajustarnos a lo que
+            buscas.
           </p>
         </div>
       </section>
@@ -71,15 +71,10 @@ export default async function NosotrosPage() {
       <section className="flex flex-col gap-4 px-6 pb-16 sm:flex-row sm:px-12 sm:pb-24">
         <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
           <div className="text-26 font-semibold tracking-[-0.025em]">Visítanos</div>
-          {/* Dirección: sin dato real confirmado (CLAUDE.md § Decisiones
-              abiertas) — lee BUSINESS_ADDRESS_LOCALITY (misma env var que
-              lib/seo/business.ts) en vez de un placeholder falso; sin
-              configurar, dice explícitamente que falta, no inventa nada. */}
-          <div className="text-texto-secundario text-[15px] leading-[1.6]">
-            {process.env.BUSINESS_ADDRESS_LOCALITY
-              ? `${process.env.BUSINESS_ADDRESS_LOCALITY}.`
-              : "Dirección por confirmar."}
-          </div>
+          {/* Dirección confirmada por el negocio. Ojo: el JSON-LD de
+              lib/seo/business.ts y el pie todavía leen la localidad de
+              BUSINESS_ADDRESS_LOCALITY, no de acá. */}
+          <div className="text-texto-secundario text-[15px] leading-[1.6]">{DIRECCION}</div>
           <span className="text-texto-terciario mt-auto pt-5 text-[15px]">Mapa próximamente</span>
         </div>
         <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
