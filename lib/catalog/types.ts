@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { CALIBRES_AWG, IMPEDANCIAS_OHM, MEDIDAS, VALUE_LABELS } from "./labels.ts";
+
 // SKU y slug se exportan como constantes: el importador de datos debe importar
 // estos mismos patrones en vez de definir los suyos, o la validación defensiva
 // del importador y la del esquema se desincronizan.
@@ -53,13 +55,63 @@ export const ImagenSchema = z.object({
 });
 export type Imagen = z.infer<typeof ImagenSchema>;
 
+// Campos normalizados del producto, ya validados por el importador. Los
+// valores de lista salen de lib/catalog/labels.ts —la misma fuente que los
+// traduce—, así que un valor aceptado acá siempre tiene cómo mostrarse.
+// Estricto: una clave que no es un campo normalizado es un error, no un dato
+// extra que se cuela en catalog.json.
+function enumDe<T extends Record<string, string>>(tabla: T) {
+  return z.enum(Object.keys(tabla) as [Extract<keyof T, string>, ...Extract<keyof T, string>[]]);
+}
+function numeroDeLista(lista: readonly number[]) {
+  return z.number().refine((n) => lista.includes(n), {
+    error: `debe ser uno de: ${lista.join(", ")}`,
+  });
+}
+const noNegativo = z.number().nonnegative();
+
+export const AtributosSchema = z.strictObject({
+  medida: z.enum(MEDIDAS).optional(),
+  potencia_rms_w: noNegativo.optional(),
+  impedancia_ohm: numeroDeLista(IMPEDANCIAS_OHM).optional(),
+  bobinas: enumDe(VALUE_LABELS.bobinas).optional(),
+  configuracion: enumDe(VALUE_LABELS.configuracion).optional(),
+  canales: z.number().int().positive().optional(),
+  clase: enumDe(VALUE_LABELS.clase).optional(),
+  formato: enumDe(VALUE_LABELS.formato).optional(),
+  pantalla_pulg: noNegativo.optional(),
+  carplay: z.boolean().optional(),
+  android_auto: z.boolean().optional(),
+  salidas_preamp_pares: z.number().int().nonnegative().optional(),
+  salidas_preamp_voltaje: noNegativo.optional(),
+  espesor_mm: noNegativo.optional(),
+  cobertura_m2: noNegativo.optional(),
+  material_insono: enumDe(VALUE_LABELS.material_insono).optional(),
+  calibre_awg: numeroDeLista(CALIBRES_AWG).optional(),
+  material_conductor: enumDe(VALUE_LABELS.material_conductor).optional(),
+  tipo_accesorio: enumDe(VALUE_LABELS.tipo_accesorio).optional(),
+  tipo_ecualizador: enumDe(VALUE_LABELS.tipo_ecualizador).optional(),
+  bandas: z.number().int().positive().optional(),
+  profundidad_mm: noNegativo.optional(),
+  sensibilidad_db: noNegativo.optional(),
+  capacidad_w: noNegativo.optional(),
+  longitud_m: noNegativo.optional(),
+});
+export type Atributos = z.infer<typeof AtributosSchema>;
+
 export const ProductoSchema = z
   .object({
     sku: z.string().regex(SKU_REGEX), // canónico, inmutable. VISIBLE como «Código»
     slug: z.string().regex(SLUG_REGEX), // URL, inmutable una vez publicado
     nombre: z.string(),
     marca: z.string(),
+    // La PRINCIPAL: define la URL canónica, el breadcrumb y los campos
+    // obligatorios. Los productos de la hoja ESPECIALES llevan «Sistemas».
     categoria: z.string(),
+    // Solo ESPECIALES: las categorías en cuyo listado también aparece (un
+    // sistema completo sale entre los subwoofers y entre las bocinas). No
+    // cambia su URL — cada producto tiene una sola.
+    categoriasSecundarias: z.array(z.string()).min(1).optional(),
     descripcionCorta: z.string(),
     // Ordenado. Exactamente 3 (Tamaño/Impedancia/Potencia RMS en SQ12-D2) — el
     // "Código" que se ve junto a ellos en la ficha se deriva de sku, no vive aquí.
@@ -75,6 +127,10 @@ export const ProductoSchema = z
     garantiaMeses: z.number().int().positive().optional(), // sin duración definida aún
     destacado: z.boolean(),
     activo: z.boolean(),
+    // Los valores normalizados de donde salieron las specs generadas. Todavía
+    // no los lee ninguna pantalla; son la materia prima de filtros y
+    // comparador. Ausente en los productos de ESPECIALES.
+    atributos: AtributosSchema.optional(),
   })
   .refine((p) => p.precioAntesCents === undefined || p.precioAntesCents > p.precioCents, {
     message: "precioAntesCents debe ser mayor que precioCents",

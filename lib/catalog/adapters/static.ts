@@ -68,7 +68,15 @@ async function listProducts(
   const productos = await cargarProductos();
 
   const filtrados = productos.filter((p) => {
-    if (filters.categoria !== undefined && p.categoria !== filters.categoria) return false;
+    // Una categoría lista sus productos principales MÁS los que la traen como
+    // secundaria (sistemas completos de la hoja ESPECIALES).
+    if (
+      filters.categoria !== undefined &&
+      p.categoria !== filters.categoria &&
+      !p.categoriasSecundarias?.includes(filters.categoria)
+    ) {
+      return false;
+    }
     if (filters.marca !== undefined && p.marca !== filters.marca) return false;
     if (filters.disponibilidad !== undefined && p.disponibilidad !== filters.disponibilidad) {
       return false;

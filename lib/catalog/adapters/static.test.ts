@@ -18,7 +18,11 @@ const RUTA_CATALOGO_REAL = path.join(
 );
 const CATALOGO_REAL: Producto[] = JSON.parse(readFileSync(RUTA_CATALOGO_REAL, "utf-8"));
 const TOTAL_CATALOGO = CATALOGO_REAL.length;
-const TOTAL_BOCINAS = CATALOGO_REAL.filter((p) => p.categoria === "Bocinas").length;
+// Una categoría lista sus productos principales MÁS los que la traen como
+// secundaria (sistemas completos de la hoja ESPECIALES).
+const esDeCategoria = (p: Producto, categoria: string) =>
+  p.categoria === categoria || (p.categoriasSecundarias ?? []).includes(categoria);
+const TOTAL_BOCINAS = CATALOGO_REAL.filter((p) => esDeCategoria(p, "Bocinas")).length;
 const TOTAL_MEMPHIS = CATALOGO_REAL.filter((p) => p.marca === "Memphis").length;
 // brands.json/taxonomy.json solo cuentan productos activos (scripts/import-catalog.ts).
 const TOTAL_PIONEER_ACTIVOS = CATALOGO_REAL.filter((p) => p.marca === "Pioneer" && p.activo).length;
@@ -47,7 +51,20 @@ test("listProducts: con pageSize suficiente, items.length cubre el total", async
 test("listProducts: filtra por categoria", async () => {
   const { items, total } = await staticAdapter.listProducts({ categoria: "Bocinas" });
   assert.equal(total, TOTAL_BOCINAS);
-  assert.ok(items.every((p) => p.categoria === "Bocinas"));
+  assert.ok(items.every((p) => esDeCategoria(p, "Bocinas")));
+});
+
+test("listProducts: un producto sale también en el listado de sus categorías secundarias", async () => {
+  const conSecundarias = CATALOGO_REAL.filter((p) => p.categoriasSecundarias);
+  for (const producto of conSecundarias) {
+    for (const categoria of producto.categoriasSecundarias ?? []) {
+      const { items } = await staticAdapter.listProducts({ categoria, pageSize: TOTAL_CATALOGO });
+      assert.ok(
+        items.some((p) => p.sku === producto.sku),
+        `${producto.sku} debería salir en ${categoria}`,
+      );
+    }
+  }
 });
 
 test("listProducts: filtra por marca", async () => {
@@ -200,15 +217,10 @@ test("listCategories: devuelve las ocho categorías, cada una con su conteo de p
   const categorias = await staticAdapter.listCategories();
   assert.equal(categorias.length, 8);
 
-  const activosPorCategoria = new Map<string, number>();
-  for (const p of CATALOGO_REAL) {
-    if (!p.activo) continue;
-    activosPorCategoria.set(p.categoria, (activosPorCategoria.get(p.categoria) ?? 0) + 1);
-  }
   for (const categoria of categorias) {
     assert.equal(
       categoria.cantidadProductos,
-      activosPorCategoria.get(categoria.nombre) ?? 0,
+      CATALOGO_REAL.filter((p) => p.activo && esDeCategoria(p, categoria.nombre)).length,
       `"${categoria.nombre}" debería contar solo sus productos activos`,
     );
   }

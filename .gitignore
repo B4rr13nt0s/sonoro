@@ -48,6 +48,10 @@ next-env.d.ts
 # sonoro — salida del importador, nunca versionada
 reports/
 
+# sonoro — archivo de bloqueo que Excel crea junto a catalogo.xlsx mientras
+# está abierto. No es parte del libro.
+~$*
+
 # sonoro — caché de Python de los scripts de Blender
 __pycache__/
 *.pyc

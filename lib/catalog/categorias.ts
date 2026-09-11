@@ -19,3 +19,11 @@ export const CATEGORIAS_SITIO = [
   { slug: "insonorizacion", nombre: "Insonorización" },
   { slug: "accesorios", nombre: "Accesorios" },
 ] as const;
+
+// Categoría PRINCIPAL de los productos de la hoja ESPECIALES (sistemas
+// completos). Queda FUERA de CATEGORIAS_SITIO a propósito: no tiene página
+// propia ni lugar en el nav —una novena categoría no cabe hoy en la barra,
+// CLAUDE.md § Patrones—. Esos productos se ven en los listados de sus
+// categoriasSecundarias, y en su ficha el breadcrumb muestra «Sistemas» sin
+// link, porque no hay página a la cual llevar.
+export const CATEGORIA_SISTEMAS = "Sistemas";

@@ -1,43 +1,49 @@
-// Importador de catálogo — docs/PLAN.md §2.3–2.4.
+// Importador de catálogo 3.0 — docs/IMPORTADOR.md.
 //
-// Lee data/source/productos.csv, valida y normaliza cada fila, y emite
-// data/catalog.json, data/brands.json, data/taxonomy.json,
-// reports/import-errors.md y reports/price-diff.md.
+// Lee data/source/catalogo.xlsx —una hoja por categoría, más ESPECIALES para
+// los productos multi-categoría—, valida, GENERA las specs legibles a partir
+// de los campos normalizados y emite:
+//   data/catalog.json · data/brands.json · data/taxonomy.json
+//   data/inactive-slugs.json
+//   data/source/catalogo.csv       el libro aplanado, solo para el diff de Git
+//   reports/import-errors.md · reports/price-diff.md
 //
-// Dos niveles de fallo, deliberadamente distintos (§2.4):
-//   - ABORT: contrato de encabezados no calza, un sku parece un valor
-//     mangeado por hoja de cálculo (fecha/notación científica), o un precio
-//     no vacío no tiene forma de número (texto real en la celda). Ninguno de
-//     los tres archivos de salida se toca — no se pisa el último catálogo
-//     bueno con una corrida corrupta.
-//   - RECHAZO por fila: cualquier otra falla de ProductoSchema (precio
-//     vacío, sku con formato inválido, specsFicha fuera de 4–10, booleano
-//     ilegible, etc.). El import continúa; la fila queda fuera de
-//     catalog.json y documentada en reports/import-errors.md.
+// Dos niveles de fallo, deliberadamente distintos:
+//   - ABORT (catalogo/contrato.ts): hojas que faltan o sobran, bloque común
+//     distinto entre hojas, columnas específicas que no calzan, sku mangeado,
+//     precio escrito como texto, sku o slug duplicado, categoría de
+//     ESPECIALES inexistente. Se juntan TODOS los ofensores y no se escribe
+//     ningún archivo: el catálogo anterior queda intacto.
+//   - RECHAZO por fila (catalogo/filas.ts + ProductoSchema): obligatorio
+//     vacío, valor fuera de lista, booleano ilegible, par etiqueta/valor
+//     asimétrico, ficha fuera de 4–10. El import continúa y la fila queda
+//     documentada en reports/import-errors.md.
 //
-// Nota: el paso 5 de §2.3 (unir content/productos/{sku}.mdx) no está
-// implementado todavía — la carpeta está vacía y ProductoSchema no tiene un
-// campo para contenido largo. Punto de extensión deliberadamente pendiente.
+// Las specs las arma catalogo/specs.ts con lib/catalog/labels.ts: este
+// archivo no traduce ni formatea nada. El contrato de cada hoja (columnas,
+// obligatorios, orden de destacadas) vive en catalogo/hojas.ts.
 //
 // Fotos (CLAUDE.md § Imágenes): public/productos/ se escanea buscando
 // archivos "SKU_vista.ext" — lib/catalog/photos.ts hace el emparejamiento
-// puro, este archivo solo aporta el filesystem. Un producto sin archivos
-// que matcheen su sku sigue con imagenes: [] (placeholder), cero cambio de
-// comportamiento — "cuando lleguen las fotos, es solo un cambio de datos".
+// puro, este archivo solo aporta el filesystem.
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { parse } from "csv-parse/sync";
 
 import { CATEGORIAS_SITIO } from "../lib/catalog/categorias.ts";
 import { construirImagenes, emparejarFotosConSkus } from "../lib/catalog/photos.ts";
-import { pareceValorMangeado, ProductoSchema, type Producto } from "../lib/catalog/types.ts";
+import { ProductoSchema, type Producto } from "../lib/catalog/types.ts";
 import { formatQ } from "../lib/format/precio.ts";
-import { precioACents } from "./precio.ts";
+import { leerLibro, validarLibro, type LibroCrudo } from "./catalogo/contrato.ts";
+import { serializarCsv } from "./catalogo/csv.ts";
+import { normalizarFila } from "./catalogo/filas.ts";
+import { defHoja } from "./catalogo/hojas.ts";
+import { MAX_FICHA, construirSpecs, type Advertencia } from "./catalogo/specs.ts";
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const RUTA_CSV = path.join(RAIZ, "data", "source", "productos.csv");
+const RUTA_LIBRO = path.join(RAIZ, "data", "source", "catalogo.xlsx");
+const RUTA_CSV_REGISTRO = path.join(RAIZ, "data", "source", "catalogo.csv");
 const RUTA_CATALOG = path.join(RAIZ, "data", "catalog.json");
 const RUTA_BRANDS = path.join(RAIZ, "data", "brands.json");
 const RUTA_TAXONOMY = path.join(RAIZ, "data", "taxonomy.json");
@@ -52,147 +58,76 @@ const RUTA_INACTIVE_SLUGS = path.join(RAIZ, "data", "inactive-slugs.json");
 const RUTA_IMPORT_ERRORS = path.join(RAIZ, "reports", "import-errors.md");
 const RUTA_PRICE_DIFF = path.join(RAIZ, "reports", "price-diff.md");
 
-// Contrato de encabezados: conjunto exacto. Falta una o sobra una
-// desconocida → abort (no se adivina). 3 pares fijos de destacada
-// (specsDestacadas exige exactamente 3) + 10 pares fijos de ficha
-// (specsFicha exige 4–10, con pares finales vacíos permitidos).
-const COLUMNAS_REQUERIDAS = [
-  "sku",
-  "slug",
-  "nombre",
-  "marca",
-  "categoria",
-  "descripcion_corta",
-  "precio",
-  "precio_antes",
-  "disponibilidad",
-  "garantia_meses",
-  "destacado",
-  "activo",
-  "spec_destacada_1_etiqueta",
-  "spec_destacada_1_valor",
-  "spec_destacada_2_etiqueta",
-  "spec_destacada_2_valor",
-  "spec_destacada_3_etiqueta",
-  "spec_destacada_3_valor",
-  "spec_ficha_1_etiqueta",
-  "spec_ficha_1_valor",
-  "spec_ficha_2_etiqueta",
-  "spec_ficha_2_valor",
-  "spec_ficha_3_etiqueta",
-  "spec_ficha_3_valor",
-  "spec_ficha_4_etiqueta",
-  "spec_ficha_4_valor",
-  "spec_ficha_5_etiqueta",
-  "spec_ficha_5_valor",
-  "spec_ficha_6_etiqueta",
-  "spec_ficha_6_valor",
-  "spec_ficha_7_etiqueta",
-  "spec_ficha_7_valor",
-  "spec_ficha_8_etiqueta",
-  "spec_ficha_8_valor",
-  "spec_ficha_9_etiqueta",
-  "spec_ficha_9_valor",
-  "spec_ficha_10_etiqueta",
-  "spec_ficha_10_valor",
-];
-
-// Forma de número: dígitos, opcionalmente un punto y 1–2 decimales. Nada de
-// letras, símbolos de moneda ni separadores de miles.
-const PRECIO_REGEX = /^\d+(\.\d{1,2})?$/;
-
-type FilaCsv = Record<string, string>;
-
 type Grupo = { nombre: string; slug: string; cantidadProductos: number };
 
-type ErrorFila = { fila: number; sku: string; motivo: string };
+// Una fila con problema, ubicada como la ve quien edita el libro.
+type AvisoFila = { donde: string; sku: string; detalle: string };
+
+type Avisos = Record<Advertencia["tipo"], AvisoFila[]>;
 
 type DiffPrecio = { sku: string; nombre: string; antesCents: number; despuesCents: number };
 
 function main(): void {
-  const csvRaw = readFileSync(RUTA_CSV, "utf-8");
-
-  let encabezadosVistos: string[] = [];
-  let filas: FilaCsv[];
+  let libro: LibroCrudo;
   try {
-    filas = parse(csvRaw, {
-      bom: true,
-      trim: false,
-      skip_empty_lines: true,
-      columns: (encabezados: string[]) => {
-        encabezadosVistos = encabezados;
-        return encabezados;
-      },
-    }) as FilaCsv[];
+    libro = leerLibro(readFileSync(RUTA_LIBRO));
   } catch (error) {
-    abortar([`No se pudo parsear el CSV: ${(error as Error).message}`]);
+    abortar([`No se pudo leer ${path.relative(RAIZ, RUTA_LIBRO)}: ${(error as Error).message}`]);
     return;
   }
 
-  const faltantes = COLUMNAS_REQUERIDAS.filter((c) => !encabezadosVistos.includes(c));
-  const desconocidas = encabezadosVistos.filter((c) => !COLUMNAS_REQUERIDAS.includes(c));
-  if (faltantes.length > 0 || desconocidas.length > 0) {
-    const motivos: string[] = [];
-    if (faltantes.length > 0) motivos.push(`Faltan columnas: ${faltantes.join(", ")}`);
-    if (desconocidas.length > 0) motivos.push(`Columnas desconocidas: ${desconocidas.join(", ")}`);
-    abortar(motivos);
-    return;
-  }
-
-  // Chequeo defensivo — antes de normalizar nada (§2.4). Se recorren todas
-  // las filas y se acumulan todas las ofensoras antes de abortar.
-  const ofensores: string[] = [];
-  filas.forEach((fila, indice) => {
-    const numeroFila = indice + 2; // +1 por índice 0, +1 por la fila de encabezado
-    const sku = (fila.sku ?? "").trim();
-    if (pareceValorMangeado(sku)) {
-      ofensores.push(
-        `Fila ${numeroFila}: sku "${sku}" parece un valor mangeado por hoja de cálculo (fecha o notación científica)`,
-      );
-    }
-    for (const columna of ["precio", "precio_antes"] as const) {
-      const valor = (fila[columna] ?? "").trim();
-      if (valor !== "" && !PRECIO_REGEX.test(valor)) {
-        ofensores.push(
-          `Fila ${numeroFila} (sku "${sku}"): ${columna} "${valor}" no tiene forma de número — parece texto`,
-        );
-      }
-    }
-  });
+  const { ofensores, filas } = validarLibro(libro);
   if (ofensores.length > 0) {
     abortar(ofensores);
     return;
   }
 
-  // Normalización + validación por fila.
   const productosValidos: Producto[] = [];
-  const errores: ErrorFila[] = [];
+  const rechazos: AvisoFila[] = [];
+  const avisos: Avisos = { contradiccion: [], recorte: [], marketing: [] };
 
-  filas.forEach((fila, indice) => {
-    const numeroFila = indice + 2;
-    const sku = (fila.sku ?? "").trim();
-    const normalizado = normalizarFila(fila);
-    if (!normalizado.ok) {
-      errores.push({ fila: numeroFila, sku, motivo: normalizado.motivo });
-      return;
+  for (const fila of filas) {
+    const def = defHoja(fila.hoja);
+    const donde = `${fila.hoja} fila ${fila.numero}`;
+    const sku = String(fila.celdas.sku ?? "").trim();
+
+    const normalizada = normalizarFila(fila, def);
+    if (!normalizada.ok) {
+      rechazos.push({ donde, sku, detalle: normalizada.motivo });
+      continue;
     }
-    const parseo = ProductoSchema.safeParse(normalizado.candidato);
+    const { atributos, libres, categoriasSecundarias, ...base } = normalizada.fila;
+
+    const specs = construirSpecs(def, atributos, libres);
+    for (const advertencia of specs.advertencias) {
+      avisos[advertencia.tipo].push({ donde, sku, detalle: advertencia.detalle });
+    }
+
+    const parseo = ProductoSchema.safeParse({
+      ...base,
+      categoria: def.categoria,
+      specsDestacadas: specs.specsDestacadas,
+      specsFicha: specs.specsFicha,
+      moneda: "GTQ",
+      imagenes: [],
+      ...(categoriasSecundarias ? { categoriasSecundarias } : {}),
+      ...(def.multicategoria ? {} : { atributos }),
+    });
     if (!parseo.success) {
       const motivo = parseo.error.issues
         .map((issue) => `${issue.path.join(".") || "(raíz)"}: ${issue.message}`)
         .join("; ");
-      errores.push({ fila: numeroFila, sku, motivo });
-      return;
+      rechazos.push({ donde, sku, detalle: motivo });
+      continue;
     }
     productosValidos.push(parseo.data);
-  });
+  }
 
   // public/productos/ puede no existir aún (repo fresco, antes de la
   // primera foto) — se trata como carpeta vacía, no como error: es el
   // mismo estado que "todavía no hay fotos", ya cubierto por imagenes: [].
   // Archivos punto (.gitkeep, .DS_Store de macOS) son bookkeeping del
-  // filesystem, no fotos con typo — se descartan antes de reportar nada,
-  // no cuentan como alerta.
+  // filesystem, no fotos con typo — se descartan antes de reportar nada.
   const nombresFotos = existsSync(RUTA_FOTOS)
     ? readdirSync(RUTA_FOTOS).filter((nombre) => !nombre.startsWith("."))
     : [];
@@ -207,10 +142,10 @@ function main(): void {
   }
   const productosConFotos = productosValidos.filter((p) => p.imagenes.length > 0).length;
 
-  const catalogoAnterior: Producto[] = existsSync(RUTA_CATALOG)
+  const huboCatalogoAnterior = existsSync(RUTA_CATALOG);
+  const catalogoAnterior: Producto[] = huboCatalogoAnterior
     ? (JSON.parse(readFileSync(RUTA_CATALOG, "utf-8")) as Producto[])
     : [];
-  const huboCatalogoAnterior = existsSync(RUTA_CATALOG);
 
   // Un archivo de foto que no matchea ningún sku es casi siempre un typo
   // (de sku o de vista) — se reporta junto a las demás alertas de
@@ -224,27 +159,23 @@ function main(): void {
   const diffPrecios = calcularDiffPrecios(catalogoAnterior, productosValidos);
 
   // Solo activos: un producto con activo=FALSE no aparece en ningún listado
-  // de cara al cliente (listProducts/listAllProducts siempre pasan
-  // activo: true — lib/catalog/types.ts § ProductFilters), así que su
-  // conteo tampoco debe sumar en brands.json/taxonomy.json. Antes se
-  // agrupaba sobre productosValidos completo: una marca o categoría con
-  // productos inactivos mostraba "N productos" en /marcas y en la ficha de
-  // marca/categoría mientras la rejilla de abajo mostraba menos, un
-  // desfase real (ej. Cerwin Vega: CAK42 activo + XED62 inactivo → decía
-  // "2 productos" y solo listaba 1).
+  // de cara al cliente, así que su conteo tampoco suma en brands.json ni en
+  // taxonomy.json — si no, «N productos» no coincide con la rejilla.
   const productosActivos = productosValidos.filter((p) => p.activo);
 
   const brands = agruparPor(productosActivos, (p) => p.marca);
   // Categorías: lista fija de CATEGORIAS_SITIO, no agrupada dinámicamente
-  // como las marcas — CLAUDE.md § Rutas las trata como un enum de negocio
-  // fijo, no como algo que el catálogo descubre. Así una categoría sin
-  // productos todavía (p. ej. recién agregada) sigue generando su ruta
-  // estática con 0 productos y el grid vacío de ProductGrid, en vez de
-  // desaparecer de taxonomy.json y devolver 404.
+  // como las marcas — una categoría sin productos todavía sigue generando su
+  // ruta estática con 0 productos en vez de devolver 404. El conteo suma los
+  // productos que la traen como SECUNDARIA porque el listado también los
+  // muestra (lib/catalog/adapters/static.ts); «Sistemas» no entra: no tiene
+  // página propia.
   const taxonomy = CATEGORIAS_SITIO.map(({ nombre, slug }) => ({
     nombre,
     slug,
-    cantidadProductos: productosActivos.filter((p) => p.categoria === nombre).length,
+    cantidadProductos: productosActivos.filter(
+      (p) => p.categoria === nombre || p.categoriasSecundarias?.includes(nombre),
+    ).length,
   }));
   const inactiveSlugs = productosValidos
     .filter((p) => !p.activo)
@@ -258,11 +189,16 @@ function main(): void {
   writeFileSync(RUTA_BRANDS, JSON.stringify(brands, null, 2) + "\n");
   writeFileSync(RUTA_TAXONOMY, JSON.stringify(taxonomy, null, 2) + "\n");
   writeFileSync(RUTA_INACTIVE_SLUGS, JSON.stringify(inactiveSlugs, null, 2) + "\n");
-  writeFileSync(RUTA_IMPORT_ERRORS, generarImportErrorsMd(errores, alertas));
+  // Todas las filas del libro, rechazadas incluidas: es el registro de la
+  // fuente, no del catálogo publicado.
+  writeFileSync(RUTA_CSV_REGISTRO, serializarCsv(filas));
+  writeFileSync(RUTA_IMPORT_ERRORS, generarImportErrorsMd(rechazos, avisos, alertas));
   writeFileSync(RUTA_PRICE_DIFF, generarPriceDiffMd(diffPrecios, !huboCatalogoAnterior));
 
   console.log(
-    `Importación completa: ${productosValidos.length} válido(s), ${errores.length} rechazado(s), ${alertas.length} alerta(s).`,
+    `Importación completa: ${productosValidos.length} válido(s), ${rechazos.length} rechazado(s), ` +
+      `${avisos.contradiccion.length} contradicción(es), ${avisos.recorte.length} ficha(s) recortada(s), ` +
+      `${alertas.length} alerta(s).`,
   );
   console.log(
     `Fotos: ${productosConFotos} producto(s) con foto(s), ${resultadoFotos.ignorados.length} archivo(s) de public/productos/ ignorado(s).`,
@@ -270,15 +206,13 @@ function main(): void {
 
   // Toda fila rechazada bloquea el build (npm run build = import:catalog &&
   // next build), no solo un ABORT total — "mejor no actualizar que publicar
-  // un catálogo roto" aplica igual a una fila individual que a un contrato
-  // de encabezados roto. Los archivos de salida ya se escribieron arriba
-  // (a diferencia de abortar(), que no escribe nada): con exitCode ≠ 0 el
-  // deploy de Vercel no llega a publicarse de todas formas, así que dejar
-  // catalog.json y reports/import-errors.md en el filesystem local solo
-  // ayuda a diagnosticar qué falló, sin ningún riesgo de que se publique.
-  if (errores.length > 0) {
+  // un catálogo roto" aplica igual a una fila individual. Los archivos de
+  // salida ya se escribieron (a diferencia de abortar()): con exitCode ≠ 0 el
+  // deploy no llega a publicarse de todas formas, y dejarlos en el
+  // filesystem local solo ayuda a diagnosticar qué falló.
+  if (rechazos.length > 0) {
     console.error(
-      `✘ ${errores.length} fila(s) rechazada(s) — ver reports/import-errors.md. El build no continúa.`,
+      `✘ ${rechazos.length} fila(s) rechazada(s) — ver reports/import-errors.md. El build no continúa.`,
     );
     process.exitCode = 1;
   }
@@ -288,105 +222,6 @@ function abortar(motivos: string[]): void {
   console.error("✘ Importación abortada. No se escribió ningún archivo de salida.\n");
   motivos.forEach((motivo) => console.error(`  - ${motivo}`));
   process.exitCode = 1;
-}
-
-type ResultadoNormalizacion =
-  { ok: true; candidato: Record<string, unknown> } | { ok: false; motivo: string };
-
-function normalizarFila(fila: FilaCsv): ResultadoNormalizacion {
-  const sku = (fila.sku ?? "").trim();
-  const slug = (fila.slug ?? "").trim();
-  const nombre = (fila.nombre ?? "").trim();
-  const marca = (fila.marca ?? "").trim();
-  const categoria = (fila.categoria ?? "").trim();
-  const descripcionCorta = (fila.descripcion_corta ?? "").trim();
-
-  const precioTexto = (fila.precio ?? "").trim();
-  if (precioTexto === "") {
-    return { ok: false, motivo: "precio vacío" };
-  }
-  const precioCents = precioACents(precioTexto);
-
-  const precioAntesTexto = (fila.precio_antes ?? "").trim();
-  const precioAntesCents = precioAntesTexto === "" ? undefined : precioACents(precioAntesTexto);
-
-  const destacado = parseBooleanoEspanol(fila.destacado);
-  if (destacado === null) {
-    return { ok: false, motivo: `destacado "${fila.destacado ?? ""}" no es VERDADERO/FALSO` };
-  }
-  const activo = parseBooleanoEspanol(fila.activo);
-  if (activo === null) {
-    return { ok: false, motivo: `activo "${fila.activo ?? ""}" no es VERDADERO/FALSO` };
-  }
-
-  const disponibilidad = (fila.disponibilidad ?? "").trim();
-
-  const garantiaTexto = (fila.garantia_meses ?? "").trim();
-  let garantiaMeses: number | undefined;
-  if (garantiaTexto !== "") {
-    if (!/^\d+$/.test(garantiaTexto)) {
-      return { ok: false, motivo: `garantia_meses "${garantiaTexto}" no es un entero` };
-    }
-    garantiaMeses = parseInt(garantiaTexto, 10);
-  }
-
-  const specsDestacadas = ensamblarSpecs(fila, "spec_destacada", 3);
-  if (!specsDestacadas.ok) return specsDestacadas;
-
-  const specsFicha = ensamblarSpecs(fila, "spec_ficha", 10);
-  if (!specsFicha.ok) return specsFicha;
-
-  const candidato: Record<string, unknown> = {
-    sku,
-    slug,
-    nombre,
-    marca,
-    categoria,
-    descripcionCorta,
-    specsDestacadas: specsDestacadas.specs,
-    specsFicha: specsFicha.specs,
-    precioCents,
-    moneda: "GTQ",
-    disponibilidad,
-    imagenes: [],
-    destacado,
-    activo,
-  };
-  if (precioAntesCents !== undefined) candidato.precioAntesCents = precioAntesCents;
-  if (garantiaMeses !== undefined) candidato.garantiaMeses = garantiaMeses;
-
-  return { ok: true, candidato };
-}
-
-function parseBooleanoEspanol(valor: string | undefined): boolean | null {
-  const v = (valor ?? "").trim().toUpperCase();
-  if (v === "VERDADERO") return true;
-  if (v === "FALSO") return false;
-  return null;
-}
-
-type ResultadoSpecs =
-  { ok: true; specs: { etiqueta: string; valor: string }[] } | { ok: false; motivo: string };
-
-function ensamblarSpecs(
-  fila: FilaCsv,
-  prefijo: "spec_destacada" | "spec_ficha",
-  maxIndice: number,
-): ResultadoSpecs {
-  const specs: { etiqueta: string; valor: string }[] = [];
-  for (let n = 1; n <= maxIndice; n++) {
-    const etiqueta = (fila[`${prefijo}_${n}_etiqueta`] ?? "").trim();
-    const valor = (fila[`${prefijo}_${n}_valor`] ?? "").trim();
-    if (etiqueta === "" && valor === "") continue;
-    if (etiqueta === "" || valor === "") {
-      return {
-        ok: false,
-        motivo: `${prefijo}_${n} tiene solo etiqueta o solo valor (etiqueta="${etiqueta}", valor="${valor}")`,
-      };
-    }
-    specs.push({ etiqueta, valor });
-  }
-  return { ok: true, specs };
 }
 
 function normalizarNombre(nombre: string): string {
@@ -470,23 +305,59 @@ function agruparPor(productos: Producto[], selector: (p: Producto) => string): G
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
 }
 
-function generarImportErrorsMd(errores: ErrorFila[], alertas: string[]): string {
+function seccion(
+  titulo: string,
+  avisos: AvisoFila[],
+  explicacion: string,
+  vacio: string,
+): string[] {
+  const lineas = ["", `## ${titulo}`, ""];
+  if (avisos.length === 0) return [...lineas, vacio];
+  lineas.push(explicacion, "");
+  for (const aviso of avisos) {
+    lineas.push(`- ${aviso.donde} (sku "${aviso.sku}"): ${aviso.detalle}`);
+  }
+  return lineas;
+}
+
+function generarImportErrorsMd(rechazos: AvisoFila[], avisos: Avisos, alertas: string[]): string {
   const lineas: string[] = ["# Errores de importación", ""];
-  if (errores.length === 0) {
+  if (rechazos.length === 0) {
     lineas.push("Sin filas rechazadas en esta corrida.");
   } else {
-    lineas.push(`${errores.length} fila(s) rechazada(s):`, "");
-    for (const error of errores) {
-      lineas.push(`- Fila ${error.fila} (sku "${error.sku}"): ${error.motivo}`);
+    lineas.push(`${rechazos.length} fila(s) rechazada(s) — no están en catalog.json:`, "");
+    for (const rechazo of rechazos) {
+      lineas.push(`- ${rechazo.donde} (sku "${rechazo.sku}"): ${rechazo.detalle}`);
     }
   }
-  lineas.push("", "## Alertas", "");
+
+  lineas.push(
+    ...seccion(
+      "Contradicciones",
+      avisos.contradiccion,
+      "Una spec libre usa la etiqueta de una spec generada y su primer número no coincide con el campo normalizado. Se publica la libre; revisa cuál de los dos está mal.",
+      "Sin contradicciones en esta corrida.",
+    ),
+    ...seccion(
+      "Fichas recortadas",
+      avisos.recorte,
+      `La ficha junta specs generadas y libres, y admite ${MAX_FICHA}. Lo que no entra no se publica.`,
+      "Ninguna ficha pasó del máximo.",
+    ),
+    ...seccion(
+      "Destacadas con etiquetas de marketing",
+      avisos.marketing,
+      "No había otra spec para completar las tres destacadas.",
+      "Ninguna.",
+    ),
+    "",
+    "## Alertas",
+    "",
+  );
   if (alertas.length === 0) {
     lineas.push("Sin alertas en esta corrida.");
   } else {
-    for (const alerta of alertas) {
-      lineas.push(`- ${alerta}`);
-    }
+    for (const alerta of alertas) lineas.push(`- ${alerta}`);
   }
   lineas.push("");
   return lineas.join("\n");

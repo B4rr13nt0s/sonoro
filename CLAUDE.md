@@ -120,11 +120,20 @@ activo             boolean
 ### Fuente de verdad
 
 ```
-Google Sheets → export CSV → data/source/productos.csv  (versionado en Git)
-                             content/productos/{sku}.mdx
-                                    ↓ scripts/import-catalog.ts
-                             data/catalog.json
+Google Sheets → descargar .xlsx → data/source/catalogo.xlsx   (superficie de edición)
+                                        ↓ npm run import:catalog
+                                  data/source/catalogo.csv     (GENERADO, solo para el diff de Git)
+                                  data/catalog.json · brands.json · taxonomy.json
+                                  reports/import-errors.md · price-diff.md
 ```
+
+El libro tiene una hoja por categoría —**la hoja ES la categoría**, no hay columna que la diga— más `ESPECIALES`, para sistemas completos. El contrato de cada hoja (columnas, obligatorios, specs generadas, orden de destacadas) vive en **una sola tabla**: `scripts/catalogo/hojas.ts`.
+
+- **Las specs derivables se GENERAN** desde los campos normalizados (`medida`, `impedancia_ohm`…) con `lib/catalog/labels.ts`; en la hoja solo se escriben las que no se deducen. Una spec libre con la etiqueta de una generada **gana**, y si su primer número contradice al campo, `import-errors.md` lo advierte.
+- **Destacadas:** las tres primeras según la prioridad de la hoja. **Ficha:** destacadas, luego el resto de generadas, luego libres; máximo 10, y **las generadas cuentan** para ese tope.
+- **`catalogo.csv` no se edita.** Es determinista —columnas en orden fijo en código, filas por categoría y sku en puntos de código— para que `git diff` muestre solo cambios reales. Incluye las filas rechazadas: es el registro de la fuente.
+- **Sistemas:** los productos de `ESPECIALES` llevan `categoria: "Sistemas"` (`CATEGORIA_SISTEMAS`) y aparecen en los listados de sus `categoriasSecundarias`. Sistemas **no** es una categoría del nav ni tiene página: su breadcrumb no lleva link.
+- Cada producto guarda sus campos normalizados en `atributos`: la materia prima de filtros y comparador.
 
 Ningún componente lee `catalog.json` directamente. **Nunca.** Todo pasa por `lib/catalog/`, con firmas asíncronas y paginadas:
 
@@ -134,7 +143,11 @@ listProducts(filters: ProductFilters): Promise<{ items: Product[]; total: number
 listBrands(): Promise<Brand[]>
 ```
 
-El importador **aborta** si un `sku` parece fecha o notación científica, si un precio llega como texto, o si el contrato de encabezados no calza. Alerta si un `slug` ya publicado cambió.
+El importador **aborta sin escribir nada**, y juntando todos los ofensores, si: falta o sobra una hoja; el bloque común no es idéntico y en el mismo orden en las nueve hojas; una columna específica falta o sobra; un `sku` no llega como texto o parece fecha o notación científica; un precio llega como texto; hay un `sku` o `slug` duplicado, aunque sea entre hojas distintas; o `ESPECIALES.categorias` nombra una categoría inexistente. Cualquier otra falla rechaza **solo la fila**, y el build no pasa. Alerta si un `slug` ya publicado cambió.
+
+### Etiquetas de los campos normalizados
+
+`lib/catalog/labels.ts` es la **única** traducción de valores normalizados a texto para el cliente: `FIELD_LABELS` (nombre de fila, leído con `fieldLabel()` porque `medida` cambia según la categoría), `VALUE_LABELS` (campos de lista), `formatValue()` y `compareMeasures()` (medidas por magnitud, no alfabético). La usan el importador, los filtros y el comparador — **nunca** se escribe una segunda tabla. Consecuencia: cambiar una etiqueta ahí cambia `catalog.json` en el próximo import, no solo la interfaz. Las claves de `VALUE_LABELS` son los valores de la hoja LISTAS; un valor nuevo en LISTAS exige su traducción.
 
 ### Mantenimiento del catálogo
 
