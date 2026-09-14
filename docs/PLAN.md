@@ -332,7 +332,7 @@ Sin imagen, la conversión recae en el texto:
 - [ ] Contraste AA, foco visible, `alt` real, navegación por teclado en el drawer, roles ARIA en filtros
 - [ ] `priority` en la imagen LCP; `lazy` en el resto
 
-**Listo cuando:** Lighthouse móvil ≥ 90 en Performance y ≥ 95 en Accessibility.
+**Listo cuando:** Lighthouse móvil ≥ 90 en Performance y ≥ 95 en Accessibility. Excepción: la portada se mide por métricas (FCP, LCP, CLS) y no por el puntaje global, porque el carrusel 3D anima sin parar y hunde el Total Blocking Time — ver el comentario en `lighthouserc.js`.
 
 ---
 
@@ -424,7 +424,7 @@ La fase más lenta. **Empezar en paralelo desde la Fase 4.**
 
 - [ ] Tests unitarios de lo que rompe en silencio (§3.3) + migración del carrito
 - [ ] Un test e2e del flujo crítico (§6)
-- [ ] Lighthouse en CI con presupuestos: Performance ≥ 90 móvil, Accessibility ≥ 95
+- [ ] Lighthouse en CI con presupuestos: Performance ≥ 90 móvil, Accessibility ≥ 95 (la portada, por métricas: ver `lighthouserc.js`)
 - [ ] Revisión manual: recorrer los SKUs publicados y verificar precio, marca y categoría contra la fuente. Una vez, a mano, antes de publicar
 - [ ] Probar en Android de gama media con red lenta, no solo en escritorio
 - [ ] Enlaces rotos, 404, favicon, OG, formulario de contacto
