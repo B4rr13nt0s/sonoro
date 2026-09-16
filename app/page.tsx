@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Fragment } from "react";
 
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { ProductCarousel3D } from "@/components/home/ProductCarousel3D";
@@ -20,81 +21,137 @@ const MENSAJE_CONSULTA_EXISTENCIAS = "Hola Sonoro, quiero consultar disponibilid
 // Las descripciones describen lo que HAY en el catálogo (medidas, canales,
 // calibres), no lo que conviene — CLAUDE.md § reglas 2.
 //
-// Composición tipo Mondrian: cuadrados y rectángulos de distinto tamaño que
-// llenan una retícula de 4 × 4 SIN huecos (4+2+2+2+1+1+2+2 = 16 celdas). El
-// orden de colocación es el de CATEGORIAS_SITIO y la rejilla va en modo
-// `dense`, así que un bloque alto entra en el hueco que dejó uno ancho en
-// vez de empujar todo hacia abajo.
+// Composición tipo Mondrian, según el boceto del negocio: una retícula de 4
+// columnas por 8 medias filas donde cada bloque tiene su lugar FIJO (`area`).
+// Los lugares se escriben a mano en vez de dejarlos al auto-placement, para
+// que el orden del DOM —el del nav, que es el que siguen el teclado y el
+// lector de pantalla— no dependa del orden visual. Las 32 celdas quedan
+// cubiertas exactamente una vez:
 //
-// De Mondrian se toma la COMPOSICIÓN, no la paleta: no hay color de acento
-// (CLAUDE.md § Sistema visual), así que los bloques son el fondo alterno y
-// uno solo negro.
+//   filas   col 1        col 2        col 3            col 4
+//   1-2     Bocinas      Bocinas      Amplificadores   Amplificadores
+//   3-4     Subwoofers   Receptores   Receptores       Ecualizadores
+//   5       Subwoofers   Subwoofers   Insonorización   Ecualizadores
+//   6       Subwoofers   Subwoofers   Insonorización   Accesorios
+//   7-8     Kits         Kits         Insonorización   Accesorios
 //
-// `span` solo aplica desde lg. Abajo de eso todas las tarjetas miden igual,
-// que es como ya se comportaba la rejilla.
+// Subwoofers es una L. CSS grid solo coloca rectángulos, así que va en dos
+// piezas —`area` arriba y `extension` abajo— que se tocan sin hueco (ver el
+// JSX). Las tarjetas conservan el estilo del sitio: fondo alterno o negro.
+//
+// Debajo de lg no hay retícula: las tarjetas van en el orden del nav, cada
+// una con su primera foto a todo el ancho, y la extensión de Subwoofers no se
+// muestra.
 type SlugCategoria = (typeof CATEGORIAS_SITIO)[number]["slug"];
 
-type TarjetaCategoria = {
-  descripcion: string;
-  // Un cuadrado encuadra una sola foto; un rectángulo, varias — se reparten
-  // el alto si es vertical y el ancho si es horizontal.
+type Bloque = {
+  area: string;
+  // Cuántas fotos lleva el bloque y cómo se acomodan: una al lado de la otra
+  // en "fila", una debajo de la otra en "columna". Todas miden lo mismo (ver
+  // FotosBloque), así que un bloque más grande no agranda sus fotos: lleva más.
   fotos: string[];
   direccion: "fila" | "columna";
-  span: string;
+};
+
+type TarjetaCategoria = Bloque & {
+  descripcion: string;
   dark?: true;
+  extension?: Bloque;
 };
 
 const TARJETAS_CATEGORIA: Record<SlugCategoria, TarjetaCategoria> = {
   bocinas: {
     descripcion: 'Coaxiales y de componentes, de 4" a 6×9".',
-    fotos: ['FOTO — bocina 6×9"'],
+    area: "lg:col-start-1 lg:col-span-2 lg:row-start-1 lg:row-span-2",
+    fotos: ['FOTO — bocina 6×9"', 'FOTO — componentes 6.5"'],
     direccion: "fila",
-    span: "lg:col-span-2 lg:row-span-2",
   },
   subwoofers: {
     descripcion: 'De 6.5" a 15", bobina simple, doble y triple.',
-    fotos: ['FOTO — sub 12" tres cuartos', 'FOTO — sub 10" de frente'],
-    direccion: "columna",
-    span: "lg:row-span-2",
+    area: "lg:col-start-1 lg:row-start-3 lg:row-span-2",
+    fotos: ['FOTO — sub 12" tres cuartos'],
+    direccion: "fila",
+    dark: true,
+    extension: {
+      area: "lg:col-start-1 lg:col-span-2 lg:row-start-5 lg:row-span-2",
+      fotos: ['FOTO — sub 10" de frente', 'FOTO — sub 15" de perfil'],
+      direccion: "fila",
+    },
   },
   amplificadores: {
     descripcion: "Monoblock y multicanal, de 1 a 6 canales.",
+    area: "lg:col-start-3 lg:col-span-2 lg:row-start-1 lg:row-span-2",
     fotos: ["FOTO — amplificador de 4 canales", "FOTO — monoblock"],
     direccion: "fila",
-    span: "lg:col-span-2",
+    dark: true,
   },
   receptores: {
     descripcion: 'CarPlay y Android Auto sin cables, de 7" a 10", con cámara de reversa.',
+    area: "lg:col-start-2 lg:col-span-2 lg:row-start-3 lg:row-span-2",
     fotos: ['FOTO — pantalla 9"', "FOTO — radio 1 DIN"],
-    direccion: "columna",
-    span: "lg:row-span-2",
-    dark: true,
+    direccion: "fila",
   },
   ecualizadores: {
     descripcion: "Gráficos, paramétricos y procesadores DSP.",
-    fotos: ["FOTO — ecualizador de frente"],
-    direccion: "fila",
-    span: "",
+    area: "lg:col-start-4 lg:row-start-3 lg:row-span-3",
+    fotos: ["FOTO — ecualizador de frente", "FOTO — procesador DSP"],
+    direccion: "columna",
   },
   kits: {
     descripcion: "Kits de cable de 0 a 8 AWG, en cobre y CCA.",
-    fotos: ["FOTO — kit de cable calibre 4"],
+    area: "lg:col-start-1 lg:col-span-2 lg:row-start-7 lg:row-span-2",
+    fotos: ["FOTO — kit de cable calibre 4", "FOTO — portafusible y terminales"],
     direccion: "fila",
-    span: "",
   },
   insonorizacion: {
     descripcion: "Láminas butílicas para puertas, piso y cajuela.",
+    area: "lg:col-start-3 lg:row-start-5 lg:row-span-4",
     fotos: ["FOTO — lámina butílica en puerta", "FOTO — rollo de insonorización"],
-    direccion: "fila",
-    span: "lg:col-span-2",
+    direccion: "columna",
   },
   accesorios: {
     descripcion: "Cables RCA, adaptadores, distribuidores y portafusibles.",
-    fotos: ["FOTO — cables RCA", "FOTO — bloque distribuidor", "FOTO — portafusible"],
+    area: "lg:col-start-4 lg:row-start-6 lg:row-span-3",
+    fotos: ["FOTO — cables RCA y adaptadores"],
     direccion: "fila",
-    span: "lg:col-span-2",
+    dark: true,
   },
 };
+
+// TODAS las fotos de la sección miden lo mismo, sin importar el bloque.
+//
+// El ancho sale de la retícula: cada foto ocupa exactamente una columna menos
+// el padding de su tarjeta. En un bloque de una columna ese es el ancho
+// interior, sin más. En uno de dos columnas, dos fotos lado a lado solo miden
+// eso si las separa el gap de la rejilla más los dos paddings: 24 + 24 + 24 =
+// 72 px (gap-18). Con eso cada foto cae alineada con su columna, también de
+// una tarjeta a otra. El alto sale de la proporción fija 3:2.
+//
+// Si cambia el gap de la rejilla (gap-6) o el padding de las tarjetas (p-6),
+// hay que recalcular gap-18: si no, las fotos de los bloques anchos dejan de
+// medir lo mismo que las de los angostos.
+//
+// Debajo de lg todas las tarjetas tienen el mismo ancho y cada una muestra
+// solo su primera foto, a todo el ancho, así que ahí también son iguales.
+// Las demás van envueltas en un div que se oculta, y no con `hidden` sobre
+// el placeholder: ese componente ya trae `flex`, y entre dos utilidades de
+// display el orden de la hoja de estilos —no el del className— decide cuál
+// gana.
+function FotosBloque({ fotos, direccion, dark }: Omit<Bloque, "area"> & { dark: boolean }) {
+  const enFila = direccion === "fila";
+  return (
+    <div className={`flex ${enFila ? "flex-row lg:gap-18" : "flex-col lg:gap-6"}`}>
+      {fotos.map((foto, i) => (
+        <div
+          key={foto}
+          className={`${enFila ? "min-w-0 flex-1" : "w-full"} ${i > 0 ? "hidden lg:block" : ""}`}
+        >
+          <PlaceholderImage label={foto} dark={dark} className="aspect-[3/2] w-full" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const CARACTERISTICAS = [
   {
@@ -156,43 +213,59 @@ export default async function Home() {
             Ver toda la tienda →
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-flow-row-dense lg:auto-rows-[200px] lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[repeat(8,auto)]">
           {CATEGORIAS_SITIO.map(({ slug, nombre }) => {
-            const { descripcion, fotos, direccion, span, dark = false } = TARJETAS_CATEGORIA[slug];
+            const {
+              descripcion,
+              area,
+              fotos,
+              direccion,
+              extension,
+              dark = false,
+            } = TARJETAS_CATEGORIA[slug];
+            const fondo = dark ? "bg-negro text-white" : "bg-fondo-alt text-negro";
             return (
-              <Link
-                key={slug}
-                href={`/catalogo/${slug}`}
-                className={`rounded-card-lg flex h-[280px] flex-col justify-between gap-3 p-6 lg:h-auto ${span} ${
-                  dark ? "bg-negro text-white" : "bg-fondo-alt text-negro"
-                }`}
-              >
-                <div className="flex flex-col gap-2">
-                  <div className="text-26 font-semibold tracking-[-0.02em]">{nombre}</div>
-                  <div
-                    className={`max-w-[400px] text-[15px] ${
-                      dark ? "text-texto-sobre-negro" : "text-texto-secundario"
-                    }`}
-                  >
-                    {descripcion}
-                  </div>
-                </div>
-                {/* min-h-0: sin esto cada placeholder se planta en su alto de
-                    contenido y el conjunto se desborda de la tarjeta en vez
-                    de repartirse el espacio que sobra. */}
-                <div
-                  className={`flex flex-1 gap-2 ${direccion === "columna" ? "flex-col" : "flex-row"}`}
+              <Fragment key={slug}>
+                {/* Con extensión, la pieza de arriba de la L baja 24 px (el
+                    gap) y pierde las esquinas de abajo: así se funde con la
+                    de abajo en un solo bloque, sin la línea blanca del gap. */}
+                <Link
+                  href={`/catalogo/${slug}`}
+                  className={`rounded-card-lg flex flex-col justify-between gap-3 p-6 ${area} ${fondo} ${
+                    extension ? "lg:-mb-6 lg:rounded-b-none" : ""
+                  }`}
                 >
-                  {fotos.map((foto) => (
-                    <PlaceholderImage
-                      key={foto}
-                      label={foto}
+                  <div className="flex flex-col gap-2">
+                    <div className="text-26 font-semibold tracking-[-0.02em]">{nombre}</div>
+                    <div
+                      className={`max-w-[400px] text-[15px] ${
+                        dark ? "text-texto-sobre-negro" : "text-texto-secundario"
+                      }`}
+                    >
+                      {descripcion}
+                    </div>
+                  </div>
+                  <FotosBloque fotos={fotos} direccion={direccion} dark={dark} />
+                </Link>
+                {/* La pieza de abajo de la L también lleva al listado, pero
+                    fuera del orden de tabulación y oculta al lector de
+                    pantalla: es el mismo destino que la de arriba, y
+                    anunciarlo dos veces seguidas solo estorba. */}
+                {extension ? (
+                  <Link
+                    href={`/catalogo/${slug}`}
+                    aria-hidden="true"
+                    tabIndex={-1}
+                    className={`rounded-card-lg hidden p-6 lg:flex lg:flex-col lg:rounded-tl-none ${extension.area} ${fondo}`}
+                  >
+                    <FotosBloque
+                      fotos={extension.fotos}
+                      direccion={extension.direccion}
                       dark={dark}
-                      className="min-h-0 flex-1"
                     />
-                  ))}
-                </div>
-              </Link>
+                  </Link>
+                ) : null}
+              </Fragment>
             );
           })}
         </div>
