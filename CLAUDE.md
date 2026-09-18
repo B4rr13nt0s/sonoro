@@ -284,7 +284,7 @@ Las de la sección de categorías son aparte del catálogo: ilustran la categor�
 
 El recorte es automático —relleno de blanco desde las orillas— salvo dos fotos con el contorno trazado A MANO en `scripts/fotos/contornos.json`, porque lo que sobra es tan claro como partes del producto y la tolerancia las mordía. `rejilla.mjs` y `zona.mjs` dibujan la foto con coordenadas encima para trazar esos contornos.
 
-**Las fotos se piden al acercarse a la sección, no en la carga inicial** (`components/home/FotosCategoria.tsx`), y por eso ese bloque es un componente cliente: con `loading="lazy"` a secas el navegador las bajaba igual durante la carga y el pintado mayor estimado de la portada se salía del presupuesto de Lighthouse. Por lo mismo el canvas 3D del hero se carga cuando el navegador queda libre. Las dos cosas cuelgan del mismo presupuesto (`lighthouserc.js`): si se agrega peso a la portada, hay que medir.
+**Las fotos se piden al acercarse a la sección, no en la carga inicial** (`components/home/FotosCategoria.tsx`), y por eso ese bloque es un componente cliente: con `loading="lazy"` a secas el navegador las bajaba igual durante la carga, 280 KB que paga también quien nunca baja. Por lo mismo el canvas 3D del hero se carga cuando el navegador queda libre. Si se agrega peso a la portada, hay que medir (`lighthouserc.js` explica qué se asierta ahí y qué no).
 
 #### Pipeline de fotos por SKU
 

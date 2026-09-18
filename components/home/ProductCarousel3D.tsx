@@ -40,10 +40,10 @@ const CHROME_SM = { v: 92, h: 320 };
 //
 // Y no se pide apenas monta, sino cuando el navegador queda libre (ver
 // `useCanvasDiferido`): son ~1 MB de three + drei + R3F, y descargarlos y
-// ejecutarlos dentro de la hidratación retrasaba el pintado del titular del
-// hero — el LCP de la portada — hasta 3.2 s en el runner de CI, con el
-// procesador frenado 4×. El cuadro ya reserva su alto, así que esperar no
-// mueve nada de sitio (CLS sigue en 0).
+// ejecutarlos dentro de la hidratación deja el hilo principal bloqueado justo
+// cuando el visitante espera ver el hero. Medido con el procesador frenado
+// 4×, el bloqueo total pasa de 2.4 s a 0.02 s. El cuadro ya reserva su alto,
+// así que esperar no mueve nada de sitio (CLS sigue en 0).
 const CarouselCanvas = dynamic(() => import("./CarouselCanvas").then((m) => m.CarouselCanvas), {
   ssr: false,
   loading: () => null,

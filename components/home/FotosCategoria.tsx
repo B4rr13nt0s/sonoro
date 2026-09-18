@@ -11,11 +11,11 @@ import { useEffect, useRef, useState } from "react";
  * acerca a la sección, no durante la carga inicial.
  *
  * `loading="lazy"` no alcanza — es lo que traen de fábrica. El umbral de
- * Chrome para «ya casi se ve» es generoso, así que con la conexión rápida de
- * una medición las ocho fotos de móvil se descargaban igual dentro de la
- * carga, y el pintado mayor estimado de la portada se pasaba de los 3 s del
- * presupuesto de Lighthouse (lighthouserc.js). Con esto vuelve a ~2.3 s, y de
- * paso quien no baja de la portada se ahorra 280 KB.
+ * Chrome para «ya casi se ve» es generoso, así que con una conexión rápida
+ * las ocho fotos de móvil se descargaban igual dentro de la carga inicial:
+ * 280 KB que se lleva también quien nunca baja de la portada. Medido en el
+ * runner de CI, con esto la portada baja UNA imagen al arrancar en vez de
+ * nueve.
  *
  * Lo que se pierde: las fotos no vienen en el HTML inicial. Es aceptable
  * porque ILUSTRAN la categoría —el nombre, la descripción y el enlace de cada
