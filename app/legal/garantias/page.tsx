@@ -34,10 +34,17 @@ export default function GarantiasPage() {
         // exclusiones sin plazo, a propósito — no se inventa un rango ni
         // una fecha.
         {
+          titulo: "Instalación",
+          parrafos: [
+            "Cada producto incluye la instalación básica. Si lo que compraste requiere una instalación más compleja, esa instalación tiene un costo adicional.",
+            "Al cerrar el pedido se te informa si el producto o los productos que llevas requieren una instalación básica o una más compleja.",
+          ],
+        },
+        {
           titulo: "Qué anula la garantía",
           parrafos: [
             "La garantía se pierde si hay evidencia de mal uso del producto, o de una instalación incorrecta.",
-            "Sonoro vende únicamente equipo: no instala ni asesora sobre cómo instalarlo. La instalación la hace el taller de tu preferencia, bajo su responsabilidad.",
+            "Si el producto lo instaló un tercero y hay evidencia de que la instalación fue incorrecta, la garantía no cubre ese daño.",
           ],
         },
         {

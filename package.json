@@ -13,6 +13,7 @@
     "test": "node --no-warnings --test \"**/*.test.ts\"",
     "test:e2e": "playwright test",
     "import:catalog": "tsx scripts/import-catalog.ts",
+    "fotos:sin-fondo": "node scripts/fotos/quitar-fondo.mjs",
     "prepare": "husky"
   },
   "lint-staged": {

@@ -16,10 +16,10 @@ En esta etapa **no hay pago en línea.** El sitio es un catálogo con carrito; e
 
 ## Reglas que no se rompen
 
-1. **Sonoro no instala. Nunca, bajo ningún concepto.** Prohibido todo copy que sugiera instalación, agenda, taller o servicio: «agenda tu instalación», «te lo instalamos», «nuestros técnicos».
+1. **Sonoro sí instala, y la instalación básica va incluida en el precio de cada producto.** Una instalación más compleja tiene **costo adicional**, y al comprador se le informa **al cerrar el pedido** si lo que lleva requiere una básica o una compleja. Lo que sigue prohibido es inventar lo que no está definido: qué cuenta como básica o compleja, precios, plazos, agenda o taller propio (ver Decisiones abiertas). Este punto cambió el 17 de septiembre de 2026; antes Sonoro no instalaba, así que queda copy viejo dando vueltas — al toparte con «la instalación la hace el taller de tu preferencia», corregilo.
 2. **Sonoro no asesora ni recomienda.** Prohibido el copy de criterio experto sobre qué le queda al cliente: «te ayudamos a escoger», «el equipo perfecto para tu carro», «te armamos tu sistema», «nuestros expertos». El sitio presenta datos del producto; el cliente decide.
 3. **No hay pago en línea.** No existe página de checkout, ni pasarela, ni campos de tarjeta, ni copy que diga «pagar», «comprar ahora» o «finalizar compra». El carrito termina en WhatsApp.
-4. **Garantía:** únicamente por **desperfecto de fábrica**. Se pierde si hay evidencia de mal uso o de instalación incorrecta. No inventes plazos ni condiciones adicionales (ver Decisiones abiertas).
+4. **Garantía:** únicamente por **desperfecto de fábrica**. Se pierde si hay evidencia de mal uso o de una instalación incorrecta hecha fuera de Sonoro. No inventes plazos ni condiciones adicionales (ver Decisiones abiertas).
 5. **Precios:** `Q 2,450.00`. Símbolo, espacio, coma de miles, **dos decimales siempre**. Sin excepciones. Siempre con IVA incluido.
 6. **Financiamiento: máximo 6 pagos.** La línea bajo el precio es `o Q 408.34 al mes × 6`. La frase para condiciones es exactamente «Hasta 6 pagos precio contado.»
 7. **Envíos:** «Envíos gratis a todo el país», siempre acompañado de «Aplican restricciones según destino y volumen del pedido».
@@ -241,7 +241,7 @@ En los SVG el texto sigue siendo texto. Antes de imprenta o bordado, convertir a
   - `noindex` en la metadata, pero **NO** en el `Disallow` de `robots.ts`: un Disallow impediría que Google llegara a leer el noindex, y la URL está hecha para compartirse.
   - **El resaltado de diferencias solo cuenta filas donde TODAS las columnas traen dato.** Un hueco no es una diferencia entre productos, es un dato que el fabricante no publica. Contarlo marcaba 17 de 17.1 filas con cuatro subwoofers —el resaltado dejaba de distinguir nada— porque `specsFicha` no tiene vocabulario fijo: Bocinas usa 49 etiquetas distintas entre 106 productos y cada uno lleva 4-10.
 - **No existe `/checkout`.** No crearla.
-- **No existe `/instalacion`.** No crearla (regla 1).
+- **No existe `/instalacion`.** Sonoro instala (regla 1), pero no hay página de ese servicio y no se arma una sin que el negocio defina qué dice: alcance, precios y qué separa una instalación básica de una compleja (ver Decisiones abiertas).
 - Filtros y orden en **query params** (`?marca=memphis&precio_max=200000`): URL compartible por WhatsApp y rastreable por Google.
 - **Los listados abren por «relevancia»:** `destacado` primero, luego precio **descendente**, desempate por `sku`. El precio descendente como criterio secundario pone el equipo antes que los accesorios sin agregar un campo al esquema — con precio ascendente, KBT abría con adaptadores RCA de Q 30 y sus subwoofers caían en la página 3. El comparador vive en `lib/catalog/orden.ts` y desempata por puntos de código, no con `localeCompare`: el orden no puede cambiar entre builds y la salida de ICU varía entre versiones.
 - **El orden por defecto no se escribe en la URL.** `ORDEN_DEFECTO` (`lib/catalog/types.ts`) es el valor que `lib/catalog/href.ts` OMITE, así que `/marcas/kbt` queda limpia y `?orden=precio_asc` solo aparece cuando alguien lo pidió. El canonical excluye `orden` aparte, armándose con el mismo builder sin pasarlo. Si algún día cambia el default, se cambia esa constante — no los tres builders.
@@ -328,10 +328,11 @@ Faltan por diseñar: carrito vacío, búsqueda sin resultados, confirmación de 
 
 No inventes valores para estos puntos. Si el trabajo los necesita, pregunta.
 
+- **Instalación básica vs. compleja.** Está definido que la básica va incluida y que la compleja cuesta aparte, y que la diferencia se le comunica al comprador al cerrar el pedido. **No** está definido qué trabajos caen en cada una, cuánto cuesta la compleja, ni si eso cambia por producto o por vehículo. Hasta definirlo, el sitio dice solo lo confirmado y no promete tiempos, precios ni agenda.
 - **Plazo de garantía.** Está definido el alcance (solo desperfecto de fábrica, se pierde por mal uso o instalación incorrecta) pero **no la duración**. Probablemente varíe por marca, según lo que otorgue cada fabricante. Hasta definirlo, `garantiaMeses` queda vacío y la página de garantías describe alcance y exclusiones sin plazo.
 - **«Envíos gratis a todo el país»** — compromiso de negocio heredado del handoff, sin confirmar. Es caro si se sostiene sin condiciones.
 - **Redondeo de la cuota.** Este documento fija `Math.ceil` al centavo (`Q 408.34`). El handoff mostraba `Q 408.33`, que suma Q 2,449.98 en seis pagos. Si el negocio prefiere 408.33, cambiar aquí y definir que la última cuota absorbe la diferencia.
-- **Datos supuestos en el handoff, todos por confirmar:** precios, conteos de producto, países de origen de las marcas, teléfono y correo. La dirección ya está confirmada y se muestra en `/nosotros`.
+- **Datos supuestos en el handoff, todos por confirmar:** precios, conteos de producto y países de origen de las marcas. La dirección, el teléfono (+502 5295 5555, el mismo de WhatsApp), el correo (sonoro502@gmail.com) y el Instagram (sonoro.gt) ya están confirmados: viven en variables de entorno —`NEXT_PUBLIC_WHATSAPP_NUMBER`, `BUSINESS_PHONE`, `BUSINESS_EMAIL`, `BUSINESS_INSTAGRAM`—, nunca incrustados en el código, y se muestran en el pie y en `/nosotros`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
@@ -440,17 +441,17 @@ Al cambiar de producto —con las flechas, con los puntos o por el ciclo— la v
 Corre siempre mientras el carrusel esté a la vista, y cada producto recorre lo mismo:
 
 ```
-espera-previa (5 s)  →  girando (15 s, una vuelta)  →
-espera-final (5 s)   →  siguiente producto  →  espera-previa …
+espera-previa (3 s)  →  girando (10 s, una vuelta)  →
+espera-final (3 s)   →  siguiente producto  →  espera-previa …
 ```
 
-Y si el usuario toma el modelo: `interactuando` → (5 s **desde que suelta**) → `volviendo` (≈0.8 s) → `girando`. O sea, primero se recuperan la vista y el zoom, y recién entonces arranca el giro.
+Y si el usuario toma el modelo: `interactuando` → (3 s **desde que suelta**) → `volviendo` (≈0.8 s) → `girando`. O sea, primero se recuperan la vista y el zoom, y recién entonces arranca el giro.
 
-El plan vive en `components/home/ciclo.ts` —sin React ni DOM— y tiene test (`ciclo.test.ts`) que fija el orden de las fases, los 25 s por producto y que el giro sea exactamente una vuelta. El ángulo es **absoluto en función del tiempo**, no un acumulador: así el modelo arranca siempre en 0, termina la vuelta exacta y cambiar de producto no arrastra el ángulo del anterior. Va en negativo porque una rotación positiva sobre +Y lleva la cara frontal hacia la derecha, y el giro pedido va de derecha a izquierda.
+El plan vive en `components/home/ciclo.ts` —sin React ni DOM— y tiene test (`ciclo.test.ts`) que fija el orden de las fases, los 16 s por producto y que el giro sea exactamente una vuelta. El ángulo es **absoluto en función del tiempo**, no un acumulador: así el modelo arranca siempre en 0, termina la vuelta exacta y cambiar de producto no arrastra el ángulo del anterior. Va en negativo porque una rotación positiva sobre +Y lleva la cara frontal hacia la derecha, y el giro pedido va de derecha a izquierda.
 
 `volviendo` es la única fase sin plazo: la corta el rig cuando la interpolación llegó a destino. Un temporizador la cortaría antes o después según cuánto hubiera que desandar.
 
-La cuenta de los 5 s **no corre mientras hay un gesto en curso**. Con un solo aviso en el `pointerdown`, un arrastre lento más largo que ese plazo se cancelaba solo a mitad de camino, y se veía como si el modelo se negara a quedarse donde uno lo dejaba.
+La cuenta de los 3 s **no corre mientras hay un gesto en curso**. Con un solo aviso en el `pointerdown`, un arrastre lento más largo que ese plazo se cancelaba solo a mitad de camino, y se veía como si el modelo se negara a quedarse donde uno lo dejaba.
 
 #### El bug del riel: por qué el modelo no giraba en horizontal
 

@@ -2,11 +2,17 @@ import type { Metadata } from "next";
 
 import { MarcasScroller } from "@/components/catalog/MarcasScroller";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
+import { IconoCorreo, IconoInstagram, IconoTelefono } from "@/components/ui/IconosContacto";
 import { listBrands } from "@/lib/catalog/index.ts";
+import { buildWhatsAppUrl, WHATSAPP_NUMBER } from "@/lib/whatsapp/index.ts";
 
 const TITULO = "Nosotros — Sonoro";
 const DESCRIPCION =
-  "Sonoro importa de forma directa equipo de audio para carro a Guatemala. Vendemos únicamente equipo — la instalación la hace el taller de tu preferencia.";
+  "Sonoro importa de forma directa equipo de audio para carro a Guatemala. Cada producto incluye la instalación básica; una instalación más compleja tiene costo adicional.";
+
+// Mismo mensaje genérico que la portada: consulta de existencia, sin
+// lenguaje de asesoría ni instalación (CLAUDE.md § reglas 1 y 2).
+const MENSAJE_CONSULTA = "Hola Sonoro, quiero consultar disponibilidad de un producto.";
 
 const DIRECCION =
   "Km 13.5 Carretera a El Salvador, Calle Real, Puerta Parada, Santa Catarina Pinula, Ofibodegas del Milenio, Bodega 6";
@@ -28,7 +34,7 @@ export default async function NosotrosPage() {
           Nosotros
         </div>
         <h1 className="text-44 sm:text-56 lg:text-68 leading-[1.05] font-semibold tracking-[-0.035em] text-balance">
-          Importamos a Guatemala todo lo que necesitas para que tú no tengas que hacerlo.
+          Importamos a Guatemala todo lo que necesitas para elevar tu vehículo a otro nivel.
         </h1>
         <p className="text-texto-secundario max-w-[700px] text-[18px] leading-[1.5] sm:text-[21px]">
           Sonoro es una empresa de car audio donde importamos marcas de calidad y renombre a nivel
@@ -61,6 +67,14 @@ export default async function NosotrosPage() {
             insonorización y accesorios; con varias gamas disponibles para ajustarnos a lo que
             buscas.
           </p>
+          {/* Instalación: solo lo confirmado por el negocio (CLAUDE.md
+              § regla 1). Qué trabajos son básicos, cuánto cuesta uno
+              complejo y en cuánto tiempo sigue sin definirse, así que no
+              se menciona. */}
+          <p className="text-texto-secundario text-[16px] leading-[1.6] sm:text-[17px]">
+            Cada producto incluye la instalación básica. Si lo que compras requiere una instalación
+            más compleja, tiene un costo adicional y te lo informamos al cerrar el pedido.
+          </p>
         </div>
       </section>
 
@@ -79,12 +93,43 @@ export default async function NosotrosPage() {
         </div>
         <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
           <div className="text-26 font-semibold tracking-[-0.025em]">Escríbenos</div>
-          <div className="text-texto-secundario text-[15px] leading-[1.6]">
-            {process.env.BUSINESS_PHONE ?? "Teléfono por confirmar."}
+          {/* Teléfono, correo e Instagram salen de las env vars de
+              lib/seo/business.ts, las mismas del JSON-LD y del pie: cada
+              dato se omite si su variable no está definida. */}
+          <div className="text-texto-secundario flex items-center gap-2 text-[15px] leading-[1.6]">
+            {process.env.BUSINESS_PHONE ? (
+              <>
+                <IconoTelefono />
+                {process.env.BUSINESS_PHONE}
+              </>
+            ) : (
+              "Teléfono por confirmar."
+            )}
           </div>
-          <span className="text-texto-terciario mt-auto pt-5 text-[15px]">
-            WhatsApp próximamente
-          </span>
+          {process.env.BUSINESS_EMAIL ? (
+            <div className="text-texto-secundario flex items-center gap-2 text-[15px] leading-[1.6]">
+              <IconoCorreo />
+              {process.env.BUSINESS_EMAIL}
+            </div>
+          ) : null}
+          {process.env.BUSINESS_INSTAGRAM ? (
+            <a
+              href={`https://www.instagram.com/${process.env.BUSINESS_INSTAGRAM}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-texto-secundario flex items-center gap-2 text-[15px] leading-[1.6]"
+            >
+              <IconoInstagram />@{process.env.BUSINESS_INSTAGRAM}
+            </a>
+          ) : null}
+          <a
+            href={buildWhatsAppUrl(WHATSAPP_NUMBER, MENSAJE_CONSULTA)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-auto pt-5 text-[15px]"
+          >
+            Escríbenos por WhatsApp →
+          </a>
         </div>
       </section>
     </div>

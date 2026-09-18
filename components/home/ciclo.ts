@@ -4,12 +4,12 @@
  * Cada producto recorre siempre lo mismo mientras el carrusel esté a la
  * vista:
  *
- *   espera-previa (5 s)  →  girando (15 s, una vuelta completa)  →
- *   espera-final (5 s)   →  [avanza]  →  espera-previa …
+ *   espera-previa (3 s)  →  girando (10 s, una vuelta completa)  →
+ *   espera-final (3 s)   →  [avanza]  →  espera-previa …
  *
  * Y si el usuario toma el modelo:
  *
- *   interactuando  →  (5 s desde que SUELTA)  →  volviendo  →  girando …
+ *   interactuando  →  (3 s desde que SUELTA)  →  volviendo  →  girando …
  *
  * O sea: primero se recupera la vista y el zoom predeterminados, y recién
  * entonces arranca el giro.
@@ -23,10 +23,10 @@ export type FaseCarrusel =
   "interactuando" | "volviendo" | "espera-previa" | "girando" | "espera-final";
 
 /** Quietud en la vista predeterminada, antes y después de cada vuelta. */
-export const ESPERA_MS = 5000;
+export const ESPERA_MS = 3000;
 
 /** Lo que tarda una vuelta completa del modelo. */
-export const GIRO_MS = 15000;
+export const GIRO_MS = 10000;
 
 export interface PasoCiclo {
   siguiente: FaseCarrusel;

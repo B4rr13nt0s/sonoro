@@ -1,27 +1,48 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { IconoCorreo, IconoInstagram, IconoTelefono } from "@/components/ui/IconosContacto";
+
 const ENLACES_LEGALES = [
   { href: "/legal/terminos", nombre: "Términos" },
   { href: "/legal/privacidad", nombre: "Privacidad" },
   { href: "/legal/garantias", nombre: "Garantías" },
 ] as const;
 
-// Ciudad y teléfono vienen de las mismas env vars que ya usa
-// lib/seo/business.ts para el JSON-LD LocalBusiness — sin confirmar
-// todavía (CLAUDE.md § Decisiones abiertas), así que cada segmento se omite
-// si su variable no está definida, en vez de mostrar un placeholder falso
-// como "+502 0000 0000".
-function lineaDeContacto(): string {
-  const segmentos = [
-    process.env.BUSINESS_ADDRESS_LOCALITY,
-    "Envíos gratis a todo el país",
-    process.env.BUSINESS_PHONE,
-  ].filter((segmento): segmento is string => Boolean(segmento));
-  return segmentos.join(" · ");
+// Ciudad, teléfono, correo e Instagram vienen de las mismas env vars que ya
+// usa lib/seo/business.ts para el JSON-LD LocalBusiness, así que cada
+// segmento se omite si su variable no está definida, en vez de mostrar un
+// placeholder falso como "+502 0000 0000".
+//
+// El teléfono y el correo son texto, no enlaces: la línea es de contacto,
+// no un botón de pedido — para pedir está «Pedir por WhatsApp» del carrito.
+// Instagram sí es enlace porque sin él no se llega a la cuenta.
+//
+// Los tres datos de contacto llevan icono a la izquierda. Los separadores «·»
+// van entre segmentos, no dentro de ellos, para que un icono nunca quede
+// colgado al final de un renglón lejos de su dato: cada segmento es un
+// `inline-flex` que el navegador no parte.
+function segmentosDeContacto() {
+  const contacto = [
+    process.env.BUSINESS_PHONE
+      ? { clave: "tel", icono: IconoTelefono, texto: process.env.BUSINESS_PHONE }
+      : null,
+    process.env.BUSINESS_EMAIL
+      ? { clave: "correo", icono: IconoCorreo, texto: process.env.BUSINESS_EMAIL }
+      : null,
+  ].filter((dato) => dato !== null);
+
+  const previos = [process.env.BUSINESS_ADDRESS_LOCALITY, "Envíos gratis a todo el país"].filter(
+    (segmento): segmento is string => Boolean(segmento),
+  );
+
+  return { previos, contacto };
 }
 
 export function SiteFooter() {
+  const instagram = process.env.BUSINESS_INSTAGRAM;
+  const { previos, contacto } = segmentosDeContacto();
+
   return (
     <footer className="border-borde-nav flex flex-col items-center gap-4 border-t px-6 py-10 text-center sm:px-12 lg:flex-row lg:items-center lg:justify-between lg:text-left">
       {/* El lockup oficial de public/logos/, no reconstruido en código: ya
@@ -54,7 +75,34 @@ export function SiteFooter() {
           </Link>
         ))}
       </nav>
-      <span className="text-texto-terciario font-mono text-[11px]">{lineaDeContacto()}</span>
+      <span className="text-texto-terciario flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-mono text-[11px] lg:justify-end">
+        {previos.map((segmento, i) => (
+          <span key={segmento}>
+            {segmento}
+            {i < previos.length - 1 ? " ·" : null}
+          </span>
+        ))}
+        {contacto.map(({ clave, icono: Icono, texto }) => (
+          <span key={clave} className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true">·</span>
+            <Icono />
+            {texto}
+          </span>
+        ))}
+        {instagram ? (
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true">·</span>
+            <a
+              href={`https://www.instagram.com/${instagram}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-texto-secundario inline-flex items-center gap-1.5"
+            >
+              <IconoInstagram />@{instagram}
+            </a>
+          </span>
+        ) : null}
+      </span>
     </footer>
   );
 }

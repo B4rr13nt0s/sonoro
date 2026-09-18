@@ -42,6 +42,12 @@ export function buildLocalBusinessJsonLd() {
     ...(address ? { address } : {}),
     ...(process.env.BUSINESS_PHONE ? { telephone: process.env.BUSINESS_PHONE } : {}),
     ...(process.env.BUSINESS_EMAIL ? { email: process.env.BUSINESS_EMAIL } : {}),
+    // `sameAs` es la propiedad de schema.org para los perfiles del negocio
+    // en otros sitios; hoy solo Instagram. La variable guarda el usuario
+    // (sonoro.gt), no la URL, para que el pie pueda mostrarlo como @usuario.
+    ...(process.env.BUSINESS_INSTAGRAM
+      ? { sameAs: [`https://www.instagram.com/${process.env.BUSINESS_INSTAGRAM}/`] }
+      : {}),
     ...(openingHours && openingHours.length > 0 ? { openingHours } : {}),
   };
 }

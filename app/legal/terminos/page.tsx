@@ -54,7 +54,7 @@ export default function TerminosPage() {
         {
           titulo: "Instalación",
           parrafos: [
-            "Sonoro vende únicamente equipo. La instalación la hace el taller de tu preferencia.",
+            "Cada producto incluye la instalación básica. Una instalación más compleja tiene un costo adicional, y al cerrar el pedido se te informa cuál requiere lo que llevas.",
           ],
         },
         {

@@ -30,19 +30,19 @@ test("el ciclo recorre espera → giro → espera → siguiente producto", () =>
   assert.equal(fase, "espera-previa", "tras avanzar vuelve al principio del ciclo");
   assert.equal(avances, 1, "se avanza de producto una sola vez por vuelta");
   assert.equal(transcurrido, duracionProductoMs());
-  assert.equal(transcurrido, 25_000);
+  assert.equal(transcurrido, 16_000);
 });
 
-test("la espera antes y después del giro son iguales, y el giro dura 15 s", () => {
+test("la espera antes y después del giro son iguales, y el giro dura 10 s", () => {
   assert.equal(PLAN_CICLO["espera-previa"]?.esperaMs, ESPERA_MS);
   assert.equal(PLAN_CICLO["espera-final"]?.esperaMs, ESPERA_MS);
-  assert.equal(ESPERA_MS, 5_000);
+  assert.equal(ESPERA_MS, 3_000);
   assert.equal(PLAN_CICLO.girando?.esperaMs, GIRO_MS);
-  assert.equal(GIRO_MS, 15_000);
+  assert.equal(GIRO_MS, 10_000);
 });
 
 test("tras soltar el modelo se recupera la vista antes de girar", () => {
-  // 5 s desde que se suelta, y recién ahí empieza a volver la cámara.
+  // 3 s desde que se suelta, y recién ahí empieza a volver la cámara.
   assert.deepEqual(PLAN_CICLO.interactuando, { siguiente: "volviendo", esperaMs: ESPERA_MS });
   // 'volviendo' no termina por reloj: la corta el rig cuando llegó a destino.
   assert.equal(PLAN_CICLO.volviendo, null);

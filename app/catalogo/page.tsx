@@ -21,9 +21,9 @@ import { listBrands, listProducts, parseOrden } from "@/lib/catalog/index.ts";
 //
 // Existe porque /productos son solo los marcados `destacado` (72 de 320) y
 // el sitio no tenía ninguna ruta para recorrer el catálogo entero.
-const TITULO = "Catálogo completo — Sonoro";
+const TITULO = "Catálogo — Sonoro";
 const DESCRIPCION =
-  "Catálogo completo de Sonoro: bocinas, subwoofers, amplificadores, receptores, kits, insonorización y accesorios. Envíos a toda Guatemala.";
+  "Catálogo de Sonoro: bocinas, subwoofers, amplificadores, receptores, kits, insonorización y accesorios. Envíos a toda Guatemala.";
 
 function primeroDeQuery(valor: string | string[] | undefined): string | undefined {
   return Array.isArray(valor) ? valor[0] : valor;
@@ -74,9 +74,9 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
     <div className="flex flex-col">
       <section className="flex flex-col gap-6 px-6 pt-10 pb-6 sm:flex-row sm:items-end sm:justify-between sm:px-12 sm:pt-14 sm:pb-8">
         <div className="flex flex-col gap-3">
-          <Breadcrumbs items={[{ label: "Inicio", href: "/" }, { label: "Catálogo completo" }]} />
+          <Breadcrumbs items={[{ label: "Inicio", href: "/" }, { label: "Catálogo" }]} />
           <h1 className="text-34 sm:text-40 lg:text-48 font-semibold tracking-[-0.03em]">
-            Catálogo completo
+            Catálogo
           </h1>
         </div>
 
