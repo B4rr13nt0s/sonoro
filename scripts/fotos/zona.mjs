@@ -3,7 +3,7 @@
 import sharp from "sharp";
 import path from "node:path";
 
-const ORIGEN = "public/fotos_pagina_de_inicio";
+const ORIGEN = "assets/fotos_pagina_de_inicio";
 const [archivo, sx0, sy0, sx1, sy1, salida] = process.argv.slice(2);
 const x0 = +sx0,
   y0 = +sy0,

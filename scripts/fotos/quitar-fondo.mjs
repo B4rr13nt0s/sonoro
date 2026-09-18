@@ -4,8 +4,10 @@ import sharp from "sharp";
 import fs from "node:fs";
 import path from "node:path";
 
-const ORIGEN = "public/fotos_pagina_de_inicio";
-const DESTINO = path.join(ORIGEN, "sin_fondo");
+// Los originales NO viven en public/: pesan 14 MB y no se sirven nunca, solo
+// alimentan a este script. Lo que se publica son las copias sin fondo.
+const ORIGEN = "assets/fotos_pagina_de_inicio";
+const DESTINO = "public/fotos_pagina_de_inicio";
 const UMBRAL = 232; // min(R,G,B) >= UMBRAL cuenta como fondo alcanzable
 // Dos fotos no se resuelven con tolerancia, porque lo que sobra es tan
 // oscuro como partes del producto: al subirla se mordían el crossover del
@@ -18,7 +20,7 @@ const UMBRAL = 232; // min(R,G,B) >= UMBRAL cuenta como fondo alcanzable
 //                superficie y la sombra donde se apoyan las bocinas).
 const MANUAL = JSON.parse(fs.readFileSync(new URL("./contornos.json", import.meta.url), "utf8"));
 const BANDA = 3; // px de borde suavizado
-const MAX = 1600;
+const MAX = 1200;
 // Fotos donde el producto encierra fondo (espirales de cable): también se
 // vacían los huecos blancos cerrados.
 const CON_HUECOS = /^(4GKIT|8GKIT)_/;

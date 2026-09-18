@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Fragment } from "react";
 
 import { ProductGrid } from "@/components/catalog/ProductGrid";
+import { FotosCategoria } from "@/components/home/FotosCategoria";
 import { ProductCarousel3D } from "@/components/home/ProductCarousel3D";
 import { CATEGORIAS_SITIO } from "@/lib/catalog/categorias.ts";
 import { listBrands, listProducts } from "@/lib/catalog/index.ts";
@@ -45,16 +45,17 @@ const MENSAJE_CONSULTA_EXISTENCIAS = "Hola Sonoro, quiero consultar disponibilid
 type SlugCategoria = (typeof CATEGORIAS_SITIO)[number]["slug"];
 
 // Las fotos de la portada viven en public/fotos_pagina_de_inicio/, con el
-// nombre SKU_pagina_de_inicio.ext. No pasan por el catálogo: ilustran la
+// nombre SKU_pagina_de_inicio.webp. No pasan por el catálogo: ilustran la
 // categoría, no venden un producto puntual.
 //
-// La página usa las copias SIN FONDO de sin_fondo/ (WebP con transparencia,
-// recortadas al producto), no los originales: el producto se asienta sobre el
-// color de la tarjeta. Una foto nueva hay que pasarla también por ahí.
+// Son copias SIN FONDO —WebP con transparencia, recortadas al producto— para
+// que el producto se asiente sobre el color de la tarjeta. Las genera
+// `npm run fotos:sin-fondo` desde los originales de assets/, que no se
+// publican; una foto nueva se guarda ahí y se vuelve a correr ese comando.
 type Foto = { src: string; alt: string };
 
 const foto = (archivo: string, alt: string): Foto => ({
-  src: `/fotos_pagina_de_inicio/sin_fondo/${archivo}`,
+  src: `/fotos_pagina_de_inicio/${archivo}`,
   alt,
 });
 
@@ -225,53 +226,10 @@ const TARJETAS_CATEGORIA: Record<SlugCategoria, TarjetaCategoria> = {
 // muestra completa (object-contain) con un margen interno para que el
 // producto no toque el borde. Las fotos tienen proporciones muy distintas
 // —de 0.5 a 2.2—: recortarlas a 3:2 cortaría productos.
-type Anclaje = "centro" | "abajo" | "arriba";
-
-const ANCLAJE_EN_FILA: Record<Anclaje, string> = {
-  centro: "items-center",
-  abajo: "items-end",
-  arriba: "items-start",
-};
-const ANCLAJE_EN_COLUMNA: Record<Anclaje, string> = {
-  centro: "justify-center",
-  abajo: "justify-end",
-  arriba: "justify-start",
-};
-
-function FotosBloque({
-  fotos,
-  direccion,
-  columnas,
-  anclaje = "centro",
-  separacionL = false,
-}: Omit<Bloque, "area"> & { anclaje?: Anclaje; separacionL?: boolean }) {
-  const enFila = direccion === "fila";
-  const ancho = columnas === 2 ? "w-full lg:w-[calc((100%-72px)/2)]" : "w-full";
-  return (
-    <div
-      className={`flex flex-1 ${separacionL ? "gap-6 lg:gap-18" : "gap-6"} ${
-        enFila
-          ? `flex-row justify-center ${ANCLAJE_EN_FILA[anclaje]}`
-          : `flex-col items-center ${ANCLAJE_EN_COLUMNA[anclaje]}`
-      }`}
-    >
-      {fotos.map((foto, i) => (
-        <div key={foto.src} className={`${ancho} ${i > 0 ? "hidden lg:block" : ""}`}>
-          <div className="relative aspect-[3/2] w-full">
-            <Image
-              src={foto.src}
-              alt={foto.alt}
-              fill
-              sizes="(min-width: 1024px) 22vw, 90vw"
-              className="object-contain p-6"
-            />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
+//
+// El bloque de fotos vive en components/home/FotosCategoria.tsx, del lado
+// del cliente: las pide al acercarse a la sección, no en la carga inicial
+// (ahí está el porqué).
 const CARACTERISTICAS = [
   {
     numero: "01",
@@ -385,7 +343,7 @@ export default async function Home() {
                         {descripcion}
                       </div>
                     </div>
-                    <FotosBloque
+                    <FotosCategoria
                       fotos={fotos}
                       direccion={direccion}
                       columnas={columnas}
@@ -403,7 +361,7 @@ export default async function Home() {
                       tabIndex={-1}
                       className={`rounded-card-lg hidden p-6 lg:flex lg:flex-col lg:rounded-tl-none ${extension.area} ${fondo}`}
                     >
-                      <FotosBloque
+                      <FotosCategoria
                         fotos={extension.fotos}
                         direccion={extension.direccion}
                         columnas={extension.columnas}

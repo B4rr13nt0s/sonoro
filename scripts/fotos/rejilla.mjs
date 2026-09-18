@@ -4,7 +4,7 @@
 import sharp from "sharp";
 import path from "node:path";
 
-const ORIGEN = "public/fotos_pagina_de_inicio";
+const ORIGEN = "assets/fotos_pagina_de_inicio";
 const [archivo, salida] = process.argv.slice(2);
 const W = 1000;
 

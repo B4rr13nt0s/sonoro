@@ -278,6 +278,14 @@ Patrón del handoff, adoptado tal cual: rayas diagonales `repeating-linear-gradi
 
 Como no hay fotos de todas las marcas todavía, **las imágenes OG se generan dinámicamente** con `ImageResponse`: fondo de marca + nombre + precio + logo. Sin esto, cada enlace compartido por WhatsApp —el canal principal— se vería vacío.
 
+#### Fotos de la portada
+
+Las de la sección de categorías son aparte del catálogo: ilustran la categoría, no venden un SKU. Los originales viven en `assets/fotos_pagina_de_inicio/` —**fuera de `public/`**, porque son 14 MB que no se sirven nunca— y `npm run fotos:sin-fondo` (`scripts/fotos/`) genera en `public/fotos_pagina_de_inicio/` las copias sin fondo, en WebP con transparencia y recortadas al producto, que son las que usa la página. Una foto nueva se guarda en `assets/` y se vuelve a correr ese comando.
+
+El recorte es automático —relleno de blanco desde las orillas— salvo dos fotos con el contorno trazado A MANO en `scripts/fotos/contornos.json`, porque lo que sobra es tan claro como partes del producto y la tolerancia las mordía. `rejilla.mjs` y `zona.mjs` dibujan la foto con coordenadas encima para trazar esos contornos.
+
+**Las fotos se piden al acercarse a la sección, no en la carga inicial** (`components/home/FotosCategoria.tsx`), y por eso ese bloque es un componente cliente: con `loading="lazy"` a secas el navegador las bajaba igual durante la carga y el pintado mayor estimado de la portada se salía del presupuesto de Lighthouse. Por lo mismo el canvas 3D del hero se carga cuando el navegador queda libre. Las dos cosas cuelgan del mismo presupuesto (`lighthouserc.js`): si se agrega peso a la portada, hay que medir.
+
 #### Pipeline de fotos por SKU
 
 Los archivos van en `public/productos/`, con el nombre `SKU_vista.ext`:

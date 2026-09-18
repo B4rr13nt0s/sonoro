@@ -37,10 +37,40 @@ const CHROME_SM = { v: 92, h: 320 };
 // en cliente. `next/dynamic` con `ssr: false` no está permitido en Server
 // Components, por eso el import vive acá, en el componente cliente, y el
 // home importa este archivo normalmente.
+//
+// Y no se pide apenas monta, sino cuando el navegador queda libre (ver
+// `useCanvasDiferido`): son ~1 MB de three + drei + R3F, y descargarlos y
+// ejecutarlos dentro de la hidratación retrasaba el pintado del titular del
+// hero — el LCP de la portada — hasta 3.2 s en el runner de CI, con el
+// procesador frenado 4×. El cuadro ya reserva su alto, así que esperar no
+// mueve nada de sitio (CLS sigue en 0).
 const CarouselCanvas = dynamic(() => import("./CarouselCanvas").then((m) => m.CarouselCanvas), {
   ssr: false,
   loading: () => null,
 });
+
+/**
+ * `true` cuando conviene cargar el canvas: al quedar el navegador ocioso
+ * después del primer pintado, o a los 2 s como tope.
+ *
+ * `requestIdleCallback` no existe en Safari, de ahí el `setTimeout` de
+ * respaldo. El plazo es corto a propósito: el modelo es lo que el visitante
+ * viene a ver, solo no debe competir con el primer pintado.
+ */
+function useCanvasDiferido(): boolean {
+  const [listo, setListo] = useState(false);
+
+  useEffect(() => {
+    if (typeof window.requestIdleCallback !== "function") {
+      const id = window.setTimeout(() => setListo(true), 200);
+      return () => window.clearTimeout(id);
+    }
+    const id = window.requestIdleCallback(() => setListo(true), { timeout: 2000 });
+    return () => window.cancelIdleCallback(id);
+  }, []);
+
+  return listo;
+}
 
 function usePrefersReducedMotion(): boolean {
   return useMediaQuery("(prefers-reduced-motion: reduce)");
@@ -54,6 +84,7 @@ export function ProductCarousel3D() {
   const [pestanaVisible, setPestanaVisible] = useState(true);
 
   const contenedor = useRef<HTMLDivElement>(null);
+  const canvasListo = useCanvasDiferido();
   const reducedMotion = usePrefersReducedMotion();
   const anchoSm = useMediaQuery("(min-width: 640px)");
   const chrome = anchoSm ? CHROME_SM : CHROME_MOVIL;
@@ -130,16 +161,18 @@ export function ProductCarousel3D() {
       className={`bg-fondo-alt relative mt-7 w-full cursor-grab touch-pan-y overflow-hidden rounded-t-2xl select-none active:cursor-grabbing ${ALTO}`}
       {...handlers}
     >
-      <CarouselCanvas
-        index={index}
-        direction={direction}
-        fase={fase}
-        faseInicio={faseInicio}
-        chrome={chrome}
-        pendienteRef={pendienteRef}
-        alVolver={alVolver}
-        frameloop={frameloop}
-      />
+      {canvasListo ? (
+        <CarouselCanvas
+          index={index}
+          direction={direction}
+          fase={fase}
+          faseInicio={faseInicio}
+          chrome={chrome}
+          pendienteRef={pendienteRef}
+          alVolver={alVolver}
+          frameloop={frameloop}
+        />
+      ) : null}
 
       {/* Toda la interfaz vive en el DOM, encima del canvas, nunca dentro.
           Un <canvas> es opaco para lectores de pantalla y para el
