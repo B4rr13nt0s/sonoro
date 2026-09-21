@@ -5,7 +5,7 @@
 import { ImageResponse } from "next/og";
 
 import { formatQ } from "@/lib/format/precio.ts";
-import { getProduct } from "@/lib/catalog/index.ts";
+import { getProduct, listAllProducts } from "@/lib/catalog/index.ts";
 import { LOGO_LOCKUP_BLANCO_DATA_URI } from "@/lib/og/assets.ts";
 import { OG_FONTS } from "@/lib/og/fonts.ts";
 
@@ -17,14 +17,25 @@ import { OG_FONTS } from "@/lib/og/fonts.ts";
 // enlaces compartidos, el canal principal del negocio (CLAUDE.md § Modelo
 // de conversión). Cada revisión levantaba una función.
 //
-// No se pregeneran las 328 con generateStaticParams porque alargaría cada
-// build por una imagen que quizá nadie comparta; con ISR la primera
-// petición la arma y las siguientes salen de la red.
+// Se pregeneran las 328 con generateStaticParams, que en Vercel es lo único
+// que de verdad las saca de la función: probado en producción, ni la
+// cabecera Cache-Control de next.config ni `revalidate` a secas las hacían
+// cachear —tres peticiones seguidas daban las tres X-Vercel-Cache: MISS—
+// porque la ruta lee el catálogo del disco en cada petición y queda
+// dinámica. Pregeneradas salen de la red como cualquier archivo estático.
 //
 // Si cambia un precio, la tarjeta compartida puede mostrar el viejo hasta
 // una semana. Es aceptable: el precio de verdad está en la ficha, a un
 // clic. Si algún día no lo fuera, se baja este número.
 export const revalidate = 604800;
+
+// Mismo conjunto que las fichas (app/producto/[slug]/page.tsx): los dados de
+// baja también la llevan, porque un enlace viejo compartido por WhatsApp
+// sigue mostrando su tarjeta aunque la página responda 410.
+export async function generateStaticParams() {
+  const productos = await listAllProducts();
+  return productos.map((producto) => ({ slug: producto.slug }));
+}
 
 export const alt = "Producto — Sonoro";
 export const size = { width: 1200, height: 630 };

@@ -63,27 +63,26 @@ const CABECERAS_SEGURIDAD = [
   },
 ];
 
-// Los listados son PÚBLICOS e iguales para todos: no hay sesión, el carrito
-// vive en localStorage y nada depende de cookies. Aun así Next los marca
-// `private, no-cache, no-store` por llevar searchParams, así que cada visita
-// levantaba una función. Con esto la red de Vercel los sirve cacheados por
-// URL completa —filtros y página incluidos— y revalida por detrás:
-// s-maxage cachea en el CDN, stale-while-revalidate deja servir la copia
-// vieja mientras se rehace, y max-age=0 mantiene al navegador preguntando,
-// que es lo que hace que un cambio de precio se vea al instante.
-// Las imágenes OG de producto llevan además `revalidate` en su propio
-// archivo, que es lo que las convierte en ISR; esta cabecera es la que se
-// puede COMPROBAR desde fuera, y la que hace que la red de Vercel las sirva
-// cacheadas en vez de rearmarlas en cada revisión de WhatsApp o Google.
+// Las imágenes OG de producto se pregeneran en el build
+// (app/producto/[slug]/opengraph-image.tsx), así que son archivos estáticos y
+// esta cabecera sí les aplica: la red de Vercel las sirve cacheadas en vez de
+// rearmarlas en cada revisión de WhatsApp, Facebook o Google.
 const CACHE_OG = {
   key: "Cache-Control",
   value: "public, max-age=0, s-maxage=604800, stale-while-revalidate=86400",
 };
 
-const CACHE_LISTADOS = {
-  key: "Cache-Control",
-  value: "public, max-age=0, s-maxage=300, stale-while-revalidate=3600",
-};
+// LOS LISTADOS NO SE PUEDEN CACHEAR ASÍ, y la nota queda para que nadie
+// vuelva a intentarlo igual. Son públicos e iguales para todos —no hay
+// sesión, el carrito vive en localStorage—, pero llevan searchParams, así que
+// Next los renderiza por petición y los marca `private, no-cache, no-store`.
+// Una regla de Cache-Control acá los arregla en `next start` y NO en Vercel:
+// probado en producción, tres peticiones seguidas a /catalogo?page=2 dieron
+// las tres X-Vercel-Cache: MISS, porque la plataforma manda su propia
+// cabecera en las respuestas de función. El camino de verdad es `use cache`
+// con cacheComponents (Next 16), que es un cambio de arquitectura aparte.
+// Mientras tanto responden en ~0.45 s en caliente, que para un listado de
+// 328 productos es aceptable.
 
 const nextConfig: NextConfig = {
   // lib/catalog/adapters/static.ts lee data/*.json con fs.readFile, en una
@@ -127,10 +126,6 @@ const nextConfig: NextConfig = {
       },
       { source: "/:path*", headers: CABECERAS_SEGURIDAD },
       { source: "/producto/:slug/opengraph-image", headers: [CACHE_OG] },
-      { source: "/catalogo", headers: [CACHE_LISTADOS] },
-      { source: "/catalogo/:categoria", headers: [CACHE_LISTADOS] },
-      { source: "/marcas/:marca", headers: [CACHE_LISTADOS] },
-      { source: "/productos", headers: [CACHE_LISTADOS] },
     ];
   },
   async redirects() {
