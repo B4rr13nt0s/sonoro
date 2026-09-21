@@ -396,6 +396,14 @@ Es el activo más valioso de esta fase: demanda real, productos cotizados que no
 
 **Listo cuando:** un test e2e recorre buscar → filtrar → agregar 2 productos → abrir carrito → verificar el texto del mensaje.
 
+#### Lo que falta del lado del Apps Script
+
+El endpoint es ABIERTO por necesidad: lo llama el navegador de cualquiera que cierre un pedido, sin sesión ni token. Del lado de la app ya hay tres filtros —frecuencia por IP, tamaño del cuerpo y topes campo por campo (`lib/quoteLog/`)— pero el último tramo no vive en este repositorio y hay que cerrarlo en el script que recibe:
+
+1. **Escribir los valores como TEXTO, nunca como fórmula.** `nombre`, `sku` y `userAgent` los controla quien manda la petición, y en una hoja de cálculo un valor que empieza con `=`, `+`, `-` o `@` no es texto: se ejecuta. Un `=IMPORTXML(...)` en una celda convierte la hoja en un canal para sacar datos. En Apps Script se resuelve escribiendo con `setValues` sobre un rango que ya tenga formato de texto plano (`setNumberFormat("@")`), o anteponiendo una comilla simple al valor.
+2. **Verificar el `token`** que manda la app (`QUOTE_LOG_TOKEN`) antes de escribir nada, y responder sin detalle si no coincide.
+3. **Ignorar filas repetidas por `ref`**: el reenvío puede llegar dos veces si el navegador reintenta.
+
 ---
 
 ## Fase 7 — Contenido y SEO
