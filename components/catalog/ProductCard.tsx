@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { ProductImage } from "@/components/media/ProductImage";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
-import type { Producto } from "@/lib/catalog/index.ts";
+import type { ProductoTarjeta } from "@/lib/catalog/index.ts";
 import { etiquetaDisponibilidad } from "@/lib/catalog/disponibilidad.ts";
 
 // CLAUDE.md § Patrones que se repiten — "Tarjeta de producto": imagen 200px,
@@ -19,7 +19,7 @@ import { etiquetaDisponibilidad } from "@/lib/catalog/disponibilidad.ts";
 // meter un botón dentro sin romper el HTML: un <button> dentro de un <a> es
 // inválido, y ese botón tiene que ir como hermano con `relative z-10` para
 // quedar por encima de la capa del enlace estirado.
-export function ProductCard({ producto }: { producto: Producto }) {
+export function ProductCard({ producto }: { producto: ProductoTarjeta }) {
   const especificacion = producto.specsDestacadas
     .slice(0, 2)
     .map((spec) => spec.valor)

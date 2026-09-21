@@ -1,5 +1,5 @@
 import { ProductCard } from "@/components/catalog/ProductCard";
-import type { Producto } from "@/lib/catalog/index.ts";
+import type { ProductoTarjeta } from "@/lib/catalog/index.ts";
 
 // Rejilla de tarjetas de producto — CLAUDE.md § Patrones que se repiten no
 // define estados de carga ni vacío (el handoff es estático), así que los
@@ -8,7 +8,7 @@ import type { Producto } from "@/lib/catalog/index.ts";
 const CLASES_GRID = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4";
 
 type ProductGridProps = {
-  productos: Producto[];
+  productos: ProductoTarjeta[];
   loading?: boolean;
   skeletonCount?: number;
   emptyMessage?: string;

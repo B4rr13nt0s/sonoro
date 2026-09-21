@@ -138,6 +138,34 @@ export const ProductoSchema = z
   });
 export type Producto = z.infer<typeof ProductoSchema>;
 
+/**
+ * Lo que necesita una TARJETA de producto y nada más.
+ *
+ * Existe por /buscar, que es la única ruta que manda el catálogo entero al
+ * navegador para filtrar sin ida y vuelta al servidor: con el producto
+ * completo eran 452 KB de HTML por visita, y más de la mitad era
+ * `specsFicha` y `atributos` —la ficha técnica y la materia prima de los
+ * filtros— que ahí no se usan para nada. Acotar el tipo lo deja en unos
+ * 200 KB.
+ *
+ * Es un `Pick`, no un tipo aparte, justamente para que un `Producto`
+ * completo siga sirviendo donde se pida esto: las rutas que ya tienen el
+ * producto entero no cambian.
+ */
+export type ProductoTarjeta = Pick<
+  Producto,
+  | "sku"
+  | "slug"
+  | "nombre"
+  | "marca"
+  | "categoria"
+  | "precioCents"
+  | "disponibilidad"
+  | "destacado"
+  | "imagenes"
+  | "specsDestacadas"
+>;
+
 // Arreglo completo — lo usa el adaptador estático para validar
 // data/catalog.json en cuanto lo lee, no solo su forma de fila individual.
 export const CatalogoSchema = z.array(ProductoSchema);

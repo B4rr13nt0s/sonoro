@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { ProductGrid } from "@/components/catalog/ProductGrid";
-import type { Producto } from "@/lib/catalog/index.ts";
+import type { ProductoTarjeta } from "@/lib/catalog/index.ts";
 import { compararRelevancia } from "@/lib/catalog/orden.ts";
 
 const INCREMENTO = 8;
@@ -18,7 +18,7 @@ function normalizar(texto: string): string {
   return texto.normalize("NFD").replace(MARCAS_DIACRITICAS, "").toLowerCase().trim();
 }
 
-function coincide(producto: Producto, consultaNormalizada: string): boolean {
+function coincide(producto: ProductoTarjeta, consultaNormalizada: string): boolean {
   return (
     normalizar(producto.nombre).includes(consultaNormalizada) ||
     normalizar(producto.marca).includes(consultaNormalizada) ||
@@ -29,7 +29,7 @@ function coincide(producto: Producto, consultaNormalizada: string): boolean {
 // Relevancia simple, no una búsqueda con backend: match exacto de sku o
 // nombre pesa más que "empieza con", que pesa más que "contiene en
 // cualquier parte". Suficiente para ordenar sin depender de nada externo.
-function puntuarRelevancia(producto: Producto, consultaNormalizada: string): number {
+function puntuarRelevancia(producto: ProductoTarjeta, consultaNormalizada: string): number {
   const nombre = normalizar(producto.nombre);
   const marca = normalizar(producto.marca);
   const sku = normalizar(producto.sku);
@@ -44,7 +44,7 @@ function puntuarRelevancia(producto: Producto, consultaNormalizada: string): num
   return 30; // sku.includes — ya se sabe que coincide() dio true en algún campo
 }
 
-export function SearchExperience({ productos }: { productos: Producto[] }) {
+export function SearchExperience({ productos }: { productos: ProductoTarjeta[] }) {
   const [borrador, setBorrador] = useState("");
   const [consulta, setConsulta] = useState("");
   const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);

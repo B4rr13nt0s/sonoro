@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { SIN_VENTANA_HASTA, paginasVisibles } from "./paginacion.ts";
+import { SIN_VENTANA_HASTA, paginasVisibles, parsePagina } from "./paginacion.ts";
 
 test("paginación: con pocas páginas se listan todas, sin saltos", () => {
   assert.deepEqual(paginasVisibles(1, 1), [1]);
@@ -62,4 +62,19 @@ test("paginación: nunca dibuja más de 7 números, sea cual sea el total", () =
       assert.ok(numeros.length <= 7, `${numeros.length} números con ${actual} de ${total}`);
     }
   }
+});
+
+test("parsePagina: entero ≥ 1, y todo lo demás cae en 1", () => {
+  assert.equal(parsePagina("2"), 2);
+  assert.equal(parsePagina(["3", "7"]), 3, "param repetido: manda el primero");
+  assert.equal(parsePagina("1.9"), 1, "un decimal se trunca, no se cuela al slice");
+  assert.equal(parsePagina("2.5"), 2);
+  for (const malo of [undefined, "", "abc", "0", "-3", "NaN", "Infinity", "1e999"]) {
+    assert.equal(parsePagina(malo), 1, `${malo} debería caer en 1`);
+  }
+  assert.equal(
+    parsePagina("1e9"),
+    1_000_000_000,
+    "un número grande es válido; el 404 lo pone la ruta",
+  );
 });

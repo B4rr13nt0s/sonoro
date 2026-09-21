@@ -9,7 +9,7 @@
 //      VALOR desde lib/catalog/index.ts arrastraría el adaptador estático, y
 //      con él node:fs y data/catalog.json, al bundle del navegador.
 //   2. Es lógica pura: se prueba sin leer el catálogo (orden.test.ts).
-import type { Producto } from "./types.ts";
+import type { ProductoTarjeta } from "./types.ts";
 
 // destacado primero → precio DESCENDENTE → sku.
 //
@@ -24,7 +24,7 @@ import type { Producto } from "./types.ts";
 // puntos de código es determinista en cualquier runtime. Como el sku es único
 // (CLAUDE.md § Esquema de producto), este comparador es un orden TOTAL: no
 // depende de que Array.prototype.sort sea estable ni del orden de entrada.
-export function compararRelevancia(a: Producto, b: Producto): number {
+export function compararRelevancia(a: ProductoTarjeta, b: ProductoTarjeta): number {
   if (a.destacado !== b.destacado) return a.destacado ? -1 : 1;
   if (a.precioCents !== b.precioCents) return b.precioCents - a.precioCents;
   return a.sku < b.sku ? -1 : a.sku > b.sku ? 1 : 0;

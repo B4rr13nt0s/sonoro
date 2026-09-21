@@ -14,6 +14,7 @@ import {
   listCategories,
   listProducts,
   parseOrden,
+  parsePagina,
 } from "@/lib/catalog/index.ts";
 
 // Todas las marcas son data estática (data/brands.json, generado en build) —
@@ -37,8 +38,7 @@ export async function generateMetadata(props: PageProps<"/marcas/[marca]">): Pro
   if (!marca) return {};
 
   const categoriaSlug = primeroDeQuery(searchParams.categoria);
-  const paginaParam = Number(primeroDeQuery(searchParams.page));
-  const page = Number.isFinite(paginaParam) && paginaParam >= 1 ? paginaParam : 1;
+  const page = parsePagina(searchParams.page);
   // Mismo criterio que /catalogo/[categoria]: canonical sin `orden`, con
   // categoria/page preservados.
   const canonical = buildMarcaHref(marcaSlug, { categoria: categoriaSlug, page });
@@ -83,8 +83,7 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
     : undefined;
 
   const orden = parseOrden(searchParams.orden);
-  const paginaParam = Number(primeroDeQuery(searchParams.page));
-  const paginaSolicitada = Number.isFinite(paginaParam) && paginaParam >= 1 ? paginaParam : 1;
+  const paginaSolicitada = parsePagina(searchParams.page);
 
   const { items, total, page, pageSize } = await listProducts({
     marca: marca.nombre,
@@ -94,6 +93,10 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
     page: paginaSolicitada,
   });
   const totalPaginas = Math.max(1, Math.ceil(total / pageSize));
+  // Una página que no existe es un 404, no un listado vacío con 200: de lo
+  // contrario `?page=99999` le abre a Google un espacio infinito de URLs, y
+  // cada una se renderiza en el servidor.
+  if (paginaSolicitada > totalPaginas) notFound();
 
   return (
     <div className="flex flex-col">

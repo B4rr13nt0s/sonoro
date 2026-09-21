@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 // Herramienta interna de referencia visual — no es una ruta de CLAUDE.md §
 // Rutas, no debe indexarse.
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
+
+// Y en el sitio publicado no existe: `noindex` le pide a Google que no la
+// liste, pero cualquiera con el enlace la abría igual. En local y en los
+// preview de Vercel sigue disponible, que es donde sirve.
+//
+// VERCEL_ENV y no NODE_ENV: los preview también compilan con
+// NODE_ENV=production (ver lib/seo/site.ts), así que con NODE_ENV esta
+// página desaparecería justo donde se usa para revisar diseño.
+const ES_PRODUCCION = process.env.VERCEL_ENV === "production";
 
 const COLORES = [
   { nombre: "negro", uso: "Negro / texto / botones", hex: "#0B0B0C" },
@@ -43,6 +53,8 @@ function Etiqueta({ children }: { children: React.ReactNode }) {
 }
 
 export default function StyleguidePage() {
+  if (ES_PRODUCCION) notFound();
+
   return (
     <div className="mx-auto flex max-w-[1280px] flex-col gap-24 px-12 py-24">
       <header className="flex flex-col gap-2">

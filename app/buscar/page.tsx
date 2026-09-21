@@ -18,8 +18,28 @@ export const metadata: Metadata = {
 // trae el catálogo una vez (misma fuente que el resto del sitio, lib/catalog)
 // y se lo pasa al Client Component; el filtrado, orden y "sin resultados"
 // pasan en el navegador, sin ida y vuelta al servidor.
+//
+// Va acotado a ProductoTarjeta y no al producto entero: esto viaja a CADA
+// visitante dentro del HTML, y `specsFicha` y `atributos` —ficha técnica y
+// materia prima de los filtros— no se usan acá. Con el producto completo
+// eran 452 KB por visita.
 export default async function BuscarPage() {
   const productos = await listAllProducts({ activo: true });
 
-  return <SearchExperience productos={productos} />;
+  return (
+    <SearchExperience
+      productos={productos.map((producto) => ({
+        sku: producto.sku,
+        slug: producto.slug,
+        nombre: producto.nombre,
+        marca: producto.marca,
+        categoria: producto.categoria,
+        precioCents: producto.precioCents,
+        disponibilidad: producto.disponibilidad,
+        destacado: producto.destacado,
+        imagenes: producto.imagenes,
+        specsDestacadas: producto.specsDestacadas,
+      }))}
+    />
+  );
 }

@@ -42,3 +42,23 @@ export function paginasVisibles(paginaActual: number, totalPaginas: number): Ite
   }
   return items;
 }
+
+/**
+ * El número de página que pide la URL (`?page=2`), ya saneado.
+ *
+ * Devuelve SIEMPRE un entero ≥ 1: lo que no lo sea —`?page=abc`, `?page=0`,
+ * `?page=-3`, `?page=1.5`, `?page=1e9`— cae en 1. Existe porque las cuatro
+ * rutas de listado repetían `Number(...)` a mano y un decimal se colaba
+ * hasta el `slice` del adaptador.
+ *
+ * Que la página EXISTA es otra pregunta, y se responde después de consultar
+ * el catálogo: las rutas devuelven 404 cuando el número pedido pasa del
+ * total. Sin eso, `?page=99999` respondía 200 con un listado vacío, que para
+ * Google es un espacio infinito de URLs que además se renderizan.
+ */
+export function parsePagina(valor: string | string[] | undefined): number {
+  const crudo = Array.isArray(valor) ? valor[0] : valor;
+  const numero = Number(crudo);
+  if (!Number.isFinite(numero) || numero < 1) return 1;
+  return Math.min(Math.trunc(numero), Number.MAX_SAFE_INTEGER);
+}

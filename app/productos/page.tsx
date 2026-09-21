@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 import { FiltroMarca } from "@/components/catalog/FiltroMarca";
 import { OrdenSelector } from "@/components/catalog/OrdenSelector";
@@ -6,7 +7,7 @@ import { Pagination } from "@/components/catalog/Pagination";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildProductosHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
-import { listBrands, listProducts, parseOrden } from "@/lib/catalog/index.ts";
+import { listBrands, listProducts, parseOrden, parsePagina } from "@/lib/catalog/index.ts";
 
 const TITULO = "Productos destacados — Sonoro";
 const DESCRIPCION =
@@ -19,8 +20,7 @@ function primeroDeQuery(valor: string | string[] | undefined): string | undefine
 export async function generateMetadata(props: PageProps<"/productos">): Promise<Metadata> {
   const searchParams = await props.searchParams;
   const marcaSlug = primeroDeQuery(searchParams.marca);
-  const paginaParam = Number(primeroDeQuery(searchParams.page));
-  const page = Number.isFinite(paginaParam) && paginaParam >= 1 ? paginaParam : 1;
+  const page = parsePagina(searchParams.page);
   // Mismo criterio que /catalogo/[categoria]: canonical sin `orden`, con
   // marca/page preservados.
   const canonical = buildProductosHref({ marca: marcaSlug, page });
@@ -38,8 +38,7 @@ export default async function ProductosPage(props: PageProps<"/productos">) {
 
   const marcaSlug = primeroDeQuery(searchParams.marca);
   const orden = parseOrden(searchParams.orden);
-  const paginaParam = Number(primeroDeQuery(searchParams.page));
-  const paginaSolicitada = Number.isFinite(paginaParam) && paginaParam >= 1 ? paginaParam : 1;
+  const paginaSolicitada = parsePagina(searchParams.page);
 
   const marcas = await listBrands();
   // Mismo criterio que /catalogo/[categoria]: un slug que no resuelve a
@@ -57,6 +56,10 @@ export default async function ProductosPage(props: PageProps<"/productos">) {
     page: paginaSolicitada,
   });
   const totalPaginas = Math.max(1, Math.ceil(total / pageSize));
+  // Una página que no existe es un 404, no un listado vacío con 200: de lo
+  // contrario `?page=99999` le abre a Google un espacio infinito de URLs, y
+  // cada una se renderiza en el servidor.
+  if (paginaSolicitada > totalPaginas) notFound();
 
   return (
     <div className="flex flex-col">

@@ -7,7 +7,13 @@ import { Pagination } from "@/components/catalog/Pagination";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildCatalogHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
-import { listBrands, listCategories, listProducts, parseOrden } from "@/lib/catalog/index.ts";
+import {
+  listBrands,
+  listCategories,
+  listProducts,
+  parseOrden,
+  parsePagina,
+} from "@/lib/catalog/index.ts";
 
 // Copy propia de la ficha de categoría (párrafo bajo el h1). Solo Subwoofers
 // tenía texto en el handoff (design/catalogo-subwoofers.html); el resto
@@ -53,8 +59,7 @@ export async function generateMetadata(
   if (!categoria) return {};
 
   const marcaSlug = primeroDeQuery(searchParams.marca);
-  const paginaParam = Number(primeroDeQuery(searchParams.page));
-  const page = Number.isFinite(paginaParam) && paginaParam >= 1 ? paginaParam : 1;
+  const page = parsePagina(searchParams.page);
   // Canonical propio, sin `orden`: el orden de precio no cambia el
   // contenido, así que no debe fragmentar el canonical. `marca`/`page` sí
   // se preservan — CLAUDE.md § Rutas los declara "rastreables por Google".
@@ -81,8 +86,7 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
 
   const marcaSlug = primeroDeQuery(searchParams.marca);
   const orden = parseOrden(searchParams.orden);
-  const paginaParam = Number(primeroDeQuery(searchParams.page));
-  const paginaSolicitada = Number.isFinite(paginaParam) && paginaParam >= 1 ? paginaParam : 1;
+  const paginaSolicitada = parsePagina(searchParams.page);
 
   const marcas = await listBrands();
   // Si el slug no resuelve a una marca real, se filtra por el slug crudo:
@@ -100,6 +104,10 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
     page: paginaSolicitada,
   });
   const totalPaginas = Math.max(1, Math.ceil(total / pageSize));
+  // Una página que no existe es un 404, no un listado vacío con 200: de lo
+  // contrario `?page=99999` le abre a Google un espacio infinito de URLs, y
+  // cada una se renderiza en el servidor.
+  if (paginaSolicitada > totalPaginas) notFound();
 
   return (
     <div className="flex flex-col">

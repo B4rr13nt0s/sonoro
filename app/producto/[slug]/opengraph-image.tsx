@@ -9,6 +9,23 @@ import { getProduct } from "@/lib/catalog/index.ts";
 import { LOGO_LOCKUP_BLANCO_DATA_URI } from "@/lib/og/assets.ts";
 import { OG_FONTS } from "@/lib/og/fonts.ts";
 
+// Una semana de caché en la red de Vercel, revalidando por detrás.
+//
+// Sin esto la imagen se rearmaba en CADA petición —`max-age=0,
+// must-revalidate`, `X-Vercel-Cache: MISS`, 2 s y 45 KB por vez— y quien
+// las pide no son personas: son WhatsApp, Facebook y Google revisando
+// enlaces compartidos, el canal principal del negocio (CLAUDE.md § Modelo
+// de conversión). Cada revisión levantaba una función.
+//
+// No se pregeneran las 328 con generateStaticParams porque alargaría cada
+// build por una imagen que quizá nadie comparta; con ISR la primera
+// petición la arma y las siguientes salen de la red.
+//
+// Si cambia un precio, la tarjeta compartida puede mostrar el viejo hasta
+// una semana. Es aceptable: el precio de verdad está en la ficha, a un
+// clic. Si algún día no lo fuera, se baja este número.
+export const revalidate = 604800;
+
 export const alt = "Producto — Sonoro";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

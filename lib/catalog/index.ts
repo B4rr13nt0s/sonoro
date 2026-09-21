@@ -46,6 +46,8 @@ export type {
   Moneda,
   Orden,
   Producto,
+  ProductoTarjeta,
   ProductFilters,
   Spec,
 } from "./types.ts";
+export { parsePagina } from "./paginacion.ts";
