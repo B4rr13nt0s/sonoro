@@ -29,6 +29,17 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/*": ["data/*.json"],
   },
+  // Next 16 exige declarar las calidades permitidas del optimizador de
+  // imágenes: cualquier `quality` que no esté en esta lista responde 400
+  // («unrestricted access could allow malicious actors to optimize more
+  // qualities than you intended», docs de next/image § qualities). El
+  // default es [75] a secas, así que las fotos de categorías de la portada
+  // —que piden 50— salían rotas EN PRODUCCIÓN aunque en local funcionaran:
+  // `next start` no aplica la lista, el optimizador de Vercel sí.
+  images: {
+    qualities: [50, 75],
+  },
+
   // Los .glb de public/models/ y el decoder de Draco de public/draco/ son
   // inmutables mientras no se regeneren: son binarios de contenido fijo,
   // no datos del catálogo. Consecuencia que hay que tener presente:
