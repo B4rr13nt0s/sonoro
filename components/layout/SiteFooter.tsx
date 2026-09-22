@@ -64,12 +64,14 @@ export function SiteFooter() {
           className="h-[34px] w-auto"
         />
       </Link>
+      {/* `-my-3 py-3` en cada enlace: el texto de 11 px queda donde estaba y
+          el área tocable llega a 44 px de alto, el mínimo para el dedo. */}
       <nav className="flex gap-5">
         {ENLACES_LEGALES.map((enlace) => (
           <Link
             key={enlace.href}
             href={enlace.href}
-            className="text-texto-terciario hover:text-texto-secundario font-mono text-[11px]"
+            className="text-texto-terciario hover:text-texto-secundario -my-3.5 py-3.5 font-mono text-[11px]"
           >
             {enlace.nombre}
           </Link>
@@ -96,7 +98,7 @@ export function SiteFooter() {
               href={`https://www.instagram.com/${instagram}/`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-texto-secundario inline-flex items-center gap-1.5"
+              className="hover:text-texto-secundario -my-3.5 inline-flex items-center gap-1.5 py-3.5"
             >
               <IconoInstagram />@{instagram}
             </a>

@@ -54,7 +54,7 @@ export function Pagination({ paginaActual, totalPaginas, hrefPara }: PaginationP
             <span
               key={`salto-${indice}`}
               aria-hidden="true"
-              className="text-texto-terciario flex h-9 items-center justify-center px-0.5 text-[13px]"
+              className="text-texto-terciario flex h-11 items-center justify-center px-0.5 text-[13px] sm:h-9"
             >
               …
             </span>
@@ -64,7 +64,10 @@ export function Pagination({ paginaActual, totalPaginas, hrefPara }: PaginationP
               href={hrefPara(pagina)}
               aria-label={`Página ${pagina}`}
               aria-current={pagina === paginaActual ? "page" : undefined}
-              className={`flex h-9 w-9 items-center justify-center rounded-full text-[13px] ${
+              // 44x44 en el teléfono, que es el mínimo para el dedo; en
+              // escritorio vuelven a los 36 del handoff, donde se apunta con
+              // el mouse.
+              className={`flex h-11 w-11 items-center justify-center rounded-full text-[13px] sm:h-9 sm:w-9 ${
                 pagina === paginaActual
                   ? "bg-negro text-white"
                   : "text-texto-nav hover:text-texto-secundario"
@@ -120,7 +123,7 @@ function ControlPagina({
     <Link
       href={href}
       aria-label={etiqueta}
-      className="border-borde-pildora text-texto-nav hover:text-texto-secundario rounded-full border px-3 py-2 text-[13px]"
+      className="border-borde-pildora text-texto-nav hover:text-texto-secundario flex min-h-11 min-w-11 items-center justify-center rounded-full border px-3 py-2 text-[13px] sm:min-h-0 sm:min-w-0"
     >
       {contenido}
     </Link>

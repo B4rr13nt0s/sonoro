@@ -34,7 +34,10 @@ export function SiteHeader() {
         <Link
           href="/"
           aria-label="Inicio"
-          className="flex flex-none items-center"
+          // El monograma mide 32 px por diseño (CLAUDE.md § Radios); el
+          // padding negativo le da los 44 px de área tocable sin agrandarlo
+          // ni mover la barra.
+          className="-m-1.5 flex flex-none items-center p-1.5"
           onClick={cerrarMenu}
         >
           <Monogram className="rounded-nav-mark h-8 w-8" />

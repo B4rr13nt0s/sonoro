@@ -148,8 +148,10 @@ export function ProductCarousel3D() {
   const actual = MODELS[MODEL_IDS[index]];
   const frameloop = enCuadro && pestanaVisible ? "always" : "never";
 
+  // 44x44 en el teléfono —el mínimo para el dedo, y acá se usan justo con el
+  // dedo— y los 40 del handoff desde sm, donde se apunta con el mouse.
   const botonRedondo =
-    "border-borde-pildora text-negro bg-blanco/70 flex h-10 w-10 items-center justify-center rounded-full border text-[15px] backdrop-blur-sm";
+    "border-borde-pildora text-negro bg-blanco/70 flex h-11 w-11 items-center justify-center rounded-full border text-[15px] backdrop-blur-sm sm:h-10 sm:w-10";
 
   return (
     <div

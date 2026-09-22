@@ -96,7 +96,12 @@ export function SearchExperience({ productos }: { productos: ProductoTarjeta[] }
   return (
     <div className="flex flex-col">
       <section className="px-6 pt-10 sm:px-12 sm:pt-14">
-        <div className="border-negro rounded-card flex items-center gap-4 border px-5 py-4 sm:px-6 sm:py-5">
+        {/* El foco se marca en el RECUADRO, no en el input: el campo es
+            transparente y ocupa solo su renglón, así que un anillo en él se
+            vería partido. `outline` y no `ring`, que en Tailwind es una
+            sombra (CLAUDE.md § Sistema visual: sin sombras), y outline no
+            empuja el layout. */}
+        <div className="border-negro rounded-card focus-within:outline-negro flex items-center gap-4 border px-5 py-4 focus-within:outline-2 focus-within:outline-offset-2 sm:px-6 sm:py-5">
           <span className="text-texto-terciario text-[20px]" aria-hidden="true">
             ⌕
           </span>

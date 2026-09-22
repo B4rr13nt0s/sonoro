@@ -9,6 +9,8 @@ import Link from "next/link";
 // navegables.
 export type Miga = { label: string; href?: string };
 
+// Los enlaces llevan `py-3 -my-3`: el texto mide 11 px y queda donde estaba,
+// pero el área tocable sube a 44 px de alto, que es el mínimo para el dedo.
 export function Breadcrumbs({ items }: { items: Miga[] }) {
   return (
     <div className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">
@@ -16,7 +18,10 @@ export function Breadcrumbs({ items }: { items: Miga[] }) {
         <span key={`${item.label}-${indice}`}>
           {indice > 0 ? " / " : ""}
           {item.href ? (
-            <Link href={item.href} className="hover:text-texto-secundario">
+            <Link
+              href={item.href}
+              className="hover:text-texto-secundario -my-3.5 inline-block py-3.5"
+            >
               {item.label}
             </Link>
           ) : (

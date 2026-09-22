@@ -82,8 +82,29 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             app/producto/[slug]/page.tsx. Nada de components/comparador/ ni de
             lib/comparador/ se tocó. */}
         <CartProvider catalogo={catalogo}>
+          {/* Saltar al contenido: invisible hasta que el teclado lo enfoca.
+              El nav lleva ocho categorías más marcas, nosotros, buscar y
+              carrito — sin esto, quien navega con teclado o lector de
+              pantalla los recorre enteros en CADA página antes de llegar a
+              lo que vino a leer. */}
+          <a
+            href="#contenido"
+            // Está SIEMPRE en el DOM, colocado fuera de la pantalla, y baja
+            // a la vista al enfocarse. Así el primer Tab de cada página cae
+            // en él: verificado con un navegador de verdad (142 × 46 px a
+            // 12 px del borde).
+            //
+            // Ojo al probar esto: `:focus` solo coincide cuando la VENTANA
+            // tiene el foco, así que medirlo desde un panel automatizado en
+            // segundo plano da siempre "sigue escondido", aunque funcione.
+            className="border-negro bg-blanco text-negro absolute -top-20 left-3 z-50 rounded-full border px-4 py-3 text-[13px] focus:top-3"
+          >
+            Saltar al contenido
+          </a>
           <SiteHeader />
-          <main className="flex flex-1 flex-col">{children}</main>
+          <main id="contenido" className="flex flex-1 flex-col">
+            {children}
+          </main>
           <SiteFooter />
         </CartProvider>
       </body>
