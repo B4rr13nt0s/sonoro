@@ -178,9 +178,11 @@ El importador **aborta sin escribir nada**, y juntando todos los ofensores, si: 
 | Bordes de tarjeta | `#ECECEA` |
 | Bordes de píldora | `#E4E4E0` |
 | Texto secundario | `#6B6B67` |
-| Texto terciario / etiquetas | `#9C9C97` |
+| Texto terciario / etiquetas | `#6E6E6E` |
 | Texto sobre negro | `#A1A1A6` |
 | Bordes sobre negro | `#232326` |
+
+El **texto terciario se oscureció de `#9C9C97` a `#6E6E6E`** (app/globals.css, agosto 2026) y esta tabla se quedó con el valor viejo hasta septiembre. El original daba 2.76:1 sobre blanco y 2.53:1 sobre el fondo alterno, y estas etiquetas van en 10-12 px, donde WCAG AA no hace excepción: exige 4.5:1. El valor de hoy da 5.10 y 4.67. **Al aclararlo se rompe esa cuenta** — y antes de tocar cualquier color de esta tabla, comprobar contra `app/globals.css`, que es donde vive el valor que el sitio usa de verdad.
 
 **Sin degradados. Sin sombras. Sin emoji.**
 

@@ -23,7 +23,7 @@ const COLORES = [
   { nombre: "borde-tarjeta", uso: "Bordes de tarjeta", hex: "#ECECEA" },
   { nombre: "borde-pildora", uso: "Bordes de píldora", hex: "#E4E4E0" },
   { nombre: "texto-secundario", uso: "Texto secundario", hex: "#6B6B67" },
-  { nombre: "texto-terciario", uso: "Texto terciario / etiquetas", hex: "#9C9C97" },
+  { nombre: "texto-terciario", uso: "Texto terciario / etiquetas", hex: "#6E6E6E" },
   { nombre: "texto-sobre-negro", uso: "Texto sobre negro", hex: "#A1A1A6" },
   { nombre: "borde-sobre-negro", uso: "Bordes sobre negro", hex: "#232326" },
 ] as const;
