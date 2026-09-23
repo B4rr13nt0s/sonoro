@@ -404,6 +404,8 @@ El endpoint es ABIERTO por necesidad: lo llama el navegador de cualquiera que ci
 2. **Verificar el `token`** que manda la app (`QUOTE_LOG_TOKEN`) antes de escribir nada, y responder sin detalle si no coincide.
 3. **Ignorar filas repetidas por `ref`**: el reenvío puede llegar dos veces si el navegador reintenta.
 
+El script con las tres cosas resueltas está en `docs/apps-script/quote-log.gs`, listo para pegar en el editor de Apps Script de la hoja. No se ejecuta desde el repositorio —vive ahí para quedar versionado y revisable— y sus instrucciones de instalación van en su propia cabecera.
+
 ---
 
 ## Fase 7 — Contenido y SEO
