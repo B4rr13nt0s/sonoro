@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { AddToCartButton } from "@/components/cart/AddToCartButton";
+import { AgregarConCantidad } from "@/components/cart/AgregarConCantidad";
 import { ConsultarWhatsAppButton } from "@/components/product/ConsultarWhatsAppButton";
 import { ViewProductTracker } from "@/components/analytics/ViewProductTracker";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -212,11 +212,11 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
                   url={absoluteUrl(`/producto/${producto.slug}`)}
                   variante="principal"
                 />
-                <AddToCartButton producto={producto} variante="secundario" />
+                <AgregarConCantidad producto={producto} variante="secundario" />
               </>
             ) : (
               <>
-                <AddToCartButton producto={producto} variante="principal" />
+                <AgregarConCantidad producto={producto} variante="principal" />
                 <ConsultarWhatsAppButton
                   producto={producto}
                   url={absoluteUrl(`/producto/${producto.slug}`)}
