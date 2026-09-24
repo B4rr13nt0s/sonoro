@@ -26,7 +26,8 @@ import { buildQuoteLogRequest, sendQuoteLog } from "@/lib/quoteLog/index.ts";
 import { trackEvent } from "@/lib/analytics/track.ts";
 
 export function CarritoView() {
-  const { items, createdAt, subtotalCents, itemCount, hydrated, setQty, removeItem } = useCart();
+  const { items, createdAt, subtotalCents, itemCount, hydrated, setQty, removeItem, clear } =
+    useCart();
 
   // Una sola vez por carrito con contenido — mismo patrón de ref-guard que
   // CartLink en SiteHeader.tsx usa para su animación, para no disparar
@@ -69,6 +70,7 @@ export function CarritoView() {
           </div>
 
           <OrderSummary
+            onPedidoEnviado={clear}
             items={items}
             createdAt={createdAt}
             subtotalCents={subtotalCents}
@@ -170,13 +172,18 @@ function OrderSummary({
   createdAt,
   subtotalCents,
   itemCount,
+  onPedidoEnviado,
 }: {
   items: CartItem[];
   createdAt: string;
   subtotalCents: number;
   itemCount: number;
+  onPedidoEnviado: () => void;
 }) {
-  const ref = useMemo(() => buildOrderRef(createdAt), [createdAt]);
+  // El Ref sale del carrito ENTERO —cuándo nació y qué lleva— para que dos
+  // pedidos distintos del mismo carrito no compartan identificador (ver
+  // lib/whatsapp/ref.ts).
+  const ref = useMemo(() => buildOrderRef(createdAt, items), [createdAt, items]);
   const cuota = calcularCuotaCents(subtotalCents, 6);
 
   // El wa.me hay que armarlo en el cliente: necesita origin (window) para el
@@ -237,6 +244,15 @@ function OrderSummary({
             currency: "GTQ",
             ref,
           });
+          // El pedido ya salió: el carrito se vacía para que el siguiente
+          // empiece de cero, con su propio `createdAt` y su propio Ref.
+          //
+          // En un setTimeout y no aquí mismo: vaciar sincrónicamente hace que
+          // React re-renderice DENTRO del clic —el carrito pasa a vacío y este
+          // <a> se desmonta— antes de que el navegador ejecute la navegación
+          // del enlace, y WhatsApp no llega a abrirse. Con el temporizador, la
+          // navegación ya arrancó cuando el carrito se limpia.
+          setTimeout(onPedidoEnviado, 0);
         }}
         className="bg-negro mt-1 rounded-full px-6 py-4 text-center text-[16px] text-white"
       >

@@ -53,7 +53,8 @@ Ref: SNR-A7K2M
 
 - El botón dice **«Pedir por WhatsApp»**. Nunca «Proceder al pago», «Pagar» ni «Finalizar compra».
 - El resumen conserva el diseño del handoff: subtotal, envío, total en 28px, cuota, botón negro a todo el ancho, condiciones en mono al final.
-- **ID de pedido corto** (`SNR-XXXXX`) visible en pantalla y en el mensaje: vendedor y cliente hablan del mismo pedido.
+- **ID de pedido corto** (`SNR-XXXXX`) visible en pantalla y en el mensaje: vendedor y cliente hablan del mismo pedido. Sale de `buildOrderRef` (`lib/whatsapp/ref.ts`) y se calcula con el carrito ENTERO: su `createdAt` **más su contenido** (sku, cantidad y precio de cada línea, ordenadas por sku). Con solo `createdAt` identificaba un carrito y no un pedido — en la hoja del negocio quedó `SNR-S8CAM` el 25 de agosto de 2026 con dos pedidos distintos, porque el mismo cliente volvió, cambió los productos y el Ref no se movió. Los cinco caracteres no cambian: meter más datos en la cuenta reparte el hash, no lo alarga.
+- **Al pulsar «Pedir por WhatsApp» el carrito se vacía**, en un `setTimeout` y no en el propio clic: vaciarlo sincrónicamente desmonta el enlace mientras el navegador todavía no ejecutó la navegación, y WhatsApp no llega a abrirse. El pedido siguiente nace con su propio `createdAt` y su propio Ref. Consecuencia asumida: quien vuelve a la pestaña del carrito después de pedir lo encuentra vacío, sin pantalla de confirmación — esa pantalla sigue en la lista de lo que falta diseñar.
 - Si el carrito excede ~15 líneas, el mensaje envía el `Ref` y un enlace en vez de la lista completa.
 - El número va en `NEXT_PUBLIC_WHATSAPP_NUMBER`. Nunca incrustado en el código.
 - **El estado del carrito no conoce WhatsApp.** WhatsApp es un consumidor del carrito, igual que lo será el checkout en el futuro.
