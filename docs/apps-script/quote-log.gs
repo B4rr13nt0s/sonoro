@@ -65,6 +65,45 @@ function configurar() {
   Logger.log('Copia esa línea a tu .env.local y a las variables de entorno de Vercel.');
 }
 
+/**
+ * Diagnóstico para correr A MANO desde el editor (menú desplegable →
+ * dondeEscribo → ▶), sin volver a implementar: ejecutar una función usa el
+ * código GUARDADO, no el de la implementación.
+ *
+ * Responde a la pregunta que ninguna otra cosa responde desde fuera: en qué
+ * libro y en qué pestaña está cayendo lo que el script dice haber registrado.
+ * Si el libro que imprime no es el que tienes abierto, ahí está el problema —
+ * el proyecto quedó atado a otro archivo (pasa al duplicar la hoja, o al
+ * crear el script desde drive.google.com en vez de desde la hoja).
+ */
+function dondeEscribo() {
+  const libro = SpreadsheetApp.getActiveSpreadsheet();
+  if (!libro) {
+    Logger.log('El script NO está atado a ninguna hoja de cálculo.');
+    return;
+  }
+
+  Logger.log('Libro:     ' + libro.getName());
+  Logger.log('URL:       ' + libro.getUrl());
+  Logger.log('Pestañas:  ' + libro.getSheets().map(function (h) { return h.getName(); }).join(' · '));
+
+  const hoja = libro.getSheetByName(HOJA);
+  if (!hoja) {
+    Logger.log('La pestaña ' + HOJA + ' no existe todavía en ese libro.');
+    return;
+  }
+
+  const filas = Math.max(0, hoja.getLastRow() - 1);
+  Logger.log('Pestaña ' + HOJA + ': ' + filas + ' fila(s) de pedidos');
+  if (filas > 0) {
+    const desde = Math.max(2, hoja.getLastRow() - 4);
+    const ultimos = hoja.getRange(desde, 1, hoja.getLastRow() - desde + 1, 2).getValues();
+    for (let i = 0; i < ultimos.length; i++) {
+      Logger.log('   ' + ultimos[i][0] + '   ' + ultimos[i][1]);
+    }
+  }
+}
+
 function obtenerHoja() {
   const libro = SpreadsheetApp.getActiveSpreadsheet();
   let hoja = libro.getSheetByName(HOJA);
@@ -245,7 +284,50 @@ function doPost(e) {
 /**
  * Verificación rápida desde el navegador: abre la URL de la implementación
  * y debe responder que el servicio está activo.
+ *
+ * Con `?token=<el token>&diag=1` responde además DÓNDE está escribiendo: qué
+ * libro, qué pestañas tiene, cuántas filas lleva y los últimos refs. Sirve
+ * para el caso en que el script contesta «Registrado» y la fila no aparece
+ * donde uno la busca — casi siempre porque el proyecto de Apps Script no está
+ * atado a la hoja que uno tiene abierta, sino a otro libro.
+ *
+ * Va detrás del token porque expone datos del negocio, y solo LEE.
  */
-function doGet() {
-  return respuesta(true, 'Servicio de registro de pedidos activo');
+function doGet(e) {
+  const parametros = (e && e.parameter) || {};
+  if (!parametros.diag) {
+    return respuesta(true, 'Servicio de registro de pedidos activo');
+  }
+
+  const esperado = PropertiesService.getScriptProperties().getProperty('QUOTE_LOG_TOKEN');
+  if (!esperado || parametros.token !== esperado) {
+    return respuesta(false, 'No autorizado');
+  }
+
+  const libro = SpreadsheetApp.getActiveSpreadsheet();
+  if (!libro) {
+    return respuesta(false, 'El script NO está atado a ninguna hoja de cálculo');
+  }
+
+  const hoja = libro.getSheetByName(HOJA);
+  const ultimos = [];
+  if (hoja && hoja.getLastRow() > 1) {
+    const desde = Math.max(2, hoja.getLastRow() - 4);
+    const filas = hoja.getRange(desde, 1, hoja.getLastRow() - desde + 1, 2).getValues();
+    for (let i = 0; i < filas.length; i++) {
+      ultimos.push(String(filas[i][0]) + '  ' + String(filas[i][1]));
+    }
+  }
+
+  return respuesta(true, 'Diagnóstico', {
+    libro: libro.getName(),
+    libroUrl: libro.getUrl(),
+    pestanas: libro.getSheets().map(function (h) {
+      return h.getName();
+    }),
+    pestanaDestino: HOJA,
+    existeDestino: Boolean(hoja),
+    filas: hoja ? Math.max(0, hoja.getLastRow() - 1) : 0,
+    ultimos: ultimos,
+  });
 }
