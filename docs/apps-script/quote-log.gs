@@ -65,45 +65,6 @@ function configurar() {
   Logger.log('Copia esa línea a tu .env.local y a las variables de entorno de Vercel.');
 }
 
-/**
- * Diagnóstico para correr A MANO desde el editor (menú desplegable →
- * dondeEscribo → ▶), sin volver a implementar: ejecutar una función usa el
- * código GUARDADO, no el de la implementación.
- *
- * Responde a la pregunta que ninguna otra cosa responde desde fuera: en qué
- * libro y en qué pestaña está cayendo lo que el script dice haber registrado.
- * Si el libro que imprime no es el que tienes abierto, ahí está el problema —
- * el proyecto quedó atado a otro archivo (pasa al duplicar la hoja, o al
- * crear el script desde drive.google.com en vez de desde la hoja).
- */
-function dondeEscribo() {
-  const libro = SpreadsheetApp.getActiveSpreadsheet();
-  if (!libro) {
-    Logger.log('El script NO está atado a ninguna hoja de cálculo.');
-    return;
-  }
-
-  Logger.log('Libro:     ' + libro.getName());
-  Logger.log('URL:       ' + libro.getUrl());
-  Logger.log('Pestañas:  ' + libro.getSheets().map(function (h) { return h.getName(); }).join(' · '));
-
-  const hoja = libro.getSheetByName(HOJA);
-  if (!hoja) {
-    Logger.log('La pestaña ' + HOJA + ' no existe todavía en ese libro.');
-    return;
-  }
-
-  const filas = Math.max(0, hoja.getLastRow() - 1);
-  Logger.log('Pestaña ' + HOJA + ': ' + filas + ' fila(s) de pedidos');
-  if (filas > 0) {
-    const desde = Math.max(2, hoja.getLastRow() - 4);
-    const ultimos = hoja.getRange(desde, 1, hoja.getLastRow() - desde + 1, 2).getValues();
-    for (let i = 0; i < ultimos.length; i++) {
-      Logger.log('   ' + ultimos[i][0] + '   ' + ultimos[i][1]);
-    }
-  }
-}
-
 function obtenerHoja() {
   const libro = SpreadsheetApp.getActiveSpreadsheet();
   let hoja = libro.getSheetByName(HOJA);
@@ -158,16 +119,46 @@ function sanear(valor, maximo) {
   return /^[=+\-@\t\r]/.test(texto) ? "'" + texto : texto;
 }
 
-/** ¿Este pedido ya está en la hoja? Se compara contra la columna Ref. */
-function refYaRegistrado(hoja, ref) {
+/**
+ * Minutos dentro de los cuales dos filas idénticas se consideran el MISMO
+ * envío repetido y no dos pedidos.
+ */
+const VENTANA_REENVIO_MIN = 10;
+
+/**
+ * ¿Esto es un reenvío de algo que ya se escribió hace un momento?
+ *
+ * OJO CON EL REF: no es único por pedido. Se deriva de la fecha de creación
+ * del carrito (lib/whatsapp/ref.ts), así que mientras el carrito siga vivo en
+ * el navegador —aunque el cliente cambie los productos— el Ref es el mismo.
+ * En esta hoja hay pedidos reales que lo comprueban: SNR-S8CAM aparece el
+ * 25 de agosto con dos productos distintos.
+ *
+ * Por eso NO alcanza con mirar el Ref: descartar por Ref a secas tira
+ * pedidos buenos de clientes que vuelven desde el mismo navegador. Se
+ * comparan Ref, unidades y subtotal, y solo dentro de los últimos minutos:
+ * lo que se quiere atrapar es el reintento de red del mismo envío, que llega
+ * en segundos, no un pedido igual hecho otro día.
+ */
+function esReenvioReciente(hoja, ref, unidades, subtotal) {
   const ultima = hoja.getLastRow();
   if (ultima < 2) return false;
 
-  const refs = hoja.getRange(2, 2, ultima - 1, 1).getValues();
-  for (let i = 0; i < refs.length; i++) {
-    // El apóstrofo de `sanear` no viaja en el valor leído, así que comparar
-    // en crudo alcanza.
-    if (String(refs[i][0]).trim() === ref) return true;
+  // Con mirar las últimas filas basta: un reintento llega en segundos, así
+  // que está al final. Evita leer la hoja entera en cada pedido.
+  const desde = Math.max(2, ultima - 49);
+  const filas = hoja.getRange(desde, 1, ultima - desde + 1, 4).getValues();
+  const limite = Date.now() - VENTANA_REENVIO_MIN * 60 * 1000;
+
+  for (let i = 0; i < filas.length; i++) {
+    const fila = filas[i];
+    if (String(fila[1]).trim() !== ref) continue;
+    if (Number(fila[2]) !== Number(unidades)) continue;
+    if (Number(fila[3]) !== Number(subtotal)) continue;
+    // La columna Fecha puede volver como Date (si la hoja la interpretó) o
+    // como texto; las dos se entienden con new Date(...).
+    const fecha = fila[0] instanceof Date ? fila[0] : new Date(String(fila[0]).replace(' ', 'T'));
+    if (!isNaN(fecha.getTime()) && fecha.getTime() >= limite) return true;
   }
   return false;
 }
@@ -266,8 +257,8 @@ function doPost(e) {
       const hoja = obtenerHoja();
       // El reenvío puede llegar dos veces si la red reintenta, y un pedido
       // contado doble ensucia justo los números por los que existe la hoja.
-      if (refYaRegistrado(hoja, ref)) {
-        return respuesta(true, 'Repetido, no se escribió', { ref: ref });
+      if (esReenvioReciente(hoja, ref, unidades, subtotalCents / 100)) {
+        return respuesta(true, 'Reenvío repetido, no se escribió', { ref: ref });
       }
       hoja.appendRow(fila);
     } finally {
@@ -284,50 +275,7 @@ function doPost(e) {
 /**
  * Verificación rápida desde el navegador: abre la URL de la implementación
  * y debe responder que el servicio está activo.
- *
- * Con `?token=<el token>&diag=1` responde además DÓNDE está escribiendo: qué
- * libro, qué pestañas tiene, cuántas filas lleva y los últimos refs. Sirve
- * para el caso en que el script contesta «Registrado» y la fila no aparece
- * donde uno la busca — casi siempre porque el proyecto de Apps Script no está
- * atado a la hoja que uno tiene abierta, sino a otro libro.
- *
- * Va detrás del token porque expone datos del negocio, y solo LEE.
  */
-function doGet(e) {
-  const parametros = (e && e.parameter) || {};
-  if (!parametros.diag) {
-    return respuesta(true, 'Servicio de registro de pedidos activo');
-  }
-
-  const esperado = PropertiesService.getScriptProperties().getProperty('QUOTE_LOG_TOKEN');
-  if (!esperado || parametros.token !== esperado) {
-    return respuesta(false, 'No autorizado');
-  }
-
-  const libro = SpreadsheetApp.getActiveSpreadsheet();
-  if (!libro) {
-    return respuesta(false, 'El script NO está atado a ninguna hoja de cálculo');
-  }
-
-  const hoja = libro.getSheetByName(HOJA);
-  const ultimos = [];
-  if (hoja && hoja.getLastRow() > 1) {
-    const desde = Math.max(2, hoja.getLastRow() - 4);
-    const filas = hoja.getRange(desde, 1, hoja.getLastRow() - desde + 1, 2).getValues();
-    for (let i = 0; i < filas.length; i++) {
-      ultimos.push(String(filas[i][0]) + '  ' + String(filas[i][1]));
-    }
-  }
-
-  return respuesta(true, 'Diagnóstico', {
-    libro: libro.getName(),
-    libroUrl: libro.getUrl(),
-    pestanas: libro.getSheets().map(function (h) {
-      return h.getName();
-    }),
-    pestanaDestino: HOJA,
-    existeDestino: Boolean(hoja),
-    filas: hoja ? Math.max(0, hoja.getLastRow() - 1) : 0,
-    ultimos: ultimos,
-  });
+function doGet() {
+  return respuesta(true, 'Servicio de registro de pedidos activo');
 }
