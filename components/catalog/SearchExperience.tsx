@@ -96,6 +96,11 @@ export function SearchExperience({ productos }: { productos: ProductoTarjeta[] }
   return (
     <div className="flex flex-col">
       <section className="px-6 pt-10 sm:px-12 sm:pt-14">
+        {/* La página no tenía NINGÚN encabezado: el diseño abre directo con el
+            campo. El h1 le dice a Google y al lector de pantalla de qué trata
+            sin agregar un titular que el diseño no tiene — mismo patrón que
+            /marcas/[marca]. */}
+        <h1 className="sr-only">Buscar en el catálogo</h1>
         {/* El foco se marca en el RECUADRO, no en el input: el campo es
             transparente y ocupa solo su renglón, así que un anillo en él se
             vería partido. `outline` y no `ring`, que en Tailwind es una
@@ -107,6 +112,7 @@ export function SearchExperience({ productos }: { productos: ProductoTarjeta[] }
           </span>
           <input
             type="text"
+            name="q"
             value={borrador}
             onChange={(evento) => setBorrador(evento.target.value)}
             onKeyDown={alTecleo}

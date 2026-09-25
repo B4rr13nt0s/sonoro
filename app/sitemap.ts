@@ -1,6 +1,8 @@
 // docs/PLAN.md § Fase 7: sitemap.xml generado desde el catálogo. Excluye
-// /carrito (privado, sesión/localStorage) y /styleguide (herramienta
-// interna, no es una ruta de CLAUDE.md § Rutas).
+// /carrito (privado, sesión/localStorage), /styleguide (herramienta
+// interna, no es una ruta de CLAUDE.md § Rutas), /comparar (noindex) y
+// /buscar: sin consulta es un campo vacío —los resultados se arman en el
+// navegador—, así que no hay contenido que ofrecerle a Google.
 import type { MetadataRoute } from "next";
 
 import { listAllProducts, listBrands, listCategories } from "@/lib/catalog/index.ts";
@@ -21,7 +23,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/productos"), changeFrequency: "weekly", priority: 0.7 },
     { url: absoluteUrl("/marcas"), changeFrequency: "weekly", priority: 0.6 },
     { url: absoluteUrl("/nosotros"), changeFrequency: "yearly", priority: 0.3 },
-    { url: absoluteUrl("/buscar"), changeFrequency: "monthly", priority: 0.3 },
     { url: absoluteUrl("/legal/terminos"), changeFrequency: "yearly", priority: 0.1 },
     { url: absoluteUrl("/legal/privacidad"), changeFrequency: "yearly", priority: 0.1 },
     { url: absoluteUrl("/legal/garantias"), changeFrequency: "yearly", priority: 0.1 },
