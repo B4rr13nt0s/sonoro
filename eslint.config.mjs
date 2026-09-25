@@ -49,6 +49,12 @@ const eslintConfig = defineConfig([
     // Decoder de Draco: binario/minificado de terceros copiado de
     // node_modules/three, no código del proyecto.
     "public/draco/**",
+    // Worktrees de otras sesiones de Claude Code: copias completas del repo
+    // que no son de este checkout, y duplicaban cada error.
+    ".claude/**",
+    ".lighthouseci/**",
+    "test-results/**",
+    "playwright-report/**",
   ]),
 ]);
 

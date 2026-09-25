@@ -10,3 +10,13 @@ design
 CLAUDE.md
 docs
 public/draco
+# Worktrees de otras sesiones de Claude Code: copias completas del repo que
+# no son de este checkout.
+.claude
+# Salidas de Playwright y Lighthouse.
+test-results
+playwright-report
+.lighthouseci
+# Archivo de verificación de Google Search Console: tiene que quedar byte por
+# byte como lo entregó Google.
+public/googlec3ca1df37bbf4981.html

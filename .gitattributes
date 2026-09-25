@@ -1,0 +1,4 @@
+# El repositorio guarda todo el texto en LF, y así lo deja también en la copia
+# de trabajo aunque Git en Windows tenga core.autocrlf=true: con CRLF,
+# `prettier --check` marcaba como mal formateados archivos que no lo estaban.
+* text=auto eol=lf
