@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { cartReducer } from "./reducer.ts";
-import { crearCarritoVacio, type Cart } from "./types.ts";
+import { MAX_CANTIDAD_POR_LINEA, crearCarritoVacio, type Cart } from "./types.ts";
 
 const T0 = "2026-08-21T10:00:00.000Z";
 const T1 = "2026-08-21T10:05:00.000Z";
@@ -73,4 +73,24 @@ test("hydrate: reemplaza el carrito completo por el que trae la acción", () => 
   };
   const resultado = cartReducer(carritoVacio(), { type: "hydrate", cart: otro });
   assert.deepEqual(resultado, otro);
+});
+
+test("tope por línea: ni sumar desde la ficha ni el «+» del carrito pasan de MAX_CANTIDAD_POR_LINEA", () => {
+  const con99 = cartReducer(carritoVacio(), {
+    type: "add",
+    item: { ...ITEM_A, qty: MAX_CANTIDAD_POR_LINEA },
+    now: T0,
+  });
+  const otraVez = cartReducer(con99, { type: "add", item: { ...ITEM_A, qty: 5 }, now: T1 });
+  assert.equal(otraVez.items[0].qty, MAX_CANTIDAD_POR_LINEA);
+
+  const conMas = cartReducer(con99, { type: "setQty", sku: ITEM_A.sku, qty: 100, now: T1 });
+  assert.equal(conMas.items[0].qty, MAX_CANTIDAD_POR_LINEA);
+
+  const nuevaExcedida = cartReducer(carritoVacio(), {
+    type: "add",
+    item: { ...ITEM_A, qty: 500 },
+    now: T0,
+  });
+  assert.equal(nuevaExcedida.items[0].qty, MAX_CANTIDAD_POR_LINEA);
 });

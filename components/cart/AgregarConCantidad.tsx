@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { claseBoton, type VarianteBoton } from "@/components/ui/boton.ts";
 import { trackEvent } from "@/lib/analytics/track.ts";
-import { useCart } from "@/lib/cart/index.ts";
+import { MAX_CANTIDAD_POR_LINEA, useCart } from "@/lib/cart/index.ts";
 import type { Producto } from "@/lib/catalog/index.ts";
 
 /**
@@ -17,15 +17,6 @@ import type { Producto } from "@/lib/catalog/index.ts";
 
 /** Cuánto dura el mensaje de confirmación, con el botón sin responder. */
 const CONFIRMACION_MS = 5000;
-
-/**
- * Tope del selector. No es una regla del negocio —un instalador puede pedir
- * veinte bocinas— sino un freno a la cantidad absurda: el registro de
- * cotizaciones descarta las líneas con más de 999 unidades
- * (lib/quoteLog/types.ts), así que un pedido que pase de ahí se cerraría por
- * WhatsApp sin quedar registrado.
- */
-const MAX_CANTIDAD = 99;
 
 export function AgregarConCantidad({
   producto,
@@ -132,8 +123,8 @@ export function AgregarConCantidad({
         <button
           type="button"
           aria-label={`Agregar una unidad de ${producto.nombre}`}
-          onClick={() => setCantidad((n) => Math.min(MAX_CANTIDAD, n + 1))}
-          disabled={cantidad >= MAX_CANTIDAD}
+          onClick={() => setCantidad((n) => Math.min(MAX_CANTIDAD_POR_LINEA, n + 1))}
+          disabled={cantidad >= MAX_CANTIDAD_POR_LINEA}
           className="flex h-11 w-11 items-center justify-center text-[16px] disabled:opacity-40 lg:h-[38px] lg:w-[38px]"
         >
           +

@@ -16,13 +16,14 @@ import {
   useContext,
   useEffect,
   useReducer,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 
 import { cartReducer } from "./reducer.ts";
 import { reconcile, type CambioCarrito } from "./reconcile.ts";
-import { loadCart, saveCart } from "./storage.ts";
+import { CART_STORAGE_KEY, loadCart, saveCart } from "./storage.ts";
 import { itemCount, subtotalCents } from "./totals.ts";
 import { crearCarritoVacio, type CartItem, type CatalogoSku } from "./types.ts";
 
@@ -100,8 +101,36 @@ export function CartProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Otra pestaña cambió el carrito. Sin esto, cada pestaña guardaba SU copia
+  // y la última en escribir borraba lo que agregó la otra: abrir una ficha
+  // desde un enlace de WhatsApp, agregarla, y seguir en la pestaña de antes
+  // perdía ese producto al siguiente cambio. `storage` solo se dispara en las
+  // OTRAS pestañas, nunca en la que escribió.
+  //
+  // Lo que llega de afuera se aplica pero NO se vuelve a guardar
+  // (`vinoDeOtraPestaña`): reconcile() puede corregir un precio, y si dos
+  // pestañas cargaron catálogos distintos —una abierta antes de un deploy—
+  // cada una corregiría a su versión y lo reescribiría, pisándose en bucle.
+  // Se guarda recién cuando esta pestaña cambie algo por su cuenta.
+  const vinoDeOtraPestaña = useRef(false);
   useEffect(() => {
     if (!hydrated) return;
+    function alCambiarEnOtraPestaña(evento: StorageEvent) {
+      if (evento.key !== CART_STORAGE_KEY && evento.key !== null) return;
+      const { cart: reconciliado } = reconcile(loadCart(), catalogo);
+      vinoDeOtraPestaña.current = true;
+      dispatch({ type: "hydrate", cart: reconciliado });
+    }
+    window.addEventListener("storage", alCambiarEnOtraPestaña);
+    return () => window.removeEventListener("storage", alCambiarEnOtraPestaña);
+  }, [hydrated, catalogo]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (vinoDeOtraPestaña.current) {
+      vinoDeOtraPestaña.current = false;
+      return;
+    }
     saveCart(cart);
   }, [cart, hydrated]);
 

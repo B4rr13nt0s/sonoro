@@ -140,3 +140,135 @@ test("CartProvider: montar con un carrito ya guardado no lo pisa con el estado v
     globalAny.IS_REACT_ACT_ENVIRONMENT = anteriores.IS_REACT_ACT_ENVIRONMENT;
   }
 });
+
+// Dos pestañas: la otra guardó un carrito distinto y el navegador avisa con
+// `storage`. Antes nadie escuchaba ese evento, y la pestaña de acá pisaba lo
+// de la otra en su siguiente escritura.
+test("CartProvider: adopta lo que otra pestaña guardó, sin reescribirlo, y lo conserva al cambiar algo", async () => {
+  const dom = new JSDOM("<!doctype html><html><body><div id='root'></div></body></html>", {
+    url: "http://localhost/",
+  });
+  const globalAny = globalThis as Record<string, unknown>;
+  const descriptorNavigatorOriginal = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const anteriores = {
+    window: globalAny.window,
+    document: globalAny.document,
+    IS_REACT_ACT_ENVIRONMENT: globalAny.IS_REACT_ACT_ENVIRONMENT,
+  };
+  globalAny.window = dom.window;
+  globalAny.document = dom.window.document;
+  Object.defineProperty(globalThis, "navigator", {
+    value: dom.window.navigator,
+    configurable: true,
+    writable: true,
+  });
+  globalAny.IS_REACT_ACT_ENVIRONMENT = true;
+
+  const storageProto = Object.getPrototypeOf(dom.window.localStorage) as {
+    setItem: (key: string, value: string) => void;
+  };
+  const setItemOriginal = storageProto.setItem;
+
+  try {
+    const linea = (sku: string, unitPriceCents: number) => ({
+      sku,
+      qty: 1,
+      unitPriceCents,
+      currency: "GTQ" as const,
+      nombreSnapshot: sku,
+      imagenSnapshot: null,
+      addedAt: "2026-09-25T10:00:00.000Z",
+    });
+    const catalogo: CatalogoSku[] = [
+      { sku: "SQ12-D2", activo: true, disponibilidad: "disponible", precioCents: 245000 },
+      { sku: "PRX60C", activo: true, disponibilidad: "disponible", precioCents: 118000 },
+      { sku: "KSL-8B", activo: true, disponibilidad: "disponible", precioCents: 190000 },
+    ];
+
+    const escrituras: string[] = [];
+    storageProto.setItem = function (this: Storage, key: string, value: string) {
+      if (key === CART_STORAGE_KEY) escrituras.push(value);
+      return setItemOriginal.call(this, key, value);
+    };
+
+    const probeState: { valor: ReturnType<typeof useCart> | null } = { valor: null };
+    function Probe() {
+      probeState.valor = useCart();
+      return null;
+    }
+
+    const contenedor = document.getElementById("root");
+    if (!contenedor) throw new Error("no se encontró #root en el DOM de prueba");
+    const root = createRoot(contenedor);
+    await act(async () => {
+      // eslint-disable-next-line react/no-children-prop
+      root.render(createElement(CartProvider, { catalogo, children: createElement(Probe) }));
+    });
+    assert.equal(probeState.valor?.items.length, 0);
+
+    // La otra pestaña guarda dos líneas. Una con un precio viejo: reconcile()
+    // la corrige acá, y aun así esta pestaña no debe reescribir.
+    const deLaOtraPestaña = {
+      schemaVersion: SCHEMA_VERSION,
+      items: [linea("SQ12-D2", 245000), linea("PRX60C", 100000)],
+      createdAt: "2026-09-25T10:00:00.000Z",
+      updatedAt: "2026-09-25T10:00:00.000Z",
+    };
+    setItemOriginal.call(
+      dom.window.localStorage,
+      CART_STORAGE_KEY,
+      JSON.stringify(deLaOtraPestaña),
+    );
+    const antesDelEvento = escrituras.length;
+    await act(async () => {
+      dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: CART_STORAGE_KEY }));
+    });
+
+    assert.deepEqual(
+      probeState.valor?.items.map((i) => i.sku),
+      ["SQ12-D2", "PRX60C"],
+    );
+    assert.equal(probeState.valor?.items[1].unitPriceCents, 118000, "precio corregido");
+    assert.equal(
+      probeState.valor?.createdAt,
+      "2026-09-25T10:00:00.000Z",
+      "mismo carrito, mismo Ref",
+    );
+    assert.equal(escrituras.length, antesDelEvento, "no reescribe lo que llegó de otra pestaña");
+
+    // Un cambio propio guarda el carrito ENTERO, con lo de la otra pestaña.
+    await act(async () => {
+      probeState.valor?.addItem({
+        sku: "KSL-8B",
+        qty: 1,
+        unitPriceCents: 190000,
+        currency: "GTQ",
+        nombreSnapshot: "KSL-8B",
+        imagenSnapshot: null,
+      });
+    });
+    const final = JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) ?? "null");
+    assert.deepEqual(
+      final.items.map((i: { sku: string }) => i.sku),
+      ["SQ12-D2", "PRX60C", "KSL-8B"],
+    );
+
+    // Otra clave de localStorage no toca el carrito.
+    await act(async () => {
+      dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: "otra-cosa" }));
+    });
+    assert.equal(probeState.valor?.items.length, 3);
+
+    await act(async () => {
+      root.unmount();
+    });
+  } finally {
+    storageProto.setItem = setItemOriginal;
+    globalAny.window = anteriores.window;
+    globalAny.document = anteriores.document;
+    if (descriptorNavigatorOriginal) {
+      Object.defineProperty(globalThis, "navigator", descriptorNavigatorOriginal);
+    }
+    globalAny.IS_REACT_ACT_ENVIRONMENT = anteriores.IS_REACT_ACT_ENVIRONMENT;
+  }
+});

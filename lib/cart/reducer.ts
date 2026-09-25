@@ -5,7 +5,9 @@
 // Cada acción que muta el carrito lleva su propio `now` (ISO 8601) en vez de
 // que el reducer llame `new Date()` — así el reducer es determinista y se
 // puede probar sin mockear el reloj.
-import { crearCarritoVacio, type Cart, type CartItem } from "./types.ts";
+import { MAX_CANTIDAD_POR_LINEA, crearCarritoVacio, type Cart, type CartItem } from "./types.ts";
+
+const topar = (qty: number) => Math.min(qty, MAX_CANTIDAD_POR_LINEA);
 
 export type CartAction =
   | {
@@ -29,9 +31,11 @@ export function cartReducer(cart: Cart, action: CartAction): Cart {
       const existente = cart.items.find((i) => i.sku === action.item.sku);
       const items = existente
         ? cart.items.map((i) =>
-            i.sku === action.item.sku ? { ...i, ...action.item, qty: i.qty + action.item.qty } : i,
+            i.sku === action.item.sku
+              ? { ...i, ...action.item, qty: topar(i.qty + action.item.qty) }
+              : i,
           )
-        : [...cart.items, { ...action.item, addedAt: action.now }];
+        : [...cart.items, { ...action.item, qty: topar(action.item.qty), addedAt: action.now }];
       return { ...cart, items, updatedAt: action.now };
     }
 
@@ -53,7 +57,7 @@ export function cartReducer(cart: Cart, action: CartAction): Cart {
       }
       return {
         ...cart,
-        items: cart.items.map((i) => (i.sku === action.sku ? { ...i, qty: action.qty } : i)),
+        items: cart.items.map((i) => (i.sku === action.sku ? { ...i, qty: topar(action.qty) } : i)),
         updatedAt: action.now,
       };
     }

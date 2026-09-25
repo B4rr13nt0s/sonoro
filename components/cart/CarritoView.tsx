@@ -15,7 +15,7 @@ import { useEffect, useMemo, useRef } from "react";
 
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
-import { useCart, type CartItem } from "@/lib/cart/index.ts";
+import { MAX_CANTIDAD_POR_LINEA, useCart, type CartItem } from "@/lib/cart/index.ts";
 import {
   buildOrderMessage,
   buildOrderRef,
@@ -149,7 +149,8 @@ function CartLineItem({
               type="button"
               aria-label={`Agregar una unidad de ${item.nombreSnapshot}`}
               onClick={() => onSetQty(item.qty + 1)}
-              className="flex h-11 w-11 items-center justify-center text-[16px] lg:h-[38px] lg:w-[38px]"
+              disabled={item.qty >= MAX_CANTIDAD_POR_LINEA}
+              className="flex h-11 w-11 items-center justify-center text-[16px] disabled:opacity-40 lg:h-[38px] lg:w-[38px]"
             >
               +
             </button>

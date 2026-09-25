@@ -5,5 +5,11 @@ export { reconcile } from "./reconcile.ts";
 export type { CambioCarrito } from "./reconcile.ts";
 export { loadCart, saveCart, CART_STORAGE_KEY } from "./storage.ts";
 export { subtotalCents, itemCount } from "./totals.ts";
-export { crearCarritoVacio, SCHEMA_VERSION, CartSchema, CartItemSchema } from "./types.ts";
+export {
+  crearCarritoVacio,
+  MAX_CANTIDAD_POR_LINEA,
+  SCHEMA_VERSION,
+  CartSchema,
+  CartItemSchema,
+} from "./types.ts";
 export type { Cart, CartItem, CatalogoSku } from "./types.ts";

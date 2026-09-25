@@ -58,6 +58,8 @@ Ref: SNR-A7K2M
 - **ID de pedido corto** (`SNR-XXXXX`) visible en pantalla y en el mensaje: vendedor y cliente hablan del mismo pedido. Sale de `buildOrderRef` (`lib/whatsapp/ref.ts`) y se calcula con el carrito ENTERO: su `createdAt` **más su contenido** (sku, cantidad y precio de cada línea, ordenadas por sku). Con solo `createdAt` identificaba un carrito y no un pedido — en la hoja del negocio quedó `SNR-S8CAM` el 25 de agosto de 2026 con dos pedidos distintos, porque el mismo cliente volvió, cambió los productos y el Ref no se movió. Los cinco caracteres no cambian: meter más datos en la cuenta reparte el hash, no lo alarga.
 - **Al pulsar «Pedir por WhatsApp» el carrito se vacía**, en un `setTimeout` y no en el propio clic: vaciarlo sincrónicamente desmonta el enlace mientras el navegador todavía no ejecutó la navegación, y WhatsApp no llega a abrirse. El pedido siguiente nace con su propio `createdAt` y su propio Ref. Consecuencia asumida: quien vuelve a la pestaña del carrito después de pedir lo encuentra vacío, sin pantalla de confirmación — esa pantalla sigue en la lista de lo que falta diseñar.
 - **El mensaje lleva siempre la lista completa**, tenga las líneas que tenga. Hasta el 25 de septiembre de 2026, con más de ~15 líneas mandaba el `Ref` y un enlace a `/carrito` — pero el carrito vive en el `localStorage` de cada navegador: el vendedor abría el enlace y veía el suyo, vacío, y el cliente tampoco, porque el pedido vacía el carrito. Los pedidos grandes llegaban sin productos. No reintroducir un enlace al carrito salvo que el enlace lleve el pedido adentro.
+- **El carrito se sincroniza entre pestañas** con el evento `storage` (`lib/cart/context.ts`). Antes cada pestaña guardaba su copia y la última borraba lo que había agregado la otra. Lo que llega de otra pestaña se aplica pero no se reescribe: dos pestañas con catálogos distintos (una abierta antes de un deploy) se corregirían el precio una a la otra en bucle.
+- **Máximo 99 unidades por línea** (`MAX_CANTIDAD_POR_LINEA`), aplicado en el reducer y no solo en la interfaz.
 - El número va en `NEXT_PUBLIC_WHATSAPP_NUMBER`. Nunca incrustado en el código.
 - **El estado del carrito no conoce WhatsApp.** WhatsApp es un consumidor del carrito, igual que lo será el checkout en el futuro.
 
@@ -155,7 +157,9 @@ El importador **aborta sin escribir nada**, y juntando todos los ofensores, si: 
 ### Mantenimiento del catálogo
 
 - Quitar un producto es activo = FALSO. NUNCA borrar la fila: rompe carritos
-  guardados y la trazabilidad de pedidos enviados.
+  guardados y la trazabilidad de pedidos enviados. Si una fila publicada
+  desaparece del libro, el importador lo marca como alerta
+  (`scripts/catalogo/alertas.ts`), igual que un slug o un sku que cambió.
 - disponibilidad = 'agotado' es para faltantes temporales; activo = FALSO es
   para descontinuados.
 - sku y slug son permanentes. Un cambio de slug exige redirección 301

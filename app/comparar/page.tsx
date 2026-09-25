@@ -104,9 +104,13 @@ export default async function CompararPage(props: PageProps<"/comparar">) {
   );
 }
 
-// No es un caso raro: el enlace del inicio llega siempre sin skus, así que
-// esta es la pantalla de entrada del comparador. Copy descriptivo, sin
-// criterio sobre qué le conviene al cliente (CLAUDE.md § reglas 2).
+// Hoy el comparador no tiene accesos (ver app/layout.tsx): a esta página solo
+// se llega con un enlace compartido. Así que este texto no puede mandar a
+// «elegir» ni «agregar» productos —el botón «Comparar» que lo permitía ya no
+// existe, y hasta septiembre de 2026 este texto lo seguía nombrando—: solo
+// dice qué pasó con el enlace. Si el comparador vuelve a tener accesos, este
+// copy vuelve a explicar cómo armar una comparación. Sin criterio sobre qué le
+// conviene al cliente (CLAUDE.md § reglas 2).
 function VolverAlCatalogo({ productos }: { productos: Producto[] }) {
   const uno = productos[0];
 
@@ -114,8 +118,8 @@ function VolverAlCatalogo({ productos }: { productos: Producto[] }) {
     <section className="flex flex-col items-start gap-5 px-6 pt-4 pb-16 sm:px-12 sm:pb-22">
       <p className="text-texto-secundario max-w-[520px] text-[17px] leading-[1.55]">
         {uno
-          ? `Hay un solo producto en esta comparación. Agrega al menos otro de ${uno.categoria.toLowerCase()} para verlos lado a lado.`
-          : "Se comparan de dos a cuatro productos de una misma categoría. Elige los que quieras desde el catálogo con el botón «Comparar» de cada producto."}
+          ? `Este enlace trae un solo producto de ${uno.categoria.toLowerCase()}, y se necesitan al menos dos para verlos lado a lado.`
+          : "Este enlace no trae productos para comparar. Puede estar incompleto, o los productos que traía ya no están en el catálogo."}
       </p>
       <div className="flex flex-wrap gap-3 text-[15px]">
         <Link href="/catalogo" className="bg-negro rounded-full px-6 py-3 text-white">

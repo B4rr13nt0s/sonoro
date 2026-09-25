@@ -18,6 +18,13 @@ const ENLACES_LEGALES = [
 // no un botón de pedido — para pedir está «Pedir por WhatsApp» del carrito.
 // Instagram sí es enlace porque sin él no se llega a la cuenta.
 //
+// El envío va en su propio renglón, debajo. CLAUDE.md § reglas 7: «Envíos
+// gratis a todo el país» va SIEMPRE con su restricción. El handoff decía
+// «Envíos a todo el país», sin «gratis», y no la necesitaba; al agregar
+// «gratis» el pie quedó prometiéndolo sin condiciones en todas las páginas,
+// hasta septiembre de 2026. Con la frase completa la línea no entra en un
+// renglón a 1280 px, y partida dejaba un «·» colgando al inicio del segundo.
+//
 // Los tres datos de contacto llevan icono a la izquierda. Los separadores «·»
 // van entre segmentos, no dentro de ellos, para que un icono nunca quede
 // colgado al final de un renglón lejos de su dato: cada segmento es un
@@ -32,8 +39,8 @@ function segmentosDeContacto() {
       : null,
   ].filter((dato) => dato !== null);
 
-  const previos = [process.env.BUSINESS_ADDRESS_LOCALITY, "Envíos gratis a todo el país"].filter(
-    (segmento): segmento is string => Boolean(segmento),
+  const previos = [process.env.BUSINESS_ADDRESS_LOCALITY].filter((segmento): segmento is string =>
+    Boolean(segmento),
   );
 
   return { previos, contacto };
@@ -77,34 +84,39 @@ export function SiteFooter() {
           </Link>
         ))}
       </nav>
-      <span className="text-texto-terciario flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-mono text-[11px] lg:justify-end">
-        {previos.map((segmento, i) => (
-          <span key={segmento}>
-            {segmento}
-            {i < previos.length - 1 ? " ·" : null}
-          </span>
-        ))}
-        {contacto.map(({ clave, icono: Icono, texto }) => (
-          <span key={clave} className="inline-flex items-center gap-1.5">
-            <span aria-hidden="true">·</span>
-            <Icono />
-            {texto}
-          </span>
-        ))}
-        {instagram ? (
-          <span className="inline-flex items-center gap-1.5">
-            <span aria-hidden="true">·</span>
-            <a
-              href={`https://www.instagram.com/${instagram}/`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-texto-secundario -my-3.5 inline-flex items-center gap-1.5 py-3.5"
-            >
-              <IconoInstagram />@{instagram}
-            </a>
-          </span>
-        ) : null}
-      </span>
+      <div className="text-texto-terciario flex flex-col items-center gap-1.5 font-mono text-[11px] lg:items-end">
+        <span className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 lg:justify-end">
+          {previos.map((segmento, i) => (
+            <span key={segmento}>
+              {segmento}
+              {i < previos.length - 1 ? " ·" : null}
+            </span>
+          ))}
+          {contacto.map(({ clave, icono: Icono, texto }, i) => (
+            <span key={clave} className="inline-flex items-center gap-1.5">
+              {previos.length > 0 || i > 0 ? <span aria-hidden="true">·</span> : null}
+              <Icono />
+              {texto}
+            </span>
+          ))}
+          {instagram ? (
+            <span className="inline-flex items-center gap-1.5">
+              <span aria-hidden="true">·</span>
+              <a
+                href={`https://www.instagram.com/${instagram}/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-texto-secundario -my-3.5 inline-flex items-center gap-1.5 py-3.5"
+              >
+                <IconoInstagram />@{instagram}
+              </a>
+            </span>
+          ) : null}
+        </span>
+        <span>
+          Envíos gratis a todo el país. Aplican restricciones según destino y volumen del pedido.
+        </span>
+      </div>
     </footer>
   );
 }

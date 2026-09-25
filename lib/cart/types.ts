@@ -10,6 +10,19 @@ import { MonedaSchema } from "../catalog/types.ts";
 
 export const SCHEMA_VERSION = 1;
 
+/**
+ * Tope de unidades por línea. No es una regla del negocio —un instalador
+ * puede pedir veinte bocinas— sino un freno a la cantidad absurda: el
+ * registro de cotizaciones descarta las líneas con más de 999 unidades
+ * (lib/quoteLog/types.ts), así que un pedido que pase de ahí se cerraría por
+ * WhatsApp sin quedar registrado.
+ *
+ * Lo aplica el reducer, no solo la interfaz: hasta septiembre de 2026 el
+ * tope vivía en el selector de la ficha, pero el «+» del carrito no lo
+ * tenía, y agregar 99 dos veces desde la ficha sumaba 198.
+ */
+export const MAX_CANTIDAD_POR_LINEA = 99;
+
 export const CartItemSchema = z.object({
   sku: z.string(),
   qty: z.number().int().positive(),

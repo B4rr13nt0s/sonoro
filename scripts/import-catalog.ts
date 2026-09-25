@@ -37,6 +37,7 @@ import { construirImagenes, emparejarFotosConSkus } from "../lib/catalog/photos.
 import { ProductoSchema, type Producto } from "../lib/catalog/types.ts";
 import { formatQ } from "../lib/format/precio.ts";
 import { leerLibro, validarLibro, type LibroCrudo } from "./catalogo/contrato.ts";
+import { detectarAlertas } from "./catalogo/alertas.ts";
 import { serializarCsv } from "./catalogo/csv.ts";
 import { normalizarFila } from "./catalogo/filas.ts";
 import { defHoja } from "./catalogo/hojas.ts";
@@ -153,7 +154,11 @@ function main(): void {
   // (de sku o de vista) — se reporta junto a las demás alertas de
   // integridad de datos, nunca se ignora en silencio.
   const alertas = [
-    ...detectarAlertas(catalogoAnterior, productosValidos),
+    ...detectarAlertas(
+      catalogoAnterior,
+      productosValidos,
+      new Set(rechazos.map((rechazo) => rechazo.sku)),
+    ),
     ...resultadoFotos.ignorados,
   ];
   alertas.forEach((alerta) => console.warn(`⚠ ALERTA: ${alerta}`));
@@ -228,45 +233,6 @@ function abortar(motivos: string[]): void {
   console.error("✘ Importación abortada. No se escribió ningún archivo de salida.\n");
   motivos.forEach((motivo) => console.error(`  - ${motivo}`));
   process.exitCode = 1;
-}
-
-function normalizarNombre(nombre: string): string {
-  return nombre.trim().toLowerCase().replace(/\s+/g, " ");
-}
-
-// "0450" → "450": quita ceros a la izquierda de cada grupo numérico que
-// arranca al inicio del sku o justo después de un separador.
-function sinCerosIniciales(sku: string): string {
-  return sku.replace(/(^|[ .-])0+(?=\d)/g, "$1");
-}
-
-function detectarAlertas(anteriores: Producto[], nuevos: Producto[]): string[] {
-  const alertas: string[] = [];
-
-  const porSlugAnterior = new Map(anteriores.map((p) => [p.slug, p]));
-  const porNombreAnterior = new Map(anteriores.map((p) => [normalizarNombre(p.nombre), p]));
-  const porSkuAnterior = new Map(anteriores.map((p) => [p.sku, p]));
-
-  for (const nuevo of nuevos) {
-    // Ceros iniciales perdidos: match por slug O por nombre normalizado —
-    // si solo se empareja por slug, un producto donde slug y sku cambiaron
-    // a la vez nunca se detecta.
-    const viejo =
-      porSlugAnterior.get(nuevo.slug) ?? porNombreAnterior.get(normalizarNombre(nuevo.nombre));
-    if (viejo && viejo.sku !== nuevo.sku && sinCerosIniciales(viejo.sku) === nuevo.sku) {
-      alertas.push(
-        `sku perdió ceros iniciales: "${viejo.sku}" → "${nuevo.sku}" (producto "${nuevo.nombre}")`,
-      );
-    }
-
-    // Slug cambiado: match por sku estable.
-    const viejoPorSku = porSkuAnterior.get(nuevo.sku);
-    if (viejoPorSku && viejoPorSku.slug !== nuevo.slug) {
-      alertas.push(`slug cambió para sku "${nuevo.sku}": "${viejoPorSku.slug}" → "${nuevo.slug}"`);
-    }
-  }
-
-  return alertas;
 }
 
 function calcularDiffPrecios(anteriores: Producto[], nuevos: Producto[]): DiffPrecio[] {
