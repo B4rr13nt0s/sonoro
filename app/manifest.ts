@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 
+import { DESCRIPCION_SITIO, TITULO_SITIO } from "@/lib/seo/textos.ts";
+
 // Manifiesto para cuando alguien guarda el sitio en la pantalla de inicio del
 // teléfono — el caso realista acá, con el tráfico mayoritariamente móvil.
 //
@@ -15,10 +17,9 @@ import type { MetadataRoute } from "next";
 // el fondo del sitio es blanco y el negro de marca tiñe la barra del sistema.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Sonoro — Equipo de audio para carro",
+    name: TITULO_SITIO,
     short_name: "Sonoro",
-    description:
-      "Bocinas, subwoofers, amplificadores, receptores, kits, insonorización y accesorios. Envíos a toda Guatemala.",
+    description: DESCRIPCION_SITIO,
     lang: "es-GT",
     start_url: "/",
     display: "standalone",

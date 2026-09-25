@@ -17,12 +17,12 @@ export default function TerminosPage() {
     <LegalPage
       etiqueta="Legal"
       titulo="Términos y condiciones"
-      actualizado="Última actualización: 11 de septiembre de 2026"
+      actualizado="Última actualización: 24 de septiembre de 2026"
       secciones={[
         {
           titulo: "Qué es Sonoro",
           parrafos: [
-            "Sonoro es un catálogo en línea de equipo de audio para carro en Guatemala. El sitio no procesa pagos: el pedido se arma en el carrito y se cierra directamente con Sonoro por WhatsApp.",
+            "Sonoro es un catálogo en línea de equipo de audio para carro, marino y motorsports en Guatemala. El sitio no procesa pagos: el pedido se arma en el carrito y se cierra directamente con Sonoro por WhatsApp.",
           ],
         },
         {

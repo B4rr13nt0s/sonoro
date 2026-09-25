@@ -6,10 +6,7 @@ import { IconoCorreo, IconoInstagram, IconoTelefono } from "@/components/ui/Icon
 import { listBrands } from "@/lib/catalog/index.ts";
 import { buildWhatsAppUrl, WHATSAPP_NUMBER } from "@/lib/whatsapp/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
-
-const TITULO = "Nosotros";
-const DESCRIPCION =
-  "Sonoro importa de forma directa equipo de audio para carro a Guatemala. Cada producto incluye la instalación básica; una instalación más compleja tiene costo adicional.";
+import { TEXTOS_NOSOTROS } from "@/lib/seo/textos.ts";
 
 // Mismo mensaje genérico que la portada: consulta de existencia, sin
 // lenguaje de asesoría ni instalación (CLAUDE.md § reglas 1 y 2).
@@ -18,11 +15,7 @@ const MENSAJE_CONSULTA = "Hola Sonoro, quiero consultar disponibilidad de un pro
 const DIRECCION =
   "Km 13.5 Carretera a El Salvador, Calle Real, Puerta Parada, Santa Catarina Pinula, Ofibodegas del Milenio, Bodega 6";
 
-export const metadata: Metadata = metadataPagina({
-  titulo: TITULO,
-  descripcion: DESCRIPCION,
-  ruta: "/nosotros",
-});
+export const metadata: Metadata = metadataPagina({ ...TEXTOS_NOSOTROS, ruta: "/nosotros" });
 
 export default async function NosotrosPage() {
   const marcas = await listBrands();

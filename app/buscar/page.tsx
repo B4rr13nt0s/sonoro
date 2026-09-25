@@ -3,15 +3,9 @@ import type { Metadata } from "next";
 import { SearchExperience } from "@/components/catalog/SearchExperience";
 import { listAllProducts } from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
+import { TEXTOS_BUSCAR } from "@/lib/seo/textos.ts";
 
-const TITULO = "Buscar";
-const DESCRIPCION = "Busca en el catálogo de Sonoro por nombre, marca o código.";
-
-export const metadata: Metadata = metadataPagina({
-  titulo: TITULO,
-  descripcion: DESCRIPCION,
-  ruta: "/buscar",
-});
+export const metadata: Metadata = metadataPagina({ ...TEXTOS_BUSCAR, ruta: "/buscar" });
 
 // CLAUDE.md § Rutas: /buscar existe como ruta, pero la búsqueda en sí es del
 // lado del cliente sobre el catálogo estático — este Server Component solo

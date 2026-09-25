@@ -9,7 +9,8 @@ import { CATEGORIAS_SITIO } from "@/lib/catalog/categorias.ts";
 import { listBrands, listProducts } from "@/lib/catalog/index.ts";
 import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
 import { buildLocalBusinessJsonLd } from "@/lib/seo/business.ts";
-import { DESCRIPCION_SITIO, metadataPagina, TITULO_SITIO } from "@/lib/seo/metadata.ts";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
+import { DESCRIPCION_SITIO, TITULO_SITIO } from "@/lib/seo/textos.ts";
 import { buildWhatsAppUrl, WHATSAPP_NUMBER } from "@/lib/whatsapp/index.ts";
 
 export const metadata: Metadata = metadataPagina({

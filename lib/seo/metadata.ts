@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { TITULO_SITIO } from "./textos.ts";
+
 // Metadata de una página pública, armada en UN solo lugar: título,
 // descripción, canonical, Open Graph y tarjeta de Twitter/X.
 //
@@ -16,12 +18,6 @@ import type { Metadata } from "next";
 // el sufijo a mano.
 
 export const SUFIJO_TITULO = " — Sonoro";
-
-// Los de la portada, que también son el respaldo del layout raíz para las
-// rutas que no declaran los suyos (la 404).
-export const TITULO_SITIO = "Sonoro — Equipo de audio para carro";
-export const DESCRIPCION_SITIO =
-  "Bocinas, subwoofers, amplificadores, receptores, kits, insonorización y accesorios. Envíos a toda Guatemala.";
 
 // La ruta que Next le da a app/opengraph-image.tsx. Se resuelve contra
 // metadataBase, así que sale absoluta (https://sonoro.gt/opengraph-image).

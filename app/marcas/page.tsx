@@ -4,15 +4,13 @@ import Link from "next/link";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { listBrands } from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
+import { textosMarcas } from "@/lib/seo/textos.ts";
 
-const TITULO = "Marcas";
-const DESCRIPCION = "Las marcas de audio para carro que vende Sonoro en Guatemala.";
-
-export const metadata: Metadata = metadataPagina({
-  titulo: TITULO,
-  descripcion: DESCRIPCION,
-  ruta: "/marcas",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const marcas = await listBrands();
+  const { titulo, descripcion } = textosMarcas(marcas.map((marca) => marca.nombre));
+  return metadataPagina({ titulo, descripcion, ruta: "/marcas" });
+}
 
 export default async function MarcasPage() {
   const marcas = await listBrands();

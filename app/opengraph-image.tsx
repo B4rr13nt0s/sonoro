@@ -8,8 +8,9 @@ import { ImageResponse } from "next/og";
 
 import { LOGO_LOCKUP_BLANCO_DATA_URI } from "@/lib/og/assets.ts";
 import { OG_FONTS } from "@/lib/og/fonts.ts";
+import { LEMA, TITULO_SITIO } from "@/lib/seo/textos.ts";
 
-export const alt = "Sonoro — Equipo de audio para carro";
+export const alt = TITULO_SITIO;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -49,7 +50,7 @@ export default async function Image() {
           maxWidth: 820,
         }}
       >
-        Equipo de audio para carro
+        {LEMA}
       </div>
     </div>,
     { ...size, fonts: OG_FONTS },

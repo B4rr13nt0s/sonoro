@@ -16,7 +16,9 @@ import {
   parseOrden,
   parsePagina,
 } from "@/lib/catalog/index.ts";
+import { CATEGORIA_SISTEMAS } from "@/lib/catalog/categorias.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
+import { masFrecuentes, textosMarca } from "@/lib/seo/textos.ts";
 
 // Todas las marcas son data estática (data/brands.json, generado en build) —
 // igual que categorías y productos, cualquier slug fuera de esta lista es
@@ -44,10 +46,28 @@ export async function generateMetadata(props: PageProps<"/marcas/[marca]">): Pro
   // categoria/page preservados.
   const canonical = buildMarcaHref(marcaSlug, { categoria: categoriaSlug, page });
 
-  const titulo = marca.nombre;
-  const description = `Catálogo de ${marca.nombre} en Sonoro: equipo de audio para carro con envíos a toda Guatemala.`;
+  const categoriaFiltro = categoriaSlug
+    ? (await listCategories()).find((categoria) => categoria.slug === categoriaSlug)?.nombre
+    : undefined;
+  const productos = await listAllProducts({
+    marca: marca.nombre,
+    categoria: categoriaFiltro,
+    activo: true,
+  });
+  const { titulo, descripcion } = textosMarca({
+    nombre: marca.nombre,
+    total: productos.length,
+    // «Sistemas» no es una categoría del sitio (CLAUDE.md § Fuente de verdad).
+    categorias: masFrecuentes(
+      productos
+        .map((producto) => producto.categoria)
+        .filter((categoria) => categoria !== CATEGORIA_SISTEMAS),
+    ),
+    categoriaFiltro,
+    page,
+  });
 
-  return metadataPagina({ titulo, descripcion: description, ruta: canonical });
+  return metadataPagina({ titulo, descripcion, ruta: canonical });
 }
 
 export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {

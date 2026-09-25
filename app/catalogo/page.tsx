@@ -9,6 +9,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildCatalogoCompletoHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
 import { listBrands, listProducts, parseOrden, parsePagina } from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
+import { textosCatalogo } from "@/lib/seo/textos.ts";
 
 // Todo el catálogo. Es la RUTA HERMANA de /catalogo/[categoria], no su
 // padre: misma plantilla, mismo orden, misma paginación y mismos filtros,
@@ -23,10 +24,6 @@ import { metadataPagina } from "@/lib/seo/metadata.ts";
 //
 // Existe porque /productos son solo los marcados `destacado` (72 de 320) y
 // el sitio no tenía ninguna ruta para recorrer el catálogo entero.
-const TITULO = "Catálogo";
-const DESCRIPCION =
-  "Catálogo de Sonoro: bocinas, subwoofers, amplificadores, receptores, kits, insonorización y accesorios. Envíos a toda Guatemala.";
-
 function primeroDeQuery(valor: string | string[] | undefined): string | undefined {
   return Array.isArray(valor) ? valor[0] : valor;
 }
@@ -39,7 +36,13 @@ export async function generateMetadata(props: PageProps<"/catalogo">): Promise<M
   // marca/page preservados.
   const canonical = buildCatalogoCompletoHref({ marca: marcaSlug, page });
 
-  return metadataPagina({ titulo: TITULO, descripcion: DESCRIPCION, ruta: canonical });
+  const marcaFiltro = marcaSlug
+    ? ((await listBrands()).find((marca) => marca.slug === marcaSlug)?.nombre ?? marcaSlug)
+    : undefined;
+  const { total } = await listProducts({ marca: marcaFiltro, activo: true });
+  const { titulo, descripcion } = textosCatalogo({ total, marcaFiltro, page });
+
+  return metadataPagina({ titulo, descripcion, ruta: canonical });
 }
 
 export default async function CatalogoPage(props: PageProps<"/catalogo">) {

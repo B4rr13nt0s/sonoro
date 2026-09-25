@@ -15,6 +15,7 @@ import { buildProductJsonLd } from "@/lib/seo/product.ts";
 import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
 import { absoluteUrl } from "@/lib/seo/site.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
+import { textosProducto } from "@/lib/seo/textos.ts";
 
 // El catálogo entero es data estática generada en build (scripts/import-catalog.ts
 // → data/catalog.json) — todo slug válido se conoce de antemano, igual que
@@ -43,8 +44,7 @@ export async function generateMetadata(props: PageProps<"/producto/[slug]">): Pr
   }
 
   return metadataPagina({
-    titulo: producto.nombre,
-    descripcion: producto.descripcionCorta,
+    ...textosProducto(producto),
     ruta: `/producto/${slug}`,
     // El opengraph-image.tsx de esta misma carpeta pone la imagen propia de
     // la ficha: pasar también la de por defecto sería declarar dos.

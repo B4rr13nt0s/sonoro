@@ -8,7 +8,9 @@ Este documento **reemplaza** al `CLAUDE.md` que venía dentro del handoff de dis
 
 ## Qué es Sonoro
 
-Tienda en línea de equipo de audio para carro en Guatemala. **Vende producto, nada más.**
+Tienda en línea de equipo de audio para carro, marino y motorsports en Guatemala. **Vende producto, nada más.**
+
+Empezó con audio para carro y el catálogo ya trae equipo marino y de motorsports (lanchas, UTV, motos). En el copy va «carro, marino y motorsports», nunca «para vehículos»: «carro» es lo que más se busca. Títulos y descripciones de cada página salen de `lib/seo/textos.ts`, y ahí vive, a mano, qué categorías tienen equipo marino o de motorsports — el catálogo no trae un campo de uso.
 
 En esta etapa **no hay pago en línea.** El sitio es un catálogo con carrito; el pedido se cierra por WhatsApp. La estructura de datos está diseñada para que agregar pago en línea después sea sumar un módulo, no reescribir.
 

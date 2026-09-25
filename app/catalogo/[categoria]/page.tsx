@@ -8,6 +8,7 @@ import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildCatalogHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
 import {
+  listAllProducts,
   listBrands,
   listCategories,
   listProducts,
@@ -15,6 +16,7 @@ import {
   parsePagina,
 } from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
+import { masFrecuentes, textosCategoria } from "@/lib/seo/textos.ts";
 
 // Copy propia de la ficha de categoría (párrafo bajo el h1). Solo Subwoofers
 // tenía texto en el handoff (design/catalogo-subwoofers.html); el resto
@@ -66,10 +68,26 @@ export async function generateMetadata(
   // se preservan — CLAUDE.md § Rutas los declara "rastreables por Google".
   const canonical = buildCatalogHref(categoriaSlug, { marca: marcaSlug, page });
 
-  const titulo = categoria.nombre;
-  const description = `Compra ${categoria.nombre.toLowerCase()} para audio de carro en Guatemala. Envíos a todo el país.`;
+  // Mismo criterio que la página: un slug de marca que no existe filtra por
+  // el slug crudo, y el listado sale vacío.
+  const marcaFiltro = marcaSlug
+    ? ((await listBrands()).find((marca) => marca.slug === marcaSlug)?.nombre ?? marcaSlug)
+    : undefined;
+  const productos = await listAllProducts({
+    categoria: categoria.nombre,
+    marca: marcaFiltro,
+    activo: true,
+  });
+  const { titulo, descripcion } = textosCategoria({
+    slug: categoria.slug,
+    nombre: categoria.nombre,
+    total: productos.length,
+    marcas: masFrecuentes(productos.map((producto) => producto.marca)),
+    marcaFiltro,
+    page,
+  });
 
-  return metadataPagina({ titulo, descripcion: description, ruta: canonical });
+  return metadataPagina({ titulo, descripcion, ruta: canonical });
 }
 
 export default async function CategoriaPage(props: PageProps<"/catalogo/[categoria]">) {

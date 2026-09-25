@@ -28,7 +28,7 @@ export function buildLlmsTxt({
   return [
     "# Sonoro",
     "",
-    "> Tienda en línea de equipo de audio para carro en Guatemala: bocinas, subwoofers, amplificadores, receptores, ecualizadores, kits de instalación, insonorización y accesorios. Precios en quetzales con IVA incluido.",
+    "> Tienda en línea de equipo de audio para carro, marino y motorsports en Guatemala: bocinas, subwoofers, amplificadores, receptores, ecualizadores, kits de instalación, insonorización y accesorios. Precios en quetzales con IVA incluido.",
     "",
     "- El sitio es un catálogo con carrito. No hay pago en línea: el pedido se envía por WhatsApp desde el carrito.",
     "- Envíos gratis a todo el país. Aplican restricciones según destino y volumen del pedido.",
