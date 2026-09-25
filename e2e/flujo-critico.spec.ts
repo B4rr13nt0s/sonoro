@@ -16,12 +16,15 @@ import { test, expect } from "@playwright/test";
 import { formatQ } from "../lib/format/precio.ts";
 
 // El Ref depende de cart.createdAt (lib/cart/context.ts: new Date() al
-// crear/tocar el carrito) vía buildOrderRef (hash FNV-1a determinista,
-// lib/whatsapp/ref.ts) — con el reloj congelado en FECHA_CONGELADA, el Ref
-// es siempre el mismo. Recalculado con:
-//   node --experimental-strip-types -e "import('./lib/whatsapp/ref.ts').then(m => console.log(m.buildOrderRef('2026-01-01T00:00:00.000Z')))"
+// crear/tocar el carrito) Y del contenido del carrito (sku, qty y precio de
+// cada línea) vía buildOrderRef (hash FNV-1a determinista,
+// lib/whatsapp/ref.ts) — con el reloj congelado en FECHA_CONGELADA y las dos
+// líneas de abajo (1x PRODUCTO_1, 1x PRODUCTO_2), el Ref es siempre el mismo.
+// Si cambia la fecha, un producto, su precio o la cantidad, hay que
+// recalcularlo con:
+//   node --experimental-strip-types -e "import('./lib/whatsapp/ref.ts').then(m => console.log(m.buildOrderRef('2026-01-01T00:00:00.000Z', [{ sku: 'TS-W312D4', qty: 1, unitPriceCents: 80000 }, { sku: 'MVH-X700BT', qty: 1, unitPriceCents: 135000 }])))"
 const FECHA_CONGELADA = new Date("2026-01-01T00:00:00.000Z");
-const REF_ESPERADO = "SNR-SIE5N";
+const REF_ESPERADO = "SNR-4RH3A";
 
 // Dos productos reales del catálogo (data/catalog.json), misma marca en
 // categorías distintas — así "buscar + filtrar" tiene sentido: una búsqueda
