@@ -9,11 +9,8 @@ import { metadataPagina } from "@/lib/seo/metadata.ts";
 import { TEXTOS_NOSOTROS } from "@/lib/seo/textos.ts";
 
 // Mismo mensaje genérico que la portada: consulta de existencia, sin
-// lenguaje de asesoría ni instalación (CLAUDE.md § reglas 1 y 2).
+// lenguaje de asesoría (CLAUDE.md § reglas 2).
 const MENSAJE_CONSULTA = "Hola Sonoro, quiero consultar disponibilidad de un producto.";
-
-const DIRECCION =
-  "Km 13.5 Carretera a El Salvador, Calle Real, Puerta Parada, Santa Catarina Pinula, Ofibodegas del Milenio, Bodega 6";
 
 export const metadata: Metadata = metadataPagina({ ...TEXTOS_NOSOTROS, ruta: "/nosotros" });
 
@@ -78,10 +75,16 @@ export default async function NosotrosPage() {
       <section className="flex flex-col gap-4 px-6 pb-16 sm:flex-row sm:px-12 sm:pb-24">
         <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
           <div className="text-26 font-semibold tracking-[-0.025em]">Visítanos</div>
-          {/* Dirección confirmada por el negocio. Ojo: el JSON-LD de
-              lib/seo/business.ts y el pie todavía leen la localidad de
-              BUSINESS_ADDRESS_LOCALITY, no de acá. */}
-          <div className="text-texto-secundario text-[15px] leading-[1.6]">{DIRECCION}</div>
+          {/* La dirección sale de BUSINESS_ADDRESS_STREET, la misma variable
+              que lee el JSON-LD de lib/seo/business.ts (CLAUDE.md § Decisiones
+              abiertas: nunca incrustada en el código). Hasta septiembre de
+              2026 estaba escrita acá a mano, y la página y Google mostraban
+              dos direcciones distintas. */}
+          {process.env.BUSINESS_ADDRESS_STREET ? (
+            <div className="text-texto-secundario text-[15px] leading-[1.6]">
+              {process.env.BUSINESS_ADDRESS_STREET}
+            </div>
+          ) : null}
           <span className="text-texto-terciario mt-auto pt-5 text-[15px]">Mapa próximamente</span>
         </div>
         <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
