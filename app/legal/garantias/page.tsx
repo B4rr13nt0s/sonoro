@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 
 import { LegalPage } from "@/components/legal/LegalPage";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
 
-const TITULO = "Garantías — Sonoro";
+const TITULO = "Garantías";
 const DESCRIPCION = "Alcance y exclusiones de la garantía de fábrica en Sonoro.";
 
-export const metadata: Metadata = {
-  title: TITULO,
-  description: DESCRIPCION,
-  alternates: { canonical: "/legal/garantias" },
-  openGraph: { title: TITULO, description: DESCRIPCION, url: "/legal/garantias" },
-};
+export const metadata: Metadata = metadataPagina({
+  titulo: TITULO,
+  descripcion: DESCRIPCION,
+  ruta: "/legal/garantias",
+});
 
 export default function GarantiasPage() {
   return (

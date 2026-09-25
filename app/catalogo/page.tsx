@@ -8,6 +8,7 @@ import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildCatalogoCompletoHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
 import { listBrands, listProducts, parseOrden, parsePagina } from "@/lib/catalog/index.ts";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
 
 // Todo el catálogo. Es la RUTA HERMANA de /catalogo/[categoria], no su
 // padre: misma plantilla, mismo orden, misma paginación y mismos filtros,
@@ -22,7 +23,7 @@ import { listBrands, listProducts, parseOrden, parsePagina } from "@/lib/catalog
 //
 // Existe porque /productos son solo los marcados `destacado` (72 de 320) y
 // el sitio no tenía ninguna ruta para recorrer el catálogo entero.
-const TITULO = "Catálogo — Sonoro";
+const TITULO = "Catálogo";
 const DESCRIPCION =
   "Catálogo de Sonoro: bocinas, subwoofers, amplificadores, receptores, kits, insonorización y accesorios. Envíos a toda Guatemala.";
 
@@ -38,12 +39,7 @@ export async function generateMetadata(props: PageProps<"/catalogo">): Promise<M
   // marca/page preservados.
   const canonical = buildCatalogoCompletoHref({ marca: marcaSlug, page });
 
-  return {
-    title: TITULO,
-    description: DESCRIPCION,
-    alternates: { canonical },
-    openGraph: { title: TITULO, description: DESCRIPCION, url: canonical },
-  };
+  return metadataPagina({ titulo: TITULO, descripcion: DESCRIPCION, ruta: canonical });
 }
 
 export default async function CatalogoPage(props: PageProps<"/catalogo">) {

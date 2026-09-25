@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { CartProvider } from "@/lib/cart/index.ts";
 import type { CatalogoSku } from "@/lib/cart/index.ts";
 import { listAllProducts } from "@/lib/catalog/index.ts";
+import { DESCRIPCION_SITIO, SUFIJO_TITULO, TITULO_SITIO } from "@/lib/seo/metadata.ts";
 import { SITE_URL } from "@/lib/seo/site.ts";
 // Solo por su efecto de validación al importarse (ver lib/whatsapp/config.ts):
 // falla el build en Production si NEXT_PUBLIC_WHATSAPP_NUMBER no está
@@ -27,18 +28,20 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
-const DESCRIPCION_SITIO =
-  "Bocinas, subwoofers, amplificadores, receptores, kits, insonorización y accesorios. Envíos a toda Guatemala.";
-
+// Solo lo que TODA ruta puede heredar sin mentir. El canonical y el og:url
+// no están acá a propósito: vivían en este layout apuntando a "/", y toda
+// página que no declaraba el suyo —/comparar, la 404— heredaba un canonical
+// a la portada. Cada página los pone con metadataPagina (lib/seo/metadata.ts).
 export const metadata: Metadata = {
   metadataBase: SITE_URL,
-  title: "Sonoro — Equipo de audio para carro",
+  title: {
+    default: TITULO_SITIO,
+    template: `%s${SUFIJO_TITULO}`,
+  },
   description: DESCRIPCION_SITIO,
-  alternates: { canonical: "/" },
   openGraph: {
-    title: "Sonoro — Equipo de audio para carro",
+    title: TITULO_SITIO,
     description: DESCRIPCION_SITIO,
-    url: "/",
     siteName: "Sonoro",
     locale: "es_GT",
     type: "website",

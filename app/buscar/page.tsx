@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 
 import { SearchExperience } from "@/components/catalog/SearchExperience";
 import { listAllProducts } from "@/lib/catalog/index.ts";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
 
-const TITULO = "Buscar — Sonoro";
+const TITULO = "Buscar";
 const DESCRIPCION = "Busca en el catálogo de Sonoro por nombre, marca o código.";
 
-export const metadata: Metadata = {
-  title: TITULO,
-  description: DESCRIPCION,
-  alternates: { canonical: "/buscar" },
-  openGraph: { title: TITULO, description: DESCRIPCION, url: "/buscar" },
-};
+export const metadata: Metadata = metadataPagina({
+  titulo: TITULO,
+  descripcion: DESCRIPCION,
+  ruta: "/buscar",
+});
 
 // CLAUDE.md § Rutas: /buscar existe como ruta, pero la búsqueda en sí es del
 // lado del cliente sobre el catálogo estático — este Server Component solo

@@ -16,6 +16,7 @@ import {
   parseOrden,
   parsePagina,
 } from "@/lib/catalog/index.ts";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
 
 // Todas las marcas son data estática (data/brands.json, generado en build) —
 // igual que categorías y productos, cualquier slug fuera de esta lista es
@@ -43,15 +44,10 @@ export async function generateMetadata(props: PageProps<"/marcas/[marca]">): Pro
   // categoria/page preservados.
   const canonical = buildMarcaHref(marcaSlug, { categoria: categoriaSlug, page });
 
-  const title = `${marca.nombre} — Sonoro`;
+  const titulo = marca.nombre;
   const description = `Catálogo de ${marca.nombre} en Sonoro: equipo de audio para carro con envíos a toda Guatemala.`;
 
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    openGraph: { title, description, url: canonical },
-  };
+  return metadataPagina({ titulo, descripcion: description, ruta: canonical });
 }
 
 export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {

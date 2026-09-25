@@ -5,8 +5,9 @@ import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { IconoCorreo, IconoInstagram, IconoTelefono } from "@/components/ui/IconosContacto";
 import { listBrands } from "@/lib/catalog/index.ts";
 import { buildWhatsAppUrl, WHATSAPP_NUMBER } from "@/lib/whatsapp/index.ts";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
 
-const TITULO = "Nosotros — Sonoro";
+const TITULO = "Nosotros";
 const DESCRIPCION =
   "Sonoro importa de forma directa equipo de audio para carro a Guatemala. Cada producto incluye la instalación básica; una instalación más compleja tiene costo adicional.";
 
@@ -17,12 +18,11 @@ const MENSAJE_CONSULTA = "Hola Sonoro, quiero consultar disponibilidad de un pro
 const DIRECCION =
   "Km 13.5 Carretera a El Salvador, Calle Real, Puerta Parada, Santa Catarina Pinula, Ofibodegas del Milenio, Bodega 6";
 
-export const metadata: Metadata = {
-  title: TITULO,
-  description: DESCRIPCION,
-  alternates: { canonical: "/nosotros" },
-  openGraph: { title: TITULO, description: DESCRIPCION, url: "/nosotros" },
-};
+export const metadata: Metadata = metadataPagina({
+  titulo: TITULO,
+  descripcion: DESCRIPCION,
+  ruta: "/nosotros",
+});
 
 export default async function NosotrosPage() {
   const marcas = await listBrands();

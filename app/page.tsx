@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Fragment } from "react";
 
@@ -8,7 +9,18 @@ import { CATEGORIAS_SITIO } from "@/lib/catalog/categorias.ts";
 import { listBrands, listProducts } from "@/lib/catalog/index.ts";
 import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
 import { buildLocalBusinessJsonLd } from "@/lib/seo/business.ts";
+import { DESCRIPCION_SITIO, metadataPagina, TITULO_SITIO } from "@/lib/seo/metadata.ts";
 import { buildWhatsAppUrl, WHATSAPP_NUMBER } from "@/lib/whatsapp/index.ts";
+
+export const metadata: Metadata = metadataPagina({
+  titulo: TITULO_SITIO,
+  tituloAbsoluto: true,
+  descripcion: DESCRIPCION_SITIO,
+  ruta: "/",
+  // app/opengraph-image.tsx vive en este mismo segmento: la de config la
+  // pisaría y se perdería el hash de versión que Next le agrega a la URL.
+  conImagenPropia: true,
+});
 
 // Mensaje genérico (no depende de un carrito, a diferencia de
 // CarritoView) — solo consulta de existencia, sin lenguaje de asesoría ni

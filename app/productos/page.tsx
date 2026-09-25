@@ -8,8 +8,9 @@ import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildProductosHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
 import { listBrands, listProducts, parseOrden, parsePagina } from "@/lib/catalog/index.ts";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
 
-const TITULO = "Productos destacados — Sonoro";
+const TITULO = "Productos destacados";
 const DESCRIPCION =
   "Los productos destacados de Sonoro: equipo de audio para carro con envíos a toda Guatemala.";
 
@@ -25,12 +26,7 @@ export async function generateMetadata(props: PageProps<"/productos">): Promise<
   // marca/page preservados.
   const canonical = buildProductosHref({ marca: marcaSlug, page });
 
-  return {
-    title: TITULO,
-    description: DESCRIPCION,
-    alternates: { canonical },
-    openGraph: { title: TITULO, description: DESCRIPCION, url: canonical },
-  };
+  return metadataPagina({ titulo: TITULO, descripcion: DESCRIPCION, ruta: canonical });
 }
 
 export default async function ProductosPage(props: PageProps<"/productos">) {

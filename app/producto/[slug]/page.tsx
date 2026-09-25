@@ -14,6 +14,7 @@ import { etiquetaDisponibilidad } from "@/lib/catalog/disponibilidad.ts";
 import { buildProductJsonLd } from "@/lib/seo/product.ts";
 import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
 import { absoluteUrl } from "@/lib/seo/site.ts";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
 
 // El catálogo entero es data estática generada en build (scripts/import-catalog.ts
 // → data/catalog.json) — todo slug válido se conoce de antemano, igual que
@@ -36,22 +37,19 @@ export async function generateMetadata(props: PageProps<"/producto/[slug]">): Pr
   // como si siguiera a la venta.
   if (!producto.activo) {
     return {
-      title: "Producto ya no disponible — Sonoro",
+      title: "Producto ya no disponible",
       robots: { index: false, follow: false },
     };
   }
 
-  const canonical = `/producto/${slug}`;
-  const title = `${producto.nombre} — Sonoro`;
-
-  return {
-    title,
-    description: producto.descripcionCorta,
-    alternates: { canonical },
-    // Sin `openGraph.images`: el opengraph-image.tsx colocado en esta misma
-    // carpeta ya inyecta esas etiquetas — fijarlas a mano las duplicaría.
-    openGraph: { title, description: producto.descripcionCorta, url: canonical },
-  };
+  return metadataPagina({
+    titulo: producto.nombre,
+    descripcion: producto.descripcionCorta,
+    ruta: `/producto/${slug}`,
+    // El opengraph-image.tsx de esta misma carpeta pone la imagen propia de
+    // la ficha: pasar también la de por defecto sería declarar dos.
+    conImagenPropia: true,
+  });
 }
 
 export default async function ProductoPage(props: PageProps<"/producto/[slug]">) {

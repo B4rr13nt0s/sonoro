@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { listAllProducts } from "@/lib/catalog/index.ts";
 import type { Producto } from "@/lib/catalog/index.ts";
 import { parsearSkus } from "@/lib/comparador/index.ts";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
 
 // Comparador de especificaciones. El estado vive en la URL —no en
 // localStorage— porque lo que le da valor a la función es que se pueda
@@ -14,18 +15,19 @@ import { parsearSkus } from "@/lib/comparador/index.ts";
 //
 // Por eso esta página NO lee la selección guardada ni la modifica: quien abre
 // un enlace ajeno ve lo que trae el enlace y no pierde lo suyo.
-const TITULO = "Comparar productos — Sonoro";
+const TITULO = "Comparar productos";
 const DESCRIPCION = "Pon hasta cuatro equipos lado a lado y revisa sus fichas técnicas completas.";
 
-export const metadata: Metadata = {
-  title: TITULO,
-  description: DESCRIPCION,
-  // Son combinaciones infinitas de productos, no páginas de catálogo: no hay
-  // nada que indexar. A diferencia de /carrito, esta URL NO se agrega al
-  // Disallow de robots.ts — un Disallow impediría que Google llegara a leer
-  // este noindex, y la URL está hecha para compartirse.
-  robots: { index: false, follow: false },
-};
+// Son combinaciones infinitas de productos, no páginas de catálogo: no hay
+// nada que indexar. A diferencia de /carrito, esta URL NO se agrega al
+// Disallow de robots.ts — un Disallow impediría que Google llegara a leer
+// este noindex, y la URL está hecha para compartirse.
+export const metadata: Metadata = metadataPagina({
+  titulo: TITULO,
+  descripcion: DESCRIPCION,
+  ruta: "/comparar",
+  noIndexar: true,
+});
 
 type Descarte = { sku: string; motivo: string };
 

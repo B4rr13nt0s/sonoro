@@ -14,6 +14,7 @@ import {
   parseOrden,
   parsePagina,
 } from "@/lib/catalog/index.ts";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
 
 // Copy propia de la ficha de categoría (párrafo bajo el h1). Solo Subwoofers
 // tenía texto en el handoff (design/catalogo-subwoofers.html); el resto
@@ -65,15 +66,10 @@ export async function generateMetadata(
   // se preservan — CLAUDE.md § Rutas los declara "rastreables por Google".
   const canonical = buildCatalogHref(categoriaSlug, { marca: marcaSlug, page });
 
-  const title = `${categoria.nombre} — Sonoro`;
+  const titulo = categoria.nombre;
   const description = `Compra ${categoria.nombre.toLowerCase()} para audio de carro en Guatemala. Envíos a todo el país.`;
 
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    openGraph: { title, description, url: canonical },
-  };
+  return metadataPagina({ titulo, descripcion: description, ruta: canonical });
 }
 
 export default async function CategoriaPage(props: PageProps<"/catalogo/[categoria]">) {

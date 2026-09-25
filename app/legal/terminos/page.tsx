@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 
 import { LegalPage } from "@/components/legal/LegalPage";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
 
-const TITULO = "Términos y condiciones — Sonoro";
+const TITULO = "Términos y condiciones";
 const DESCRIPCION = "Cómo funciona un pedido en Sonoro, precios, envíos y garantías.";
 
-export const metadata: Metadata = {
-  title: TITULO,
-  description: DESCRIPCION,
-  alternates: { canonical: "/legal/terminos" },
-  openGraph: { title: TITULO, description: DESCRIPCION, url: "/legal/terminos" },
-};
+export const metadata: Metadata = metadataPagina({
+  titulo: TITULO,
+  descripcion: DESCRIPCION,
+  ruta: "/legal/terminos",
+});
 
 export default function TerminosPage() {
   return (

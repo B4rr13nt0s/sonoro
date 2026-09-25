@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 
 import { LegalPage } from "@/components/legal/LegalPage";
+import { metadataPagina } from "@/lib/seo/metadata.ts";
 
-const TITULO = "Aviso de privacidad — Sonoro";
+const TITULO = "Aviso de privacidad";
 const DESCRIPCION = "Qué información recopila Sonoro al usar el carrito y pedir por WhatsApp.";
 
-export const metadata: Metadata = {
-  title: TITULO,
-  description: DESCRIPCION,
-  alternates: { canonical: "/legal/privacidad" },
-  openGraph: { title: TITULO, description: DESCRIPCION, url: "/legal/privacidad" },
-};
+export const metadata: Metadata = metadataPagina({
+  titulo: TITULO,
+  descripcion: DESCRIPCION,
+  ruta: "/legal/privacidad",
+});
 
 export default function PrivacidadPage() {
   return (
