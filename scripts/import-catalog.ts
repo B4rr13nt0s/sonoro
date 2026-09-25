@@ -4,7 +4,7 @@
 // los productos multi-categoría—, valida, GENERA las specs legibles a partir
 // de los campos normalizados y emite:
 //   data/catalog.json · data/brands.json · data/taxonomy.json
-//   data/inactive-slugs.json
+//   data/inactive-slugs.json · data/conteos.json
 //   data/source/catalogo.csv       el libro aplanado, solo para el diff de Git
 //   reports/import-errors.md · reports/price-diff.md
 //
@@ -31,7 +31,8 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { CATEGORIAS_SITIO } from "../lib/catalog/categorias.ts";
+import { CATEGORIAS_SITIO, perteneceACategoria } from "../lib/catalog/categorias.ts";
+import { construirConteos } from "../lib/catalog/conteos.ts";
 import { construirImagenes, emparejarFotosConSkus } from "../lib/catalog/photos.ts";
 import { ProductoSchema, type Producto } from "../lib/catalog/types.ts";
 import { formatQ } from "../lib/format/precio.ts";
@@ -55,6 +56,7 @@ const RUTA_FOTOS = path.join(RAIZ, "public", "productos");
 // build (CLAUDE.md § Mantenimiento del catálogo: activo = FALSO, nunca se
 // borra la fila), así que no hay razón para leer el catálogo entero ahí.
 const RUTA_INACTIVE_SLUGS = path.join(RAIZ, "data", "inactive-slugs.json");
+const RUTA_CONTEOS = path.join(RAIZ, "data", "conteos.json");
 const RUTA_IMPORT_ERRORS = path.join(RAIZ, "reports", "import-errors.md");
 const RUTA_PRICE_DIFF = path.join(RAIZ, "reports", "price-diff.md");
 
@@ -173,9 +175,7 @@ function main(): void {
   const taxonomy = CATEGORIAS_SITIO.map(({ nombre, slug }) => ({
     nombre,
     slug,
-    cantidadProductos: productosActivos.filter(
-      (p) => p.categoria === nombre || p.categoriasSecundarias?.includes(nombre),
-    ).length,
+    cantidadProductos: productosActivos.filter((p) => perteneceACategoria(p, nombre)).length,
   }));
   const inactiveSlugs = productosValidos
     .filter((p) => !p.activo)
@@ -189,6 +189,12 @@ function main(): void {
   writeFileSync(RUTA_BRANDS, JSON.stringify(brands, null, 2) + "\n");
   writeFileSync(RUTA_TAXONOMY, JSON.stringify(taxonomy, null, 2) + "\n");
   writeFileSync(RUTA_INACTIVE_SLUGS, JSON.stringify(inactiveSlugs, null, 2) + "\n");
+  // Lo que proxy.ts necesita para responder 404 a una página de listado que
+  // no existe, sin cargar el catálogo (lib/catalog/conteos.ts).
+  writeFileSync(
+    RUTA_CONTEOS,
+    JSON.stringify(construirConteos(productosValidos, brands, CATEGORIAS_SITIO), null, 2) + "\n",
+  );
   // Todas las filas del libro, rechazadas incluidas: es el registro de la
   // fuente, no del catálogo publicado.
   writeFileSync(RUTA_CSV_REGISTRO, serializarCsv(filas));

@@ -1,0 +1,240 @@
+{
+  "catalogo": {
+    "total": 320,
+    "porFiltro": {
+      "cerwin-vega": 43,
+      "focal": 7,
+      "jbl": 4,
+      "kbt": 74,
+      "memphis": 110,
+      "pioneer": 15,
+      "rockford-fosgate": 57,
+      "soundskins": 10
+    }
+  },
+  "productos": {
+    "total": 72,
+    "porFiltro": {
+      "cerwin-vega": 8,
+      "focal": 2,
+      "jbl": 2,
+      "kbt": 15,
+      "memphis": 23,
+      "pioneer": 4,
+      "rockford-fosgate": 15,
+      "soundskins": 3
+    }
+  },
+  "categorias": {
+    "bocinas": {
+      "total": 108,
+      "porFiltro": {
+        "cerwin-vega": 16,
+        "focal": 7,
+        "jbl": 4,
+        "kbt": 12,
+        "memphis": 38,
+        "pioneer": 2,
+        "rockford-fosgate": 29,
+        "soundskins": 0
+      }
+    },
+    "subwoofers": {
+      "total": 55,
+      "porFiltro": {
+        "cerwin-vega": 5,
+        "focal": 0,
+        "jbl": 0,
+        "kbt": 14,
+        "memphis": 25,
+        "pioneer": 1,
+        "rockford-fosgate": 10,
+        "soundskins": 0
+      }
+    },
+    "amplificadores": {
+      "total": 49,
+      "porFiltro": {
+        "cerwin-vega": 0,
+        "focal": 0,
+        "jbl": 0,
+        "kbt": 19,
+        "memphis": 16,
+        "pioneer": 0,
+        "rockford-fosgate": 14,
+        "soundskins": 0
+      }
+    },
+    "receptores": {
+      "total": 14,
+      "porFiltro": {
+        "cerwin-vega": 0,
+        "focal": 0,
+        "jbl": 0,
+        "kbt": 0,
+        "memphis": 0,
+        "pioneer": 12,
+        "rockford-fosgate": 2,
+        "soundskins": 0
+      }
+    },
+    "ecualizadores": {
+      "total": 9,
+      "porFiltro": {
+        "cerwin-vega": 4,
+        "focal": 0,
+        "jbl": 0,
+        "kbt": 4,
+        "memphis": 1,
+        "pioneer": 0,
+        "rockford-fosgate": 0,
+        "soundskins": 0
+      }
+    },
+    "kits": {
+      "total": 10,
+      "porFiltro": {
+        "cerwin-vega": 2,
+        "focal": 0,
+        "jbl": 0,
+        "kbt": 5,
+        "memphis": 3,
+        "pioneer": 0,
+        "rockford-fosgate": 0,
+        "soundskins": 0
+      }
+    },
+    "insonorizacion": {
+      "total": 7,
+      "porFiltro": {
+        "cerwin-vega": 0,
+        "focal": 0,
+        "jbl": 0,
+        "kbt": 0,
+        "memphis": 0,
+        "pioneer": 0,
+        "rockford-fosgate": 0,
+        "soundskins": 7
+      }
+    },
+    "accesorios": {
+      "total": 69,
+      "porFiltro": {
+        "cerwin-vega": 16,
+        "focal": 0,
+        "jbl": 0,
+        "kbt": 20,
+        "memphis": 27,
+        "pioneer": 0,
+        "rockford-fosgate": 3,
+        "soundskins": 3
+      }
+    }
+  },
+  "marcas": {
+    "cerwin-vega": {
+      "total": 43,
+      "porFiltro": {
+        "bocinas": 16,
+        "subwoofers": 5,
+        "amplificadores": 0,
+        "receptores": 0,
+        "ecualizadores": 4,
+        "kits": 2,
+        "insonorizacion": 0,
+        "accesorios": 16
+      }
+    },
+    "focal": {
+      "total": 7,
+      "porFiltro": {
+        "bocinas": 7,
+        "subwoofers": 0,
+        "amplificadores": 0,
+        "receptores": 0,
+        "ecualizadores": 0,
+        "kits": 0,
+        "insonorizacion": 0,
+        "accesorios": 0
+      }
+    },
+    "jbl": {
+      "total": 4,
+      "porFiltro": {
+        "bocinas": 4,
+        "subwoofers": 0,
+        "amplificadores": 0,
+        "receptores": 0,
+        "ecualizadores": 0,
+        "kits": 0,
+        "insonorizacion": 0,
+        "accesorios": 0
+      }
+    },
+    "kbt": {
+      "total": 74,
+      "porFiltro": {
+        "bocinas": 12,
+        "subwoofers": 14,
+        "amplificadores": 19,
+        "receptores": 0,
+        "ecualizadores": 4,
+        "kits": 5,
+        "insonorizacion": 0,
+        "accesorios": 20
+      }
+    },
+    "memphis": {
+      "total": 110,
+      "porFiltro": {
+        "bocinas": 38,
+        "subwoofers": 25,
+        "amplificadores": 16,
+        "receptores": 0,
+        "ecualizadores": 1,
+        "kits": 3,
+        "insonorizacion": 0,
+        "accesorios": 27
+      }
+    },
+    "pioneer": {
+      "total": 15,
+      "porFiltro": {
+        "bocinas": 2,
+        "subwoofers": 1,
+        "amplificadores": 0,
+        "receptores": 12,
+        "ecualizadores": 0,
+        "kits": 0,
+        "insonorizacion": 0,
+        "accesorios": 0
+      }
+    },
+    "rockford-fosgate": {
+      "total": 57,
+      "porFiltro": {
+        "bocinas": 29,
+        "subwoofers": 10,
+        "amplificadores": 14,
+        "receptores": 2,
+        "ecualizadores": 0,
+        "kits": 0,
+        "insonorizacion": 0,
+        "accesorios": 3
+      }
+    },
+    "soundskins": {
+      "total": 10,
+      "porFiltro": {
+        "bocinas": 0,
+        "subwoofers": 0,
+        "amplificadores": 0,
+        "receptores": 0,
+        "ecualizadores": 0,
+        "kits": 0,
+        "insonorizacion": 7,
+        "accesorios": 3
+      }
+    }
+  }
+}

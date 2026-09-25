@@ -27,3 +27,18 @@ export const CATEGORIAS_SITIO = [
 // categoriasSecundarias, y en su ficha el breadcrumb muestra «Sistemas» sin
 // link, porque no hay página a la cual llevar.
 export const CATEGORIA_SISTEMAS = "Sistemas";
+
+// Una categoría lista sus productos principales MÁS los que la traen como
+// secundaria (sistemas completos de la hoja ESPECIALES). Es LA regla: la usan
+// el adaptador al filtrar, el importador al contar para taxonomy.json y los
+// conteos con que proxy.ts valida la paginación — si cada uno la escribiera
+// por su cuenta, un listado podría decir «3 páginas» y el proxy dejar pasar 2.
+export function perteneceACategoria(
+  producto: { categoria: string; categoriasSecundarias?: readonly string[] },
+  categoria: string,
+): boolean {
+  return (
+    producto.categoria === categoria ||
+    (producto.categoriasSecundarias?.includes(categoria) ?? false)
+  );
+}

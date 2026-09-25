@@ -33,7 +33,6 @@ test("buildOrderMessage: formato exacto de CLAUDE.md § Modelo de conversión", 
   const mensaje = buildOrderMessage({
     items,
     ref: "SNR-A7K2M",
-    cartUrl: "https://sonoro.gt/carrito",
   });
 
   const esperado = [
@@ -55,7 +54,6 @@ test("buildOrderMessage: qty === 1 no lleva sufijo 'c/u'", () => {
   const mensaje = buildOrderMessage({
     items: [item({ qty: 1 })],
     ref: "SNR-00000",
-    cartUrl: "https://sonoro.gt/carrito",
   });
   assert.ok(mensaje.includes(LINEA_1));
   assert.ok(!mensaje.includes("c/u"));
@@ -65,7 +63,6 @@ test("buildOrderMessage: qty > 1 sí lleva sufijo 'c/u'", () => {
   const mensaje = buildOrderMessage({
     items: [item({ qty: 3 })],
     ref: "SNR-00000",
-    cartUrl: "https://sonoro.gt/carrito",
   });
   assert.ok(mensaje.includes("3x "));
   assert.ok(mensaje.includes("c/u"));
@@ -79,33 +76,21 @@ test("buildOrderMessage: subtotal y total coinciden (envío gratis) y suman por 
   const mensaje = buildOrderMessage({
     items,
     ref: "SNR-00000",
-    cartUrl: "https://sonoro.gt/carrito",
   });
   // 2*1000 + 1*500 = 2500.00
   assert.ok(mensaje.includes(`Subtotal: ${formatQ(250000)}`));
   assert.ok(mensaje.includes(`Total: ${formatQ(250000)}`));
 });
 
-test("buildOrderMessage: más de 15 líneas envía el ref y un enlace, no la lista completa", () => {
-  const items = Array.from({ length: 16 }, (_, i) => item({ sku: `SKU-${i}`, qty: 1 }));
-  const cartUrl = "https://sonoro.gt/carrito";
-  const mensaje = buildOrderMessage({ items, ref: "SNR-A7K2M", cartUrl });
+test("buildOrderMessage: con más de 15 líneas lista TODAS, sin enlace al carrito", () => {
+  // El carrito vive en el localStorage de cada navegador: un enlace a
+  // /carrito le mostraría al vendedor su propio carrito, vacío.
+  const items = Array.from({ length: 40 }, (_, i) => item({ sku: `SKU-${i}`, qty: 1 }));
+  const mensaje = buildOrderMessage({ items, ref: "SNR-A7K2M" });
 
-  assert.ok(mensaje.includes(cartUrl), "debe incluir el enlace al carrito");
-  assert.ok(mensaje.includes("Ref: SNR-A7K2M"), "debe incluir el ref");
-  assert.ok(!mensaje.includes("(SKU-0)"), "no debe listar las líneas individuales");
-  assert.ok(!mensaje.includes("(SKU-15)"));
-});
-
-test("buildOrderMessage: exactamente 15 líneas SÍ lista todo (el límite es 'excede', no 'alcanza')", () => {
-  const items = Array.from({ length: 15 }, (_, i) => item({ sku: `SKU-${i}`, qty: 1 }));
-  const mensaje = buildOrderMessage({
-    items,
-    ref: "SNR-A7K2M",
-    cartUrl: "https://sonoro.gt/carrito",
-  });
-  assert.ok(mensaje.includes("(SKU-0)"));
-  assert.ok(mensaje.includes("(SKU-14)"));
+  for (let i = 0; i < 40; i++) assert.ok(mensaje.includes(`(SKU-${i})`), `falta SKU-${i}`);
+  assert.ok(!mensaje.includes("/carrito"));
+  assert.ok(mensaje.includes("Ref: SNR-A7K2M"));
 });
 
 test("buildProductInquiryMessage: formato exacto, tres líneas", () => {
@@ -139,7 +124,7 @@ test("buildProductInquiryMessage: no habla de pedir, ni de precio, ni de instala
   assert.ok(!mensaje.includes("Subtotal"));
   assert.ok(!mensaje.includes("Total"));
   assert.ok(!mensaje.includes("Ref:"));
-  // CLAUDE.md § reglas 1 y 2: Sonoro no instala ni asesora.
+  // CLAUDE.md § reglas 1 y 2: la consulta no ofrece instalación ni asesoría.
   assert.ok(!/instalamos|asesor|te ayudamos/i.test(mensaje));
   // El sku va tal cual, con su espacio interno.
   assert.ok(mensaje.includes("(ACX 165)"));

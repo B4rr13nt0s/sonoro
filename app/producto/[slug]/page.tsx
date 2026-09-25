@@ -178,9 +178,9 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
               opciones desplegables — este producto YA es el D2 de 12", no
               hay nada que elegir aquí. */}
           <div className="grid grid-cols-2 gap-2.5 pt-1">
-            {tarjetas.map((spec) => (
+            {tarjetas.map((spec, indice) => (
               <div
-                key={spec.etiqueta}
+                key={`${indice}-${spec.etiqueta}`}
                 className="rounded-field border-borde-tarjeta flex flex-col gap-1 border px-4.5 py-4"
               >
                 <div className="text-texto-terciario font-mono text-[10px] tracking-[0.14em] uppercase">
@@ -248,9 +248,13 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
           </p>
         </div>
         <div className="grid grid-cols-1 gap-x-16 sm:grid-cols-2">
-          {producto.specsFicha.map((spec) => (
+          {/* La key lleva el índice: specsFicha no exige etiquetas únicas
+              (lib/comparador/tabla.ts cuenta los casos que ya existieron), y
+              dos filas con la misma key hacen que React pierda una. El
+              arreglo es fijo por render, así que el índice es estable. */}
+          {producto.specsFicha.map((spec, indice) => (
             <div
-              key={spec.etiqueta}
+              key={`${indice}-${spec.etiqueta}`}
               className="border-borde-sobre-negro flex justify-between gap-6 border-t py-4 text-[15px]"
             >
               <span className="text-texto-sobre-negro">{spec.etiqueta}</span>
@@ -261,7 +265,7 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
             </div>
           ))}
         </div>
-        <div className="font-mono text-[11px] text-[#6e6e72]">
+        <div className="text-texto-terciario-sobre-negro font-mono text-[11px]">
           Datos publicados por el fabricante.
         </div>
       </section>

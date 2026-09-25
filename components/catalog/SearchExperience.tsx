@@ -198,7 +198,7 @@ export function SearchExperience({ productos }: { productos: ProductoTarjeta[] }
                 <button
                   type="button"
                   onClick={() => setVisibles((valor) => valor + INCREMENTO)}
-                  className="rounded-full border border-[#d6d6d2] px-7 py-3.5 text-[15px]"
+                  className="border-borde-boton rounded-full border px-7 py-3.5 text-[15px]"
                 >
                   Ver {Math.min(restantes, INCREMENTO)} resultados más
                 </button>

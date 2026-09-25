@@ -24,8 +24,8 @@ export const metadata: Metadata = metadataPagina({
 });
 
 // Mensaje genérico (no depende de un carrito, a diferencia de
-// CarritoView) — solo consulta de existencia, sin lenguaje de asesoría ni
-// instalación (CLAUDE.md § reglas 1 y 2).
+// CarritoView) — solo consulta de existencia, sin lenguaje de asesoría
+// (CLAUDE.md § reglas 2).
 const MENSAJE_CONSULTA_EXISTENCIAS = "Hola Sonoro, quiero consultar disponibilidad de un producto.";
 
 // Una tarjeta por categoría del sitio, en el orden del nav. El nombre y el
@@ -440,7 +440,7 @@ export default async function Home() {
             <Link
               key={marca.slug}
               href={`/marcas/${marca.slug}`}
-              className="border-borde-pildora rounded-full border px-6.5 py-3 text-[17px] text-[#2c2c2a]"
+              className="border-borde-pildora text-texto-pildora rounded-full border px-6.5 py-3 text-[17px]"
             >
               {marca.nombre}
             </Link>

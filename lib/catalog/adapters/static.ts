@@ -6,7 +6,9 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { perteneceACategoria } from "../categorias.ts";
 import { compararRelevancia } from "../orden.ts";
+import { PAGE_SIZE_DEFECTO } from "../paginacion.ts";
 import {
   BrandsSchema,
   CatalogoSchema,
@@ -22,8 +24,6 @@ const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..",
 const RUTA_CATALOG = path.join(RAIZ, "data", "catalog.json");
 const RUTA_BRANDS = path.join(RAIZ, "data", "brands.json");
 const RUTA_TAXONOMY = path.join(RAIZ, "data", "taxonomy.json");
-
-const PAGE_SIZE_DEFECTO = 24;
 
 // Cache en memoria del proceso: los JSON de data/ los regenera
 // scripts/import-catalog.ts como paso de build, no cambian mientras el
@@ -68,13 +68,7 @@ async function listProducts(
   const productos = await cargarProductos();
 
   const filtrados = productos.filter((p) => {
-    // Una categoría lista sus productos principales MÁS los que la traen como
-    // secundaria (sistemas completos de la hoja ESPECIALES).
-    if (
-      filters.categoria !== undefined &&
-      p.categoria !== filters.categoria &&
-      !p.categoriasSecundarias?.includes(filters.categoria)
-    ) {
+    if (filters.categoria !== undefined && !perteneceACategoria(p, filters.categoria)) {
       return false;
     }
     if (filters.marca !== undefined && p.marca !== filters.marca) return false;

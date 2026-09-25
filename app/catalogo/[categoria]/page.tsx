@@ -21,7 +21,7 @@ import { masFrecuentes, textosCategoria } from "@/lib/seo/textos.ts";
 // Copy propia de la ficha de categoría (párrafo bajo el h1). Solo Subwoofers
 // tenía texto en el handoff (design/catalogo-subwoofers.html); el resto
 // sigue el mismo tono: una frase factual sobre qué hace el producto, sin
-// criterio de instalación ni de asesoría (CLAUDE.md § reglas 1 y 2).
+// asesoría ni promesas sobre la instalación (CLAUDE.md § reglas 1 y 2).
 const DESCRIPCIONES: Partial<Record<string, string>> = {
   bocinas:
     "La bocina reproduce el rango medio y agudo: voces, instrumentos y detalle. Vienen coaxiales, de dos vías en un solo cuerpo, o de componentes, con el tweeter aparte del woofer.",
@@ -37,10 +37,10 @@ const DESCRIPCIONES: Partial<Record<string, string>> = {
   ecualizadores:
     "El ecualizador ajusta el balance de frecuencias del sistema antes de que llegue a las bocinas, banda por banda.",
   accesorios:
-    "Piezas complementarias del sistema — conectores, capacitores, controles remotos — que no encajan en el resto de categorías.",
+    "Piezas complementarias del sistema — cables RCA, adaptadores, distribución de corriente, cajones, controles remotos — que no encajan en el resto de categorías.",
 };
 
-// Solo estas seis rutas existen — CLAUDE.md § Rutas. Cualquier otro valor
+// Solo existen las ocho categorías del sitio — CLAUDE.md § Rutas. Cualquier otro valor
 // de [categoria] es 404, no una página renderizada al vuelo.
 export const dynamicParams = false;
 
@@ -87,7 +87,14 @@ export async function generateMetadata(
     page,
   });
 
-  return metadataPagina({ titulo, descripcion, ruta: canonical });
+  // Un listado vacío existe —una marca sin productos en la categoría, que el
+  // propio filtro ofrece— pero no tiene nada que indexar.
+  return metadataPagina({
+    titulo,
+    descripcion,
+    ruta: canonical,
+    noIndexar: productos.length === 0,
+  });
 }
 
 export default async function CategoriaPage(props: PageProps<"/catalogo/[categoria]">) {
@@ -118,9 +125,10 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
     page: paginaSolicitada,
   });
   const totalPaginas = Math.max(1, Math.ceil(total / pageSize));
-  // Una página que no existe es un 404, no un listado vacío con 200: de lo
-  // contrario `?page=99999` le abre a Google un espacio infinito de URLs, y
-  // cada una se renderiza en el servidor.
+  // Respaldo: el 404 con status real lo da proxy.ts (lib/catalog/conteos.ts),
+  // porque para cuando la página llega acá loading.tsx ya mandó las cabeceras
+  // con 200. Esto solo asegura que, si el proxy y la página divergieran, no
+  // se dibuje un listado vacío.
   if (paginaSolicitada > totalPaginas) notFound();
 
   return (

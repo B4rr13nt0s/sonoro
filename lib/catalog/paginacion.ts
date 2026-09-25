@@ -9,6 +9,11 @@
 
 export type ItemPaginacion = number | "…";
 
+// Productos por página de listado. Vive acá, en un módulo sin dependencias, y
+// no en el adaptador: proxy.ts lo necesita para saber cuántas páginas tiene
+// un listado, y el adaptador lee el disco.
+export const PAGE_SIZE_DEFECTO = 24;
+
 // Páginas a cada lado de la actual. Con 1, el caso más ancho son cinco
 // números (primera, actual±1, última) y dos «…»: entra en una sola fila en
 // un teléfono de 375px.

@@ -63,7 +63,7 @@ export function CarritoView() {
               />
             ))}
             <div className="border-borde-tarjeta border-t pt-7">
-              <Link href="/" className="text-[15px] text-[#565654]">
+              <Link href="/catalogo" className="text-texto-suave text-[15px]">
                 ← Seguir comprando
               </Link>
             </div>
@@ -86,7 +86,7 @@ function CarritoVacio() {
   return (
     <div className="flex flex-col items-center gap-5 px-6 pb-24 text-center sm:px-12">
       <p className="text-texto-secundario text-[17px]">Tu carrito está vacío.</p>
-      <Link href="/" className="bg-negro rounded-full px-6 py-3.75 text-[16px] text-white">
+      <Link href="/catalogo" className="bg-negro rounded-full px-6 py-3.75 text-[16px] text-white">
         Ver catálogo
       </Link>
     </div>
@@ -186,17 +186,13 @@ function OrderSummary({
   const ref = useMemo(() => buildOrderRef(createdAt, items), [createdAt, items]);
   const cuota = calcularCuotaCents(subtotalCents, 6);
 
-  // El wa.me hay que armarlo en el cliente: necesita origin (window) para el
-  // enlace de "más de 15 líneas" y el número sale de
-  // NEXT_PUBLIC_WHATSAPP_NUMBER, nunca incrustado (CLAUDE.md § Modelo de
-  // conversión). OrderSummary solo se monta cuando `hydrated` ya es true
-  // (CarritoView), así que estamos garantizado en el navegador acá.
-  const whatsappUrl = useMemo(() => {
-    const cartUrl =
-      typeof window !== "undefined" ? `${window.location.origin}/carrito` : "/carrito";
-    const mensaje = buildOrderMessage({ items, ref, cartUrl });
-    return buildWhatsAppUrl(WHATSAPP_NUMBER, mensaje);
-  }, [items, ref]);
+  // El número sale de NEXT_PUBLIC_WHATSAPP_NUMBER, nunca incrustado
+  // (CLAUDE.md § Modelo de conversión). El mensaje lleva siempre la lista
+  // completa: ver lib/whatsapp/message.ts.
+  const whatsappUrl = useMemo(
+    () => buildWhatsAppUrl(WHATSAPP_NUMBER, buildOrderMessage({ items, ref })),
+    [items, ref],
+  );
 
   return (
     <div className="border-borde-tarjeta rounded-card-lg flex flex-col gap-5 border p-8">
@@ -207,7 +203,9 @@ function OrderSummary({
 
       <div className="text-texto-secundario flex flex-col gap-3 text-[15px]">
         <div className="flex justify-between">
-          <span>Subtotal ({itemCount} artículos)</span>
+          <span>
+            Subtotal ({itemCount} {itemCount === 1 ? "artículo" : "artículos"})
+          </span>
           <span className="text-negro">{formatQ(subtotalCents)}</span>
         </div>
         <div className="flex justify-between">

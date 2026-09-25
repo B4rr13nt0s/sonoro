@@ -29,7 +29,9 @@ export async function generateMetadata(props: PageProps<"/productos">): Promise<
   const { total } = await listProducts({ marca: marcaFiltro, destacado: true, activo: true });
   const { titulo, descripcion } = textosDestacados({ total, marcaFiltro, page });
 
-  return metadataPagina({ titulo, descripcion, ruta: canonical });
+  // Un listado vacío existe —una marca sin productos en la categoría, que el
+  // propio filtro ofrece— pero no tiene nada que indexar.
+  return metadataPagina({ titulo, descripcion, ruta: canonical, noIndexar: total === 0 });
 }
 
 export default async function ProductosPage(props: PageProps<"/productos">) {
@@ -55,9 +57,10 @@ export default async function ProductosPage(props: PageProps<"/productos">) {
     page: paginaSolicitada,
   });
   const totalPaginas = Math.max(1, Math.ceil(total / pageSize));
-  // Una página que no existe es un 404, no un listado vacío con 200: de lo
-  // contrario `?page=99999` le abre a Google un espacio infinito de URLs, y
-  // cada una se renderiza en el servidor.
+  // Respaldo: el 404 con status real lo da proxy.ts (lib/catalog/conteos.ts),
+  // porque para cuando la página llega acá loading.tsx ya mandó las cabeceras
+  // con 200. Esto solo asegura que, si el proxy y la página divergieran, no
+  // se dibuje un listado vacío.
   if (paginaSolicitada > totalPaginas) notFound();
 
   return (

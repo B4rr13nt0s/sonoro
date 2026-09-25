@@ -22,24 +22,25 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import brandsRaw from "./data/brands.json";
+import conteosRaw from "./data/conteos.json";
 import inactiveSlugsRaw from "./data/inactive-slugs.json";
-import taxonomyRaw from "./data/taxonomy.json";
+import { listadoInexistente, type Conteos } from "./lib/catalog/conteos.ts";
 
 const INACTIVE_SLUGS = new Set<string>(inactiveSlugsRaw);
+const CONTEOS: Conteos = conteosRaw;
 
-// El 404 de /catalogo/[categoria] y /marcas/[marca] también tiene que salir
-// de acá. Las dos rutas declaran `dynamicParams = false`, pero leen
-// searchParams, así que se renderizan por petición, y su loading.tsx empieza
-// a mandar el esqueleto ANTES de que la página llegue a su notFound(): para
-// entonces las cabeceras ya salieron con 200. El resultado era un soft 404
-// —/catalogo/no-existe respondía 200 con la página de error y un noindex—
-// que Search Console reporta como error. Mismos archivos generados que ya
-// usa generateStaticParams de cada ruta (vía lib/catalog), leídos directo por
-// la misma razón que inactive-slugs.json: son listas chicas conocidas en
-// build, y esto corre en cada petición.
-const SLUGS_CATEGORIA = new Set<string>(taxonomyRaw.map((categoria) => categoria.slug));
-const SLUGS_MARCA = new Set<string>(brandsRaw.map((marca) => marca.slug));
+// El 404 de los LISTADOS también tiene que salir de acá: /catalogo,
+// /productos, /catalogo/[categoria] y /marcas/[marca]. Leen searchParams, así
+// que se renderizan por petición, y su loading.tsx empieza a mandar el
+// esqueleto ANTES de que la página llegue a su notFound(): para entonces las
+// cabeceras ya salieron con 200. El resultado era un soft 404 —
+// /catalogo/no-existe o /catalogo?page=99999 respondían 200 con la página de
+// error y un noindex— que Search Console reporta como error.
+//
+// listadoInexistente cubre la categoría o marca de la ruta, el slug de un
+// filtro (?marca=, ?categoria=) y la página más allá de la última, con los
+// conteos que el importador deja en data/conteos.json: una tabla chica
+// conocida en build, leída directo por la misma razón que inactive-slugs.json.
 
 function noIndexar(response: NextResponse) {
   response.headers.set("X-Robots-Tag", "noindex");
@@ -61,14 +62,14 @@ function inexistente(request: NextRequest) {
 }
 
 export function proxy(request: NextRequest) {
-  const [, seccion, slug] = request.nextUrl.pathname.match(/^\/([a-z]+)\/([^/]+)$/) ?? [];
+  const { pathname, searchParams } = request.nextUrl;
+  const [, seccion, slug] = pathname.match(/^\/([a-z]+)\/([^/]+)$/) ?? [];
 
   if (seccion === "producto" && INACTIVE_SLUGS.has(slug)) return retirado(request);
-  if (seccion === "catalogo" && !SLUGS_CATEGORIA.has(slug)) return inexistente(request);
-  if (seccion === "marcas" && !SLUGS_MARCA.has(slug)) return inexistente(request);
+  if (listadoInexistente(CONTEOS, pathname, searchParams)) return inexistente(request);
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/producto/:slug", "/catalogo/:slug", "/marcas/:slug"],
+  matcher: ["/producto/:slug", "/catalogo", "/catalogo/:slug", "/productos", "/marcas/:slug"],
 };

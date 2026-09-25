@@ -28,6 +28,20 @@
   --color-borde-nav: #ededeb;
   --color-texto-nav: #4a4a48;
 
+  /* También del handoff, y hasta septiembre de 2026 escritos a mano en cada
+   * componente. Uno por uso, con el valor exacto del handoff:
+   * texto-suave  «← Seguir comprando» (design/carrito.html y otras)
+   * texto-pildora  nombre en las píldoras de marca (design/index.html)
+   * borde-boton  botón con contorno de /buscar (design/buscar.html) */
+  --color-texto-suave: #565654;
+  --color-texto-pildora: #2c2c2a;
+  --color-borde-boton: #d6d6d2;
+  /* El handoff ponía #6E6E72 para «Datos publicados por el fabricante.»
+   * sobre negro: 3.87:1, y es texto de 11 px, donde WCAG AA pide 4.5:1
+   * (mismo caso que texto-terciario). #7A7A7E es el gris más cercano a ese
+   * tono que pasa: 4.60:1 sobre #0B0B0C. */
+  --color-texto-terciario-sobre-negro: #7a7a7e;
+
   /* Tipografía */
   --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-display: var(--font-bakbak-one), sans-serif;
