@@ -2,12 +2,14 @@
 // CartItem que ya usa lib/whatsapp — consumidor del carrito, igual que
 // WhatsApp (CLAUDE.md § Modelo de conversión), no al revés.
 import type { CartItem } from "../cart/index.ts";
+import { marcaDisponibilidad } from "../catalog/disponibilidad.ts";
 import type { Disponibilidad } from "../catalog/types.ts";
 import type { QuoteLogRequest } from "./types.ts";
 
 // `disponibilidad` (por sku) es el mismo mapa que marca las líneas del
-// mensaje de WhatsApp (lib/whatsapp/message.ts): lo disponible no lleva
-// campo, igual que no lleva marca en el mensaje.
+// mensaje de WhatsApp (lib/whatsapp/message.ts), y `estado` lleva el mismo
+// texto que esa marca, ya armado: la hoja lo copia sin traducir nada. Lo
+// disponible no lleva campo, igual que no lleva marca en el mensaje.
 export function buildQuoteLogRequest(params: {
   items: CartItem[];
   ref: string;
@@ -19,13 +21,13 @@ export function buildQuoteLogRequest(params: {
   return {
     ref: params.ref,
     items: params.items.map((item) => {
-      const estado = disponibilidad[item.sku];
+      const estado = marcaDisponibilidad(disponibilidad[item.sku]);
       return {
         sku: item.sku,
         nombre: item.nombreSnapshot,
         qty: item.qty,
         unitPriceCents: item.unitPriceCents,
-        ...(estado && estado !== "disponible" ? { disponibilidad: estado } : {}),
+        ...(estado ? { estado } : {}),
       };
     }),
     subtotalCents: params.subtotalCents,

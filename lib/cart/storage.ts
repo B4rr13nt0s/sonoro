@@ -4,7 +4,7 @@
 // producen un carrito vacío nuevo, no un error.
 import { z } from "zod";
 
-import { CambioCarritoSchema, type CambioCarrito } from "./reconcile.ts";
+import { acumularCambios, CambioCarritoSchema, type CambioCarrito } from "./reconcile.ts";
 import { CartSchema, SCHEMA_VERSION, crearCarritoVacio, type Cart } from "./types.ts";
 
 export const CART_STORAGE_KEY = "sonoro:cart";
@@ -65,25 +65,86 @@ export function saveCart(cart: Cart): void {
 // guarda aparte del carrito porque el carrito se guarda YA corregido: sin
 // esto, si la corrección pasa en otra página (o en otra pestaña) y /carrito
 // se abre con una carga completa, reconcile() ya no encuentra nada que
-// avisar y el total cambia sin explicación. /carrito los borra al mostrarlos.
-export function loadCambiosPendientes(): CambioCarrito[] {
+// avisar y el total cambia sin explicación.
+//
+// Dos resguardos:
+//
+// - `carrito` es el createdAt del carrito al que se refieren. Si el carrito
+//   guardado se descartó (corrupto, versión sin migración) o ya se pidió,
+//   el carrito actual es otro y estos avisos no hablan de nada en pantalla.
+// - Descartar NO reescribe la lista: sube la marca `sonoro:cart-cambios-
+//   vistos` (hasta cuándo ya se mostró todo). Leer-sumar-escribir la lista
+//   no es atómico entre pestañas, y una pestaña que hidrata a la vez que
+//   /carrito descarta volvía a escribir lo ya visto. Con la marca, lo que
+//   se detectó antes de ella queda fuera aunque alguien lo reescriba.
+export const CAMBIOS_VISTOS_STORAGE_KEY = "sonoro:cart-cambios-vistos";
+
+const PendientesSchema = z.object({
+  carrito: z.string(),
+  cambios: z.array(z.object({ cambio: CambioCarritoSchema, detectadoEn: z.number() })),
+});
+type Pendientes = z.infer<typeof PendientesSchema>;
+
+function leerPendientes(createdAt: string): Pendientes["cambios"] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(CAMBIOS_STORAGE_KEY);
     if (!raw) return [];
-    const resultado = z.array(CambioCarritoSchema).safeParse(JSON.parse(raw));
-    return resultado.success ? resultado.data : [];
+    const resultado = PendientesSchema.safeParse(JSON.parse(raw));
+    if (!resultado.success || resultado.data.carrito !== createdAt) return [];
+    const vistosHasta = Number(window.localStorage.getItem(CAMBIOS_VISTOS_STORAGE_KEY)) || 0;
+    return resultado.data.cambios.filter((c) => c.detectadoEn > vistosHasta);
   } catch {
     return [];
   }
 }
 
-export function saveCambiosPendientes(cambios: readonly CambioCarrito[]): void {
+/** Los avisos pendientes del carrito `createdAt`. Nunca lanza. */
+export function loadCambiosPendientes(createdAt: string): CambioCarrito[] {
+  return leerPendientes(createdAt).map((c) => c.cambio);
+}
+
+/**
+ * Suma `nuevos` a lo pendiente del carrito `createdAt` (acumularCambios) y lo
+ * guarda. Lo nuevo lleva la hora `ahora`; lo que ya estaba conserva la suya,
+ * para que la marca de vistos lo siga reconociendo. Devuelve la lista.
+ */
+export function agregarCambiosPendientes(
+  createdAt: string,
+  nuevos: readonly CambioCarrito[],
+  ahora: number,
+): CambioCarrito[] {
+  const previos = leerPendientes(createdAt);
+  const horaPrevia = new Map(previos.map((c) => [c.cambio.sku, c.detectadoEn]));
+  const skusNuevos = new Set(nuevos.map((c) => c.sku));
+  const cambios = acumularCambios(
+    previos.map((c) => c.cambio),
+    nuevos,
+  );
+  if (typeof window !== "undefined" && nuevos.length > 0) {
+    const pendientes: Pendientes = {
+      carrito: createdAt,
+      cambios: cambios.map((cambio) => ({
+        cambio,
+        detectadoEn: skusNuevos.has(cambio.sku) ? ahora : (horaPrevia.get(cambio.sku) ?? ahora),
+      })),
+    };
+    try {
+      window.localStorage.setItem(CAMBIOS_STORAGE_KEY, JSON.stringify(pendientes));
+    } catch {
+      // Igual que saveCart: sin storage, los avisos quedan solo en memoria.
+    }
+  }
+  return cambios;
+}
+
+/** Todo lo detectado hasta `ahora` ya se mostró. */
+export function marcarCambiosVistos(ahora: number): void {
   if (typeof window === "undefined") return;
   try {
-    if (cambios.length === 0) window.localStorage.removeItem(CAMBIOS_STORAGE_KEY);
-    else window.localStorage.setItem(CAMBIOS_STORAGE_KEY, JSON.stringify(cambios));
+    window.localStorage.setItem(CAMBIOS_VISTOS_STORAGE_KEY, String(ahora));
+    window.localStorage.removeItem(CAMBIOS_STORAGE_KEY);
   } catch {
-    // Igual que saveCart: sin storage, los avisos quedan solo en memoria.
+    // Sin storage no hay nada guardado que descartar.
   }
 }

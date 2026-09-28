@@ -14,7 +14,12 @@ import { createRoot } from "react-dom/client";
 import { JSDOM } from "jsdom";
 
 import { CartProvider, useCart } from "./context.ts";
-import { CART_STORAGE_KEY } from "./storage.ts";
+import {
+  agregarCambiosPendientes,
+  CAMBIOS_STORAGE_KEY,
+  CART_STORAGE_KEY,
+  loadCambiosPendientes,
+} from "./storage.ts";
 import { SCHEMA_VERSION, type CatalogoSku } from "./types.ts";
 
 test("CartProvider: montar con un carrito ya guardado no lo pisa con el estado vacío inicial", async () => {
@@ -264,6 +269,114 @@ test("CartProvider: adopta lo que otra pestaña guardó, sin reescribirlo, y lo 
     });
   } finally {
     storageProto.setItem = setItemOriginal;
+    globalAny.window = anteriores.window;
+    globalAny.document = anteriores.document;
+    if (descriptorNavigatorOriginal) {
+      Object.defineProperty(globalThis, "navigator", descriptorNavigatorOriginal);
+    }
+    globalAny.IS_REACT_ACT_ENVIRONMENT = anteriores.IS_REACT_ACT_ENVIRONMENT;
+  }
+});
+
+// Los avisos de lo que reconcile() corrigió: se guardan al hidratar, salen
+// por useCart() hasta que /carrito los descarta, y lo que otra pestaña
+// guarda llega por `storage` — pero solo si es del mismo carrito.
+test("CartProvider: guarda los avisos al hidratar, los descarta y adopta los de otra pestaña", async () => {
+  const dom = new JSDOM("<!doctype html><html><body><div id='root'></div></body></html>", {
+    url: "http://localhost/",
+  });
+  const globalAny = globalThis as Record<string, unknown>;
+  const descriptorNavigatorOriginal = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const anteriores = {
+    window: globalAny.window,
+    document: globalAny.document,
+    IS_REACT_ACT_ENVIRONMENT: globalAny.IS_REACT_ACT_ENVIRONMENT,
+  };
+  globalAny.window = dom.window;
+  globalAny.document = dom.window.document;
+  Object.defineProperty(globalThis, "navigator", {
+    value: dom.window.navigator,
+    configurable: true,
+    writable: true,
+  });
+  globalAny.IS_REACT_ACT_ENVIRONMENT = true;
+
+  try {
+    const CREADO = "2026-09-20T10:00:00.000Z";
+    window.localStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify({
+        schemaVersion: SCHEMA_VERSION,
+        items: [
+          {
+            sku: "SQ12-D2",
+            qty: 1,
+            unitPriceCents: 200000,
+            currency: "GTQ",
+            nombreSnapshot: "SQ12-D2",
+            imagenSnapshot: null,
+            addedAt: CREADO,
+          },
+        ],
+        createdAt: CREADO,
+        updatedAt: CREADO,
+      }),
+    );
+    const catalogo: CatalogoSku[] = [
+      { sku: "SQ12-D2", activo: true, disponibilidad: "disponible", precioCents: 245000 },
+    ];
+    const precio = {
+      tipo: "precio_actualizado" as const,
+      sku: "SQ12-D2",
+      nombreSnapshot: "SQ12-D2",
+      precioAnteriorCents: 200000,
+      precioActualCents: 245000,
+    };
+
+    const probeState: { valor: ReturnType<typeof useCart> | null } = { valor: null };
+    function Probe() {
+      probeState.valor = useCart();
+      return null;
+    }
+    const contenedor = document.getElementById("root");
+    if (!contenedor) throw new Error("no se encontró #root en el DOM de prueba");
+    const root = createRoot(contenedor);
+    await act(async () => {
+      // eslint-disable-next-line react/no-children-prop
+      root.render(createElement(CartProvider, { catalogo, children: createElement(Probe) }));
+    });
+
+    assert.deepEqual(probeState.valor?.cambios, [precio]);
+    assert.deepEqual(loadCambiosPendientes(CREADO), [precio], "quedan guardados para /carrito");
+
+    await act(async () => {
+      probeState.valor?.descartarCambios();
+    });
+    assert.deepEqual(probeState.valor?.cambios, []);
+    assert.deepEqual(loadCambiosPendientes(CREADO), [], "no vuelven en la próxima carga");
+
+    // Otra pestaña guarda un aviso de OTRO carrito: no es de acá.
+    agregarCambiosPendientes("2026-01-01T00:00:00.000Z", [precio], Date.now() + 1);
+    await act(async () => {
+      dom.window.dispatchEvent(
+        new dom.window.StorageEvent("storage", { key: CAMBIOS_STORAGE_KEY }),
+      );
+    });
+    assert.deepEqual(probeState.valor?.cambios, []);
+
+    // Y uno de ESTE carrito: sí.
+    agregarCambiosPendientes(CREADO, [precio], Date.now() + 2);
+    await act(async () => {
+      dom.window.dispatchEvent(
+        new dom.window.StorageEvent("storage", { key: CAMBIOS_STORAGE_KEY }),
+      );
+    });
+    assert.deepEqual(probeState.valor?.cambios, [precio]);
+
+    await act(async () => {
+      root.unmount();
+    });
+  } finally {
     globalAny.window = anteriores.window;
     globalAny.document = anteriores.document;
     if (descriptorNavigatorOriginal) {

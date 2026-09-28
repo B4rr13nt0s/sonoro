@@ -7,9 +7,11 @@ export {
   loadCart,
   saveCart,
   loadCambiosPendientes,
-  saveCambiosPendientes,
+  agregarCambiosPendientes,
+  marcarCambiosVistos,
   CART_STORAGE_KEY,
   CAMBIOS_STORAGE_KEY,
+  CAMBIOS_VISTOS_STORAGE_KEY,
 } from "./storage.ts";
 export { subtotalCents, itemCount } from "./totals.ts";
 export {

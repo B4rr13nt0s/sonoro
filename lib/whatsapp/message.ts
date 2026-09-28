@@ -4,7 +4,7 @@
 // ya usa el resto de la app. No decide envío ni cuota — usa las reglas ya
 // fijadas en CLAUDE.md (envío gratis, 6 pagos) tal como las usa /carrito.
 import { subtotalCents, type CartItem } from "../cart/index.ts";
-import { etiquetaDisponibilidad } from "../catalog/disponibilidad.ts";
+import { marcaDisponibilidad } from "../catalog/disponibilidad.ts";
 import type { Disponibilidad } from "../catalog/types.ts";
 import { formatQ } from "../format/precio.ts";
 
@@ -49,8 +49,8 @@ export function buildOrderMessage(params: {
 function formatearLinea(item: CartItem, disponibilidad: Disponibilidad | undefined): string {
   const precioUnitario = formatQ(item.unitPriceCents);
   const sufijo = item.qty > 1 ? " c/u" : "";
-  const estado = disponibilidad ? etiquetaDisponibilidad(disponibilidad) : null;
-  const marca = estado ? ` · ${estado.toLowerCase()}` : "";
+  const estado = marcaDisponibilidad(disponibilidad);
+  const marca = estado ? ` · ${estado}` : "";
   return `${item.qty}x ${item.nombreSnapshot} (${item.sku}) — ${precioUnitario}${sufijo}${marca}`;
 }
 

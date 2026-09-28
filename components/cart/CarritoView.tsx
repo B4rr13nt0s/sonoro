@@ -11,7 +11,7 @@
 // design/checkout.html (CLAUDE.md § reglas).
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { avisosDeCambios } from "@/components/cart/avisos.ts";
 import { PildoraDisponibilidad } from "@/components/catalog/PildoraDisponibilidad";
@@ -54,11 +54,16 @@ export function CarritoView() {
   // no los trae. Quedan atados al carrito en el que se mostraron: al pedir
   // por WhatsApp el carrito se vacía con un `createdAt` nuevo, y un «Se quitó
   // X» sobre el pedido que ya salió no dice nada.
+  //
+  // Solo con la pestaña a la vista: una pestaña de /carrito abierta en
+  // segundo plano también recibe los avisos que escribe otra (evento
+  // `storage`), y si los tomara los descartaría sin que nadie los viera.
+  const visible = useSyncExternalStore(suscribirVisibilidad, pestañaVisible, () => false);
   const [vistos, setVistos] = useState<{ createdAt: string; cambios: CambioCarrito[] } | null>(
     null,
   );
   useEffect(() => {
-    if (!hydrated || cambios.length === 0) return;
+    if (!hydrated || !visible || cambios.length === 0) return;
     // Copiar al estado local ES el propósito: el contexto los descarta en la
     // línea siguiente y esta visita todavía tiene que mostrarlos.
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -70,7 +75,7 @@ export function CarritoView() {
           : cambios,
     }));
     descartarCambios();
-  }, [hydrated, cambios, createdAt, descartarCambios]);
+  }, [hydrated, visible, cambios, createdAt, descartarCambios]);
 
   const avisos = useMemo(
     () =>
@@ -153,6 +158,15 @@ export function CarritoView() {
       )}
     </div>
   );
+}
+
+function suscribirVisibilidad(alCambiar: () => void) {
+  document.addEventListener("visibilitychange", alCambiar);
+  return () => document.removeEventListener("visibilitychange", alCambiar);
+}
+
+function pestañaVisible() {
+  return document.visibilityState === "visible";
 }
 
 function CarritoVacio() {

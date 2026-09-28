@@ -210,3 +210,73 @@ test("saveCart + loadCart: round-trip conserva el carrito guardado", async () =>
 
   assert.deepEqual(recuperado, original);
 });
+
+// Avisos pendientes (CLAUDE.md § Modelo de conversión: «El carrito avisa lo
+// que corrigió al abrirse»). Mismo contrato que loadCart: nunca lanza.
+const CARRITO = "2026-09-20T10:00:00.000Z";
+const precio = (sku: string, anterior: number, actual: number) => ({
+  tipo: "precio_actualizado" as const,
+  sku,
+  nombreSnapshot: sku,
+  precioAnteriorCents: anterior,
+  precioActualCents: actual,
+});
+
+test("avisos pendientes: se guardan y se leen para el mismo carrito", async () => {
+  const { agregarCambiosPendientes, loadCambiosPendientes } = await import("./storage.ts");
+  const leidos = conLocalStorageVacio(() => {
+    agregarCambiosPendientes(CARRITO, [precio("A", 70000, 80000)], 1000);
+    return loadCambiosPendientes(CARRITO);
+  });
+  assert.deepEqual(leidos, [precio("A", 70000, 80000)]);
+});
+
+test("avisos pendientes: se suman a los que ya estaban, uno por sku", async () => {
+  const { agregarCambiosPendientes, loadCambiosPendientes } = await import("./storage.ts");
+  const leidos = conLocalStorageVacio(() => {
+    agregarCambiosPendientes(CARRITO, [precio("A", 70000, 80000)], 1000);
+    agregarCambiosPendientes(CARRITO, [precio("A", 80000, 90000), precio("B", 1, 2)], 2000);
+    return loadCambiosPendientes(CARRITO);
+  });
+  assert.deepEqual(leidos, [precio("A", 70000, 90000), precio("B", 1, 2)]);
+});
+
+test("avisos pendientes: los de otro carrito no se leen", async () => {
+  const { agregarCambiosPendientes, loadCambiosPendientes } = await import("./storage.ts");
+  const leidos = conLocalStorageVacio(() => {
+    agregarCambiosPendientes(CARRITO, [precio("A", 70000, 80000)], 1000);
+    return loadCambiosPendientes("2026-09-28T10:00:00.000Z");
+  });
+  assert.deepEqual(leidos, []);
+});
+
+test("avisos pendientes: JSON corrupto o con otra forma no lanza y no trae nada", async () => {
+  const { CAMBIOS_STORAGE_KEY, loadCambiosPendientes } = await import("./storage.ts");
+  for (const raw of ["{no es json", "[1,2,3]", JSON.stringify({ carrito: CARRITO, cambios: 7 })]) {
+    const leidos = conLocalStorageVacio(() => {
+      window.localStorage.setItem(CAMBIOS_STORAGE_KEY, raw);
+      return loadCambiosPendientes(CARRITO);
+    });
+    assert.deepEqual(leidos, [], raw);
+  }
+});
+
+test("avisos pendientes: lo marcado como visto no vuelve aunque otra pestaña lo reescriba", async () => {
+  const {
+    CAMBIOS_STORAGE_KEY,
+    agregarCambiosPendientes,
+    loadCambiosPendientes,
+    marcarCambiosVistos,
+  } = await import("./storage.ts");
+  const leidos = conLocalStorageVacio(() => {
+    agregarCambiosPendientes(CARRITO, [precio("A", 70000, 80000)], 1000);
+    // La otra pestaña leyó la lista ANTES de que /carrito la descartara...
+    const leidaPorLaOtra = window.localStorage.getItem(CAMBIOS_STORAGE_KEY) ?? "";
+    marcarCambiosVistos(1500);
+    // ...y la escribe DESPUÉS, junto con lo suyo.
+    window.localStorage.setItem(CAMBIOS_STORAGE_KEY, leidaPorLaOtra);
+    agregarCambiosPendientes(CARRITO, [precio("B", 1, 2)], 2000);
+    return loadCambiosPendientes(CARRITO);
+  });
+  assert.deepEqual(leidos, [precio("B", 1, 2)]);
+});

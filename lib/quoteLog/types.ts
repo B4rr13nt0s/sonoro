@@ -17,14 +17,13 @@
 //   qty            nadie pide 1,000 de un subwoofer → 999
 //   unitPriceCents el producto más caro, Q 70,000   → Q 1,000,000
 //   userAgent      los reales rondan 120 caracteres → 400
+//   estado         «bajo pedido», 11                → 40
 //
 // Un pedido legítimo que roce un tope se pierde del registro, no de la
 // venta: el carrito sigue su camino a WhatsApp pase lo que pase (route.ts
 // responde 204 siempre). Si algún día el catálogo trae nombres más largos,
 // se sube el tope acá, no se quita.
 import { z } from "zod";
-
-import { DisponibilidadSchema } from "../catalog/types.ts";
 
 export const MAX_REF = 32;
 export const MAX_SKU = 64;
@@ -33,10 +32,11 @@ export const MAX_ITEMS = 60;
 export const MAX_QTY = 999;
 export const MAX_PRECIO_CENTS = 100_000_000;
 export const MAX_USER_AGENT = 400;
+export const MAX_ESTADO = 40;
 
 /**
  * Tope del cuerpo del POST, en bytes. Con los topes de arriba, el cuerpo más
- * grande que puede ser VÁLIDO ronda los 20 KB; 64 KB deja margen para que un
+ * grande que puede ser VÁLIDO ronda los 23 KB; 64 KB deja margen para que un
  * cuerpo apenas pasado de la raya se rechace por esquema —no por tamaño— y el
  * corte por bytes quede solo para lo que es claramente un abuso.
  */
@@ -47,11 +47,12 @@ export const QuoteLogItemSchema = z.object({
   nombre: z.string().max(MAX_NOMBRE),
   qty: z.number().int().positive().max(MAX_QTY),
   unitPriceCents: z.number().int().nonnegative().max(MAX_PRECIO_CENTS),
-  // Solo en lo agotado o bajo pedido, igual que la marca del mensaje de
-  // WhatsApp: la hoja tiene que mostrar qué líneas esperan confirmación de
-  // existencias. Opcional para que un cliente con el bundle anterior siga
-  // registrando.
-  disponibilidad: DisponibilidadSchema.exclude(["disponible"]).optional(),
+  // La marca de la línea —«agotado», «bajo pedido»— tal como sale en el
+  // mensaje de WhatsApp, solo en lo que no está disponible: la hoja tiene que
+  // mostrar qué líneas esperan confirmación de existencias. Texto con tope y
+  // no un enum a propósito: un valor inesperado acá no puede tirar el
+  // registro del pedido entero. Opcional para el bundle anterior.
+  estado: z.string().max(MAX_ESTADO).optional(),
 });
 export type QuoteLogItem = z.infer<typeof QuoteLogItemSchema>;
 

@@ -24,13 +24,15 @@ import {
 } from "react";
 
 import { cartReducer } from "./reducer.ts";
-import { acumularCambios, reconcile, type CambioCarrito } from "./reconcile.ts";
+import { reconcile, type CambioCarrito } from "./reconcile.ts";
 import {
+  agregarCambiosPendientes,
   CAMBIOS_STORAGE_KEY,
+  CAMBIOS_VISTOS_STORAGE_KEY,
   CART_STORAGE_KEY,
   loadCambiosPendientes,
   loadCart,
-  saveCambiosPendientes,
+  marcarCambiosVistos,
   saveCart,
 } from "./storage.ts";
 import { itemCount, subtotalCents } from "./totals.ts";
@@ -111,9 +113,13 @@ export function CartProvider({
     const { cart: reconciliado, cambios: cambiosDetectados } = reconcile(cargado, catalogo);
     dispatch({ type: "hydrate", cart: reconciliado });
     // El carrito se guarda ya corregido (efecto de abajo), así que lo que se
-    // corrigió se guarda también, sumado a lo que quedó sin avisar de antes.
-    const pendientes = acumularCambios(loadCambiosPendientes(), cambiosDetectados);
-    saveCambiosPendientes(pendientes);
+    // corrigió se guarda también, sumado a lo que quedó sin avisar de antes
+    // DEL MISMO carrito (lib/cart/storage.ts).
+    const pendientes = agregarCambiosPendientes(
+      reconciliado.createdAt,
+      cambiosDetectados,
+      Date.now(),
+    );
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCambios(pendientes);
     // `catalogo` es el snapshot que trajo el Server Component contenedor al
@@ -134,13 +140,23 @@ export function CartProvider({
   // cada una corregiría a su versión y lo reescribiría, pisándose en bucle.
   // Se guarda recién cuando esta pestaña cambie algo por su cuenta.
   const vinoDeOtraPestaña = useRef(false);
+  // El listener de abajo vive mientras dure la pestaña; lee el carrito
+  // actual de acá para saber de qué carrito son los avisos que llegan.
+  const createdAtActual = useRef(cart.createdAt);
+  useEffect(() => {
+    createdAtActual.current = cart.createdAt;
+  }, [cart.createdAt]);
   useEffect(() => {
     if (!hydrated) return;
     function alCambiarEnOtraPestaña(evento: StorageEvent) {
       // Otra pestaña guardó avisos nuevos o ya los mostró: esta se queda con
       // la misma lista, para no volver a avisar lo que el cliente ya vio.
-      if (evento.key === CAMBIOS_STORAGE_KEY || evento.key === null) {
-        setCambios(loadCambiosPendientes());
+      if (
+        evento.key === CAMBIOS_STORAGE_KEY ||
+        evento.key === CAMBIOS_VISTOS_STORAGE_KEY ||
+        evento.key === null
+      ) {
+        setCambios(loadCambiosPendientes(createdAtActual.current));
       }
       if (evento.key !== CART_STORAGE_KEY && evento.key !== null) return;
       const { cart: reconciliado } = reconcile(loadCart(), catalogo);
@@ -166,7 +182,7 @@ export function CartProvider({
   );
 
   const descartarCambios = useCallback(() => {
-    saveCambiosPendientes([]);
+    marcarCambiosVistos(Date.now());
     setCambios([]);
   }, []);
 

@@ -217,13 +217,12 @@ function doPost(e) {
       const nombre = String(it.nombre || '').slice(0, 120);
       const qty = Number(it.qty) || 0;
       const cents = Number(it.unitPriceCents) || 0;
-      // La misma marca que la línea del mensaje de WhatsApp: lo agotado o
-      // bajo pedido espera confirmación de existencias. Lo disponible no
+      // La misma marca que la línea del mensaje de WhatsApp («agotado»,
+      // «bajo pedido»), que el sitio ya manda armada en `estado`: lo agotado
+      // o bajo pedido espera confirmación de existencias. Lo disponible no
       // trae el campo y no lleva marca.
-      const marca =
-        it.disponibilidad === 'agotado' ? ' · agotado'
-        : it.disponibilidad === 'bajo_pedido' ? ' · bajo pedido'
-        : '';
+      const estado = String(it.estado || '').slice(0, 40);
+      const marca = estado ? ' · ' + estado : '';
 
       unidades += qty;
       skus.push(sku);

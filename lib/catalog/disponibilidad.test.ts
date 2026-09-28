@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { etiquetaDisponibilidad } from "./disponibilidad.ts";
+import { etiquetaDisponibilidad, marcaDisponibilidad } from "./disponibilidad.ts";
 import { DisponibilidadSchema } from "./types.ts";
 
 test("disponibilidad: el estado normal no se etiqueta", () => {
@@ -26,4 +26,11 @@ test("disponibilidad: cubre todos los valores del esquema", () => {
     assert.equal(typeof etiqueta, "string", `${valor} no tiene texto`);
     assert.ok((etiqueta ?? "").length > 0, `${valor} tiene texto vacío`);
   }
+});
+
+test("marcaDisponibilidad: la etiqueta en minúsculas, y nada para lo disponible", () => {
+  assert.equal(marcaDisponibilidad("disponible"), null);
+  assert.equal(marcaDisponibilidad(undefined), null);
+  assert.equal(marcaDisponibilidad("agotado"), "agotado");
+  assert.equal(marcaDisponibilidad("bajo_pedido"), "bajo pedido");
 });

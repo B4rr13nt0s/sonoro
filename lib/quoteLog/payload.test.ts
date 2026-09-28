@@ -70,8 +70,8 @@ test("buildQuoteLogRequest: marca lo agotado y lo bajo pedido, y deja lo disponi
   });
 
   assert.deepEqual(
-    request.items.map((i) => i.disponibilidad),
-    [undefined, "agotado", "bajo_pedido"],
+    request.items.map((i) => i.estado),
+    [undefined, "agotado", "bajo pedido"],
   );
-  assert.ok(!("disponibilidad" in request.items[0]));
+  assert.ok(!("estado" in request.items[0]));
 });

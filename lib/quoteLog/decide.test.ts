@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { decideQuoteLogForward } from "./decide.ts";
-import { MAX_ITEMS, MAX_NOMBRE, MAX_QTY, MAX_REF, MAX_USER_AGENT } from "./types.ts";
+import { MAX_ESTADO, MAX_ITEMS, MAX_NOMBRE, MAX_QTY, MAX_REF, MAX_USER_AGENT } from "./types.ts";
 
 const BODY_VALIDO = {
   ref: "SNR-A7K2M",
@@ -89,6 +89,13 @@ test("decideQuoteLogForward: rechaza lo que se pasa de los topes", () => {
     ],
     ["qty absurda", { ...BODY_VALIDO, items: [{ ...BODY_VALIDO.items[0], qty: MAX_QTY + 1 }] }],
     [
+      "estado larguísimo",
+      {
+        ...BODY_VALIDO,
+        items: [{ ...BODY_VALIDO.items[0], estado: "E".repeat(MAX_ESTADO + 1) }],
+      },
+    ],
+    [
       "precio absurdo",
       { ...BODY_VALIDO, items: [{ ...BODY_VALIDO.items[0], unitPriceCents: 100_000_001 }] },
     ],
@@ -125,9 +132,17 @@ test("decideQuoteLogForward: un pedido en el límite exacto sí pasa", () => {
       nombre: "N".repeat(MAX_NOMBRE),
       qty: MAX_QTY,
       unitPriceCents: 100_000_000,
+      estado: "E".repeat(MAX_ESTADO),
     })),
     subtotalCents: 100_000_000,
     userAgent: "U".repeat(MAX_USER_AGENT),
   };
   assert.equal(decideQuoteLogForward(alLimite, ENV_COMPLETO).forward, true);
+});
+
+test("decideQuoteLogForward: un estado que no se esperaba no tira el pedido", () => {
+  // Texto con tope, no enum: lo peor que puede pasar con un valor raro es
+  // una marca rara en la hoja, nunca un pedido sin registrar.
+  const body = { ...BODY_VALIDO, items: [{ ...BODY_VALIDO.items[0], estado: "disponible" }] };
+  assert.equal(decideQuoteLogForward(body, ENV_COMPLETO).forward, true);
 });

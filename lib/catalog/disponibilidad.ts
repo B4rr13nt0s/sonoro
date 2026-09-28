@@ -22,3 +22,13 @@ export function etiquetaDisponibilidad(disponibilidad: Disponibilidad): string |
       return "Bajo pedido";
   }
 }
+
+// La marca que lleva una línea de pedido agotada o bajo pedido —«agotado»,
+// «bajo pedido»—, sacada de la misma etiqueta: la usan el mensaje de
+// WhatsApp (lib/whatsapp/message.ts) y el registro de pedidos
+// (lib/quoteLog/payload.ts), que la hoja copia tal cual. Así los dos dicen
+// siempre lo mismo que la píldora.
+export function marcaDisponibilidad(disponibilidad: Disponibilidad | undefined): string | null {
+  const etiqueta = disponibilidad ? etiquetaDisponibilidad(disponibilidad) : null;
+  return etiqueta ? etiqueta.toLowerCase() : null;
+}
