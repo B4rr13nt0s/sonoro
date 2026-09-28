@@ -6,7 +6,7 @@
 // snapshot, no una referencia viva.
 import { z } from "zod";
 
-import { MonedaSchema } from "../catalog/types.ts";
+import { MonedaSchema, type Disponibilidad } from "../catalog/types.ts";
 
 export const SCHEMA_VERSION = 1;
 
@@ -54,6 +54,6 @@ export function crearCarritoVacio(now: string): Cart {
 export type CatalogoSku = {
   sku: string;
   activo: boolean;
-  disponibilidad: "disponible" | "bajo_pedido" | "agotado";
+  disponibilidad: Disponibilidad;
   precioCents: number;
 };

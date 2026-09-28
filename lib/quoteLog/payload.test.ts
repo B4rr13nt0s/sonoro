@@ -59,3 +59,19 @@ test("buildQuoteLogRequest: preserva el orden y la cantidad de líneas del carri
     ["A", "B"],
   );
 });
+
+test("buildQuoteLogRequest: marca lo agotado y lo bajo pedido, y deja lo disponible sin campo", () => {
+  const request = buildQuoteLogRequest({
+    items: [item({ sku: "A" }), item({ sku: "B" }), item({ sku: "C" })],
+    ref: "SNR-A7K2M",
+    subtotalCents: 1470000,
+    userAgent: "Mozilla/5.0 Test",
+    disponibilidad: { A: "disponible", B: "agotado", C: "bajo_pedido" },
+  });
+
+  assert.deepEqual(
+    request.items.map((i) => i.disponibilidad),
+    [undefined, "agotado", "bajo_pedido"],
+  );
+  assert.ok(!("disponibilidad" in request.items[0]));
+});

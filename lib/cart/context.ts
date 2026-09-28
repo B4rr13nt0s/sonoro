@@ -13,6 +13,7 @@
 import {
   createContext,
   createElement,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -23,9 +24,17 @@ import {
 } from "react";
 
 import { cartReducer } from "./reducer.ts";
-import { reconcile, type CambioCarrito } from "./reconcile.ts";
-import { CART_STORAGE_KEY, loadCart, saveCart } from "./storage.ts";
+import { acumularCambios, reconcile, type CambioCarrito } from "./reconcile.ts";
+import {
+  CAMBIOS_STORAGE_KEY,
+  CART_STORAGE_KEY,
+  loadCambiosPendientes,
+  loadCart,
+  saveCambiosPendientes,
+  saveCart,
+} from "./storage.ts";
 import { itemCount, subtotalCents } from "./totals.ts";
+import type { Disponibilidad } from "../catalog/types.ts";
 import { crearCarritoVacio, type CartItem, type CatalogoSku } from "./types.ts";
 
 type NuevoItem = Pick<
@@ -43,15 +52,18 @@ type CartContextValue = {
   createdAt: string;
   subtotalCents: number;
   itemCount: number;
-  // Resultado de reconcile() al hidratar — líneas quitadas por dejar de
-  // existir o quedar inactivas, marcadas como agotadas, o con precio
-  // actualizado. /carrito los avisa (components/cart/avisos.ts).
+  // Lo que reconcile() corrigió y el cliente todavía no vio: líneas quitadas
+  // por dejar de existir o quedar inactivas, o con precio actualizado. Se
+  // guardan en localStorage hasta que /carrito los muestra y llama a
+  // descartarCambios() — así salen una sola vez, aunque la corrección haya
+  // pasado en otra página o en otra pestaña (components/cart/avisos.ts).
   cambios: CambioCarrito[];
+  descartarCambios: () => void;
   // Disponibilidad ACTUAL de cada sku, del mismo catálogo que usa
   // reconcile(). El CartItem no la guarda —es un snapshot de lo que se
   // agregó, y la disponibilidad cambia—, así que /carrito la lee de acá para
   // etiquetar lo agotado o bajo pedido, y para marcarlo en el mensaje.
-  disponibilidadPorSku: Readonly<Record<string, CatalogoSku["disponibilidad"]>>;
+  disponibilidadPorSku: Readonly<Record<string, Disponibilidad>>;
   // false hasta que el efecto de abajo lea localStorage — /carrito lo usa
   // para no mostrar "carrito vacío" un instante antes de que aparezca el
   // carrito real (CLAUDE.md § Modelo de conversión: localStorage no existe
@@ -98,8 +110,12 @@ export function CartProvider({
     const cargado = loadCart();
     const { cart: reconciliado, cambios: cambiosDetectados } = reconcile(cargado, catalogo);
     dispatch({ type: "hydrate", cart: reconciliado });
+    // El carrito se guarda ya corregido (efecto de abajo), así que lo que se
+    // corrigió se guarda también, sumado a lo que quedó sin avisar de antes.
+    const pendientes = acumularCambios(loadCambiosPendientes(), cambiosDetectados);
+    saveCambiosPendientes(pendientes);
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setCambios(cambiosDetectados);
+    setCambios(pendientes);
     // `catalogo` es el snapshot que trajo el Server Component contenedor al
     // renderizar esta página — no cambia durante la vida de la pestaña, así
     // que hidratar solo debe correr una vez al montar.
@@ -121,6 +137,11 @@ export function CartProvider({
   useEffect(() => {
     if (!hydrated) return;
     function alCambiarEnOtraPestaña(evento: StorageEvent) {
+      // Otra pestaña guardó avisos nuevos o ya los mostró: esta se queda con
+      // la misma lista, para no volver a avisar lo que el cliente ya vio.
+      if (evento.key === CAMBIOS_STORAGE_KEY || evento.key === null) {
+        setCambios(loadCambiosPendientes());
+      }
       if (evento.key !== CART_STORAGE_KEY && evento.key !== null) return;
       const { cart: reconciliado } = reconcile(loadCart(), catalogo);
       vinoDeOtraPestaña.current = true;
@@ -144,12 +165,18 @@ export function CartProvider({
     [catalogo],
   );
 
+  const descartarCambios = useCallback(() => {
+    saveCambiosPendientes([]);
+    setCambios([]);
+  }, []);
+
   const value: CartContextValue = {
     items: cart.items,
     createdAt: cart.createdAt,
     subtotalCents: subtotalCents(cart.items),
     itemCount: itemCount(cart.items),
     cambios: cambios ?? [],
+    descartarCambios,
     disponibilidadPorSku,
     hydrated,
     addItem: (item) => dispatch({ type: "add", item, now: new Date().toISOString() }),

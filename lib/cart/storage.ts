@@ -2,9 +2,13 @@
 // crashear con un carrito viejo" — loadCart() nunca lanza. JSON corrupto,
 // forma inválida, o un schemaVersion sin ruta de migración conocida
 // producen un carrito vacío nuevo, no un error.
+import { z } from "zod";
+
+import { CambioCarritoSchema, type CambioCarrito } from "./reconcile.ts";
 import { CartSchema, SCHEMA_VERSION, crearCarritoVacio, type Cart } from "./types.ts";
 
 export const CART_STORAGE_KEY = "sonoro:cart";
+export const CAMBIOS_STORAGE_KEY = "sonoro:cart-cambios";
 
 // Una entrada por versión ANTERIOR a la actual: recibe el JSON crudo ya
 // parseado (todavía sin validar contra CartSchema) y devuelve un Cart de la
@@ -54,5 +58,32 @@ export function saveCart(cart: Cart): void {
   } catch {
     // localStorage puede fallar (modo privado, cuota excedida, etc.) — no
     // hay nada que hacer salvo no crashear el carrito en memoria.
+  }
+}
+
+// Lo que reconcile() corrigió y el cliente todavía no vio en /carrito. Se
+// guarda aparte del carrito porque el carrito se guarda YA corregido: sin
+// esto, si la corrección pasa en otra página (o en otra pestaña) y /carrito
+// se abre con una carga completa, reconcile() ya no encuentra nada que
+// avisar y el total cambia sin explicación. /carrito los borra al mostrarlos.
+export function loadCambiosPendientes(): CambioCarrito[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(CAMBIOS_STORAGE_KEY);
+    if (!raw) return [];
+    const resultado = z.array(CambioCarritoSchema).safeParse(JSON.parse(raw));
+    return resultado.success ? resultado.data : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveCambiosPendientes(cambios: readonly CambioCarrito[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (cambios.length === 0) window.localStorage.removeItem(CAMBIOS_STORAGE_KEY);
+    else window.localStorage.setItem(CAMBIOS_STORAGE_KEY, JSON.stringify(cambios));
+  } catch {
+    // Igual que saveCart: sin storage, los avisos quedan solo en memoria.
   }
 }

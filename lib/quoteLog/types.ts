@@ -24,6 +24,8 @@
 // se sube el tope acá, no se quita.
 import { z } from "zod";
 
+import { DisponibilidadSchema } from "../catalog/types.ts";
+
 export const MAX_REF = 32;
 export const MAX_SKU = 64;
 export const MAX_NOMBRE = 200;
@@ -45,6 +47,11 @@ export const QuoteLogItemSchema = z.object({
   nombre: z.string().max(MAX_NOMBRE),
   qty: z.number().int().positive().max(MAX_QTY),
   unitPriceCents: z.number().int().nonnegative().max(MAX_PRECIO_CENTS),
+  // Solo en lo agotado o bajo pedido, igual que la marca del mensaje de
+  // WhatsApp: la hoja tiene que mostrar qué líneas esperan confirmación de
+  // existencias. Opcional para que un cliente con el bundle anterior siga
+  // registrando.
+  disponibilidad: DisponibilidadSchema.exclude(["disponible"]).optional(),
 });
 export type QuoteLogItem = z.infer<typeof QuoteLogItemSchema>;
 

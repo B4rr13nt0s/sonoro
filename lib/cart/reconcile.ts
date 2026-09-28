@@ -6,19 +6,29 @@
 // producto que ya no vende — así que esto corre ANTES de que el carrito
 // hidratado quede disponible al resto de la app. /carrito le avisa al
 // cliente qué cambió (components/cart/avisos.ts).
+//
+// Lo agotado o bajo pedido NO es un cambio: se puede pedir igual, y /carrito
+// lo lee de la disponibilidad actual (useCart().disponibilidadPorSku), no de
+// acá. Reportarlo en cada carga lo convertía en un «cambio» permanente.
+import { z } from "zod";
+
 import type { Cart, CartItem, CatalogoSku } from "./types.ts";
 
-export type CambioCarrito =
-  | { tipo: "eliminado_no_existe"; sku: string; nombreSnapshot: string }
-  | { tipo: "eliminado_inactivo"; sku: string; nombreSnapshot: string }
-  | { tipo: "agotado"; sku: string; nombreSnapshot: string }
-  | {
-      tipo: "precio_actualizado";
-      sku: string;
-      nombreSnapshot: string;
-      precioAnteriorCents: number;
-      precioActualCents: number;
-    };
+// Con esquema porque los cambios todavía no avisados se guardan en
+// localStorage (./storage.ts) hasta que el cliente abre /carrito, y lo que
+// sale de ahí se valida antes de usarse.
+export const CambioCarritoSchema = z.discriminatedUnion("tipo", [
+  z.object({ tipo: z.literal("eliminado_no_existe"), sku: z.string(), nombreSnapshot: z.string() }),
+  z.object({ tipo: z.literal("eliminado_inactivo"), sku: z.string(), nombreSnapshot: z.string() }),
+  z.object({
+    tipo: z.literal("precio_actualizado"),
+    sku: z.string(),
+    nombreSnapshot: z.string(),
+    precioAnteriorCents: z.number().int().nonnegative(),
+    precioActualCents: z.number().int().nonnegative(),
+  }),
+]);
+export type CambioCarrito = z.infer<typeof CambioCarritoSchema>;
 
 export function reconcile(
   cart: Cart,
@@ -47,10 +57,6 @@ export function reconcile(
       return acumulado;
     }
 
-    if (actual.disponibilidad === "agotado") {
-      cambios.push({ tipo: "agotado", sku: item.sku, nombreSnapshot: item.nombreSnapshot });
-    }
-
     if (actual.precioCents !== item.unitPriceCents) {
       cambios.push({
         tipo: "precio_actualizado",
@@ -68,4 +74,32 @@ export function reconcile(
   }, []);
 
   return { cart: { ...cart, items }, cambios };
+}
+
+/**
+ * Suma cambios nuevos a los que todavía no se avisaron, uno por sku.
+ *
+ * Un precio que cambió dos veces antes de que el cliente abra /carrito se
+ * avisa como UN cambio, del primer precio al último — y si volvió al
+ * original, no hay nada que avisar. Un producto quitado reemplaza cualquier
+ * aviso de precio anterior del mismo sku.
+ */
+export function acumularCambios(
+  previos: readonly CambioCarrito[],
+  nuevos: readonly CambioCarrito[],
+): CambioCarrito[] {
+  const porSku = new Map(previos.map((cambio) => [cambio.sku, cambio]));
+  for (const nuevo of nuevos) {
+    const previo = porSku.get(nuevo.sku);
+    if (nuevo.tipo === "precio_actualizado" && previo?.tipo === "precio_actualizado") {
+      if (previo.precioAnteriorCents === nuevo.precioActualCents) {
+        porSku.delete(nuevo.sku);
+      } else {
+        porSku.set(nuevo.sku, { ...nuevo, precioAnteriorCents: previo.precioAnteriorCents });
+      }
+      continue;
+    }
+    porSku.set(nuevo.sku, nuevo);
+  }
+  return [...porSku.values()];
 }

@@ -11,14 +11,20 @@
 // design/checkout.html (CLAUDE.md § reglas).
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { avisosDeCambios } from "@/components/cart/avisos.ts";
+import { PildoraDisponibilidad } from "@/components/catalog/PildoraDisponibilidad";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
-import { etiquetaDisponibilidad } from "@/lib/catalog/disponibilidad.ts";
 import type { Disponibilidad } from "@/lib/catalog/index.ts";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
-import { MAX_CANTIDAD_POR_LINEA, useCart, type CartItem } from "@/lib/cart/index.ts";
+import {
+  acumularCambios,
+  MAX_CANTIDAD_POR_LINEA,
+  useCart,
+  type CambioCarrito,
+  type CartItem,
+} from "@/lib/cart/index.ts";
 import {
   buildOrderMessage,
   buildOrderRef,
@@ -36,15 +42,42 @@ export function CarritoView() {
     itemCount,
     hydrated,
     cambios,
+    descartarCambios,
     disponibilidadPorSku,
     setQty,
     removeItem,
     clear,
   } = useCart();
 
+  // Los avisos salen UNA vez: al llegar a esta página se copian acá y se
+  // descartan del carrito (y de localStorage), así que la próxima visita ya
+  // no los trae. Quedan atados al carrito en el que se mostraron: al pedir
+  // por WhatsApp el carrito se vacía con un `createdAt` nuevo, y un «Se quitó
+  // X» sobre el pedido que ya salió no dice nada.
+  const [vistos, setVistos] = useState<{ createdAt: string; cambios: CambioCarrito[] } | null>(
+    null,
+  );
+  useEffect(() => {
+    if (!hydrated || cambios.length === 0) return;
+    // Copiar al estado local ES el propósito: el contexto los descarta en la
+    // línea siguiente y esta visita todavía tiene que mostrarlos.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setVistos((previos) => ({
+      createdAt,
+      cambios:
+        previos && previos.createdAt === createdAt
+          ? acumularCambios(previos.cambios, cambios)
+          : cambios,
+    }));
+    descartarCambios();
+  }, [hydrated, cambios, createdAt, descartarCambios]);
+
   const avisos = useMemo(
-    () => avisosDeCambios(cambios, new Set(items.map((item) => item.sku))),
-    [cambios, items],
+    () =>
+      vistos && vistos.createdAt === createdAt
+        ? avisosDeCambios(vistos.cambios, new Set(items.map((item) => item.sku)))
+        : [],
+    [vistos, createdAt, items],
   );
 
   // Una sola vez por carrito con contenido — mismo patrón de ref-guard que
@@ -69,19 +102,23 @@ export function CarritoView() {
 
       {/* Fuera de las dos ramas de abajo: si reconcile() quitó todas las
           líneas, el carrito queda vacío y el cliente igual tiene que saber
-          por qué. Misma tarjeta que los productos omitidos de /comparar. */}
-      {hydrated && avisos.length > 0 ? (
-        <div className="px-6 pb-8 sm:px-12">
-          <div
-            role="status"
-            className="border-borde-tarjeta rounded-card text-texto-secundario flex flex-col gap-1 border p-5 text-[14px]"
-          >
-            {avisos.map((aviso) => (
-              <span key={aviso}>{aviso}</span>
-            ))}
+          por qué. Misma tarjeta que los productos omitidos de /comparar.
+          La región `status` está SIEMPRE montada y el contenido llega
+          después: un lector de pantalla no anuncia una región viva que
+          aparece ya con su texto adentro. */}
+      <div role="status">
+        {avisos.length > 0 ? (
+          <div className="px-6 pb-8 sm:px-12">
+            <div className="border-borde-tarjeta rounded-card text-texto-secundario flex flex-col gap-1 border p-5 text-[14px]">
+              {/* Índice como key: la lista no se reordena, y dos avisos
+                  pueden decir lo mismo (dos productos con el mismo nombre). */}
+              {avisos.map((aviso, i) => (
+                <span key={i}>{aviso}</span>
+              ))}
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
 
       {!hydrated ? null : items.length === 0 ? (
         <CarritoVacio />
@@ -141,10 +178,6 @@ function CartLineItem({
   onRemove: () => void;
 }) {
   const totalLinea = item.unitPriceCents * item.qty;
-  // Agotado o bajo pedido se puede pedir igual —el vendedor confirma—, pero
-  // el cliente tiene que verlo antes de mandar el pedido. Misma etiqueta y
-  // misma píldora que la ficha, sin color de acento.
-  const estado = disponibilidad ? etiquetaDisponibilidad(disponibilidad) : null;
 
   return (
     <div className="border-borde-tarjeta flex gap-4 border-t py-6 sm:gap-6 sm:py-7">
@@ -169,11 +202,10 @@ function CartLineItem({
           <span className="text-texto-terciario font-mono text-[10px] tracking-[0.14em] uppercase">
             {item.sku}
           </span>
-          {estado ? (
-            <span className="border-borde-pildora text-negro rounded-full border px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] uppercase">
-              {estado}
-            </span>
-          ) : null}
+          {/* Agotado o bajo pedido se puede pedir igual —el vendedor
+              confirma—, pero el cliente tiene que verlo antes de mandar el
+              pedido. La misma píldora que la ficha. */}
+          <PildoraDisponibilidad disponibilidad={disponibilidad} />
         </div>
         <div className="flex items-start justify-between gap-3">
           <div className="text-[17px] font-semibold tracking-[-0.015em] sm:text-[19px]">
@@ -291,7 +323,13 @@ function OrderSummary({
           // sin esperar la respuesta"). Por eso no hay preventDefault ni
           // await: el navegador sigue con la navegación del <a> normal.
           sendQuoteLog(
-            buildQuoteLogRequest({ items, ref, subtotalCents, userAgent: navigator.userAgent }),
+            buildQuoteLogRequest({
+              items,
+              ref,
+              subtotalCents,
+              userAgent: navigator.userAgent,
+              disponibilidad: disponibilidadPorSku,
+            }),
           );
           trackEvent("whatsapp_click", {
             value: subtotalCents / 100,

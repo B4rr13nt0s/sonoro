@@ -5,12 +5,12 @@ import { notFound } from "next/navigation";
 import { AgregarConCantidad } from "@/components/cart/AgregarConCantidad";
 import { ConsultarWhatsAppButton } from "@/components/product/ConsultarWhatsAppButton";
 import { ViewProductTracker } from "@/components/analytics/ViewProductTracker";
+import { PildoraDisponibilidad } from "@/components/catalog/PildoraDisponibilidad";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ProductGallery } from "@/components/media/ProductGallery";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import { getProduct, listAllProducts, listBrands, listCategories } from "@/lib/catalog/index.ts";
 import { buildCatalogHref, buildMarcaHref } from "@/lib/catalog/href.ts";
-import { etiquetaDisponibilidad } from "@/lib/catalog/disponibilidad.ts";
 import { buildProductJsonLd } from "@/lib/seo/product.ts";
 import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
 import { absoluteUrl } from "@/lib/seo/site.ts";
@@ -60,7 +60,6 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
   // Agotado invierte la jerarquía de los dos botones de acción: agregar al
   // carrito algo que no hay no lleva a ninguna parte, y preguntar sí.
   const agotado = producto.disponibilidad === "agotado";
-  const etiquetaEstado = etiquetaDisponibilidad(producto.disponibilidad);
 
   // Se resuelven una sola vez y sirven a las dos ramas de abajo: la de
   // producto inactivo (link "Ver {categoría}") y la de breadcrumbs del
@@ -162,11 +161,7 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
                   acento (CLAUDE.md § Sistema visual) — el contorno y las
                   versalitas en mono bastan para que no se confunda con el
                   precio. */}
-              {etiquetaEstado ? (
-                <span className="border-borde-pildora text-negro rounded-full border px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase">
-                  {etiquetaEstado}
-                </span>
-              ) : null}
+              <PildoraDisponibilidad disponibilidad={producto.disponibilidad} />
             </div>
             <div className="text-texto-secundario text-[14px]">
               o {formatQ(cuota)} al mes × 6 · IVA incluido

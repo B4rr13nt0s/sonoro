@@ -217,10 +217,17 @@ function doPost(e) {
       const nombre = String(it.nombre || '').slice(0, 120);
       const qty = Number(it.qty) || 0;
       const cents = Number(it.unitPriceCents) || 0;
+      // La misma marca que la línea del mensaje de WhatsApp: lo agotado o
+      // bajo pedido espera confirmación de existencias. Lo disponible no
+      // trae el campo y no lleva marca.
+      const marca =
+        it.disponibilidad === 'agotado' ? ' · agotado'
+        : it.disponibilidad === 'bajo_pedido' ? ' · bajo pedido'
+        : '';
 
       unidades += qty;
       skus.push(sku);
-      lineas.push(qty + 'x ' + sku + ' — ' + nombre + ' @ Q ' + (cents / 100).toFixed(2));
+      lineas.push(qty + 'x ' + sku + ' — ' + nombre + ' @ Q ' + (cents / 100).toFixed(2) + marca);
     }
 
     // El subtotal se RECALCULA aquí en vez de confiar en el que manda el

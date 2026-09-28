@@ -34,11 +34,6 @@ test("inactivo o inexistente: la misma frase, aunque la línea ya no esté", () 
   ]);
 });
 
-test("agotado no genera aviso: lo dice la etiqueta de la línea", () => {
-  const agotado: CambioCarrito = { tipo: "agotado", sku: "X", nombreSnapshot: "X" };
-  assert.deepEqual(avisosDeCambios([agotado], new Set(["X"])), []);
-});
-
 test("conserva el orden de los cambios", () => {
   const quitado: CambioCarrito = {
     tipo: "eliminado_inactivo",
