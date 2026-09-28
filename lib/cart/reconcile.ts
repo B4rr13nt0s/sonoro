@@ -34,6 +34,22 @@ export const CambioCarritoSchema = z.discriminatedUnion("tipo", [
 ]);
 export type CambioCarrito = z.infer<typeof CambioCarritoSchema>;
 
+/**
+ * Por qué una línea con esta entrada del catálogo no puede estar en el
+ * carrito, o `null` si puede. Es LA regla: reconcile() quita lo que ella
+ * rechaza, y addItem() (./context.ts) no deja entrar lo mismo — así lo que
+ * el carrito acepta y lo que quita en la carga siguiente no pueden
+ * desincronizarse.
+ */
+export function motivoParaQuitar(
+  actual: CatalogoSku | undefined,
+): "eliminado_no_existe" | "eliminado_inactivo" | "eliminado_agotado" | null {
+  if (!actual) return "eliminado_no_existe";
+  if (!actual.activo) return "eliminado_inactivo";
+  if (actual.disponibilidad === "agotado") return "eliminado_agotado";
+  return null;
+}
+
 export function reconcile(
   cart: Cart,
   catalogo: CatalogoSku[],
@@ -44,30 +60,14 @@ export function reconcile(
   const items = cart.items.reduce<CartItem[]>((acumulado, item) => {
     const actual = porSku.get(item.sku);
 
-    if (!actual) {
-      cambios.push({
-        tipo: "eliminado_no_existe",
-        sku: item.sku,
-        nombreSnapshot: item.nombreSnapshot,
-      });
+    const motivo = motivoParaQuitar(actual);
+    if (motivo !== null) {
+      cambios.push({ tipo: motivo, sku: item.sku, nombreSnapshot: item.nombreSnapshot });
       return acumulado;
     }
-    if (!actual.activo) {
-      cambios.push({
-        tipo: "eliminado_inactivo",
-        sku: item.sku,
-        nombreSnapshot: item.nombreSnapshot,
-      });
-      return acumulado;
-    }
-    if (actual.disponibilidad === "agotado") {
-      cambios.push({
-        tipo: "eliminado_agotado",
-        sku: item.sku,
-        nombreSnapshot: item.nombreSnapshot,
-      });
-      return acumulado;
-    }
+    // Inalcanzable —sin entrada, motivoParaQuitar() ya devolvió un motivo—;
+    // solo le dice a TypeScript que `actual` existe de acá en adelante.
+    if (!actual) return acumulado;
 
     if (actual.precioCents !== item.unitPriceCents) {
       cambios.push({

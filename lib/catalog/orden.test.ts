@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { compararRelevancia } from "./orden.ts";
+import { compararPrecioAsc, compararPrecioDesc, compararRelevancia } from "./orden.ts";
 import type { Producto } from "./types.ts";
 
 // Productos sintéticos: estas pruebas fijan el COMPARADOR, no el catálogo.
@@ -86,5 +86,29 @@ test("relevancia: el orden no depende del orden de entrada — mismo resultado s
   for (let corte = 0; corte < base.length; corte += 1) {
     const barajado = [...base.slice(corte), ...base.slice(0, corte)].reverse();
     assert.deepEqual(skus(barajado.sort(compararRelevancia)), esperado);
+  }
+});
+
+test("órdenes por precio: el mismo precio se desempata por sku, sin importar el orden de entrada", () => {
+  const entrada = [
+    producto("KBT-C", 3000, false),
+    producto("KBT-A", 3000, false),
+    producto("KBT-Z", 9000, false),
+    producto("KBT-B", 3000, false),
+  ];
+  const skus = (lista: Producto[]) => lista.map((p) => p.sku);
+  for (const lista of [entrada, [...entrada].reverse()]) {
+    assert.deepEqual(skus([...lista].sort(compararPrecioAsc)), [
+      "KBT-A",
+      "KBT-B",
+      "KBT-C",
+      "KBT-Z",
+    ]);
+    assert.deepEqual(skus([...lista].sort(compararPrecioDesc)), [
+      "KBT-Z",
+      "KBT-A",
+      "KBT-B",
+      "KBT-C",
+    ]);
   }
 });

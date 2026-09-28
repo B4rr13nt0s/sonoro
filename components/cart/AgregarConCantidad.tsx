@@ -47,7 +47,7 @@ export function AgregarConCantidad({
   const inactivo = confirmando || agotado;
 
   function agregar() {
-    addItem({
+    const agregado = addItem({
       sku: producto.sku,
       qty: cantidad,
       unitPriceCents: producto.precioCents,
@@ -55,6 +55,8 @@ export function AgregarConCantidad({
       nombreSnapshot: producto.nombre,
       imagenSnapshot: producto.imagenes[0]?.url ?? null,
     });
+    // El carrito no lo aceptó (agotado, inactivo): ni confirmación ni evento.
+    if (!agregado) return;
     trackEvent("add_to_quote", {
       item_id: producto.sku,
       item_name: producto.nombre,

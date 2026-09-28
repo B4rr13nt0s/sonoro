@@ -51,10 +51,12 @@ export function paginasVisibles(paginaActual: number, totalPaginas: number): Ite
 /**
  * El número de página que pide la URL (`?page=2`), ya saneado.
  *
- * Devuelve SIEMPRE un entero ≥ 1: lo que no lo sea —`?page=abc`, `?page=0`,
- * `?page=-3`, `?page=1.5`, `?page=1e9`— cae en 1. Existe porque las cuatro
- * rutas de listado repetían `Number(...)` a mano y un decimal se colaba
- * hasta el `slice` del adaptador.
+ * Devuelve SIEMPRE un entero ≥ 1: lo que no es un número ≥ 1 —`?page=abc`,
+ * `?page=0`, `?page=-3`— cae en 1, y un decimal se trunca (`?page=2.5` → 2).
+ * Un número grande pasa tal cual (`?page=1e9` → 1,000,000,000): que esa
+ * página exista lo decide la ruta (ver abajo). Existe porque las cuatro rutas
+ * de listado repetían `Number(...)` a mano y un decimal se colaba hasta el
+ * `slice` del adaptador.
  *
  * Que la página EXISTA es otra pregunta, y se responde después de consultar
  * el catálogo: las rutas devuelven 404 cuando el número pedido pasa del

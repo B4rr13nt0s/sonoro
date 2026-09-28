@@ -42,7 +42,7 @@ export function AddToCartButton({
     <button
       type="button"
       onClick={() => {
-        addItem({
+        const agregado = addItem({
           sku: producto.sku,
           qty: 1,
           unitPriceCents: producto.precioCents,
@@ -50,6 +50,8 @@ export function AddToCartButton({
           nombreSnapshot: producto.nombre,
           imagenSnapshot: producto.imagenes[0]?.url ?? null,
         });
+        // El carrito no lo aceptó (agotado, inactivo): no se mide.
+        if (!agregado) return;
         trackEvent("add_to_quote", {
           item_id: producto.sku,
           item_name: producto.nombre,

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { acumularCambios, reconcile, type CambioCarrito } from "./reconcile.ts";
+import { acumularCambios, motivoParaQuitar, reconcile, type CambioCarrito } from "./reconcile.ts";
 import type { Cart, CartItem, CatalogoSku } from "./types.ts";
 
 function item(overrides: Partial<CartItem> = {}): CartItem {
@@ -162,4 +162,19 @@ test("acumularCambios: skus distintos se conservan en orden", () => {
     precio(1, 2, "A"),
     precio(3, 4, "B"),
   ]);
+});
+
+test("motivoParaQuitar: la regla que comparten reconcile() y addItem()", () => {
+  const entrada = (o: Partial<CatalogoSku>): CatalogoSku => ({
+    sku: "X",
+    activo: true,
+    disponibilidad: "disponible",
+    precioCents: 100,
+    ...o,
+  });
+  assert.equal(motivoParaQuitar(undefined), "eliminado_no_existe");
+  assert.equal(motivoParaQuitar(entrada({ activo: false })), "eliminado_inactivo");
+  assert.equal(motivoParaQuitar(entrada({ disponibilidad: "agotado" })), "eliminado_agotado");
+  assert.equal(motivoParaQuitar(entrada({ disponibilidad: "bajo_pedido" })), null);
+  assert.equal(motivoParaQuitar(entrada({})), null);
 });

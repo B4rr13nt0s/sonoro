@@ -24,13 +24,22 @@ export const listCategories = adapter.listCategories;
 // generateStaticParams (necesita cada producto, no solo la primera página) y
 // /buscar (la búsqueda del lado del cliente necesita el catálogo completo en
 // memoria del navegador, filtra ahí, no aquí).
+//
+// Pide páginas del tamaño más grande posible: con el adaptador estático sale
+// todo en una vuelta. Con páginas de 24 hacía 14 llamadas por catálogo, y cada
+// una volvía a filtrar los 320 productos — en cada página del sitio, porque
+// app/layout.tsx la usa. El bucle sigue para un adaptador que tope el tamaño.
 export async function listAllProducts(
   filters: Omit<ProductFilters, "page" | "pageSize"> = {},
 ): Promise<Producto[]> {
   const productos: Producto[] = [];
   let page = 1;
   for (;;) {
-    const { items, total } = await listProducts({ ...filters, page });
+    const { items, total } = await listProducts({
+      ...filters,
+      page,
+      pageSize: Number.MAX_SAFE_INTEGER,
+    });
     productos.push(...items);
     if (productos.length >= total) break;
     page += 1;

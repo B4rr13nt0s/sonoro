@@ -12,8 +12,8 @@
 //   ref            SNR-XXXXX, 9 caracteres          → 32
 //   sku            el más largo del catálogo, 21    → 64
 //   nombre         el más largo del catálogo, 83    → 200
-//   items          el mensaje de WhatsApp ya corta  → 60
-//                  a ~15 líneas (CLAUDE.md)
+//   items          más líneas que productos activos → 400
+//                  tiene el catálogo (320)
 //   qty            nadie pide 1,000 de un subwoofer → 999
 //   unitPriceCents el producto más caro, Q 70,000   → Q 1,000,000
 //   userAgent      los reales rondan 120 caracteres → 400
@@ -28,7 +28,12 @@ import { z } from "zod";
 export const MAX_REF = 32;
 export const MAX_SKU = 64;
 export const MAX_NOMBRE = 200;
-export const MAX_ITEMS = 60;
+// Un carrito no puede tener más líneas que productos a la venta (una por
+// sku), y el mensaje de WhatsApp lleva siempre la lista completa. Hasta
+// septiembre de 2026 era 60, pensado para un mensaje que cortaba en ~15
+// líneas: un carrito de 61 productos salía completo por WhatsApp y se perdía
+// ENTERO del registro. decide.test.ts falla si el catálogo pasa este número.
+export const MAX_ITEMS = 400;
 export const MAX_QTY = 999;
 export const MAX_PRECIO_CENTS = 100_000_000;
 export const MAX_USER_AGENT = 400;
@@ -36,19 +41,22 @@ export const MAX_ESTADO = 40;
 
 /**
  * Tope del cuerpo del POST, en bytes. Con los topes de arriba, el cuerpo más
- * grande que puede ser VÁLIDO ronda los 23 KB; 64 KB deja margen para que un
- * cuerpo apenas pasado de la raya se rechace por esquema —no por tamaño— y el
- * corte por bytes quede solo para lo que es claramente un abuso.
+ * grande que puede ser VÁLIDO ronda los 150 KB (400 líneas con todos los
+ * campos al tope; un pedido real de 320 líneas pesa unos 45 KB); 256 KB deja
+ * margen para que un cuerpo apenas pasado de la raya se rechace por esquema
+ * —no por tamaño— y el corte por bytes quede solo para lo que es claramente
+ * un abuso. decide.test.ts comprueba que el cuerpo válido más grande entra.
  */
-export const MAX_BODY_BYTES = 64 * 1024;
+export const MAX_BODY_BYTES = 256 * 1024;
 
 export const QuoteLogItemSchema = z.object({
   sku: z.string().max(MAX_SKU),
   nombre: z.string().max(MAX_NOMBRE),
   qty: z.number().int().positive().max(MAX_QTY),
   unitPriceCents: z.number().int().nonnegative().max(MAX_PRECIO_CENTS),
-  // La marca de la línea —«agotado», «bajo pedido»— tal como sale en el
-  // mensaje de WhatsApp, solo en lo que no está disponible: la hoja tiene que
+  // La marca de la línea —hoy «bajo pedido»; lo agotado no se puede pedir—
+  // tal como sale en el mensaje de WhatsApp, solo en lo que no está
+  // disponible: la hoja tiene que
   // mostrar qué líneas esperan confirmación de existencias. Texto con tope y
   // no un enum a propósito: un valor inesperado acá no puede tirar el
   // registro del pedido entero. Opcional para el bundle anterior.

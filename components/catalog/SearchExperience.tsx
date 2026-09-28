@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { ProductGrid } from "@/components/catalog/ProductGrid";
@@ -45,15 +46,35 @@ function puntuarRelevancia(producto: ProductoTarjeta, consultaNormalizada: strin
 }
 
 export function SearchExperience({ productos }: { productos: ProductoTarjeta[] }) {
-  const [borrador, setBorrador] = useState("");
-  const [consulta, setConsulta] = useState("");
+  // La consulta vive en la URL (`/buscar?q=memphis`), no en el estado: con
+  // ella solo en React, volver atrás desde un resultado dejaba la búsqueda en
+  // blanco —y la búsqueda es la ruta principal de navegación (CLAUDE.md §
+  // Patrones)—, y no se podía compartir. Mismo criterio que los filtros de
+  // los listados.
+  const consulta = (useSearchParams().get("q") ?? "").trim();
+  const [borrador, setBorrador] = useState(consulta);
   const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
   const [visibles, setVisibles] = useState(INCREMENTO);
 
-  function ejecutarBusqueda(valor: string) {
-    setConsulta(valor.trim());
+  // Si la consulta cambia desde afuera —atrás/adelante, o «Buscar» del
+  // encabezado, que lleva a /buscar sin `q`—, el campo y los filtros la
+  // siguen. Se ajusta durante el render, no en un efecto: es el patrón de
+  // React para derivar estado de algo que cambió.
+  const [consultaVista, setConsultaVista] = useState(consulta);
+  if (consulta !== consultaVista) {
+    setConsultaVista(consulta);
+    setBorrador(consulta);
     setCategoriaActiva(null);
     setVisibles(INCREMENTO);
+  }
+
+  function ejecutarBusqueda(valor: string) {
+    const q = valor.trim();
+    // replaceState y no pushState: cada búsqueda reemplaza a la anterior, así
+    // que atrás sale de /buscar en vez de recorrer cada consulta tecleada.
+    // Next sincroniza useSearchParams con la historia nativa, sin pedir la
+    // página de nuevo al servidor.
+    window.history.replaceState(null, "", q ? `/buscar?q=${encodeURIComponent(q)}` : "/buscar");
   }
 
   function alTecleo(evento: React.KeyboardEvent<HTMLInputElement>) {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 
 import { SearchExperience } from "@/components/catalog/SearchExperience";
 import { listAllProducts } from "@/lib/catalog/index.ts";
@@ -18,6 +19,11 @@ export const metadata: Metadata = metadataPagina({ ...TEXTOS_BUSCAR, ruta: "/bus
 // materia prima de los filtros— no se usan acá. Con el producto completo
 // eran 452 KB por visita.
 export default async function BuscarPage() {
+  // Por petición y no prerenderizada: SearchExperience lee `?q=` con
+  // useSearchParams, y en una página prerenderizada eso deja todo el bloque
+  // sin HTML hasta que corre el JavaScript. Así la búsqueda compartida o a la
+  // que se vuelve con atrás llega ya dibujada.
+  await connection();
   const productos = await listAllProducts({ activo: true });
 
   return (

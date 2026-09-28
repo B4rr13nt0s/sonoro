@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { perteneceACategoria } from "../categorias.ts";
-import { compararRelevancia } from "../orden.ts";
+import { compararPrecioAsc, compararPrecioDesc, compararRelevancia } from "../orden.ts";
 import { PAGE_SIZE_DEFECTO } from "../paginacion.ts";
 import {
   BrandsSchema,
@@ -28,34 +28,31 @@ const RUTA_TAXONOMY = path.join(RAIZ, "data", "taxonomy.json");
 // Cache en memoria del proceso: los JSON de data/ los regenera
 // scripts/import-catalog.ts como paso de build, no cambian mientras el
 // proceso corre. Evita releer y re-validar el archivo en cada llamada.
-let productosCache: Promise<Producto[]> | null = null;
-let brandsCache: Promise<Brand[]> | null = null;
-let categoriasCache: Promise<Categoria[]> | null = null;
-
-async function cargarProductos(): Promise<Producto[]> {
-  if (!productosCache) {
-    productosCache = readFile(RUTA_CATALOG, "utf-8").then((raw) =>
-      CatalogoSchema.parse(JSON.parse(raw)),
-    );
-  }
-  return productosCache;
+//
+// Lo que se guarda es la PROMESA, para que dos llamadas simultáneas no lean
+// el archivo dos veces — y por eso una lectura que falla se olvida: si se
+// quedara guardada rechazada, un error pasajero (EMFILE bajo carga) tumbaría
+// todas las páginas de esa instancia hasta que se reinicie.
+function enCache<T>(cargar: () => Promise<T>): () => Promise<T> {
+  let cache: Promise<T> | null = null;
+  return () => {
+    if (!cache) {
+      cache = cargar().catch((error: unknown) => {
+        cache = null;
+        throw error;
+      });
+    }
+    return cache;
+  };
 }
 
-async function cargarBrands(): Promise<Brand[]> {
-  if (!brandsCache) {
-    brandsCache = readFile(RUTA_BRANDS, "utf-8").then((raw) => BrandsSchema.parse(JSON.parse(raw)));
-  }
-  return brandsCache;
+async function leerJson(ruta: string): Promise<unknown> {
+  return JSON.parse(await readFile(ruta, "utf-8"));
 }
 
-async function cargarCategorias(): Promise<Categoria[]> {
-  if (!categoriasCache) {
-    categoriasCache = readFile(RUTA_TAXONOMY, "utf-8").then((raw) =>
-      CategoriasSchema.parse(JSON.parse(raw)),
-    );
-  }
-  return categoriasCache;
-}
+const cargarProductos = enCache(async () => CatalogoSchema.parse(await leerJson(RUTA_CATALOG)));
+const cargarBrands = enCache(async () => BrandsSchema.parse(await leerJson(RUTA_BRANDS)));
+const cargarCategorias = enCache(async () => CategoriasSchema.parse(await leerJson(RUTA_TAXONOMY)));
 
 async function getProduct(slug: string): Promise<Producto | null> {
   const productos = await cargarProductos();
@@ -91,9 +88,9 @@ async function listProducts(
   if (filters.orden === "relevancia") {
     filtrados.sort(compararRelevancia);
   } else if (filters.orden === "precio_asc") {
-    filtrados.sort((a, b) => a.precioCents - b.precioCents);
+    filtrados.sort(compararPrecioAsc);
   } else if (filters.orden === "precio_desc") {
-    filtrados.sort((a, b) => b.precioCents - a.precioCents);
+    filtrados.sort(compararPrecioDesc);
   }
 
   const total = filtrados.length;

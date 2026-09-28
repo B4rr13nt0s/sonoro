@@ -17,11 +17,13 @@ import { formatQ } from "../format/precio.ts";
 // llegaba sin productos. Un wa.me con 16 líneas pesa unos 3 KB y WhatsApp
 // lo abre sin problema.
 //
-// `disponibilidad` (por sku) marca al final de la línea lo que está agotado
-// o bajo pedido — `· bajo pedido` —, con el mismo texto que la etiqueta de
-// la ficha y del carrito: el cliente puede pedirlo igual, y el vendedor lo
-// ve sin tener que buscarlo. Lo disponible no lleva marca. Sin el mapa, el
-// mensaje sale como antes.
+// `disponibilidad` (por sku) marca al final de la línea lo que está bajo
+// pedido — `· bajo pedido` —, con el mismo texto que la etiqueta de la ficha
+// y del carrito: el cliente puede pedirlo igual, y el vendedor ve sin buscar
+// qué tiene que confirmar. Lo disponible no lleva marca. Lo agotado no llega
+// acá: no se agrega al carrito y reconcile() lo quita (lib/cart/reconcile.ts);
+// si un catálogo viejo lo colara, la marca sería `· agotado`, del mismo
+// marcaDisponibilidad(). Sin el mapa, el mensaje sale sin marcas.
 export function buildOrderMessage(params: {
   items: CartItem[];
   ref: string;

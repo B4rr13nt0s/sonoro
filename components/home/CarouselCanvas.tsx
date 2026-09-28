@@ -5,7 +5,13 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 import { MathUtils, Vector3, type Group } from "three";
 
-import { FRAME_HEIGHT, FRAME_RADIUS, MODEL_IDS, type ModelId } from "@/lib/models3d.ts";
+import {
+  FONDO_ESTUDIO_3D,
+  FRAME_HEIGHT,
+  FRAME_RADIUS,
+  MODEL_IDS,
+  type ModelId,
+} from "@/lib/models3d.ts";
 
 import { anguloDelCiclo, type FaseCarrusel } from "./ciclo.ts";
 import { ProductModel3D, preloadModel } from "./ProductModel3D";
@@ -236,7 +242,7 @@ function Escena({
             El contraste lo ponen los focos de abajo, no este gris: por eso
             conviene bajarlo y dejarlos brillantes, que es como se ilumina
             metal en un estudio de verdad. */}
-        <color attach="background" args={["#8e8e94"]} />
+        <color attach="background" args={[FONDO_ESTUDIO_3D]} />
         {/* Cenital ancha: el brillo largo que recorre las tapas metálicas. */}
         <Lightformer intensity={3.4} form="rect" position={[0, 6, 1]} scale={[12, 8, 1]} />
         {/* Principal, del lado de la cámara en la pose predeterminada

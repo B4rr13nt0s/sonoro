@@ -374,46 +374,55 @@ test("CartProvider: guarda los avisos al hidratar, los descarta y adopta los de 
     });
     assert.deepEqual(probeState.valor?.cambios, [precio]);
 
-    // Lo agotado no entra, aunque el botón no lo haya impedido.
+    // Lo que reconcile() quitaría no entra, aunque el botón no lo haya
+    // impedido — y addItem() lo dice, para que nadie confirme ni mida.
+    const nuevo = (sku: string) => ({
+      sku,
+      qty: 1,
+      unitPriceCents: 145000,
+      currency: "GTQ" as const,
+      nombreSnapshot: sku,
+      imagenSnapshot: null,
+    });
+    const aceptados: (boolean | undefined)[] = [];
     await act(async () => {
       probeState.valor?.descartarCambios();
-      probeState.valor?.addItem({
-        sku: "P1T-S",
-        qty: 1,
-        unitPriceCents: 145000,
-        currency: "GTQ",
-        nombreSnapshot: "P1T-S",
-        imagenSnapshot: null,
-      });
+      aceptados.push(probeState.valor?.addItem(nuevo("P1T-S")));
+      aceptados.push(probeState.valor?.addItem(nuevo("NO-EXISTE")));
     });
+    assert.deepEqual(aceptados, [false, false]);
     assert.deepEqual(
       probeState.valor?.items.map((i) => i.sku),
       ["SQ12-D2"],
     );
 
     // Otra pestaña, con un catálogo viejo, sí lo agregó y guardó el carrito:
-    // esta lo quita Y lo avisa, igual que al hidratar.
+    // esta lo quita y lo avisa...
     const conAgotado = JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) ?? "null");
-    conAgotado.items.push({
-      sku: "P1T-S",
-      qty: 1,
-      unitPriceCents: 145000,
-      currency: "GTQ",
-      nombreSnapshot: "P1T-S",
-      imagenSnapshot: null,
-      addedAt: CREADO,
-    });
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(conAgotado));
-    await act(async () => {
-      dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: CART_STORAGE_KEY }));
-    });
+    conAgotado.items.push({ ...nuevo("P1T-S"), addedAt: CREADO });
+    const guardarDeLaOtra = async () => {
+      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(conAgotado));
+      await act(async () => {
+        dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: CART_STORAGE_KEY }));
+      });
+    };
+    await guardarDeLaOtra();
     assert.deepEqual(
       probeState.valor?.items.map((i) => i.sku),
       ["SQ12-D2"],
     );
-    assert.deepEqual(probeState.valor?.cambios, [
-      { tipo: "eliminado_agotado", sku: "P1T-S", nombreSnapshot: "P1T-S" },
-    ]);
+    const agotado = { tipo: "eliminado_agotado", sku: "P1T-S", nombreSnapshot: "P1T-S" };
+    assert.deepEqual(probeState.valor?.cambios, [agotado]);
+    // ...pero solo acá: la otra todavía lo tiene en su carrito, y si leyera
+    // el aviso diría «Se quitó X» con X a la vista.
+    assert.deepEqual(loadCambiosPendientes(CREADO), []);
+
+    // Cada escritura de la otra trae la misma corrección: se avisa una vez.
+    await act(async () => {
+      probeState.valor?.descartarCambios();
+    });
+    await guardarDeLaOtra();
+    assert.deepEqual(probeState.valor?.cambios, [], "no vuelve a avisar lo ya visto");
 
     await act(async () => {
       root.unmount();

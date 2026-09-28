@@ -47,6 +47,19 @@ const ENCABEZADOS = [
 const COLUMNAS_DE_TEXTO = [2, 5, 6, 7];
 
 /**
+ * Topes de las celdas de texto. Iguales o mayores que los del sitio
+ * (lib/quoteLog/types.ts: sku 64, nombre 200), y los de Productos y SKUs muy
+ * por encima de un pedido real: hasta septiembre de 2026 Productos se cortaba
+ * en 2,000 caracteres —unas 25 líneas— sin aviso, y Unidades y Subtotal
+ * contaban productos que la celda ya no mostraba. Una celda de Sheets admite
+ * 50,000 caracteres; si igual se llegara al tope, `cortar` lo dice.
+ */
+const MAX_SKU = 64;
+const MAX_NOMBRE = 200;
+const MAX_PRODUCTOS = 45000;
+const MAX_SKUS = 20000;
+
+/**
  * Ejecutar una sola vez, a mano, desde el editor.
  * Genera el token compartido y prepara la hoja.
  */
@@ -117,6 +130,29 @@ function obtenerHoja() {
 function sanear(valor, maximo) {
   const texto = String(valor == null ? '' : valor).slice(0, maximo || 200);
   return /^[=+\-@\t\r]/.test(texto) ? "'" + texto : texto;
+}
+
+/**
+ * Une `partes` con `separador` sin pasar de `maximo` caracteres, cortando
+ * entre partes y nunca a mitad de una. Si algo no entra, el final lo dice
+ * («… y 3 más»): un pedido incompleto en la hoja tiene que verse incompleto,
+ * no parecer entero.
+ */
+function cortar(partes, separador, maximo) {
+  const texto = partes.join(separador);
+  if (texto.length <= maximo) return texto;
+  const entran = [];
+  let largo = 0;
+  for (let i = 0; i < partes.length; i++) {
+    const aviso = separador + '… y ' + (partes.length - i) + ' más';
+    const suma = largo + (entran.length ? separador.length : 0) + partes[i].length;
+    if (suma + aviso.length > maximo) {
+      return entran.join(separador) + aviso;
+    }
+    entran.push(partes[i]);
+    largo = suma;
+  }
+  return entran.join(separador);
 }
 
 /**
@@ -213,13 +249,13 @@ function doPost(e) {
 
     for (let i = 0; i < items.length; i++) {
       const it = items[i] || {};
-      const sku = String(it.sku || '?').slice(0, 40);
-      const nombre = String(it.nombre || '').slice(0, 120);
+      const sku = String(it.sku || '?').slice(0, MAX_SKU);
+      const nombre = String(it.nombre || '').slice(0, MAX_NOMBRE);
       const qty = Number(it.qty) || 0;
       const cents = Number(it.unitPriceCents) || 0;
-      // La misma marca que la línea del mensaje de WhatsApp («agotado»,
-      // «bajo pedido»), que el sitio ya manda armada en `estado`: lo agotado
-      // o bajo pedido espera confirmación de existencias. Lo disponible no
+      // La misma marca que la línea del mensaje de WhatsApp —hoy «bajo
+      // pedido»; lo agotado ya no se puede pedir—, que el sitio manda armada
+      // en `estado`: espera confirmación de existencias. Lo disponible no
       // trae el campo y no lleva marca.
       const estado = String(it.estado || '').slice(0, 40);
       const marca = estado ? ' · ' + estado : '';
@@ -248,8 +284,8 @@ function doPost(e) {
       sanear(ref, 40),
       unidades,
       subtotalCents / 100,
-      sanear(lineas.join('\n'), 2000),
-      sanear(skus.join(', '), 400),
+      sanear(cortar(lineas, '\n', MAX_PRODUCTOS), MAX_PRODUCTOS),
+      sanear(cortar(skus, ', ', MAX_SKUS), MAX_SKUS),
       sanear(origen, 240),
     ];
 

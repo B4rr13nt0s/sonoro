@@ -150,3 +150,10 @@ export const modelUrl = (id: ModelId) => `/models/${MODELS[id].archivo}`;
 // El decoder de Draco es local (public/draco/), no el CDN de gstatic.com:
 // es un tercero en el critical path del home.
 export const DRACO_DECODER_PATH = "/draco/";
+
+// Gris del ciclorama del estudio 3D (<color attach="background"> en
+// CarouselCanvas.tsx). Es la perilla que más pesa en cómo se ve el metal —
+// CLAUDE.md § Estudio sin CDN—, así que vive con nombre acá y no escrita a
+// mano en el componente (CLAUDE.md § Sistema visual). No es un token de
+// interfaz: three.js no lee las variables CSS de globals.css.
+export const FONDO_ESTUDIO_3D = "#8e8e94";

@@ -24,7 +24,7 @@ import {
 } from "react";
 
 import { cartReducer } from "./reducer.ts";
-import { reconcile, type CambioCarrito } from "./reconcile.ts";
+import { acumularCambios, motivoParaQuitar, reconcile, type CambioCarrito } from "./reconcile.ts";
 import {
   agregarCambiosPendientes,
   CAMBIOS_STORAGE_KEY,
@@ -74,7 +74,10 @@ type CartContextValue = {
   // durante SSR, así que el primer render del cliente es inevitablemente
   // vacío).
   hydrated: boolean;
-  addItem: (item: NuevoItem) => void;
+  // Devuelve si lo agregó: no agrega lo que reconcile() quitaría en la
+  // carga siguiente (agotado, inactivo, fuera del catálogo), y quien llama
+  // necesita saberlo para no confirmar ni medir un agregado que no pasó.
+  addItem: (item: NuevoItem) => boolean;
   removeItem: (sku: string) => void;
   setQty: (sku: string, qty: number) => void;
   clear: () => void;
@@ -142,6 +145,15 @@ export function CartProvider({
   // cada una corregiría a su versión y lo reescribiría, pisándose en bucle.
   // Se guarda recién cuando esta pestaña cambie algo por su cuenta.
   const vinoDeOtraPestaña = useRef(false);
+  // Lo que ESTA pestaña corrigió del carrito que guardó otra (una abierta
+  // antes de un deploy puede agregar algo que acá ya está agotado). Se avisa
+  // solo acá, en memoria, y no en localStorage: la otra pestaña, con su
+  // catálogo, todavía tiene ese producto en su carrito, y si leyera el aviso
+  // diría «Se quitó X» con X a la vista — y lo daría por visto por esta.
+  // Como no se guarda el carrito corregido, cada escritura de la otra trae
+  // la misma corrección: `yaAvisadas` evita avisarla más de una vez.
+  const [locales, setLocales] = useState<CambioCarrito[]>([]);
+  const yaAvisadas = useRef(new Set<string>());
   // El listener de abajo vive mientras dure la pestaña; lee el carrito
   // actual de acá para saber de qué carrito son los avisos que llegan.
   const createdAtActual = useRef(cart.createdAt);
@@ -164,13 +176,13 @@ export function CartProvider({
       const { cart: reconciliado, cambios: corregidos } = reconcile(loadCart(), catalogo);
       vinoDeOtraPestaña.current = true;
       dispatch({ type: "hydrate", cart: reconciliado });
-      // Lo que esta pestaña corrigió de lo que trajo la otra —una abierta
-      // antes de un deploy puede agregar algo que acá ya está agotado— se
-      // avisa igual que al hidratar. Guardar los avisos no provoca el bucle
-      // de arriba: la otra pestaña solo los lee, no vuelve a reconciliar.
-      if (corregidos.length > 0) {
-        setCambios(agregarCambiosPendientes(reconciliado.createdAt, corregidos, Date.now()));
-      }
+      const nuevos = corregidos.filter((cambio) => {
+        const clave = JSON.stringify([reconciliado.createdAt, cambio]);
+        if (yaAvisadas.current.has(clave)) return false;
+        yaAvisadas.current.add(clave);
+        return true;
+      });
+      if (nuevos.length > 0) setLocales((previos) => acumularCambios(previos, nuevos));
     }
     window.addEventListener("storage", alCambiarEnOtraPestaña);
     return () => window.removeEventListener("storage", alCambiarEnOtraPestaña);
@@ -190,26 +202,36 @@ export function CartProvider({
     [catalogo],
   );
 
+  const catalogoPorSku = useMemo(() => new Map(catalogo.map((p) => [p.sku, p])), [catalogo]);
+
   const descartarCambios = useCallback(() => {
     marcarCambiosVistos(Date.now());
+    setLocales([]);
     setCambios([]);
   }, []);
+
+  // Los guardados (de cualquier pestaña) más los que solo son de esta.
+  const todosLosCambios = useMemo(
+    () => acumularCambios(cambios ?? [], locales),
+    [cambios, locales],
+  );
 
   const value: CartContextValue = {
     items: cart.items,
     createdAt: cart.createdAt,
     subtotalCents: subtotalCents(cart.items),
     itemCount: itemCount(cart.items),
-    cambios: cambios ?? [],
+    cambios: todosLosCambios,
     descartarCambios,
     disponibilidadPorSku,
     hydrated,
-    // Lo agotado no se agrega, aunque un botón se olvide de impedirlo: la
-    // regla vive acá y no solo en la interfaz, igual que el tope por línea
-    // vive en el reducer (CLAUDE.md § Modelo de conversión).
+    // Lo que reconcile() quitaría no entra, aunque un botón se olvide de
+    // impedirlo: la regla vive acá y no solo en la interfaz, igual que el
+    // tope por línea vive en el reducer (CLAUDE.md § Modelo de conversión).
     addItem: (item) => {
-      if (disponibilidadPorSku[item.sku] === "agotado") return;
+      if (motivoParaQuitar(catalogoPorSku.get(item.sku)) !== null) return false;
       dispatch({ type: "add", item, now: new Date().toISOString() });
+      return true;
     },
     removeItem: (sku) => dispatch({ type: "remove", sku, now: new Date().toISOString() }),
     setQty: (sku, qty) => dispatch({ type: "setQty", sku, qty, now: new Date().toISOString() }),

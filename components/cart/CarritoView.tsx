@@ -216,9 +216,10 @@ function CartLineItem({
           <span className="text-texto-terciario font-mono text-[10px] tracking-[0.14em] uppercase">
             {item.sku}
           </span>
-          {/* Agotado o bajo pedido se puede pedir igual —el vendedor
-              confirma—, pero el cliente tiene que verlo antes de mandar el
-              pedido. La misma píldora que la ficha. */}
+          {/* Bajo pedido se puede pedir igual —el vendedor confirma—, pero
+              el cliente tiene que verlo antes de mandar el pedido. La misma
+              píldora que la ficha. (Lo agotado no llega acá: reconcile() lo
+              quita del carrito.) */}
           <PildoraDisponibilidad disponibilidad={disponibilidad} />
         </div>
         <div className="flex items-start justify-between gap-3">

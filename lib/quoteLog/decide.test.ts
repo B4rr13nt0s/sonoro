@@ -1,8 +1,18 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import { decideQuoteLogForward } from "./decide.ts";
-import { MAX_ESTADO, MAX_ITEMS, MAX_NOMBRE, MAX_QTY, MAX_REF, MAX_USER_AGENT } from "./types.ts";
+import {
+  MAX_BODY_BYTES,
+  MAX_ESTADO,
+  MAX_ITEMS,
+  MAX_NOMBRE,
+  MAX_QTY,
+  MAX_REF,
+  MAX_SKU,
+  MAX_USER_AGENT,
+} from "./types.ts";
 
 const BODY_VALIDO = {
   ref: "SNR-A7K2M",
@@ -145,4 +155,32 @@ test("decideQuoteLogForward: un estado que no se esperaba no tira el pedido", ()
   // una marca rara en la hoja, nunca un pedido sin registrar.
   const body = { ...BODY_VALIDO, items: [{ ...BODY_VALIDO.items[0], estado: "disponible" }] };
   assert.equal(decideQuoteLogForward(body, ENV_COMPLETO).forward, true);
+});
+
+test("MAX_ITEMS: un carrito con todo el catálogo activo se registra", () => {
+  // Un carrito tiene como mucho una línea por producto a la venta. Si el
+  // catálogo crece por encima del tope, el pedido más grande se perdería
+  // entero del registro: hay que subir MAX_ITEMS (y revisar MAX_BODY_BYTES).
+  const catalogo = JSON.parse(
+    readFileSync(new URL("../../data/catalog.json", import.meta.url), "utf-8"),
+  ) as { activo: boolean }[];
+  const activos = catalogo.filter((p) => p.activo).length;
+  assert.ok(activos <= MAX_ITEMS, `${activos} productos activos > MAX_ITEMS (${MAX_ITEMS})`);
+});
+
+test("MAX_BODY_BYTES: el cuerpo válido más grande entra", () => {
+  const alTope = {
+    ref: "R".repeat(MAX_REF),
+    items: Array.from({ length: MAX_ITEMS }, () => ({
+      sku: "S".repeat(MAX_SKU),
+      nombre: "N".repeat(MAX_NOMBRE),
+      qty: MAX_QTY,
+      unitPriceCents: 100_000_000,
+      estado: "E".repeat(MAX_ESTADO),
+    })),
+    subtotalCents: 100_000_000,
+    userAgent: "U".repeat(MAX_USER_AGENT),
+  };
+  assert.equal(decideQuoteLogForward(alTope, ENV_COMPLETO).forward, true);
+  assert.ok(Buffer.byteLength(JSON.stringify(alTope), "utf8") <= MAX_BODY_BYTES);
 });

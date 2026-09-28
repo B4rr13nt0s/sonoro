@@ -1,5 +1,5 @@
-// El comparador del orden "relevancia" (OrdenSchema en types.ts), que es con
-// el que abren todos los listados.
+// Los comparadores de los órdenes de listado (OrdenSchema en types.ts):
+// «relevancia», con el que abren todos, y los dos por precio.
 //
 // Archivo aparte, sin dependencias y sin acceso a disco, por dos razones:
 //
@@ -27,5 +27,21 @@ import type { ProductoTarjeta } from "./types.ts";
 export function compararRelevancia(a: ProductoTarjeta, b: ProductoTarjeta): number {
   if (a.destacado !== b.destacado) return a.destacado ? -1 : 1;
   if (a.precioCents !== b.precioCents) return b.precioCents - a.precioCents;
+  return compararSku(a, b);
+}
+
+// Los órdenes por precio, con el mismo desempate por sku: sin él, dos
+// productos del mismo precio (los adaptadores de Q 30 de una marca) quedaban
+// en el orden de catalog.json, que cambia al reordenar el libro — y un
+// enlace a `?page=2` compartido mostraba otros productos después de un build.
+export function compararPrecioAsc(a: ProductoTarjeta, b: ProductoTarjeta): number {
+  return a.precioCents - b.precioCents || compararSku(a, b);
+}
+
+export function compararPrecioDesc(a: ProductoTarjeta, b: ProductoTarjeta): number {
+  return b.precioCents - a.precioCents || compararSku(a, b);
+}
+
+function compararSku(a: ProductoTarjeta, b: ProductoTarjeta): number {
   return a.sku < b.sku ? -1 : a.sku > b.sku ? 1 : 0;
 }
