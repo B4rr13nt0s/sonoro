@@ -78,7 +78,7 @@ export function AgregarConCantidad({
         onClick={agregar}
         disabled={inactivo}
         aria-live="polite"
-        className={inactivo ? claseBotonInactivo() : claseBoton(variante)}
+        className={inactivo ? claseBotonInactivo(variante) : claseBoton(variante)}
       >
         {agotado
           ? "Agotado"

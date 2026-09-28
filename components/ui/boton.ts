@@ -41,8 +41,15 @@ export function claseBoton(variante: VarianteBoton, tamano: TamanoBoton = "norma
 // El botón que no responde: el de «Agregar al carrito» mientras muestra su
 // confirmación, y el de un producto agotado. Negro al 60 % sobre blanco
 // (≈ #6D6D6D, 5.0:1 contra el texto blanco) y sin el hover ni el `scale` de
-// BASE: si no responde, no debe parecer que responde. Es el mismo en las dos
-// variantes a propósito — deshabilitado ya no hay jerarquía que marcar.
-export function claseBotonInactivo(tamano: TamanoBoton = "normal"): string {
-  return `flex-1 cursor-default rounded-full border border-transparent text-center ${TAMANOS[tamano]} bg-negro/60 text-white`;
+// BASE: si no responde, no debe parecer que responde. El mismo gris en las
+// dos variantes —deshabilitado ya no hay jerarquía que marcar—, pero con el
+// BORDE de la variante que reemplaza: la secundaria mide 1 px más por lado,
+// y sin respetarlo el botón cambiaba de alto al pasar a gris y empujaba lo
+// que tiene debajo.
+export function claseBotonInactivo(
+  variante: VarianteBoton,
+  tamano: TamanoBoton = "normal",
+): string {
+  const borde = variante === "principal" ? "" : " border border-transparent";
+  return `flex-1 cursor-default rounded-full text-center ${TAMANOS[tamano]} bg-negro/60 text-white${borde}`;
 }

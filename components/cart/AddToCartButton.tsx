@@ -32,7 +32,7 @@ export function AddToCartButton({
   // que en la ficha (AgregarConCantidad).
   if (producto.disponibilidad === "agotado") {
     return (
-      <button type="button" disabled className={claseBotonInactivo(tamano)}>
+      <button type="button" disabled className={claseBotonInactivo(variante, tamano)}>
         Agotado
       </button>
     );

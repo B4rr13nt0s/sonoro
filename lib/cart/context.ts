@@ -161,9 +161,16 @@ export function CartProvider({
         setCambios(loadCambiosPendientes(createdAtActual.current));
       }
       if (evento.key !== CART_STORAGE_KEY && evento.key !== null) return;
-      const { cart: reconciliado } = reconcile(loadCart(), catalogo);
+      const { cart: reconciliado, cambios: corregidos } = reconcile(loadCart(), catalogo);
       vinoDeOtraPestaña.current = true;
       dispatch({ type: "hydrate", cart: reconciliado });
+      // Lo que esta pestaña corrigió de lo que trajo la otra —una abierta
+      // antes de un deploy puede agregar algo que acá ya está agotado— se
+      // avisa igual que al hidratar. Guardar los avisos no provoca el bucle
+      // de arriba: la otra pestaña solo los lee, no vuelve a reconciliar.
+      if (corregidos.length > 0) {
+        setCambios(agregarCambiosPendientes(reconciliado.createdAt, corregidos, Date.now()));
+      }
     }
     window.addEventListener("storage", alCambiarEnOtraPestaña);
     return () => window.removeEventListener("storage", alCambiarEnOtraPestaña);
@@ -197,7 +204,13 @@ export function CartProvider({
     descartarCambios,
     disponibilidadPorSku,
     hydrated,
-    addItem: (item) => dispatch({ type: "add", item, now: new Date().toISOString() }),
+    // Lo agotado no se agrega, aunque un botón se olvide de impedirlo: la
+    // regla vive acá y no solo en la interfaz, igual que el tope por línea
+    // vive en el reducer (CLAUDE.md § Modelo de conversión).
+    addItem: (item) => {
+      if (disponibilidadPorSku[item.sku] === "agotado") return;
+      dispatch({ type: "add", item, now: new Date().toISOString() });
+    },
     removeItem: (sku) => dispatch({ type: "remove", sku, now: new Date().toISOString() }),
     setQty: (sku, qty) => dispatch({ type: "setQty", sku, qty, now: new Date().toISOString() }),
     clear: () => dispatch({ type: "clear", now: new Date().toISOString() }),

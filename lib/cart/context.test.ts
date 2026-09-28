@@ -324,6 +324,7 @@ test("CartProvider: guarda los avisos al hidratar, los descarta y adopta los de 
     );
     const catalogo: CatalogoSku[] = [
       { sku: "SQ12-D2", activo: true, disponibilidad: "disponible", precioCents: 245000 },
+      { sku: "P1T-S", activo: true, disponibilidad: "agotado", precioCents: 145000 },
     ];
     const precio = {
       tipo: "precio_actualizado" as const,
@@ -372,6 +373,47 @@ test("CartProvider: guarda los avisos al hidratar, los descarta y adopta los de 
       );
     });
     assert.deepEqual(probeState.valor?.cambios, [precio]);
+
+    // Lo agotado no entra, aunque el botón no lo haya impedido.
+    await act(async () => {
+      probeState.valor?.descartarCambios();
+      probeState.valor?.addItem({
+        sku: "P1T-S",
+        qty: 1,
+        unitPriceCents: 145000,
+        currency: "GTQ",
+        nombreSnapshot: "P1T-S",
+        imagenSnapshot: null,
+      });
+    });
+    assert.deepEqual(
+      probeState.valor?.items.map((i) => i.sku),
+      ["SQ12-D2"],
+    );
+
+    // Otra pestaña, con un catálogo viejo, sí lo agregó y guardó el carrito:
+    // esta lo quita Y lo avisa, igual que al hidratar.
+    const conAgotado = JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) ?? "null");
+    conAgotado.items.push({
+      sku: "P1T-S",
+      qty: 1,
+      unitPriceCents: 145000,
+      currency: "GTQ",
+      nombreSnapshot: "P1T-S",
+      imagenSnapshot: null,
+      addedAt: CREADO,
+    });
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(conAgotado));
+    await act(async () => {
+      dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: CART_STORAGE_KEY }));
+    });
+    assert.deepEqual(
+      probeState.valor?.items.map((i) => i.sku),
+      ["SQ12-D2"],
+    );
+    assert.deepEqual(probeState.valor?.cambios, [
+      { tipo: "eliminado_agotado", sku: "P1T-S", nombreSnapshot: "P1T-S" },
+    ]);
 
     await act(async () => {
       root.unmount();
