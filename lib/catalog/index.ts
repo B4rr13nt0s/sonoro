@@ -41,7 +41,10 @@ export async function listAllProducts(
       pageSize: Number.MAX_SAFE_INTEGER,
     });
     productos.push(...items);
-    if (productos.length >= total) break;
+    // Una página vacía también corta: un adaptador que tope el tamaño pero
+    // calcule el desplazamiento con el tamaño pedido devolvería [] desde la
+    // página 2, y sin esto el bucle no terminaría nunca.
+    if (productos.length >= total || items.length === 0) break;
     page += 1;
   }
   return productos;

@@ -45,36 +45,68 @@ function puntuarRelevancia(producto: ProductoTarjeta, consultaNormalizada: strin
   return 30; // sku.includes — ya se sabe que coincide() dio true en algún campo
 }
 
+/**
+ * Lee la búsqueda de la URL. Aparte de `Busqueda` para que app/buscar/page.tsx
+ * pueda envolver SOLO esto en un <Suspense>: useSearchParams no existe al
+ * prerenderizar, y el fallback dibuja la misma búsqueda vacía mientras tanto.
+ */
 export function SearchExperience({ productos }: { productos: ProductoTarjeta[] }) {
-  // La consulta vive en la URL (`/buscar?q=memphis`), no en el estado: con
-  // ella solo en React, volver atrás desde un resultado dejaba la búsqueda en
-  // blanco —y la búsqueda es la ruta principal de navegación (CLAUDE.md §
-  // Patrones)—, y no se podía compartir. Mismo criterio que los filtros de
-  // los listados.
-  const consulta = (useSearchParams().get("q") ?? "").trim();
+  return <Busqueda productos={productos} busqueda={useSearchParams().toString()} />;
+}
+
+/** «Ver más» empieza en INCREMENTO; lo que no sea un entero mayor, también. */
+function leerVisibles(valor: string | null): number {
+  const numero = Number(valor);
+  return Number.isInteger(numero) && numero > INCREMENTO ? numero : INCREMENTO;
+}
+
+/**
+ * La búsqueda entera vive en la URL —`/buscar?q=memphis&categoria=Amplificadores&ver=24`—,
+ * no en el estado: con ella solo en React, volver atrás desde un resultado la
+ * dejaba en blanco —y la búsqueda es la ruta principal de navegación
+ * (CLAUDE.md § Patrones)—, y no se podía compartir. Con solo la consulta en
+ * la URL, el filtro por categoría y los «Ver más» se perdían igual, y el
+ * resultado del que se volvía ya no estaba en pantalla.
+ */
+export function Busqueda({
+  productos,
+  busqueda,
+}: {
+  productos: ProductoTarjeta[];
+  /** Los query params actuales, como texto (`q=memphis&ver=16`). */
+  busqueda: string;
+}) {
+  const params = useMemo(() => new URLSearchParams(busqueda), [busqueda]);
+  const consulta = (params.get("q") ?? "").trim();
+  const categoriaPedida = params.get("categoria");
+  const visibles = leerVisibles(params.get("ver"));
   const [borrador, setBorrador] = useState(consulta);
-  const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
-  const [visibles, setVisibles] = useState(INCREMENTO);
 
   // Si la consulta cambia desde afuera —atrás/adelante, o «Buscar» del
-  // encabezado, que lleva a /buscar sin `q`—, el campo y los filtros la
-  // siguen. Se ajusta durante el render, no en un efecto: es el patrón de
-  // React para derivar estado de algo que cambió.
+  // encabezado, que lleva a /buscar sin `q`—, el campo la sigue. Se ajusta
+  // durante el render, no en un efecto: es el patrón de React para derivar
+  // estado de algo que cambió.
   const [consultaVista, setConsultaVista] = useState(consulta);
   if (consulta !== consultaVista) {
     setConsultaVista(consulta);
     setBorrador(consulta);
-    setCategoriaActiva(null);
-    setVisibles(INCREMENTO);
+  }
+
+  // replaceState y no pushState: cada cambio reemplaza al anterior, así que
+  // atrás sale de /buscar en vez de recorrer cada consulta o filtro. Next
+  // sincroniza useSearchParams con la historia nativa, sin pedir la página de
+  // nuevo al servidor. Sin consulta no hay filtros que guardar.
+  function irA({ q, categoria, ver }: { q: string; categoria?: string | null; ver?: number }) {
+    const query = new URLSearchParams();
+    if (q) query.set("q", q);
+    if (q && categoria) query.set("categoria", categoria);
+    if (q && ver && ver > INCREMENTO) query.set("ver", String(ver));
+    const texto = query.toString();
+    window.history.replaceState(null, "", texto ? `/buscar?${texto}` : "/buscar");
   }
 
   function ejecutarBusqueda(valor: string) {
-    const q = valor.trim();
-    // replaceState y no pushState: cada búsqueda reemplaza a la anterior, así
-    // que atrás sale de /buscar en vez de recorrer cada consulta tecleada.
-    // Next sincroniza useSearchParams con la historia nativa, sin pedir la
-    // página de nuevo al servidor.
-    window.history.replaceState(null, "", q ? `/buscar?q=${encodeURIComponent(q)}` : "/buscar");
+    irA({ q: valor.trim() });
   }
 
   function alTecleo(evento: React.KeyboardEvent<HTMLInputElement>) {
@@ -108,6 +140,10 @@ export function SearchExperience({ productos }: { productos: ProductoTarjeta[] }
     return conteo;
   }, [resultados]);
 
+  // Una categoría de la URL que no está entre los resultados (enlace viejo,
+  // o una consulta nueva) no filtra: se ve «Todo».
+  const categoriaActiva =
+    categoriaPedida && conteoPorCategoria.has(categoriaPedida) ? categoriaPedida : null;
   const resultadosFiltrados = categoriaActiva
     ? resultados.filter((producto) => producto.categoria === categoriaActiva)
     : resultados;
@@ -164,10 +200,7 @@ export function SearchExperience({ productos }: { productos: ProductoTarjeta[] }
               <div className="flex flex-wrap items-center gap-2.5 text-[13px]">
                 <button
                   type="button"
-                  onClick={() => {
-                    setCategoriaActiva(null);
-                    setVisibles(INCREMENTO);
-                  }}
+                  onClick={() => irA({ q: consulta })}
                   className={`rounded-full border px-4.5 py-3 lg:py-2 ${
                     !categoriaActiva
                       ? "border-negro bg-negro text-white"
@@ -180,10 +213,7 @@ export function SearchExperience({ productos }: { productos: ProductoTarjeta[] }
                   <button
                     key={categoria}
                     type="button"
-                    onClick={() => {
-                      setCategoriaActiva(categoria);
-                      setVisibles(INCREMENTO);
-                    }}
+                    onClick={() => irA({ q: consulta, categoria })}
                     className={`rounded-full border px-4.5 py-3 lg:py-2 ${
                       categoriaActiva === categoria
                         ? "border-negro bg-negro text-white"
@@ -218,7 +248,9 @@ export function SearchExperience({ productos }: { productos: ProductoTarjeta[] }
               <div className="flex justify-center pt-10">
                 <button
                   type="button"
-                  onClick={() => setVisibles((valor) => valor + INCREMENTO)}
+                  onClick={() =>
+                    irA({ q: consulta, categoria: categoriaActiva, ver: visibles + INCREMENTO })
+                  }
                   className="border-borde-boton rounded-full border px-7 py-3.5 text-[15px]"
                 >
                   Ver {Math.min(restantes, INCREMENTO)} resultados más

@@ -144,7 +144,9 @@ function cortar(partes, separador, maximo) {
   const entran = [];
   let largo = 0;
   for (let i = 0; i < partes.length; i++) {
-    const aviso = separador + '… y ' + (partes.length - i) + ' más';
+    // Sin separador delante si todavía no entró nada: la celda no puede
+    // empezar con una línea en blanco.
+    const aviso = (entran.length ? separador : '') + '… y ' + (partes.length - i) + ' más';
     const suma = largo + (entran.length ? separador.length : 0) + partes[i].length;
     if (suma + aviso.length > maximo) {
       return entran.join(separador) + aviso;

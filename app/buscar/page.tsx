@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { connection } from "next/server";
+import { Suspense } from "react";
 
-import { SearchExperience } from "@/components/catalog/SearchExperience";
+import { Busqueda, SearchExperience } from "@/components/catalog/SearchExperience";
 import { listAllProducts } from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 import { TEXTOS_BUSCAR } from "@/lib/seo/textos.ts";
@@ -19,27 +19,29 @@ export const metadata: Metadata = metadataPagina({ ...TEXTOS_BUSCAR, ruta: "/bus
 // materia prima de los filtros— no se usan acá. Con el producto completo
 // eran 452 KB por visita.
 export default async function BuscarPage() {
-  // Por petición y no prerenderizada: SearchExperience lee `?q=` con
-  // useSearchParams, y en una página prerenderizada eso deja todo el bloque
-  // sin HTML hasta que corre el JavaScript. Así la búsqueda compartida o a la
-  // que se vuelve con atrás llega ya dibujada.
-  await connection();
   const productos = await listAllProducts({ activo: true });
+  const tarjetas = productos.map((producto) => ({
+    sku: producto.sku,
+    slug: producto.slug,
+    nombre: producto.nombre,
+    marca: producto.marca,
+    categoria: producto.categoria,
+    precioCents: producto.precioCents,
+    disponibilidad: producto.disponibilidad,
+    destacado: producto.destacado,
+    imagenes: producto.imagenes,
+    specsDestacadas: producto.specsDestacadas,
+  }));
 
+  // Prerenderizada: la búsqueda lee `?q=` con useSearchParams, que no existe
+  // al prerenderizar, así que SOLO ese bloque va en un <Suspense>. El HTML
+  // estático trae el fallback —la misma búsqueda, vacía— y el navegador la
+  // cambia por la de la URL al cargar. Sin el Suspense la página entera
+  // tendría que armarse en cada visita, y es la más visitada después del
+  // inicio: la ruta principal de navegación.
   return (
-    <SearchExperience
-      productos={productos.map((producto) => ({
-        sku: producto.sku,
-        slug: producto.slug,
-        nombre: producto.nombre,
-        marca: producto.marca,
-        categoria: producto.categoria,
-        precioCents: producto.precioCents,
-        disponibilidad: producto.disponibilidad,
-        destacado: producto.destacado,
-        imagenes: producto.imagenes,
-        specsDestacadas: producto.specsDestacadas,
-      }))}
-    />
+    <Suspense fallback={<Busqueda productos={tarjetas} busqueda="" />}>
+      <SearchExperience productos={tarjetas} />
+    </Suspense>
   );
 }

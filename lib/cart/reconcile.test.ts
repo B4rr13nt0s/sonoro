@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { acumularCambios, motivoParaQuitar, reconcile, type CambioCarrito } from "./reconcile.ts";
+import { acumularCambios, reconcile, revisarEntrada, type CambioCarrito } from "./reconcile.ts";
 import type { Cart, CartItem, CatalogoSku } from "./types.ts";
 
 function item(overrides: Partial<CartItem> = {}): CartItem {
@@ -164,7 +164,7 @@ test("acumularCambios: skus distintos se conservan en orden", () => {
   ]);
 });
 
-test("motivoParaQuitar: la regla que comparten reconcile() y addItem()", () => {
+test("revisarEntrada: la regla que comparten reconcile() y addItem()", () => {
   const entrada = (o: Partial<CatalogoSku>): CatalogoSku => ({
     sku: "X",
     activo: true,
@@ -172,9 +172,13 @@ test("motivoParaQuitar: la regla que comparten reconcile() y addItem()", () => {
     precioCents: 100,
     ...o,
   });
-  assert.equal(motivoParaQuitar(undefined), "eliminado_no_existe");
-  assert.equal(motivoParaQuitar(entrada({ activo: false })), "eliminado_inactivo");
-  assert.equal(motivoParaQuitar(entrada({ disponibilidad: "agotado" })), "eliminado_agotado");
-  assert.equal(motivoParaQuitar(entrada({ disponibilidad: "bajo_pedido" })), null);
-  assert.equal(motivoParaQuitar(entrada({})), null);
+  assert.deepEqual(revisarEntrada(undefined), { motivo: "eliminado_no_existe" });
+  assert.deepEqual(revisarEntrada(entrada({ activo: false })), { motivo: "eliminado_inactivo" });
+  assert.deepEqual(revisarEntrada(entrada({ disponibilidad: "agotado" })), {
+    motivo: "eliminado_agotado",
+  });
+  const bajoPedido = entrada({ disponibilidad: "bajo_pedido" });
+  assert.deepEqual(revisarEntrada(bajoPedido), { entrada: bajoPedido });
+  const disponible = entrada({});
+  assert.deepEqual(revisarEntrada(disponible), { entrada: disponible });
 });

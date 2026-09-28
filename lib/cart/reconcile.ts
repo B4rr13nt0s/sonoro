@@ -35,19 +35,21 @@ export const CambioCarritoSchema = z.discriminatedUnion("tipo", [
 export type CambioCarrito = z.infer<typeof CambioCarritoSchema>;
 
 /**
- * Por qué una línea con esta entrada del catálogo no puede estar en el
- * carrito, o `null` si puede. Es LA regla: reconcile() quita lo que ella
- * rechaza, y addItem() (./context.ts) no deja entrar lo mismo — así lo que
- * el carrito acepta y lo que quita en la carga siguiente no pueden
+ * Si una línea con esta entrada del catálogo puede estar en el carrito: la
+ * entrada, o el motivo por el que no. Es LA regla: reconcile() quita lo que
+ * ella rechaza, y addItem() (./context.ts) no deja entrar lo mismo — así lo
+ * que el carrito acepta y lo que quita en la carga siguiente no pueden
  * desincronizarse.
  */
-export function motivoParaQuitar(
-  actual: CatalogoSku | undefined,
-): "eliminado_no_existe" | "eliminado_inactivo" | "eliminado_agotado" | null {
-  if (!actual) return "eliminado_no_existe";
-  if (!actual.activo) return "eliminado_inactivo";
-  if (actual.disponibilidad === "agotado") return "eliminado_agotado";
-  return null;
+export function revisarEntrada(
+  entrada: CatalogoSku | undefined,
+):
+  | { motivo: "eliminado_no_existe" | "eliminado_inactivo" | "eliminado_agotado" }
+  | { entrada: CatalogoSku } {
+  if (!entrada) return { motivo: "eliminado_no_existe" };
+  if (!entrada.activo) return { motivo: "eliminado_inactivo" };
+  if (entrada.disponibilidad === "agotado") return { motivo: "eliminado_agotado" };
+  return { entrada };
 }
 
 export function reconcile(
@@ -58,16 +60,12 @@ export function reconcile(
   const cambios: CambioCarrito[] = [];
 
   const items = cart.items.reduce<CartItem[]>((acumulado, item) => {
-    const actual = porSku.get(item.sku);
-
-    const motivo = motivoParaQuitar(actual);
-    if (motivo !== null) {
-      cambios.push({ tipo: motivo, sku: item.sku, nombreSnapshot: item.nombreSnapshot });
+    const revision = revisarEntrada(porSku.get(item.sku));
+    if ("motivo" in revision) {
+      cambios.push({ tipo: revision.motivo, sku: item.sku, nombreSnapshot: item.nombreSnapshot });
       return acumulado;
     }
-    // Inalcanzable —sin entrada, motivoParaQuitar() ya devolvió un motivo—;
-    // solo le dice a TypeScript que `actual` existe de acá en adelante.
-    if (!actual) return acumulado;
+    const actual = revision.entrada;
 
     if (actual.precioCents !== item.unitPriceCents) {
       cambios.push({

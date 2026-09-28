@@ -24,7 +24,7 @@ import {
 } from "react";
 
 import { cartReducer } from "./reducer.ts";
-import { acumularCambios, motivoParaQuitar, reconcile, type CambioCarrito } from "./reconcile.ts";
+import { acumularCambios, reconcile, revisarEntrada, type CambioCarrito } from "./reconcile.ts";
 import {
   agregarCambiosPendientes,
   CAMBIOS_STORAGE_KEY,
@@ -229,7 +229,7 @@ export function CartProvider({
     // impedirlo: la regla vive acá y no solo en la interfaz, igual que el
     // tope por línea vive en el reducer (CLAUDE.md § Modelo de conversión).
     addItem: (item) => {
-      if (motivoParaQuitar(catalogoPorSku.get(item.sku)) !== null) return false;
+      if ("motivo" in revisarEntrada(catalogoPorSku.get(item.sku))) return false;
       dispatch({ type: "add", item, now: new Date().toISOString() });
       return true;
     },
