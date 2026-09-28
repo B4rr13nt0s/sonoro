@@ -3,13 +3,16 @@
 // muta nada, solo calcula el carrito corregido y la lista de cambios.
 //
 // Nunca se envía por WhatsApp un precio que Sonoro ya no honra, ni un
-// producto que ya no vende — así que esto corre ANTES de que el carrito
-// hidratado quede disponible al resto de la app. /carrito le avisa al
-// cliente qué cambió (components/cart/avisos.ts).
+// producto que ya no vende o que está agotado — así que esto corre ANTES de
+// que el carrito hidratado quede disponible al resto de la app. /carrito le
+// avisa al cliente qué cambió (components/cart/avisos.ts).
 //
-// Lo agotado o bajo pedido NO es un cambio: se puede pedir igual, y /carrito
-// lo lee de la disponibilidad actual (useCart().disponibilidadPorSku), no de
-// acá. Reportarlo en cada carga lo convertía en un «cambio» permanente.
+// Lo agotado se QUITA, igual que lo inactivo: desde septiembre de 2026 no se
+// puede pedir (el botón de la ficha queda deshabilitado), así que una línea
+// agregada antes de agotarse tampoco. Se reporta una sola vez, porque la
+// línea ya no está en la carga siguiente. Lo bajo pedido sí se puede pedir y
+// no es un cambio: /carrito lo lee de la disponibilidad actual
+// (useCart().disponibilidadPorSku).
 import { z } from "zod";
 
 import type { Cart, CartItem, CatalogoSku } from "./types.ts";
@@ -20,6 +23,7 @@ import type { Cart, CartItem, CatalogoSku } from "./types.ts";
 export const CambioCarritoSchema = z.discriminatedUnion("tipo", [
   z.object({ tipo: z.literal("eliminado_no_existe"), sku: z.string(), nombreSnapshot: z.string() }),
   z.object({ tipo: z.literal("eliminado_inactivo"), sku: z.string(), nombreSnapshot: z.string() }),
+  z.object({ tipo: z.literal("eliminado_agotado"), sku: z.string(), nombreSnapshot: z.string() }),
   z.object({
     tipo: z.literal("precio_actualizado"),
     sku: z.string(),
@@ -51,6 +55,14 @@ export function reconcile(
     if (!actual.activo) {
       cambios.push({
         tipo: "eliminado_inactivo",
+        sku: item.sku,
+        nombreSnapshot: item.nombreSnapshot,
+      });
+      return acumulado;
+    }
+    if (actual.disponibilidad === "agotado") {
+      cambios.push({
+        tipo: "eliminado_agotado",
         sku: item.sku,
         nombreSnapshot: item.nombreSnapshot,
       });

@@ -6,10 +6,16 @@
 import { useCart } from "@/lib/cart/index.ts";
 import type { Producto } from "@/lib/catalog/index.ts";
 import { trackEvent } from "@/lib/analytics/track.ts";
-import { claseBoton, type TamanoBoton, type VarianteBoton } from "@/components/ui/boton.ts";
+import {
+  claseBoton,
+  claseBotonInactivo,
+  type TamanoBoton,
+  type VarianteBoton,
+} from "@/components/ui/boton.ts";
 
-// `variante` porque en la ficha la jerarquía se INVIERTE cuando el producto
-// está agotado: ahí la acción útil es preguntar, no agregar al carrito.
+// `variante` para poder usarlo como acción secundaria junto a «Consultar por
+// WhatsApp». Con el producto agotado no hay variante que valga: el botón queda
+// deshabilitado (ver abajo).
 export function AddToCartButton({
   producto,
   variante = "principal",
@@ -21,6 +27,16 @@ export function AddToCartButton({
   tamano?: TamanoBoton;
 }) {
   const { addItem } = useCart();
+
+  // Agotado no se puede agregar: gris, deshabilitado y con «Agotado», igual
+  // que en la ficha (AgregarConCantidad).
+  if (producto.disponibilidad === "agotado") {
+    return (
+      <button type="button" disabled className={claseBotonInactivo(tamano)}>
+        Agotado
+      </button>
+    );
+  }
 
   return (
     <button

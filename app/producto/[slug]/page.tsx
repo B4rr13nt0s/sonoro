@@ -187,9 +187,10 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
           </div>
 
           {/* Con el producto agotado se invierte la jerarquía: agregar al
-              carrito algo que no hay no lleva a ninguna parte, y preguntar
-              sí. Los dos botones siguen presentes en ambos casos; lo que
-              cambia es cuál se lee primero. */}
+              carrito no se puede —el botón queda gris, deshabilitado y dice
+              «Agotado» (AgregarConCantidad)— y preguntar sí. Los dos botones
+              siguen presentes en ambos casos; lo que cambia es cuál se lee
+              primero. */}
           {/* El botón principal va PRIMERO, no solo relleno de negro: el
               orden del DOM es el que siguen el teclado y el lector de
               pantalla, así que invertir solo el color dejaría la acción

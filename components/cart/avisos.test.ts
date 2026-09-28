@@ -23,6 +23,17 @@ test("precio actualizado de una línea que el cliente ya quitó: sin aviso", () 
   assert.deepEqual(avisosDeCambios([precio], new Set()), []);
 });
 
+test("agotado: se avisa que se quitó por estar agotado", () => {
+  const agotado: CambioCarrito = {
+    tipo: "eliminado_agotado",
+    sku: "P1T-S",
+    nombreSnapshot: "Tweeters P1T-S",
+  };
+  assert.deepEqual(avisosDeCambios([agotado], new Set()), [
+    "Se quitó Tweeters P1T-S del carrito: está agotado.",
+  ]);
+});
+
 test("inactivo o inexistente: la misma frase, aunque la línea ya no esté", () => {
   const cambios: CambioCarrito[] = [
     { tipo: "eliminado_inactivo", sku: "KSL-10P", nombreSnapshot: "Caja KSL-10P" },

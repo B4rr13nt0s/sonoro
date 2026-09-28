@@ -55,7 +55,8 @@ type CartContextValue = {
   subtotalCents: number;
   itemCount: number;
   // Lo que reconcile() corrigió y el cliente todavía no vio: líneas quitadas
-  // por dejar de existir o quedar inactivas, o con precio actualizado. Se
+  // por dejar de existir, quedar inactivas o agotarse, o con precio
+  // actualizado. Se
   // guardan en localStorage hasta que /carrito los muestra y llama a
   // descartarCambios() — así salen una sola vez, aunque la corrección haya
   // pasado en otra página o en otra pestaña (components/cart/avisos.ts).
@@ -64,7 +65,8 @@ type CartContextValue = {
   // Disponibilidad ACTUAL de cada sku, del mismo catálogo que usa
   // reconcile(). El CartItem no la guarda —es un snapshot de lo que se
   // agregó, y la disponibilidad cambia—, así que /carrito la lee de acá para
-  // etiquetar lo agotado o bajo pedido, y para marcarlo en el mensaje.
+  // etiquetar lo bajo pedido, y para marcarlo en el mensaje. (Lo agotado no
+  // llega a /carrito: reconcile() lo quita.)
   disponibilidadPorSku: Readonly<Record<string, Disponibilidad>>;
   // false hasta que el efecto de abajo lea localStorage — /carrito lo usa
   // para no mostrar "carrito vacío" un instante antes de que aparezca el

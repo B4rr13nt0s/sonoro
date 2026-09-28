@@ -45,13 +45,23 @@ test("reconcile: producto activo === false se elimina y se reporta", () => {
   ]);
 });
 
-test("reconcile: disponibilidad === 'agotado' no elimina la línea ni cuenta como cambio", () => {
+test("reconcile: disponibilidad === 'agotado' quita la línea y lo reporta", () => {
   const catalogo: CatalogoSku[] = [
     { sku: "SQ12-D2", activo: true, disponibilidad: "agotado", precioCents: 245000 },
   ];
   const { cart, cambios } = reconcile(carrito([item()]), catalogo);
+  assert.equal(cart.items.length, 0);
+  assert.deepEqual(cambios, [
+    { tipo: "eliminado_agotado", sku: "SQ12-D2", nombreSnapshot: 'Serie SQ 12" D2' },
+  ]);
+});
+
+test("reconcile: disponibilidad === 'bajo_pedido' no quita la línea ni cuenta como cambio", () => {
+  const catalogo: CatalogoSku[] = [
+    { sku: "SQ12-D2", activo: true, disponibilidad: "bajo_pedido", precioCents: 245000 },
+  ];
+  const { cart, cambios } = reconcile(carrito([item()]), catalogo);
   assert.equal(cart.items.length, 1);
-  assert.equal(cart.items[0].sku, "SQ12-D2");
   assert.deepEqual(cambios, []);
 });
 
@@ -100,14 +110,14 @@ test("reconcile: carrito con varias líneas mezcla eliminaciones, agotados y pre
 
   assert.deepEqual(
     cart.items.map((i) => i.sku),
-    ["B", "C"],
+    ["B"],
   );
   assert.equal(cart.items.find((i) => i.sku === "B")?.unitPriceCents, 120000);
 
   const tipos = Object.fromEntries(cambios.map((c) => [c.sku, c.tipo]));
   assert.equal(tipos.A, "eliminado_inactivo");
   assert.equal(tipos.B, "precio_actualizado");
-  assert.equal(tipos.C, undefined);
+  assert.equal(tipos.C, "eliminado_agotado");
   assert.equal(tipos.D, "eliminado_no_existe");
 });
 

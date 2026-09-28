@@ -12,8 +12,8 @@ import { formatQ } from "../../lib/format/precio.ts";
  * Una frase por cambio, en el orden en que llegaron.
  *
  * Un precio actualizado solo se avisa mientras la línea siga en el carrito:
- * si el cliente la quitó, hablar de su precio ya no dice nada. Lo agotado o
- * bajo pedido no es un cambio: lo dice la etiqueta de la línea (CarritoView).
+ * si el cliente la quitó, hablar de su precio ya no dice nada. Lo bajo pedido
+ * no es un cambio: lo dice la etiqueta de la línea (CarritoView).
  */
 export function avisosDeCambios(
   cambios: readonly CambioCarrito[],
@@ -32,6 +32,9 @@ export function avisosDeCambios(
       case "eliminado_inactivo":
       case "eliminado_no_existe":
         avisos.push(`Se quitó ${cambio.nombreSnapshot} del carrito: ya no está a la venta.`);
+        break;
+      case "eliminado_agotado":
+        avisos.push(`Se quitó ${cambio.nombreSnapshot} del carrito: está agotado.`);
         break;
     }
   }

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { claseBoton, type VarianteBoton } from "@/components/ui/boton.ts";
+import { claseBoton, claseBotonInactivo, type VarianteBoton } from "@/components/ui/boton.ts";
 import { trackEvent } from "@/lib/analytics/track.ts";
 import { MAX_CANTIDAD_POR_LINEA, useCart } from "@/lib/cart/index.ts";
 import type { Producto } from "@/lib/catalog/index.ts";
@@ -41,6 +41,10 @@ export function AgregarConCantidad({
   }, []);
 
   const confirmando = anadidas !== null;
+  // Agotado no se puede agregar: el botón queda gris, deshabilitado y dice
+  // «Agotado». Sin selector de cantidad, que no tendría a qué sumar.
+  const agotado = producto.disponibilidad === "agotado";
+  const inactivo = confirmando || agotado;
 
   function agregar() {
     addItem({
@@ -72,26 +76,22 @@ export function AgregarConCantidad({
       <button
         type="button"
         onClick={agregar}
-        disabled={confirmando}
+        disabled={inactivo}
         aria-live="polite"
-        className={
-          confirmando
-            ? // El mismo botón, en negro al 60 % sobre blanco (≈ #6D6D6D, 5.0:1
-              // contra el texto blanco) y sin el hover ni el `scale` del
-              // original: mientras no responde, no debe parecer que responde.
-              `${claseBoton(variante)} bg-negro/60 pointer-events-none border-transparent text-white`
-            : claseBoton(variante)
-        }
+        className={inactivo ? claseBotonInactivo() : claseBoton(variante)}
       >
-        {confirmando
-          ? `Has añadido ${anadidas} ${anadidas === 1 ? "ítem" : "ítems"} al carrito.`
-          : "Agregar al carrito"}
+        {agotado
+          ? "Agotado"
+          : confirmando
+            ? `Has añadido ${anadidas} ${anadidas === 1 ? "ítem" : "ítems"} al carrito.`
+            : "Agregar al carrito"}
       </button>
 
       {/* Mismo control de cantidad que el carrito (CarritoView): píldora con
           borde, 44 px de lado en el teléfono y 38 en escritorio.
           
-          Se esconde mientras dura la confirmación, y le cede su ancho al
+          Se esconde mientras dura la confirmación (y con el producto
+          agotado), y le cede su ancho al
           mensaje. Medido: sin ceder, el botón queda en 201 px en el teléfono
           y 254 en escritorio —la ficha es de dos columnas, no sobra tanto
           como parece— el mensaje se parte en dos líneas y el botón crece de
@@ -100,7 +100,7 @@ export function AgregarConCantidad({
           línea y nada se mueve de sitio. */}
       <div
         className={`border-borde-pildora flex-none items-center rounded-full border ${
-          confirmando ? "hidden" : "flex"
+          inactivo ? "hidden" : "flex"
         }`}
       >
         <button
