@@ -93,6 +93,29 @@ test("buildOrderMessage: con más de 15 líneas lista TODAS, sin enlace al carri
   assert.ok(mensaje.includes("Ref: SNR-A7K2M"));
 });
 
+test("buildOrderMessage: marca lo agotado y lo bajo pedido al final de la línea", () => {
+  const items = [
+    item({ sku: "SQ12-D2", qty: 1 }),
+    item({ sku: "PRX60C", qty: 2, nombreSnapshot: 'Memphis PRX 6.5"', unitPriceCents: 118000 }),
+    item({ sku: "KSL-8B", qty: 1, nombreSnapshot: "KSL-8B", unitPriceCents: 190000 }),
+  ];
+  const mensaje = buildOrderMessage({
+    items,
+    ref: "SNR-A7K2M",
+    disponibilidad: { "SQ12-D2": "disponible", PRX60C: "bajo_pedido", "KSL-8B": "agotado" },
+  });
+
+  // Lo disponible queda exactamente como antes.
+  assert.ok(mensaje.includes(`${LINEA_1}\n`));
+  assert.ok(mensaje.includes(`${LINEA_2} · bajo pedido`));
+  assert.ok(mensaje.includes(`1x KSL-8B (KSL-8B) — ${formatQ(190000)} · agotado`));
+});
+
+test("buildOrderMessage: sin mapa de disponibilidad, sin marcas", () => {
+  const mensaje = buildOrderMessage({ items: [item({})], ref: "SNR-00000" });
+  assert.ok(!mensaje.includes(" · "));
+});
+
 test("buildProductInquiryMessage: formato exacto, tres líneas", () => {
   const mensaje = buildProductInquiryMessage({
     nombre: 'Serie SQ 12" D2',

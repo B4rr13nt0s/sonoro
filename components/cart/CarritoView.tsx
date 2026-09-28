@@ -13,7 +13,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef } from "react";
 
+import { avisosDeCambios } from "@/components/cart/avisos.ts";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
+import { etiquetaDisponibilidad } from "@/lib/catalog/disponibilidad.ts";
+import type { Disponibilidad } from "@/lib/catalog/index.ts";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import { MAX_CANTIDAD_POR_LINEA, useCart, type CartItem } from "@/lib/cart/index.ts";
 import {
@@ -26,8 +29,23 @@ import { buildQuoteLogRequest, sendQuoteLog } from "@/lib/quoteLog/index.ts";
 import { trackEvent } from "@/lib/analytics/track.ts";
 
 export function CarritoView() {
-  const { items, createdAt, subtotalCents, itemCount, hydrated, setQty, removeItem, clear } =
-    useCart();
+  const {
+    items,
+    createdAt,
+    subtotalCents,
+    itemCount,
+    hydrated,
+    cambios,
+    disponibilidadPorSku,
+    setQty,
+    removeItem,
+    clear,
+  } = useCart();
+
+  const avisos = useMemo(
+    () => avisosDeCambios(cambios, new Set(items.map((item) => item.sku))),
+    [cambios, items],
+  );
 
   // Una sola vez por carrito con contenido — mismo patrón de ref-guard que
   // CartLink en SiteHeader.tsx usa para su animación, para no disparar
@@ -49,6 +67,22 @@ export function CarritoView() {
         <h1 className="text-40 sm:text-48 font-semibold tracking-[-0.035em]">Carrito</h1>
       </div>
 
+      {/* Fuera de las dos ramas de abajo: si reconcile() quitó todas las
+          líneas, el carrito queda vacío y el cliente igual tiene que saber
+          por qué. Misma tarjeta que los productos omitidos de /comparar. */}
+      {hydrated && avisos.length > 0 ? (
+        <div className="px-6 pb-8 sm:px-12">
+          <div
+            role="status"
+            className="border-borde-tarjeta rounded-card text-texto-secundario flex flex-col gap-1 border p-5 text-[14px]"
+          >
+            {avisos.map((aviso) => (
+              <span key={aviso}>{aviso}</span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       {!hydrated ? null : items.length === 0 ? (
         <CarritoVacio />
       ) : (
@@ -58,6 +92,7 @@ export function CarritoView() {
               <CartLineItem
                 key={item.sku}
                 item={item}
+                disponibilidad={disponibilidadPorSku[item.sku]}
                 onSetQty={(qty) => setQty(item.sku, qty)}
                 onRemove={() => removeItem(item.sku)}
               />
@@ -75,6 +110,7 @@ export function CarritoView() {
             createdAt={createdAt}
             subtotalCents={subtotalCents}
             itemCount={itemCount}
+            disponibilidadPorSku={disponibilidadPorSku}
           />
         </div>
       )}
@@ -95,14 +131,20 @@ function CarritoVacio() {
 
 function CartLineItem({
   item,
+  disponibilidad,
   onSetQty,
   onRemove,
 }: {
   item: CartItem;
+  disponibilidad: Disponibilidad | undefined;
   onSetQty: (qty: number) => void;
   onRemove: () => void;
 }) {
   const totalLinea = item.unitPriceCents * item.qty;
+  // Agotado o bajo pedido se puede pedir igual —el vendedor confirma—, pero
+  // el cliente tiene que verlo antes de mandar el pedido. Misma etiqueta y
+  // misma píldora que la ficha, sin color de acento.
+  const estado = disponibilidad ? etiquetaDisponibilidad(disponibilidad) : null;
 
   return (
     <div className="border-borde-tarjeta flex gap-4 border-t py-6 sm:gap-6 sm:py-7">
@@ -123,8 +165,15 @@ function CartLineItem({
       )}
 
       <div className="flex flex-1 flex-col gap-1.5">
-        <div className="text-texto-terciario font-mono text-[10px] tracking-[0.14em] uppercase">
-          {item.sku}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className="text-texto-terciario font-mono text-[10px] tracking-[0.14em] uppercase">
+            {item.sku}
+          </span>
+          {estado ? (
+            <span className="border-borde-pildora text-negro rounded-full border px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] uppercase">
+              {estado}
+            </span>
+          ) : null}
         </div>
         <div className="flex items-start justify-between gap-3">
           <div className="text-[17px] font-semibold tracking-[-0.015em] sm:text-[19px]">
@@ -174,7 +223,9 @@ function OrderSummary({
   subtotalCents,
   itemCount,
   onPedidoEnviado,
+  disponibilidadPorSku,
 }: {
+  disponibilidadPorSku: Readonly<Record<string, Disponibilidad>>;
   items: CartItem[];
   createdAt: string;
   subtotalCents: number;
@@ -191,8 +242,12 @@ function OrderSummary({
   // (CLAUDE.md § Modelo de conversión). El mensaje lleva siempre la lista
   // completa: ver lib/whatsapp/message.ts.
   const whatsappUrl = useMemo(
-    () => buildWhatsAppUrl(WHATSAPP_NUMBER, buildOrderMessage({ items, ref })),
-    [items, ref],
+    () =>
+      buildWhatsAppUrl(
+        WHATSAPP_NUMBER,
+        buildOrderMessage({ items, ref, disponibilidad: disponibilidadPorSku }),
+      ),
+    [items, ref, disponibilidadPorSku],
   );
 
   return (

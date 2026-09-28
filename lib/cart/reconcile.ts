@@ -4,10 +4,8 @@
 //
 // Nunca se envía por WhatsApp un precio que Sonoro ya no honra, ni un
 // producto que ya no vende — así que esto corre ANTES de que el carrito
-// hidratado quede disponible al resto de la app. La UI que muestra
-// `cambios` al usuario (Sesión 13) todavía no existe; por ahora el carrito
-// ya sale corregido y `cambios` queda disponible para cuando esa UI se
-// construya.
+// hidratado quede disponible al resto de la app. /carrito le avisa al
+// cliente qué cambió (components/cart/avisos.ts).
 import type { Cart, CartItem, CatalogoSku } from "./types.ts";
 
 export type CambioCarrito =

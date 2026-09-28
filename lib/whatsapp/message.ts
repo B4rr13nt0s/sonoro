@@ -4,6 +4,8 @@
 // ya usa el resto de la app. No decide envío ni cuota — usa las reglas ya
 // fijadas en CLAUDE.md (envío gratis, 6 pagos) tal como las usa /carrito.
 import { subtotalCents, type CartItem } from "../cart/index.ts";
+import { etiquetaDisponibilidad } from "../catalog/disponibilidad.ts";
+import type { Disponibilidad } from "../catalog/types.ts";
 import { formatQ } from "../format/precio.ts";
 
 // El mensaje lleva SIEMPRE la lista completa, sin importar cuántas líneas
@@ -14,8 +16,18 @@ import { formatQ } from "../format/precio.ts";
 // «Pedir por WhatsApp» lo vacía. El pedido grande, justo el más valioso,
 // llegaba sin productos. Un wa.me con 16 líneas pesa unos 3 KB y WhatsApp
 // lo abre sin problema.
-export function buildOrderMessage(params: { items: CartItem[]; ref: string }): string {
-  const { items, ref } = params;
+//
+// `disponibilidad` (por sku) marca al final de la línea lo que está agotado
+// o bajo pedido — `· bajo pedido` —, con el mismo texto que la etiqueta de
+// la ficha y del carrito: el cliente puede pedirlo igual, y el vendedor lo
+// ve sin tener que buscarlo. Lo disponible no lleva marca. Sin el mapa, el
+// mensaje sale como antes.
+export function buildOrderMessage(params: {
+  items: CartItem[];
+  ref: string;
+  disponibilidad?: Readonly<Record<string, Disponibilidad>>;
+}): string {
+  const { items, ref, disponibilidad = {} } = params;
   const subtotal = subtotalCents(items);
   // Sin costo de envío que restar o sumar todavía (CLAUDE.md § reglas:
   // "Envíos gratis a todo el país") — total y subtotal coinciden mientras
@@ -25,7 +37,7 @@ export function buildOrderMessage(params: { items: CartItem[]; ref: string }): s
   return [
     "Hola Sonoro, quiero pedir:",
     "",
-    ...items.map((item) => formatearLinea(item)),
+    ...items.map((item) => formatearLinea(item, disponibilidad[item.sku])),
     "",
     `Subtotal: ${formatQ(subtotal)}`,
     "Envío: gratis",
@@ -34,10 +46,12 @@ export function buildOrderMessage(params: { items: CartItem[]; ref: string }): s
   ].join("\n");
 }
 
-function formatearLinea(item: CartItem): string {
+function formatearLinea(item: CartItem, disponibilidad: Disponibilidad | undefined): string {
   const precioUnitario = formatQ(item.unitPriceCents);
   const sufijo = item.qty > 1 ? " c/u" : "";
-  return `${item.qty}x ${item.nombreSnapshot} (${item.sku}) — ${precioUnitario}${sufijo}`;
+  const estado = disponibilidad ? etiquetaDisponibilidad(disponibilidad) : null;
+  const marca = estado ? ` · ${estado.toLowerCase()}` : "";
+  return `${item.qty}x ${item.nombreSnapshot} (${item.sku}) — ${precioUnitario}${sufijo}${marca}`;
 }
 
 // Consulta por UN producto, desde la ficha. No todo cliente arma un

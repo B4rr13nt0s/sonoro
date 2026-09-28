@@ -15,6 +15,7 @@ import {
   createElement,
   useContext,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
   useState,
@@ -44,9 +45,13 @@ type CartContextValue = {
   itemCount: number;
   // Resultado de reconcile() al hidratar — líneas quitadas por dejar de
   // existir o quedar inactivas, marcadas como agotadas, o con precio
-  // actualizado. La UI de /carrito los mostrará (Sesión 13); por ahora solo
-  // quedan disponibles vía useCart().
+  // actualizado. /carrito los avisa (components/cart/avisos.ts).
   cambios: CambioCarrito[];
+  // Disponibilidad ACTUAL de cada sku, del mismo catálogo que usa
+  // reconcile(). El CartItem no la guarda —es un snapshot de lo que se
+  // agregó, y la disponibilidad cambia—, así que /carrito la lee de acá para
+  // etiquetar lo agotado o bajo pedido, y para marcarlo en el mensaje.
+  disponibilidadPorSku: Readonly<Record<string, CatalogoSku["disponibilidad"]>>;
   // false hasta que el efecto de abajo lea localStorage — /carrito lo usa
   // para no mostrar "carrito vacío" un instante antes de que aparezca el
   // carrito real (CLAUDE.md § Modelo de conversión: localStorage no existe
@@ -134,12 +139,18 @@ export function CartProvider({
     saveCart(cart);
   }, [cart, hydrated]);
 
+  const disponibilidadPorSku = useMemo(
+    () => Object.fromEntries(catalogo.map((p) => [p.sku, p.disponibilidad])),
+    [catalogo],
+  );
+
   const value: CartContextValue = {
     items: cart.items,
     createdAt: cart.createdAt,
     subtotalCents: subtotalCents(cart.items),
     itemCount: itemCount(cart.items),
     cambios: cambios ?? [],
+    disponibilidadPorSku,
     hydrated,
     addItem: (item) => dispatch({ type: "add", item, now: new Date().toISOString() }),
     removeItem: (sku) => dispatch({ type: "remove", sku, now: new Date().toISOString() }),
