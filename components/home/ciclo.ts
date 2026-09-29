@@ -49,6 +49,53 @@ export function duracionProductoMs(): number {
 }
 
 /**
+ * Cuánto lleva la fase actual SIN contar el tiempo en pausa. Es la única
+ * fuente de ese dato: de acá leen el plazo de cada fase (useIdleReturn.ts) y
+ * el ángulo del giro, frame a frame (CarouselCanvas.tsx).
+ *
+ * Mientras está en pausa el tiempo queda clavado donde se pausó, y al
+ * reanudar sigue desde ahí. Antes la pausa se descontaba corriendo un
+ * `faseInicio` en un efecto de React, que llegaba un render tarde: cada
+ * lector tenía que compensarlo por su cuenta —el temporizador con un parche
+ * que dependía del orden de los efectos— y el que no lo hacía, el canvas,
+ * dibujaba uno o dos frames con la pausa incluida: el modelo saltaba a su
+ * orientación inicial y volvía. Acá no hay nada que llegue tarde: quien
+ * pregunta entre la reanudación y el re-render ve el tiempo todavía clavado,
+ * que es exactamente el que había.
+ *
+ * Recibe `ahora` en cada llamada en vez de leer el reloj: sin DOM, y con
+ * test.
+ */
+export class RelojFase {
+  #origen: number;
+  #pausadoDesde: number | null = null;
+
+  constructor(ahora: number) {
+    this.#origen = ahora;
+  }
+
+  /** Fase nueva: el tiempo vuelve a cero. Si estaba en pausa, sigue en pausa. */
+  reiniciar(ahora: number): void {
+    this.#origen = ahora;
+    if (this.#pausadoDesde !== null) this.#pausadoDesde = ahora;
+  }
+
+  pausar(ahora: number): void {
+    this.#pausadoDesde ??= ahora;
+  }
+
+  reanudar(ahora: number): void {
+    if (this.#pausadoDesde === null) return;
+    this.#origen += ahora - this.#pausadoDesde;
+    this.#pausadoDesde = null;
+  }
+
+  transcurrido(ahora: number): number {
+    return (this.#pausadoDesde ?? ahora) - this.#origen;
+  }
+}
+
+/**
  * Ángulo del modelo, en radianes, según la fase y el tiempo transcurrido.
  *
  * Es un valor ABSOLUTO en función del tiempo, no un acumulador: así el

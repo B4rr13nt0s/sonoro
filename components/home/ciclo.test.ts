@@ -7,6 +7,7 @@ import {
   ESPERA_MS,
   GIRO_MS,
   PLAN_CICLO,
+  RelojFase,
   type FaseCarrusel,
   type PasoCiclo,
 } from "./ciclo.ts";
@@ -56,6 +57,34 @@ test("el giro va de derecha a izquierda y da exactamente una vuelta", () => {
   assert.equal(anguloDelCiclo("girando", GIRO_MS), -2 * Math.PI);
   // A mitad de camino, media vuelta.
   assert.equal(anguloDelCiclo("girando", GIRO_MS / 2), -Math.PI);
+});
+
+test("RelojFase: la pausa no cuenta, ni siquiera antes de reanudar", () => {
+  const reloj = new RelojFase(1_000);
+  assert.equal(reloj.transcurrido(5_000), 4_000);
+
+  reloj.pausar(5_000);
+  // En pausa el tiempo queda clavado: esto es lo que ve el canvas en los
+  // frames entre que el carrusel vuelve a la vista y React re-renderiza.
+  assert.equal(reloj.transcurrido(35_000), 4_000);
+  reloj.pausar(20_000); // pausar dos veces no mueve el inicio de la pausa
+  assert.equal(reloj.transcurrido(35_000), 4_000);
+
+  reloj.reanudar(35_000);
+  assert.equal(reloj.transcurrido(35_000), 4_000, "sin salto al reanudar");
+  assert.equal(reloj.transcurrido(36_000), 5_000);
+  reloj.reanudar(40_000); // reanudar sin pausa no hace nada
+  assert.equal(reloj.transcurrido(40_000), 9_000);
+});
+
+test("RelojFase: una fase nueva empieza en cero, también en plena pausa", () => {
+  const reloj = new RelojFase(0);
+  reloj.pausar(8_000);
+  // Una flecha durante la pausa: la fase nueva no arrastra la pausa vieja.
+  reloj.reiniciar(30_000);
+  assert.equal(reloj.transcurrido(30_000), 0);
+  reloj.reanudar(30_000);
+  assert.equal(reloj.transcurrido(33_000), 3_000);
 });
 
 test("el ángulo se satura en una vuelta y es 0 fuera de la fase de giro", () => {

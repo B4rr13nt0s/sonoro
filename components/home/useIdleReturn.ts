@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { PLAN_CICLO, type FaseCarrusel } from "./ciclo.ts";
+import { PLAN_CICLO, RelojFase, type FaseCarrusel } from "./ciclo.ts";
 
 export { ESPERA_MS, GIRO_MS, anguloDelCiclo, type FaseCarrusel } from "./ciclo.ts";
 
@@ -38,8 +38,11 @@ export const RETURN_EPSILON = 0.01;
 
 export interface CicloCarrusel {
   fase: FaseCarrusel;
-  /** `performance.now()` de cuando empezó la fase actual. El giro se calcula desde acá. */
-  faseInicio: number;
+  /**
+   * Cuánto lleva la fase actual, en ms, sin contar las pausas (RelojFase en
+   * ciclo.ts). El giro se calcula desde acá, frame a frame.
+   */
+  transcurrido: () => number;
   /** Empieza un gesto sostenido: pausa el ciclo hasta que termine. */
   beginGesture: () => void;
   /** Termina el gesto y arranca la cuenta de los 3 s. */
@@ -71,9 +74,13 @@ export function useCicloCarrusel({
   onAvanzar: () => void;
 }): CicloCarrusel {
   const [fase, setFase] = useState<FaseCarrusel>("espera-previa");
-  const [faseInicio, setFaseInicio] = useState(() =>
-    typeof performance === "undefined" ? 0 : performance.now(),
+  const [reloj] = useState(
+    () => new RelojFase(typeof performance === "undefined" ? 0 : performance.now()),
   );
+  // Cambia en cada ir(), aunque la fase sea la misma (otra interacción en
+  // plena `interactuando`): es lo que rearma el plazo.
+  const [numeroDeFase, setNumeroDeFase] = useState(0);
+  const transcurrido = useCallback(() => reloj.transcurrido(performance.now()), [reloj]);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const gestoActivo = useRef(false);
   const onAvanzarRef = useRef(onAvanzar);
@@ -89,10 +96,11 @@ export function useCicloCarrusel({
   const ir = useCallback(
     (siguiente: FaseCarrusel) => {
       limpiar();
+      reloj.reiniciar(performance.now());
       setFase(siguiente);
-      setFaseInicio(performance.now());
+      setNumeroDeFase((n) => n + 1);
     },
-    [limpiar],
+    [limpiar, reloj],
   );
 
   const beginGesture = useCallback(() => {
@@ -141,41 +149,23 @@ export function useCicloCarrusel({
   }, [ir]);
 
   // Mientras el carrusel no está a la vista, el tiempo de la fase no corre:
-  // el ángulo del giro sale de `performance.now() - faseInicio`, y si
-  // faseInicio no se corriera, al volver después de una pausa larga el
-  // modelo aparecía clavado al final de la vuelta (el ángulo ya pasado de
-  // largo) y se quedaba quieto el giro entero más la espera final, ~13 s.
+  // si corriera, al volver después de una pausa larga el modelo aparecía
+  // clavado al final de la vuelta (el ángulo ya pasado de largo) y se
+  // quedaba quieto el giro entero más la espera final, ~13 s.
   //
   // Lo mismo con el avance en pausa (foco del teclado adentro) durante la
-  // fase que avanza: sin correr el origen, al salir el foco el plazo ya
+  // fase que avanza: si el tiempo corriera, al salir el foco el plazo ya
   // estaba vencido y el producto cambiaba en el mismo instante, sin su
-  // espera final. La pausa queda atada a la fase en la que empezó: si en el
-  // medio la fase cambió (una flecha reinicia el ciclo), la nueva ya trae su
-  // propio origen y no hay nada que correr.
+  // espera final.
+  //
+  // El reloj (RelojFase) guarda la pausa, así que el orden entre este efecto
+  // y el de los plazos no importa: si el de los plazos corre antes, todavía
+  // ve el tiempo clavado, que es el mismo que verá después de reanudar.
   const congelado = !activo || (pausarAvance && (PLAN_CICLO[fase]?.avanza ?? false));
-  const pausa = useRef<{ desde: number; faseInicio: number } | null>(null);
-  // El corrimiento recién pedido, para el efecto de plazos de ESTE mismo
-  // commit: corre justo después, todavía con el `faseInicio` viejo, y sin
-  // esto calculaba el plazo como vencido y armaba un setTimeout(0). Si ese
-  // timer ganaba al re-render que trae el origen corrido —depende del orden
-  // de tareas del navegador—, el producto cambiaba al instante igual.
-  const corrimiento = useRef<{ faseInicio: number; ms: number } | null>(null);
   useEffect(() => {
-    if (congelado) {
-      if (pausa.current?.faseInicio !== faseInicio) {
-        pausa.current = { desde: performance.now(), faseInicio };
-      }
-      return;
-    }
-    const pendiente = pausa.current;
-    if (pendiente === null) return;
-    pausa.current = null;
-    const duracion = performance.now() - pendiente.desde;
-    corrimiento.current = { faseInicio: pendiente.faseInicio, ms: duracion };
-    // Correr el origen de la fase es sincronizar con el reloj, algo que
-    // solo se sabe al reanudar: no es un valor derivable en el render.
-    setFaseInicio((inicio) => (inicio === pendiente.faseInicio ? inicio + duracion : inicio));
-  }, [congelado, faseInicio]);
+    if (congelado) reloj.pausar(performance.now());
+    else reloj.reanudar(performance.now());
+  }, [congelado, reloj]);
 
   // Los plazos de cada fase salen de PLAN_CICLO (ver ciclo.ts, con test).
   // Se rearman en cada cambio de fase y se congelan cuando el carrusel no
@@ -197,20 +187,15 @@ export function useCicloCarrusel({
     if (plan.avanza && pausarAvance) return;
 
     // Lo que FALTA de la fase, no el plazo entero: al reanudar tras una
-    // pausa, la fase ya había consumido parte de su tiempo. Con el origen
-    // ya corrido si la pausa acaba de terminar en este commit (ver
-    // `corrimiento` arriba); en el render siguiente `faseInicio` ya lo trae.
-    const pendiente = corrimiento.current;
-    const inicio =
-      pendiente && pendiente.faseInicio === faseInicio ? faseInicio + pendiente.ms : faseInicio;
-    const restante = Math.max(0, plan.esperaMs - (performance.now() - inicio));
+    // pausa, la fase ya había consumido parte de su tiempo.
+    const restante = Math.max(0, plan.esperaMs - transcurrido());
     timer.current = setTimeout(() => {
       if (plan.avanza) onAvanzarRef.current();
       ir(plan.siguiente);
     }, restante);
-  }, [fase, faseInicio, activo, reducedMotion, pausarAvance, ir, limpiar]);
+  }, [fase, numeroDeFase, activo, reducedMotion, pausarAvance, ir, limpiar, transcurrido]);
 
   useEffect(() => limpiar, [limpiar]);
 
-  return { fase, faseInicio, beginGesture, endGesture, notifyInteraction, alVolver, reiniciar };
+  return { fase, transcurrido, beginGesture, endGesture, notifyInteraction, alVolver, reiniciar };
 }

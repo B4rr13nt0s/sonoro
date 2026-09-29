@@ -55,8 +55,8 @@ export interface CarouselCanvasProps {
   /** Dirección del último cambio de índice: +1 siguiente, −1 anterior. */
   direction: number;
   fase: FaseCarrusel;
-  /** `performance.now()` de cuando empezó la fase actual. */
-  faseInicio: number;
+  /** Cuánto lleva la fase actual, en ms, sin contar las pausas (RelojFase). */
+  transcurrido: () => number;
   /**
    * Espacio que ocupa el chrome del carrusel, en píxeles CSS: `v` es el
    * alto de las bandas de arriba y abajo (etiqueta, contador, flechas) y
@@ -193,7 +193,7 @@ function Escena({
   index,
   direction,
   fase,
-  faseInicio,
+  transcurrido,
   chrome,
   pendienteRef,
   alVolver,
@@ -277,7 +277,7 @@ function Escena({
         actual={actual}
         siguiente={siguiente}
         fase={fase}
-        faseInicio={faseInicio}
+        transcurrido={transcurrido}
         chrome={chrome}
         azimutCamaraRef={azimutCamaraRef}
       />
@@ -316,7 +316,7 @@ function Deslizador({
   actual,
   siguiente,
   fase,
-  faseInicio,
+  transcurrido,
   chrome,
   azimutCamaraRef,
 }: {
@@ -326,7 +326,7 @@ function Deslizador({
   actual: ModelId;
   siguiente: ModelId;
   fase: FaseCarrusel;
-  faseInicio: number;
+  transcurrido: () => number;
   chrome: { v: number; h: number };
   azimutCamaraRef: React.RefObject<number>;
 }) {
@@ -404,7 +404,7 @@ function Deslizador({
     // Solo gira el modelo que está en cuadro; los vecinos esperan su turno
     // en la pose predeterminada.
     if (fase === "girando") {
-      anguloRef.current = anguloBase.current + anguloDelCiclo(fase, performance.now() - faseInicio);
+      anguloRef.current = anguloBase.current + anguloDelCiclo(fase, transcurrido());
     }
   });
 

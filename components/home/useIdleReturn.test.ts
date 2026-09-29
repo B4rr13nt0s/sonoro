@@ -151,6 +151,26 @@ test("useCicloCarrusel: con el avance en pausa sigue girando pero no pasa al sig
   });
 });
 
+test("useCicloCarrusel: fuera de cuadro el tiempo de la fase no corre, y al volver no salta", async () => {
+  await conCarrusel(async ({ estado, pasar, props }) => {
+    await pasar(ESPERA_MS);
+    await pasar(4_000);
+    assert.equal(estado().fase, "girando");
+    assert.equal(estado().transcurrido(), 4_000);
+
+    await props({ activo: false, pausarAvance: false });
+    await pasar(30_000);
+    assert.equal(estado().transcurrido(), 4_000, "clavado mientras no está a la vista");
+
+    // Lo que lee el canvas para el ángulo: el mismo punto de la vuelta en
+    // el que se fue, sin la pausa encima.
+    await props({ activo: true, pausarAvance: false });
+    assert.equal(estado().transcurrido(), 4_000, "sin salto al volver");
+    await pasar(GIRO_MS - 4_000);
+    assert.equal(estado().fase, "espera-final", "termina la vuelta a su tiempo");
+  });
+});
+
 test("useCicloCarrusel: una flecha durante la pausa arranca la fase nueva sin arrastrar la pausa", async () => {
   await conCarrusel(async ({ estado, avances, pasar, props }) => {
     await props({ activo: true, pausarAvance: true });

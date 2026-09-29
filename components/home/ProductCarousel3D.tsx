@@ -105,7 +105,7 @@ export function ProductCarousel3D() {
     setIndex((actual) => (actual + 1) % MODEL_IDS.length);
   }, []);
 
-  const { fase, faseInicio, notifyInteraction, beginGesture, endGesture, alVolver, reiniciar } =
+  const { fase, transcurrido, notifyInteraction, beginGesture, endGesture, alVolver, reiniciar } =
     useCicloCarrusel({
       activo: enCuadro && pestanaVisible,
       pausarAvance: conFoco,
@@ -190,7 +190,7 @@ export function ProductCarousel3D() {
             index={index}
             direction={direction}
             fase={fase}
-            faseInicio={faseInicio}
+            transcurrido={transcurrido}
             chrome={chrome}
             pendienteRef={pendienteRef}
             alVolver={alVolver}
