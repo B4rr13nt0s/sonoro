@@ -16,6 +16,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "reac
 import { avisosDeCambios } from "@/components/cart/avisos.ts";
 import { PildoraDisponibilidad } from "@/components/catalog/PildoraDisponibilidad";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
+import { claseBoton } from "@/components/ui/boton.ts";
 import type { Disponibilidad } from "@/lib/catalog/index.ts";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import {
@@ -173,7 +174,7 @@ function CarritoVacio() {
   return (
     <div className="flex flex-col items-center gap-5 px-6 pb-24 text-center sm:px-12">
       <p className="text-texto-secundario text-[17px]">Tu carrito está vacío.</p>
-      <Link href="/catalogo" className="bg-negro rounded-full px-6 py-3.75 text-[16px] text-white">
+      <Link href="/catalogo" className={claseBoton("principal")}>
         Ver catálogo
       </Link>
     </div>
@@ -201,6 +202,9 @@ function CartLineItem({
             src={item.imagenSnapshot}
             alt={item.nombreSnapshot}
             fill
+            // La miniatura mide 100 px (140 en sm): sin `sizes`, `fill`
+            // bajaba una imagen del ancho de la ventana.
+            sizes="140px"
             className="object-cover"
           />
         </div>
@@ -297,6 +301,42 @@ function OrderSummary({
     [items, ref, disponibilidadPorSku],
   );
 
+  // Lo que pasa al pedir. Va en onClick Y en onAuxClick: con clic medio
+  // (o la rueda) el navegador abre WhatsApp en otra pestaña sin disparar
+  // `click`, y el pedido salía sin registrarse ni vaciar el carrito. «Abrir
+  // en pestaña nueva» desde el menú contextual no dispara ningún evento: ese
+  // camino sigue sin cubrirse.
+  function registrarPedido() {
+    // docs/PLAN.md § 6.4: se dispara y se olvida — nunca se espera
+    // esta llamada ni se le deja frenar la apertura de WhatsApp
+    // (CLAUDE.md: "El cliente dispara la petición y abre WhatsApp
+    // sin esperar la respuesta"). Por eso no hay preventDefault ni
+    // await: el navegador sigue con la navegación del <a> normal.
+    sendQuoteLog(
+      buildQuoteLogRequest({
+        items,
+        ref,
+        subtotalCents,
+        userAgent: navigator.userAgent,
+        disponibilidad: disponibilidadPorSku,
+      }),
+    );
+    trackEvent("whatsapp_click", {
+      value: subtotalCents / 100,
+      currency: "GTQ",
+      ref,
+    });
+    // El pedido ya salió: el carrito se vacía para que el siguiente
+    // empiece de cero, con su propio `createdAt` y su propio Ref.
+    //
+    // En un setTimeout y no aquí mismo: vaciar sincrónicamente hace que
+    // React re-renderice DENTRO del clic —el carrito pasa a vacío y este
+    // <a> se desmonta— antes de que el navegador ejecute la navegación
+    // del enlace, y WhatsApp no llega a abrirse. Con el temporizador, la
+    // navegación ya arrancó cuando el carrito se limpia.
+    setTimeout(onPedidoEnviado, 0);
+  }
+
   return (
     <div className="border-borde-tarjeta rounded-card-lg flex flex-col gap-5 border p-8">
       <div className="flex items-center justify-between gap-4">
@@ -331,35 +371,9 @@ function OrderSummary({
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={() => {
-          // docs/PLAN.md § 6.4: se dispara y se olvida — nunca se espera
-          // esta llamada ni se le deja frenar la apertura de WhatsApp
-          // (CLAUDE.md: "El cliente dispara la petición y abre WhatsApp
-          // sin esperar la respuesta"). Por eso no hay preventDefault ni
-          // await: el navegador sigue con la navegación del <a> normal.
-          sendQuoteLog(
-            buildQuoteLogRequest({
-              items,
-              ref,
-              subtotalCents,
-              userAgent: navigator.userAgent,
-              disponibilidad: disponibilidadPorSku,
-            }),
-          );
-          trackEvent("whatsapp_click", {
-            value: subtotalCents / 100,
-            currency: "GTQ",
-            ref,
-          });
-          // El pedido ya salió: el carrito se vacía para que el siguiente
-          // empiece de cero, con su propio `createdAt` y su propio Ref.
-          //
-          // En un setTimeout y no aquí mismo: vaciar sincrónicamente hace que
-          // React re-renderice DENTRO del clic —el carrito pasa a vacío y este
-          // <a> se desmonta— antes de que el navegador ejecute la navegación
-          // del enlace, y WhatsApp no llega a abrirse. Con el temporizador, la
-          // navegación ya arrancó cuando el carrito se limpia.
-          setTimeout(onPedidoEnviado, 0);
+        onClick={registrarPedido}
+        onAuxClick={(evento) => {
+          if (evento.button === 1) registrarPedido();
         }}
         className="bg-negro mt-1 rounded-full px-6 py-4 text-center text-[16px] text-white"
       >

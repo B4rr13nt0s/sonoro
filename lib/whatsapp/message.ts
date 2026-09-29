@@ -48,7 +48,9 @@ export function buildOrderMessage(params: {
   ].join("\n");
 }
 
-function formatearLinea(item: CartItem, disponibilidad: Disponibilidad | undefined): string {
+// Exportada porque el registro de pedidos manda esta MISMA línea a la hoja
+// (lib/quoteLog/payload.ts): vendedor y hoja leen el pedido igual.
+export function formatearLinea(item: CartItem, disponibilidad: Disponibilidad | undefined): string {
   const precioUnitario = formatQ(item.unitPriceCents);
   const sufijo = item.qty > 1 ? " c/u" : "";
   const estado = marcaDisponibilidad(disponibilidad);

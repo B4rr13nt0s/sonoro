@@ -5,7 +5,13 @@
 import { z } from "zod";
 
 import { acumularCambios, CambioCarritoSchema, type CambioCarrito } from "./reconcile.ts";
-import { CartSchema, SCHEMA_VERSION, crearCarritoVacio, type Cart } from "./types.ts";
+import {
+  CartSchema,
+  MAX_CANTIDAD_POR_LINEA,
+  SCHEMA_VERSION,
+  crearCarritoVacio,
+  type Cart,
+} from "./types.ts";
 
 export const CART_STORAGE_KEY = "sonoro:cart";
 export const CAMBIOS_STORAGE_KEY = "sonoro:cart-cambios";
@@ -21,6 +27,21 @@ export const CAMBIOS_STORAGE_KEY = "sonoro:cart-cambios";
 // reexporta lib/cart/index.ts, no es API pública del módulo.
 export type Migracion = (raw: Record<string, unknown>) => Cart | null;
 export const MIGRATIONS: Record<number, Migracion> = {};
+
+// Un carrito guardado antes del tope de 99 por línea (septiembre de 2026)
+// puede traer 198 —agregar 99 dos veces desde la ficha sumaba eso—. Sin
+// toparlo al cargar, salía así en /carrito y en el mensaje de WhatsApp, y el
+// «−» lo bajaba de golpe a 99. Acá es donde entra todo carrito guardado.
+function toparCantidades(cart: Cart): Cart {
+  if (cart.items.every((item) => item.qty <= MAX_CANTIDAD_POR_LINEA)) return cart;
+  return {
+    ...cart,
+    items: cart.items.map((item) => ({
+      ...item,
+      qty: Math.min(item.qty, MAX_CANTIDAD_POR_LINEA),
+    })),
+  };
+}
 
 export function loadCart(): Cart {
   if (typeof window === "undefined") return crearCarritoVacio(new Date().toISOString());
@@ -41,11 +62,15 @@ export function loadCart(): Cart {
       if (!migrado) return crearCarritoVacio(new Date().toISOString());
 
       const resultado = CartSchema.safeParse(migrado);
-      return resultado.success ? resultado.data : crearCarritoVacio(new Date().toISOString());
+      return resultado.success
+        ? toparCantidades(resultado.data)
+        : crearCarritoVacio(new Date().toISOString());
     }
 
     const resultado = CartSchema.safeParse(parsed);
-    return resultado.success ? resultado.data : crearCarritoVacio(new Date().toISOString());
+    return resultado.success
+      ? toparCantidades(resultado.data)
+      : crearCarritoVacio(new Date().toISOString());
   } catch {
     return crearCarritoVacio(new Date().toISOString());
   }

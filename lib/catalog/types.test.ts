@@ -49,12 +49,16 @@ test("pareceValorMangeado no marca los skus reales del catálogo", () => {
 // se rompe en cuanto una fila real trae un campo con coma o salto de línea
 // entre comillas (specs_ficha ya los tiene hoy, ej. CAK42 "Corriente,
 // tier..."), contando de más y produciendo skus falsos a partir de la
-// segunda mitad de una fila partida. Mismas opciones que
-// scripts/import-catalog.ts usa para parsear el mismo archivo.
+// segunda mitad de una fila partida.
+//
+// Lee data/source/catalogo.csv, el registro que el importador genera desde
+// catalogo.xlsx en cada corrida, con TODAS las filas del libro (rechazadas
+// incluidas). Antes leía data/source/productos.csv, la entrada del importador
+// viejo, que ya nadie actualiza: un sku nuevo del libro nunca pasaba por acá.
 function leerSkusDelCsv(): string[] {
   const csvPath = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
-    "../../data/source/productos.csv",
+    "../../data/source/catalogo.csv",
   );
   const raw = readFileSync(csvPath, "utf-8");
   const filas = parse(raw, {
@@ -69,9 +73,9 @@ function leerSkusDelCsv(): string[] {
 // Sin número fijo de filas — CLAUDE.md § Fuente de verdad: el catálogo de
 // prueba crece hacia el catálogo real, y esta prueba debe seguir pasando
 // sin tocarla cada vez que se importa un producto nuevo.
-test("los sku de data/source/productos.csv pasan SKU_REGEX y ninguno está mangeado", () => {
+test("los sku de data/source/catalogo.csv pasan SKU_REGEX y ninguno está mangeado", () => {
   const skus = leerSkusDelCsv();
-  assert.ok(skus.length > 0, "data/source/productos.csv no debería estar vacío");
+  assert.ok(skus.length > 0, "data/source/catalogo.csv no debería estar vacío");
 
   for (const sku of skus) {
     assert.match(sku, SKU_REGEX, `sku "${sku}" del CSV no pasa SKU_REGEX`);

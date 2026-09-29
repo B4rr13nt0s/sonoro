@@ -159,6 +159,7 @@ export type ProductoTarjeta = Pick<
   | "nombre"
   | "marca"
   | "categoria"
+  | "categoriasSecundarias"
   | "precioCents"
   | "disponibilidad"
   | "destacado"

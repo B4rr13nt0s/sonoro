@@ -17,7 +17,7 @@ export default function GarantiasPage() {
     <LegalPage
       etiqueta="Legal"
       titulo="Garantías"
-      actualizado="Última actualización: 24 de agosto de 2026"
+      actualizado="Última actualización: 28 de septiembre de 2026"
       secciones={[
         {
           titulo: "Alcance",
@@ -43,7 +43,7 @@ export default function GarantiasPage() {
         {
           titulo: "Qué anula la garantía",
           parrafos: [
-            "La garantía se pierde si hay evidencia de mal uso del producto, o de una instalación incorrecta.",
+            "La garantía se pierde si hay evidencia de mal uso del producto, o de una instalación incorrecta hecha fuera de Sonoro.",
             "Si el producto lo instaló un tercero y hay evidencia de que la instalación fue incorrecta, la garantía no cubre ese daño.",
           ],
         },

@@ -17,7 +17,7 @@ export default function PrivacidadPage() {
     <LegalPage
       etiqueta="Legal"
       titulo="Aviso de privacidad"
-      actualizado="Última actualización: 24 de agosto de 2026"
+      actualizado="Última actualización: 28 de septiembre de 2026"
       secciones={[
         {
           titulo: "Qué información recopilamos",
@@ -25,6 +25,7 @@ export default function PrivacidadPage() {
             "El carrito de compras vive únicamente en tu navegador (localStorage) — no llega a Sonoro a menos que decidas enviarlo.",
             "Cuando presionas «Pedir por WhatsApp», se abre una conversación de WhatsApp con el pedido ya redactado; a partir de ahí, lo que escribes y tu número de WhatsApp los ve Sonoro como en cualquier conversación de WhatsApp.",
             "Guardamos un registro interno de las cotizaciones que se envían por WhatsApp — los productos cotizados, la referencia del pedido, el subtotal y datos técnicos básicos del navegador — para dar seguimiento a pedidos y entender qué se cotiza más.",
+            "Usamos Google Analytics para medir cómo se usa el sitio: las páginas que se visitan, los productos que se ven y se agregan al carrito, y los pedidos que se envían por WhatsApp, con su referencia y su monto. Google Analytics guarda cookies en tu navegador para distinguir una visita de otra.",
           ],
         },
         {
@@ -44,18 +45,19 @@ export default function PrivacidadPage() {
           parrafos: [
             "La conversación de WhatsApp queda en la plataforma de WhatsApp/Meta, como cualquier otra conversación tuya en esa aplicación.",
             "El registro interno de cotizaciones se guarda en una hoja de cálculo de uso interno de Sonoro. No vendemos ni compartimos tu información con terceros de publicidad.",
+            "Los datos de uso del sitio los recibe y procesa Google, a través de Google Analytics.",
           ],
         },
         {
           titulo: "Cuánto tiempo se conserva",
           parrafos: [
-            "El carrito se conserva en tu navegador hasta que lo borres tú mismo. El registro interno de cotizaciones se conserva mientras sea útil para dar seguimiento a pedidos.",
+            "El carrito se conserva en tu navegador hasta que envías el pedido por WhatsApp —en ese momento se vacía— o hasta que lo borres tú mismo. El registro interno de cotizaciones se conserva mientras sea útil para dar seguimiento a pedidos.",
           ],
         },
         {
           titulo: "Tus opciones",
           parrafos: [
-            "Puedes borrar el carrito desde tu propio navegador en cualquier momento. Si quieres que eliminemos tu registro de una cotización específica, escríbenos por WhatsApp.",
+            "Puedes borrar el carrito desde tu propio navegador en cualquier momento, y bloquear o borrar las cookies de Google Analytics desde la configuración de tu navegador. Si quieres que eliminemos tu registro de una cotización específica, escríbenos por WhatsApp.",
           ],
         },
         {

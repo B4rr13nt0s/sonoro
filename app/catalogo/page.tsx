@@ -7,7 +7,14 @@ import { Pagination } from "@/components/catalog/Pagination";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildCatalogoCompletoHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
-import { listBrands, listProducts, parseOrden, parsePagina } from "@/lib/catalog/index.ts";
+import {
+  listBrands,
+  listProducts,
+  nombreDeMarca,
+  parseOrden,
+  parsePagina,
+  primeroDeQuery,
+} from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 import { textosCatalogo } from "@/lib/seo/textos.ts";
 
@@ -24,10 +31,6 @@ import { textosCatalogo } from "@/lib/seo/textos.ts";
 //
 // Existe porque /productos son solo los marcados `destacado` (72 de 320) y
 // el sitio no tenía ninguna ruta para recorrer el catálogo entero.
-function primeroDeQuery(valor: string | string[] | undefined): string | undefined {
-  return Array.isArray(valor) ? valor[0] : valor;
-}
-
 export async function generateMetadata(props: PageProps<"/catalogo">): Promise<Metadata> {
   const searchParams = await props.searchParams;
   const marcaSlug = primeroDeQuery(searchParams.marca);
@@ -36,9 +39,7 @@ export async function generateMetadata(props: PageProps<"/catalogo">): Promise<M
   // marca/page preservados.
   const canonical = buildCatalogoCompletoHref({ marca: marcaSlug, page });
 
-  const marcaFiltro = marcaSlug
-    ? ((await listBrands()).find((marca) => marca.slug === marcaSlug)?.nombre ?? marcaSlug)
-    : undefined;
+  const marcaFiltro = nombreDeMarca(await listBrands(), marcaSlug);
   const { total } = await listProducts({ marca: marcaFiltro, activo: true });
   const { titulo, descripcion } = textosCatalogo({ total, marcaFiltro, page });
 
@@ -58,9 +59,7 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
   // Igual que en /catalogo/[categoria]: un slug que no resuelve a marca real
   // filtra por el slug crudo — "sin resultados", no el catálogo completo sin
   // filtrar por error.
-  const marcaNombre = marcaSlug
-    ? (marcas.find((marca) => marca.slug === marcaSlug)?.nombre ?? marcaSlug)
-    : undefined;
+  const marcaNombre = nombreDeMarca(marcas, marcaSlug);
 
   const { items, total, page, pageSize } = await listProducts({
     marca: marcaNombre,

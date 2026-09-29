@@ -38,6 +38,7 @@ import { ProductoSchema, type Producto } from "../lib/catalog/types.ts";
 import { formatQ } from "../lib/format/precio.ts";
 import { leerLibro, validarLibro, type LibroCrudo } from "./catalogo/contrato.ts";
 import { detectarAlertas } from "./catalogo/alertas.ts";
+import { colisionesDeSlug } from "./catalogo/marcas.ts";
 import { serializarCsv } from "./catalogo/csv.ts";
 import { normalizarFila } from "./catalogo/filas.ts";
 import { defHoja } from "./catalogo/hojas.ts";
@@ -171,6 +172,11 @@ function main(): void {
   const productosActivos = productosValidos.filter((p) => p.activo);
 
   const brands = agruparPor(productosActivos, (p) => p.marca);
+  const colisiones = colisionesDeSlug(brands);
+  if (colisiones.length > 0) {
+    abortar(colisiones);
+    return;
+  }
   // Categorías: lista fija de CATEGORIAS_SITIO, no agrupada dinámicamente
   // como las marcas — una categoría sin productos todavía sigue generando su
   // ruta estática con 0 productos en vez de devolver 404. El conteo suma los
@@ -190,16 +196,26 @@ function main(): void {
   mkdirSync(path.dirname(RUTA_CATALOG), { recursive: true });
   mkdirSync(path.dirname(RUTA_IMPORT_ERRORS), { recursive: true });
 
-  writeFileSync(RUTA_CATALOG, JSON.stringify(productosValidos, null, 2) + "\n");
-  writeFileSync(RUTA_BRANDS, JSON.stringify(brands, null, 2) + "\n");
-  writeFileSync(RUTA_TAXONOMY, JSON.stringify(taxonomy, null, 2) + "\n");
-  writeFileSync(RUTA_INACTIVE_SLUGS, JSON.stringify(inactiveSlugs, null, 2) + "\n");
-  // Lo que proxy.ts necesita para responder 404 a una página de listado que
-  // no existe, sin cargar el catálogo (lib/catalog/conteos.ts).
-  writeFileSync(
-    RUTA_CONTEOS,
-    JSON.stringify(construirConteos(productosValidos, brands, CATEGORIAS_SITIO), null, 2) + "\n",
-  );
+  // Con filas rechazadas NO se reescribe lo publicado: data/catalog.json es
+  // además la BASE de la corrida siguiente —contra ella se calculan las
+  // alertas y el diff de precios—, y escribirlo sin las filas rechazadas la
+  // borraba. Una fila rechazada por un error en la misma edición que le
+  // cambió el precio perdía su diff al corregirla, y si en vez de corregirla
+  // se borraba, la alerta de «fila que desaparece del libro» no saltaba. El
+  // build falla igual (exitCode abajo), así que no se pierde nada: el catálogo
+  // queda en la última importación buena hasta que el libro pase entero.
+  if (rechazos.length === 0) {
+    writeFileSync(RUTA_CATALOG, JSON.stringify(productosValidos, null, 2) + "\n");
+    writeFileSync(RUTA_BRANDS, JSON.stringify(brands, null, 2) + "\n");
+    writeFileSync(RUTA_TAXONOMY, JSON.stringify(taxonomy, null, 2) + "\n");
+    writeFileSync(RUTA_INACTIVE_SLUGS, JSON.stringify(inactiveSlugs, null, 2) + "\n");
+    // Lo que proxy.ts necesita para responder 404 a una página de listado que
+    // no existe, sin cargar el catálogo (lib/catalog/conteos.ts).
+    writeFileSync(
+      RUTA_CONTEOS,
+      JSON.stringify(construirConteos(productosValidos, brands, CATEGORIAS_SITIO), null, 2) + "\n",
+    );
+  }
   // Todas las filas del libro, rechazadas incluidas: es el registro de la
   // fuente, no del catálogo publicado.
   writeFileSync(RUTA_CSV_REGISTRO, serializarCsv(filas));
@@ -217,10 +233,9 @@ function main(): void {
 
   // Toda fila rechazada bloquea el build (npm run build = import:catalog &&
   // next build), no solo un ABORT total — "mejor no actualizar que publicar
-  // un catálogo roto" aplica igual a una fila individual. Los archivos de
-  // salida ya se escribieron (a diferencia de abortar()): con exitCode ≠ 0 el
-  // deploy no llega a publicarse de todas formas, y dejarlos en el
-  // filesystem local solo ayuda a diagnosticar qué falló.
+  // un catálogo roto" aplica igual a una fila individual. Se escribieron el
+  // CSV de registro y los reportes, para diagnosticar; los datos publicados
+  // quedaron como estaban (ver arriba).
   if (rechazos.length > 0) {
     console.error(
       `✘ ${rechazos.length} fila(s) rechazada(s) — ver reports/import-errors.md. El build no continúa.`,
@@ -297,7 +312,10 @@ function generarImportErrorsMd(rechazos: AvisoFila[], avisos: Avisos, alertas: s
   if (rechazos.length === 0) {
     lineas.push("Sin filas rechazadas en esta corrida.");
   } else {
-    lineas.push(`${rechazos.length} fila(s) rechazada(s) — no están en catalog.json:`, "");
+    lineas.push(
+      `${rechazos.length} fila(s) rechazada(s) — catalog.json no se actualizó en esta corrida:`,
+      "",
+    );
     for (const rechazo of rechazos) {
       lineas.push(`- ${rechazo.donde} (sku "${rechazo.sku}"): ${rechazo.detalle}`);
     }

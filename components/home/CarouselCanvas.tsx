@@ -10,6 +10,7 @@ import {
   FRAME_HEIGHT,
   FRAME_RADIUS,
   MODEL_IDS,
+  MODELS,
   type ModelId,
 } from "@/lib/models3d.ts";
 
@@ -282,9 +283,13 @@ function Escena({
       />
 
       {/* Sin shadow maps en tiempo real: una sombra de contacto sobre el
-          plano de apoyo cuesta un render de baja resolución y alcanza. */}
+          plano de apoyo cuesta un render de baja resolución y alcanza.
+          El plano es la BASE del modelo en cuadro —la misma cuenta con la
+          que ProductModel3D lo baja para centrarlo—, no la del más alto:
+          fijo en -FRAME_HEIGHT/2 solo el subwoofer tocaba su sombra, y los
+          modelos bajos flotaban varios centímetros encima. */}
       <ContactShadows
-        position={[0, -FRAME_HEIGHT / 2, 0]}
+        position={[0, -(MODELS[actual].height * MODELS[actual].displayScale) / 2, 0]}
         scale={FRAME_RADIUS * 6}
         blur={2.6}
         far={FRAME_HEIGHT}
@@ -335,14 +340,38 @@ function Deslizador({
   const grupoActual = useRef<Group>(null);
   const grupoSiguiente = useRef<Group>(null);
   const inicio = useRef(0);
-
-  useEffect(() => {
-    t.current = 1;
-    inicio.current = performance.now();
-    // Solo depende del índice: cada cambio arranca una transición nueva.
-  }, [index]);
+  /**
+   * El índice con el que se colocaron los slides. El cambio se detecta ACÁ,
+   * en el frame, igual que en Camara (indiceColocado): con un useEffect
+   * pasivo, los frames entre el commit y el efecto dibujaban el producto
+   * nuevo ya centrado y después saltaba a un costado para deslizarse, y el
+   * efecto también corría al montar, animando un deslizamiento desde el
+   * modelo anterior cada vez que se volvía al inicio.
+   */
+  const indiceColocado = useRef(index);
+  /**
+   * El ángulo del modelo en cuadro y desde dónde arranca su giro. Fuera de
+   * «girando» el modelo SE QUEDA en el ángulo que tenía: antes volvía a 0, y
+   * agarrarlo en plena vuelta lo hacía saltar a su orientación base. Al
+   * retomar el giro, la vuelta arranca desde ahí y termina exacta. Cambiar de
+   * producto vuelve a 0: el anterior no arrastra su ángulo.
+   */
+  const anguloBase = useRef(0);
+  const faseColocada = useRef(fase);
 
   useFrame(() => {
+    if (indiceColocado.current !== index) {
+      indiceColocado.current = index;
+      t.current = 1;
+      inicio.current = performance.now();
+      anguloBase.current = 0;
+      anguloRef.current = 0;
+    }
+    if (faseColocada.current !== fase) {
+      faseColocada.current = fase;
+      if (fase === "girando") anguloBase.current = anguloRef.current;
+    }
+
     if (t.current > 0) {
       const k = Math.min((performance.now() - inicio.current) / TRANSICION_MS, 1);
       t.current = 1 - easeInOutCubic(k);
@@ -374,7 +403,9 @@ function Deslizador({
 
     // Solo gira el modelo que está en cuadro; los vecinos esperan su turno
     // en la pose predeterminada.
-    anguloRef.current = anguloDelCiclo(fase, performance.now() - faseInicio);
+    if (fase === "girando") {
+      anguloRef.current = anguloBase.current + anguloDelCiclo(fase, performance.now() - faseInicio);
+    }
   });
 
   return (
@@ -449,6 +480,8 @@ function Camara({
   } | null>(null);
   /** La distancia de reposo depende del tamaño del canvas, que llega tarde. */
   const distanciaCalibrada = useRef(false);
+  /** La distancia de reposo con la que se colocó la vista por última vez. */
+  const reposoAplicado = useRef(distanciaReposo);
   /**
    * Al cambiar de producto la vista vuelve a su pose predeterminada SIN
    * interpolar: el usuario pidió llegar al siguiente producto ya encuadrado,
@@ -470,6 +503,17 @@ function Camara({
       distanciaCalibrada.current = true;
       v.distancia = distanciaReposo;
       v.distanciaSuave = distanciaReposo;
+      reposoAplicado.current = distanciaReposo;
+    } else if (distanciaCalibrada.current && distanciaReposo !== reposoAplicado.current) {
+      // El encuadre cambió después de calibrar: se giró el teléfono, se
+      // cambió el ancho de la ventana o el chrome pasó de móvil a sm. Sin
+      // esto la vista seguía con la distancia del tamaño anterior hasta el
+      // próximo producto, con el modelo chico o metido en las esquinas. Se
+      // escala en la misma proporción, para conservar el zoom del usuario.
+      const k = distanciaReposo / reposoAplicado.current;
+      v.distancia = MathUtils.clamp(v.distancia * k, distanciaMin, distanciaMax);
+      v.distanciaSuave = MathUtils.clamp(v.distanciaSuave * k, distanciaMin, distanciaMax);
+      reposoAplicado.current = distanciaReposo;
     }
 
     if (indiceColocado.current !== index) {
@@ -478,6 +522,7 @@ function Camara({
       v.polar = POLAR_REPOSO;
       v.distancia = distanciaReposo;
       v.distanciaSuave = distanciaReposo;
+      reposoAplicado.current = distanciaReposo;
       v.mira.set(0, 0, 0);
       vuelta.current = null;
       Object.assign(pendienteRef.current, SIN_PENDIENTE);

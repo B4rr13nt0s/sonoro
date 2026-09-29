@@ -71,8 +71,15 @@ export function emparejarFotosConSkus(
     porSku.set(sku, lista);
   }
 
+  // Por puntos de código, no con localeCompare: el orden decide cuál foto
+  // es imagenes[0] —la ampliada en la ficha, el imagenSnapshot del carrito,
+  // la del JSON-LD— y no puede cambiar entre máquinas ni versiones de ICU
+  // (mismo criterio que lib/catalog/orden.ts). Para vistas en minúsculas y sin
+  // acentos es el mismo orden alfabético. El nombre de archivo desempata una
+  // misma vista en dos formatos, que si no quedaba en el orden del disco.
+  const comparar = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
   for (const lista of porSku.values()) {
-    lista.sort((a, b) => a.vista.localeCompare(b.vista, "es"));
+    lista.sort((a, b) => comparar(a.vista, b.vista) || comparar(a.archivo, b.archivo));
   }
 
   return { porSku, ignorados };

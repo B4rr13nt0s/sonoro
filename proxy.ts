@@ -61,8 +61,23 @@ function inexistente(request: NextRequest) {
   return noIndexar(NextResponse.rewrite(new URL("/_not-found", request.nextUrl), { status: 404 }));
 }
 
+// La ruta DECODIFICADA, que es la que ve la página: Next le pasa el slug ya
+// decodificado. Comparar la ruta cruda dejaba pasar /producto/memphis%2Dsrxp82v2
+// —el slug de un producto retirado con el guion codificado— con 200 y sin
+// noindex, y daba 404 a /catalogo/%73ubwoofers aunque la página existe. Una
+// secuencia % inválida no es ninguna ruta del sitio: queda tal cual y no
+// coincide con nada.
+function decodificar(pathname: string): string {
+  try {
+    return decodeURIComponent(pathname);
+  } catch {
+    return pathname;
+  }
+}
+
 export function proxy(request: NextRequest) {
-  const { pathname, searchParams } = request.nextUrl;
+  const { searchParams } = request.nextUrl;
+  const pathname = decodificar(request.nextUrl.pathname);
   const [, seccion, slug] = pathname.match(/^\/([a-z]+)\/([^/]+)$/) ?? [];
 
   if (seccion === "producto" && INACTIVE_SLUGS.has(slug)) return retirado(request);
@@ -71,5 +86,24 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/producto/:slug", "/catalogo", "/catalogo/:slug", "/productos", "/marcas/:slug"],
+  matcher: [
+    // Las fichas, SIN los prefetch: cada tarjeta de un listado precarga su
+    // ficha, y hacerlas pasar a todas por el proxy (una función por petición)
+    // para buscar entre 8 slugs retirados era pagar 24 invocaciones por
+    // página. Las tarjetas solo enlazan productos activos, así que un
+    // prefetch nunca es de un retirado; y si lo fuera, la página igual
+    // muestra el aviso de retiro. El 410 importa en la navegación y para
+    // Google, que no mandan estas cabeceras.
+    {
+      source: "/producto/:slug",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+    "/catalogo",
+    "/catalogo/:slug",
+    "/productos",
+    "/marcas/:slug",
+  ],
 };

@@ -11,6 +11,7 @@ import {
   MAX_QTY,
   MAX_REF,
   MAX_SKU,
+  MAX_TEXTO,
   MAX_USER_AGENT,
 } from "./types.ts";
 
@@ -177,10 +178,22 @@ test("MAX_BODY_BYTES: el cuerpo válido más grande entra", () => {
       qty: MAX_QTY,
       unitPriceCents: 100_000_000,
       estado: "E".repeat(MAX_ESTADO),
+      texto: "T".repeat(MAX_TEXTO),
     })),
     subtotalCents: 100_000_000,
     userAgent: "U".repeat(MAX_USER_AGENT),
   };
   assert.equal(decideQuoteLogForward(alTope, ENV_COMPLETO).forward, true);
   assert.ok(Buffer.byteLength(JSON.stringify(alTope), "utf8") <= MAX_BODY_BYTES);
+});
+
+test("decideQuoteLogForward: un pedido de más de Q 1,000,000 sí se registra", () => {
+  // 15 unidades del producto más caro (Q 70,000): el subtotal pasa el tope
+  // de UN precio, y antes el pedido entero se perdía del registro.
+  const body = {
+    ...BODY_VALIDO,
+    items: [{ sku: "X", nombre: "X", qty: 15, unitPriceCents: 7_000_000 }],
+    subtotalCents: 105_000_000,
+  };
+  assert.equal(decideQuoteLogForward(body, ENV_COMPLETO).forward, true);
 });

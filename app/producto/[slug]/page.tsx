@@ -8,6 +8,7 @@ import { ViewProductTracker } from "@/components/analytics/ViewProductTracker";
 import { PildoraDisponibilidad } from "@/components/catalog/PildoraDisponibilidad";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ProductGallery } from "@/components/media/ProductGallery";
+import { claseBoton } from "@/components/ui/boton.ts";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import { getProduct, listAllProducts, listBrands, listCategories } from "@/lib/catalog/index.ts";
 import { buildCatalogHref, buildMarcaHref } from "@/lib/catalog/href.ts";
@@ -37,9 +38,15 @@ export async function generateMetadata(props: PageProps<"/producto/[slug]">): Pr
   // solo evitamos que Google indexe el título/descripción del producto
   // como si siguiera a la venta.
   if (!producto.activo) {
+    // La vista previa de un enlace viejo tiene que decir lo mismo que la
+    // página: sin su propio openGraph heredaba el título y la descripción
+    // genéricos del sitio, junto a la tarjeta del producto.
+    const descripcion = `${producto.nombre} ya no está a la venta en Sonoro.`;
     return {
       title: "Producto ya no disponible",
+      description: descripcion,
       robots: { index: false, follow: false },
+      openGraph: { title: "Producto ya no disponible", description: descripcion },
     };
   }
 
@@ -85,19 +92,16 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
         <p className="text-texto-secundario max-w-[440px] text-[17px]">
           Este producto dejó de venderse en Sonoro. Puede seguir viendo el resto del catálogo.
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+        {/* claseBoton, igual que la 404: escritas a mano, estas clases ya se
+            habían apartado del par de botones del sitio (otro borde, sin la
+            escala del hover). */}
+        <div className="flex w-full max-w-[480px] flex-col gap-3 pt-2 sm:flex-row">
           {categoriaSlug ? (
-            <Link
-              href={`/catalogo/${categoriaSlug}`}
-              className="bg-negro rounded-full px-6 py-3.75 text-[16px] text-white"
-            >
+            <Link href={`/catalogo/${categoriaSlug}`} className={claseBoton("principal")}>
               Ver {producto.categoria}
             </Link>
           ) : null}
-          <Link
-            href="/"
-            className="border-borde-tarjeta rounded-full border px-6 py-3.75 text-[16px]"
-          >
+          <Link href="/" className={claseBoton("secundario")}>
             Ir a Inicio
           </Link>
         </div>

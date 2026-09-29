@@ -282,7 +282,7 @@ def main():
             bpy.data.objects.remove(o, do_unlink=True)
 
     obj = join_objects(parts, "subwoofer")
-    finalize(obj, "subwoofer", expected_dims=(0.315, 0.315, 0.165))
+    finalize(obj, "subwoofer-2", expected_dims=(0.315, 0.315, 0.165))
 
 
 if __name__ == "__main__":

@@ -64,3 +64,18 @@ test("sendQuoteLog: es fire-and-forget — retorna antes de que el fetch resuelv
   sendQuoteLog(PAYLOAD, fetchFalso);
   assert.equal(resuelto, false); // sendQuoteLog ya retornó sin esperar el fetch
 });
+
+test("sendQuoteLog: sin keepalive cuando el cuerpo pasa el límite de los navegadores", async () => {
+  const { MAX_KEEPALIVE_BYTES } = await import("./send.ts");
+  const inits: (RequestInit | undefined)[] = [];
+  const fetchFalso: typeof fetch = (_url, init) => {
+    inits.push(init);
+    return Promise.resolve(new Response(null, { status: 204 }));
+  };
+  const chico = { ref: "SNR-1", items: [], subtotalCents: 0, userAgent: "UA" };
+  const grande = { ...chico, userAgent: "U".repeat(MAX_KEEPALIVE_BYTES) };
+  sendQuoteLog(chico, fetchFalso);
+  sendQuoteLog(grande, fetchFalso);
+  assert.equal(inits[0]?.keepalive, true);
+  assert.equal(inits[1]?.keepalive, false);
+});

@@ -280,3 +280,27 @@ test("avisos pendientes: lo marcado como visto no vuelve aunque otra pestaña lo
   });
   assert.deepEqual(leidos, [precio("B", 1, 2)]);
 });
+
+test("loadCart: una línea guardada con más de 99 unidades se topa en 99", async () => {
+  const { loadCart, saveCart } = await import("./storage.ts");
+  const { crearCarritoVacio, MAX_CANTIDAD_POR_LINEA } = await import("./types.ts");
+  const viejo = {
+    ...crearCarritoVacio("2026-08-21T09:00:00.000Z"),
+    items: [
+      {
+        sku: "SQ12-D2",
+        qty: 198,
+        unitPriceCents: 245000,
+        currency: "GTQ" as const,
+        nombreSnapshot: 'Serie SQ 12" D2',
+        imagenSnapshot: null,
+        addedAt: "2026-08-21T09:00:00.000Z",
+      },
+    ],
+  };
+  const cargado = conLocalStorageVacio(() => {
+    saveCart(viejo);
+    return loadCart();
+  });
+  assert.equal(cargado.items[0].qty, MAX_CANTIDAD_POR_LINEA);
+});

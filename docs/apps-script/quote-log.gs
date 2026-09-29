@@ -48,7 +48,8 @@ const COLUMNAS_DE_TEXTO = [2, 5, 6, 7];
 
 /**
  * Topes de las celdas de texto. Iguales o mayores que los del sitio
- * (lib/quoteLog/types.ts: sku 64, nombre 200), y los de Productos y SKUs muy
+ * (lib/quoteLog/types.ts: sku 64, nombre 200, texto 400, userAgent 400; si
+ * cambian allá, cambian acá), y los de Productos y SKUs muy
  * por encima de un pedido real: hasta septiembre de 2026 Productos se cortaba
  * en 2,000 caracteres —unas 25 líneas— sin aviso, y Unidades y Subtotal
  * contaban productos que la celda ya no mostraba. Una celda de Sheets admite
@@ -56,6 +57,8 @@ const COLUMNAS_DE_TEXTO = [2, 5, 6, 7];
  */
 const MAX_SKU = 64;
 const MAX_NOMBRE = 200;
+const MAX_TEXTO = 400;
+const MAX_USER_AGENT = 400;
 const MAX_PRODUCTOS = 45000;
 const MAX_SKUS = 20000;
 
@@ -133,6 +136,17 @@ function sanear(valor, maximo) {
 }
 
 /**
+ * Precio en el formato del sitio (CLAUDE.md regla 5): «Q 2,450.00», con coma
+ * de miles, dos decimales y espacio duro, igual que formatQ en
+ * lib/format/precio.ts. Apps Script no puede importar esa función: esta es
+ * su copia, y solo la usa lo que la hoja arma por su cuenta.
+ */
+function formatoQ(cents) {
+  const partes = (Math.round(Number(cents) || 0) / 100).toFixed(2).split('.');
+  return 'Q ' + partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + partes[1];
+}
+
+/**
  * Une `partes` con `separador` sin pasar de `maximo` caracteres, cortando
  * entre partes y nunca a mitad de una. Si algo no entra, el final lo dice
  * («… y 3 más»): un pedido incompleto en la hoja tiene que verse incompleto,
@@ -166,15 +180,16 @@ const VENTANA_REENVIO_MIN = 10;
 /**
  * ¿Esto es un reenvío de algo que ya se escribió hace un momento?
  *
- * OJO CON EL REF: no es único por pedido. Se deriva de la fecha de creación
- * del carrito (lib/whatsapp/ref.ts), así que mientras el carrito siga vivo en
- * el navegador —aunque el cliente cambie los productos— el Ref es el mismo.
- * En esta hoja hay pedidos reales que lo comprueban: SNR-S8CAM aparece el
- * 25 de agosto con dos productos distintos.
+ * OJO CON EL REF. Desde el 24 de septiembre de 2026 sale del carrito ENTERO
+ * —su fecha de creación MÁS su contenido (lib/whatsapp/ref.ts)—, y el carrito
+ * se vacía al pedir, así que dos pedidos distintos ya no comparten Ref. Antes
+ * salía solo de la fecha, y en esta hoja quedó SNR-S8CAM el 25 de agosto con
+ * dos pedidos distintos; los Ref viejos pueden repetirse.
  *
- * Por eso NO alcanza con mirar el Ref: descartar por Ref a secas tira
- * pedidos buenos de clientes que vuelven desde el mismo navegador. Se
- * comparan Ref, unidades y subtotal, y solo dentro de los últimos minutos:
+ * Aun así NO alcanza con mirar el Ref: el mismo carrito pedido dos veces (el
+ * cliente vuelve atrás y reenvía) da el mismo Ref para un pedido que puede
+ * ser real. Se comparan Ref, unidades y subtotal, y solo dentro de los
+ * últimos minutos:
  * lo que se quiere atrapar es el reintento de red del mismo envío, que llega
  * en segundos, no un pedido igual hecho otro día.
  */
@@ -255,16 +270,19 @@ function doPost(e) {
       const nombre = String(it.nombre || '').slice(0, MAX_NOMBRE);
       const qty = Number(it.qty) || 0;
       const cents = Number(it.unitPriceCents) || 0;
-      // La misma marca que la línea del mensaje de WhatsApp —hoy «bajo
-      // pedido»; lo agotado ya no se puede pedir—, que el sitio manda armada
-      // en `estado`: espera confirmación de existencias. Lo disponible no
-      // trae el campo y no lleva marca.
+      // La línea la manda el sitio YA ARMADA en `texto`: es la misma del
+      // mensaje de WhatsApp, así que la hoja y el vendedor leen el pedido
+      // igual, y un cambio de formato no obliga a reimplementar este script.
+      // Sin `texto` (una pestaña con el sitio anterior), se arma como antes,
+      // con la marca de `estado` —hoy «bajo pedido»— y el precio en el
+      // formato del sitio (Q 2,450.00).
+      const texto = String(it.texto || '').slice(0, MAX_TEXTO);
       const estado = String(it.estado || '').slice(0, 40);
       const marca = estado ? ' · ' + estado : '';
 
       unidades += qty;
       skus.push(sku);
-      lineas.push(qty + 'x ' + sku + ' — ' + nombre + ' @ Q ' + (cents / 100).toFixed(2) + marca);
+      lineas.push(texto || qty + 'x ' + sku + ' — ' + nombre + ' @ ' + formatoQ(cents) + marca);
     }
 
     // El subtotal se RECALCULA aquí en vez de confiar en el que manda el
@@ -276,9 +294,9 @@ function doPost(e) {
     }
 
     const enviado = Number(datos.subtotalCents);
-    let origen = String(datos.userAgent || '').slice(0, 200);
+    let origen = String(datos.userAgent || '').slice(0, MAX_USER_AGENT);
     if (!isNaN(enviado) && enviado !== subtotalCents) {
-      origen = '[subtotal recibido: ' + (enviado / 100).toFixed(2) + '] ' + origen;
+      origen = '[subtotal recibido: ' + formatoQ(enviado) + '] ' + origen;
     }
 
     const fila = [
@@ -288,7 +306,7 @@ function doPost(e) {
       subtotalCents / 100,
       sanear(cortar(lineas, '\n', MAX_PRODUCTOS), MAX_PRODUCTOS),
       sanear(cortar(skus, ', ', MAX_SKUS), MAX_SKUS),
-      sanear(origen, 240),
+      sanear(origen, MAX_USER_AGENT + 40),
     ];
 
     // Dos pedidos simultáneos pueden escribir en la misma fila si no se

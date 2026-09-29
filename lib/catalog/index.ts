@@ -25,27 +25,30 @@ export const listCategories = adapter.listCategories;
 // /buscar (la búsqueda del lado del cliente necesita el catálogo completo en
 // memoria del navegador, filtra ahí, no aquí).
 //
-// Pide páginas del tamaño más grande posible: con el adaptador estático sale
-// todo en una vuelta. Con páginas de 24 hacía 14 llamadas por catálogo, y cada
-// una volvía a filtrar los 320 productos — en cada página del sitio, porque
-// app/layout.tsx la usa. El bucle sigue para un adaptador que tope el tamaño.
+// Pide primero TODO en una página: con el adaptador estático sale en una
+// vuelta. (Con páginas de 24 hacía 14 llamadas por catálogo, y cada una
+// volvía a filtrar los 320 productos, en cada página del sitio: app/layout.tsx
+// la usa.) Si el adaptador topa el tamaño, las páginas siguientes se piden con
+// el tamaño que él devolvió —el único con el que su desplazamiento cuadra—.
+//
+// Y si una página llega vacía antes de completar el total, LANZA: devolver
+// una lista incompleta en silencio haría que reconcile() quitara del carrito
+// todo lo que faltó como «ya no está a la venta», y que /buscar y
+// generateStaticParams perdieran productos, sin ningún error a la vista.
 export async function listAllProducts(
   filters: Omit<ProductFilters, "page" | "pageSize"> = {},
 ): Promise<Producto[]> {
-  const productos: Producto[] = [];
-  let page = 1;
-  for (;;) {
-    const { items, total } = await listProducts({
-      ...filters,
-      page,
-      pageSize: Number.MAX_SAFE_INTEGER,
-    });
+  const primera = await listProducts({ ...filters, page: 1, pageSize: Number.MAX_SAFE_INTEGER });
+  const productos = [...primera.items];
+  for (let page = 2; productos.length < primera.total; page += 1) {
+    const { items } = await listProducts({ ...filters, page, pageSize: primera.pageSize });
+    if (items.length === 0) {
+      throw new Error(
+        `listAllProducts: la página ${page} llegó vacía con ${productos.length} de ` +
+          `${primera.total} productos; el adaptador no cumple el contrato de paginación.`,
+      );
+    }
     productos.push(...items);
-    // Una página vacía también corta: un adaptador que tope el tamaño pero
-    // calcule el desplazamiento con el tamaño pedido devolvería [] desde la
-    // página 2, y sin esto el bucle no terminaría nunca.
-    if (productos.length >= total || items.length === 0) break;
-    page += 1;
   }
   return productos;
 }
@@ -63,3 +66,4 @@ export type {
   Spec,
 } from "./types.ts";
 export { parsePagina } from "./paginacion.ts";
+export { marcasDelFiltro, nombreDeMarca, primeroDeQuery } from "./filtros.ts";

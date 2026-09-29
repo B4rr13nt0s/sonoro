@@ -47,7 +47,10 @@ export function AgregarConCantidad({
   const inactivo = confirmando || agotado;
 
   function agregar() {
-    const agregado = addItem({
+    // Durante la confirmación el botón no se deshabilita de verdad (ver
+    // abajo), así que el clic se ignora acá.
+    if (inactivo) return;
+    const agregadas = addItem({
       sku: producto.sku,
       qty: cantidad,
       unitPriceCents: producto.precioCents,
@@ -55,17 +58,19 @@ export function AgregarConCantidad({
       nombreSnapshot: producto.nombre,
       imagenSnapshot: producto.imagenes[0]?.url ?? null,
     });
-    // El carrito no lo aceptó (agotado, inactivo): ni confirmación ni evento.
-    if (!agregado) return;
+    // Lo que de verdad entró: 0 si el carrito no lo aceptó o la línea ya
+    // está en el tope de 99, y menos de lo pedido si lo toca. Eso es lo que se
+    // confirma y lo que se mide, no lo que se eligió en el selector.
+    if (agregadas === 0) return;
     trackEvent("add_to_quote", {
       item_id: producto.sku,
       item_name: producto.nombre,
       price: producto.precioCents / 100,
       currency: "GTQ",
-      quantity: cantidad,
+      quantity: agregadas,
     });
 
-    setAnadidas(cantidad);
+    setAnadidas(agregadas);
     if (temporizador.current) clearTimeout(temporizador.current);
     temporizador.current = setTimeout(() => setAnadidas(null), CONFIRMACION_MS);
   }
@@ -78,7 +83,13 @@ export function AgregarConCantidad({
       <button
         type="button"
         onClick={agregar}
-        disabled={inactivo}
+        // Agotado: deshabilitado de verdad, nunca tuvo el foco. Confirmando:
+        // solo aria-disabled. Un `disabled` sobre el botón que el teclado
+        // acaba de pulsar le saca el foco —cae en <body>—, el siguiente Tab
+        // arranca desde el principio de la página, y el anuncio aria-live
+        // queda sobre un control que ya no está en el recorrido.
+        disabled={agotado}
+        aria-disabled={confirmando || undefined}
         aria-live="polite"
         className={inactivo ? claseBotonInactivo(variante) : claseBoton(variante)}
       >

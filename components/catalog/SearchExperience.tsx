@@ -5,45 +5,12 @@ import { useMemo, useState } from "react";
 
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import type { ProductoTarjeta } from "@/lib/catalog/index.ts";
+import { CATEGORIA_SISTEMAS, perteneceACategoria } from "@/lib/catalog/categorias.ts";
 import { compararRelevancia } from "@/lib/catalog/orden.ts";
 
+import { coincide, normalizar, puntuarRelevancia } from "./busqueda.ts";
+
 const INCREMENTO = 8;
-
-// Marcas diacríticas combinantes (U+0300–U+036F) que quedan sueltas después
-// de normalize("NFD") — construido con RegExp + \\u en vez de un literal de
-// clase de caracteres para no dejar marcas combinantes invisibles pegadas al
-// código fuente.
-const MARCAS_DIACRITICAS = new RegExp("[\\u0300-\\u036f]", "g");
-
-function normalizar(texto: string): string {
-  return texto.normalize("NFD").replace(MARCAS_DIACRITICAS, "").toLowerCase().trim();
-}
-
-function coincide(producto: ProductoTarjeta, consultaNormalizada: string): boolean {
-  return (
-    normalizar(producto.nombre).includes(consultaNormalizada) ||
-    normalizar(producto.marca).includes(consultaNormalizada) ||
-    normalizar(producto.sku).includes(consultaNormalizada)
-  );
-}
-
-// Relevancia simple, no una búsqueda con backend: match exacto de sku o
-// nombre pesa más que "empieza con", que pesa más que "contiene en
-// cualquier parte". Suficiente para ordenar sin depender de nada externo.
-function puntuarRelevancia(producto: ProductoTarjeta, consultaNormalizada: string): number {
-  const nombre = normalizar(producto.nombre);
-  const marca = normalizar(producto.marca);
-  const sku = normalizar(producto.sku);
-
-  if (sku === consultaNormalizada) return 100;
-  if (nombre === consultaNormalizada) return 90;
-  if (sku.startsWith(consultaNormalizada)) return 80;
-  if (nombre.startsWith(consultaNormalizada)) return 70;
-  if (marca.startsWith(consultaNormalizada)) return 60;
-  if (nombre.includes(consultaNormalizada)) return 50;
-  if (marca.includes(consultaNormalizada)) return 40;
-  return 30; // sku.includes — ya se sabe que coincide() dio true en algún campo
-}
 
 /**
  * Lee la búsqueda de la URL. Aparte de `Busqueda` para que app/buscar/page.tsx
@@ -132,10 +99,19 @@ export function Busqueda({
       .map((r) => r.producto);
   }, [productos, consulta]);
 
+  // Las píldoras cuentan con la misma regla que los listados
+  // (perteneceACategoria): un Sistema cuenta en las categorías que trae como
+  // secundarias, y «Sistemas» no es píldora porque no tiene página. Con solo
+  // la categoría principal aparecía una píldora «Sistemas», y al filtrar por
+  // Subwoofers desaparecía un sistema que /catalogo/subwoofers sí lista.
   const conteoPorCategoria = useMemo(() => {
     const conteo = new Map<string, number>();
     for (const producto of resultados) {
-      conteo.set(producto.categoria, (conteo.get(producto.categoria) ?? 0) + 1);
+      const categorias = [producto.categoria, ...(producto.categoriasSecundarias ?? [])];
+      for (const categoria of categorias) {
+        if (categoria === CATEGORIA_SISTEMAS) continue;
+        conteo.set(categoria, (conteo.get(categoria) ?? 0) + 1);
+      }
     }
     return conteo;
   }, [resultados]);
@@ -145,7 +121,7 @@ export function Busqueda({
   const categoriaActiva =
     categoriaPedida && conteoPorCategoria.has(categoriaPedida) ? categoriaPedida : null;
   const resultadosFiltrados = categoriaActiva
-    ? resultados.filter((producto) => producto.categoria === categoriaActiva)
+    ? resultados.filter((producto) => perteneceACategoria(producto, categoriaActiva))
     : resultados;
   const resultadosVisibles = resultadosFiltrados.slice(0, visibles);
   const restantes = resultadosFiltrados.length - resultadosVisibles.length;
@@ -191,9 +167,12 @@ export function Busqueda({
         <>
           <section className="flex flex-col items-start gap-4 px-6 pt-8 pb-3 sm:flex-row sm:items-end sm:justify-between sm:px-12">
             <div className="flex flex-col gap-2.5">
-              <h1 className="text-26 sm:text-38 font-semibold tracking-[-0.03em]">
+              {/* h2, no h1: el h1 de la página es el «Buscar en el catálogo»
+                  de arriba, y un lector de pantalla anunciaba dos títulos de
+                  primer nivel. Se ve igual. */}
+              <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.03em]">
                 {resultados.length} {resultados.length === 1 ? "resultado" : "resultados"}
-              </h1>
+              </h2>
               <div className="text-texto-secundario text-[15px]">para «{consulta}»</div>
             </div>
             {resultados.length > 0 ? (

@@ -384,13 +384,13 @@ test("CartProvider: guarda los avisos al hidratar, los descarta y adopta los de 
       nombreSnapshot: sku,
       imagenSnapshot: null,
     });
-    const aceptados: (boolean | undefined)[] = [];
+    const aceptados: (number | undefined)[] = [];
     await act(async () => {
       probeState.valor?.descartarCambios();
       aceptados.push(probeState.valor?.addItem(nuevo("P1T-S")));
       aceptados.push(probeState.valor?.addItem(nuevo("NO-EXISTE")));
     });
-    assert.deepEqual(aceptados, [false, false]);
+    assert.deepEqual(aceptados, [0, 0]);
     assert.deepEqual(
       probeState.valor?.items.map((i) => i.sku),
       ["SQ12-D2"],
@@ -416,6 +416,40 @@ test("CartProvider: guarda los avisos al hidratar, los descarta y adopta los de 
     // ...pero solo acá: la otra todavía lo tiene en su carrito, y si leyera
     // el aviso diría «Se quitó X» con X a la vista.
     assert.deepEqual(loadCambiosPendientes(CREADO), []);
+
+    // Si la otra pestaña pide —el carrito se vacía con otro createdAt—, el
+    // aviso se va con el carrito que corregía: no puede salir sobre el nuevo.
+    const vacio = {
+      schemaVersion: SCHEMA_VERSION,
+      items: [],
+      createdAt: "2026-09-28T12:00:00.000Z",
+      updatedAt: "2026-09-28T12:00:00.000Z",
+    };
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(vacio));
+    await act(async () => {
+      dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: CART_STORAGE_KEY }));
+    });
+    assert.deepEqual(probeState.valor?.cambios, [], "el aviso no sale sobre el carrito nuevo");
+    // Vuelve el carrito de antes (para seguir con el resto del test).
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(conAgotado));
+    await act(async () => {
+      dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: CART_STORAGE_KEY }));
+    });
+
+    // addItem devuelve lo que de verdad entró: con la línea cerca del tope,
+    // menos de lo pedido; en el tope, nada.
+    const entradas: (number | undefined)[] = [];
+    await act(async () => {
+      entradas.push(probeState.valor?.addItem({ ...nuevo("SQ12-D2"), qty: 97 }));
+    });
+    await act(async () => {
+      entradas.push(probeState.valor?.addItem({ ...nuevo("SQ12-D2"), qty: 5 }));
+    });
+    await act(async () => {
+      entradas.push(probeState.valor?.addItem({ ...nuevo("SQ12-D2"), qty: 5 }));
+    });
+    assert.deepEqual(entradas, [97, 1, 0]);
+    assert.equal(probeState.valor?.items.find((i) => i.sku === "SQ12-D2")?.qty, 99);
 
     // Cada escritura de la otra trae la misma corrección: se avisa una vez.
     await act(async () => {

@@ -12,8 +12,11 @@ import {
   listBrands,
   listCategories,
   listProducts,
+  marcasDelFiltro,
+  nombreDeMarca,
   parseOrden,
   parsePagina,
+  primeroDeQuery,
 } from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 import { masFrecuentes, textosCategoria } from "@/lib/seo/textos.ts";
@@ -49,10 +52,6 @@ export async function generateStaticParams() {
   return categorias.map((categoria) => ({ categoria: categoria.slug }));
 }
 
-function primeroDeQuery(valor: string | string[] | undefined): string | undefined {
-  return Array.isArray(valor) ? valor[0] : valor;
-}
-
 export async function generateMetadata(
   props: PageProps<"/catalogo/[categoria]">,
 ): Promise<Metadata> {
@@ -70,9 +69,7 @@ export async function generateMetadata(
 
   // Mismo criterio que la página: un slug de marca que no existe filtra por
   // el slug crudo, y el listado sale vacío.
-  const marcaFiltro = marcaSlug
-    ? ((await listBrands()).find((marca) => marca.slug === marcaSlug)?.nombre ?? marcaSlug)
-    : undefined;
+  const marcaFiltro = nombreDeMarca(await listBrands(), marcaSlug);
   const productos = await listAllProducts({
     categoria: categoria.nombre,
     marca: marcaFiltro,
@@ -113,9 +110,13 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
   // Si el slug no resuelve a una marca real, se filtra por el slug crudo:
   // no matchea ningún producto, así que el resultado es "sin resultados"
   // en vez de mostrar el catálogo completo sin filtrar por error.
-  const marcaNombre = marcaSlug
-    ? (marcas.find((marca) => marca.slug === marcaSlug)?.nombre ?? marcaSlug)
-    : undefined;
+  const marcaNombre = nombreDeMarca(marcas, marcaSlug);
+
+  // Para ofrecer en el filtro solo las marcas con productos en la categoría.
+  const productosDeLaCategoria = await listAllProducts({
+    categoria: categoria.nombre,
+    activo: true,
+  });
 
   const { items, total, page, pageSize } = await listProducts({
     categoria: categoria.nombre,
@@ -148,7 +149,7 @@ export default async function CategoriaPage(props: PageProps<"/catalogo/[categor
 
         <div className="flex flex-wrap items-center gap-2.5 text-[13px]">
           <FiltroMarca
-            opciones={marcas.map((marca) => ({
+            opciones={marcasDelFiltro(marcas, productosDeLaCategoria, marcaSlug).map((marca) => ({
               slug: marca.slug,
               nombre: marca.nombre,
               href: buildCatalogHref(categoriaSlug, { marca: marca.slug, orden }),

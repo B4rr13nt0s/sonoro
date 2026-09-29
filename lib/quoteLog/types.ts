@@ -36,18 +36,26 @@ export const MAX_NOMBRE = 200;
 export const MAX_ITEMS = 400;
 export const MAX_QTY = 999;
 export const MAX_PRECIO_CENTS = 100_000_000;
+// El subtotal no puede usar el tope de UN precio: 15 unidades del producto
+// de Q 70,000 ya suman Q 1,050,000, y el esquema tiraba el pedido entero del
+// registro. Este es el subtotal más grande que permiten los otros topes.
+export const MAX_SUBTOTAL_CENTS = MAX_PRECIO_CENTS * MAX_QTY * MAX_ITEMS;
 export const MAX_USER_AGENT = 400;
 export const MAX_ESTADO = 40;
+// La línea ya formateada, la misma del mensaje de WhatsApp: cantidad,
+// nombre (hasta 200), código, precio y marca de disponibilidad.
+export const MAX_TEXTO = 400;
 
 /**
  * Tope del cuerpo del POST, en bytes. Con los topes de arriba, el cuerpo más
- * grande que puede ser VÁLIDO ronda los 150 KB (400 líneas con todos los
- * campos al tope; un pedido real de 320 líneas pesa unos 45 KB); 256 KB deja
+ * grande que puede ser VÁLIDO ronda los 320 KB (400 líneas con todos los
+ * campos al tope, `texto` incluido; un pedido real de 320 líneas pesa unos
+ * 70 KB); 512 KB deja
  * margen para que un cuerpo apenas pasado de la raya se rechace por esquema
  * —no por tamaño— y el corte por bytes quede solo para lo que es claramente
  * un abuso. decide.test.ts comprueba que el cuerpo válido más grande entra.
  */
-export const MAX_BODY_BYTES = 256 * 1024;
+export const MAX_BODY_BYTES = 512 * 1024;
 
 export const QuoteLogItemSchema = z.object({
   sku: z.string().max(MAX_SKU),
@@ -61,13 +69,20 @@ export const QuoteLogItemSchema = z.object({
   // no un enum a propósito: un valor inesperado acá no puede tirar el
   // registro del pedido entero. Opcional para el bundle anterior.
   estado: z.string().max(MAX_ESTADO).optional(),
+  // La línea tal como sale en el mensaje de WhatsApp. La hoja la copia en vez
+  // de armar la suya: hasta septiembre de 2026 el Apps Script tenía su propio
+  // formato («Q 2450.00», sin coma de miles), distinto del que ve el
+  // vendedor en WhatsApp, y cada ajuste de formato obligaba a reimplementar el
+  // script. Opcional para el bundle anterior: sin él, la hoja arma la línea
+  // como antes.
+  texto: z.string().max(MAX_TEXTO).optional(),
 });
 export type QuoteLogItem = z.infer<typeof QuoteLogItemSchema>;
 
 export const QuoteLogRequestSchema = z.object({
   ref: z.string().max(MAX_REF),
   items: z.array(QuoteLogItemSchema).max(MAX_ITEMS),
-  subtotalCents: z.number().int().nonnegative().max(MAX_PRECIO_CENTS),
+  subtotalCents: z.number().int().nonnegative().max(MAX_SUBTOTAL_CENTS),
   userAgent: z.string().max(MAX_USER_AGENT),
 });
 export type QuoteLogRequest = z.infer<typeof QuoteLogRequestSchema>;

@@ -15,8 +15,9 @@ import {
   listProducts,
   parseOrden,
   parsePagina,
+  primeroDeQuery,
 } from "@/lib/catalog/index.ts";
-import { CATEGORIA_SISTEMAS } from "@/lib/catalog/categorias.ts";
+import { CATEGORIA_SISTEMAS, perteneceACategoria } from "@/lib/catalog/categorias.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 import { masFrecuentes, textosMarca } from "@/lib/seo/textos.ts";
 
@@ -28,10 +29,6 @@ export const dynamicParams = false;
 export async function generateStaticParams() {
   const marcas = await listBrands();
   return marcas.map((marca) => ({ marca: marca.slug }));
-}
-
-function primeroDeQuery(valor: string | string[] | undefined): string | undefined {
-  return Array.isArray(valor) ? valor[0] : valor;
 }
 
 export async function generateMetadata(props: PageProps<"/marcas/[marca]">): Promise<Metadata> {
@@ -90,19 +87,30 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
   // — un pill de categoría sin productos sería un filtro que siempre da
   // "sin resultados". Se ordenan según el orden canónico del sitio, no el
   // orden en que aparecen en el JSON.
+  //
+  // Con perteneceACategoria, la misma regla que el adaptador, los conteos del
+  // proxy y generateMetadata: cuenta también las categoriasSecundarias de los
+  // Sistemas. Con solo la categoría principal, una marca que llega a una
+  // categoría únicamente por un Sistema no tenía píldora, y el enlace a esa
+  // categoría mostraba «sin resultados» bajo un título que decía lo contrario.
   const productosDeLaMarca = await listAllProducts({ marca: marca.nombre, activo: true });
-  const nombresPresentes = new Set(productosDeLaMarca.map((p) => p.categoria));
-  const categoriasDisponibles = todasLasCategorias.filter((c) => nombresPresentes.has(c.nombre));
+  const categoriasDisponibles = todasLasCategorias.filter((categoria) =>
+    productosDeLaMarca.some((producto) => perteneceACategoria(producto, categoria.nombre)),
+  );
 
   const categoriaSlugParam = primeroDeQuery(searchParams.categoria);
   const categoriaActual = categoriaSlugParam
     ? categoriasDisponibles.find((c) => c.slug === categoriaSlugParam)
     : undefined;
-  // Un slug de categoría que no aplica a esta marca (o que no existe) filtra
-  // por un nombre que no matchea nada — "sin resultados" en vez de mostrar
-  // el catálogo completo de la marca sin filtrar por error.
+  // Una categoría del sitio sin productos de esta marca filtra por su nombre
+  // y da un listado vacío legítimo (200 + noindex, como su metadata); un slug
+  // que no existe filtra por un nombre que no matchea nada — "sin
+  // resultados" en vez de mostrar el catálogo completo de la marca sin
+  // filtrar por error (y el proxy ya lo respondió con 404).
   const categoriaNombre = categoriaSlugParam
-    ? (categoriaActual?.nombre ?? categoriaSlugParam)
+    ? (categoriaActual?.nombre ??
+      todasLasCategorias.find((c) => c.slug === categoriaSlugParam)?.nombre ??
+      categoriaSlugParam)
     : undefined;
 
   const orden = parseOrden(searchParams.orden);
@@ -145,8 +153,11 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
       </section>
 
       <section className="flex flex-col items-start gap-4 px-6 pt-12 pb-6 sm:flex-row sm:items-end sm:justify-between sm:px-12 sm:pt-16 sm:pb-8">
+        {/* El total del listado que se ve, no el de la marca entera: con
+            ?categoria= el encabezado decía «110 productos» sobre una grilla
+            de 25, contra el título y la descripción, que ya filtraban. */}
         <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.03em]">
-          {marca.cantidadProductos} {marca.cantidadProductos === 1 ? "producto" : "productos"}
+          {total} {total === 1 ? "producto" : "productos"}
         </h2>
         <div className="flex flex-wrap items-center gap-2.5 text-[13px]">
           <Link

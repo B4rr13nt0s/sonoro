@@ -277,7 +277,7 @@ def main():
             bpy.data.objects.remove(o, do_unlink=True)
 
     obj = join_objects(parts, "rca-cable")
-    finalize(obj, "rca-cable", expected_dims=(None, None, None))
+    finalize(obj, "rca-cable-2", expected_dims=(None, None, None))
 
 
 if __name__ == "__main__":

@@ -59,8 +59,8 @@ export function TablaComparacion({ productos }: { productos: Producto[] }) {
       >
         <table className="w-full border-separate border-spacing-0 text-left">
           <caption className="sr-only">
-            Comparación de especificaciones. Las filas resaltadas son aquellas donde los valores
-            difieren entre todos los productos comparados.
+            Comparación de especificaciones. Las filas resaltadas, marcadas «los valores difieren»,
+            son aquellas donde los valores difieren entre los productos comparados.
           </caption>
           <thead>
             <tr>
@@ -104,6 +104,11 @@ export function TablaComparacion({ productos }: { productos: Producto[] }) {
                   } ${ANCHO_ETIQUETAS}`}
                 >
                   {fila.etiqueta}
+                  {/* El resaltado es solo fondo y peso (#F5F5F3 sobre blanco
+                      apenas se distingue), y el caption promete «filas
+                      resaltadas»: sin este texto, un lector de pantalla no
+                      tenía cómo saber cuáles son. */}
+                  {fila.difieren ? <span className="sr-only"> (los valores difieren)</span> : null}
                 </th>
                 {fila.valores.map((valor, indice) => (
                   <td

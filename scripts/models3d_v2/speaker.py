@@ -245,7 +245,7 @@ def main():
     # xy="keep": los terminales sobresalen de un solo lado, asi que centrar el
     # bbox correria el eje del driver y el tweeter dejaria de estar sobre el
     # eje del cono. El eje de construccion ya es (0, 0).
-    finalize(obj, "speaker", expected_dims=(0.165, 0.165, 0.055), xy="keep")
+    finalize(obj, "speaker-2", expected_dims=(0.165, 0.165, 0.055), xy="keep")
 
 
 if __name__ == "__main__":

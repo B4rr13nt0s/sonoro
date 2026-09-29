@@ -142,7 +142,10 @@ const TARJETAS_CATEGORIA: Record<SlugCategoria, TarjetaCategoria> = {
     dark: true,
   },
   receptores: {
-    descripcion: 'CarPlay y Android Auto sin cables, de 7" a 10", con cámara de reversa.',
+    // Lo que dice el catálogo, no más: pantallas de 3" a 9" (ninguna de 10"),
+    // CarPlay y Android Auto en cinco (inalámbrico solo en dos), ninguna con
+    // cámara incluida, y seis autoestéreos de 1 DIN sin pantalla.
+    descripcion: 'Pantallas de hasta 9" con CarPlay y Android Auto, y autoestéreos de 1 DIN.',
     area: "lg:col-start-2 lg:col-span-2 lg:row-start-3 lg:row-span-2",
     columnas: 2,
     fotos: [
@@ -289,8 +292,8 @@ export default async function Home() {
           </Link>
         </div>
         <div className="text-texto-terciario px-4 font-mono text-[11px] tracking-[0.06em]">
-          Hasta 6 pagos precio contado · Producto original · Envíos gratis a todo el país, aplican
-          restricciones
+          Hasta 6 pagos precio contado · Producto original · Envíos gratis a todo el país. Aplican
+          restricciones según destino y volumen del pedido.
         </div>
         <ProductCarousel3D />
       </section>

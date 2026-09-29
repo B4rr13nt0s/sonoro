@@ -45,12 +45,18 @@ export function ProductGallery({ imagenes, nombre }: ProductGalleryProps) {
   return (
     <div className="flex flex-col gap-2.5">
       <div className={`rounded-card-lg relative overflow-hidden ${ALTO_PRINCIPAL}`}>
+        {/* `preload` y no `priority`, deprecado en Next 16 (docs de
+            next/image). Solo la foto con la que abre la ficha, que es la del
+            LCP; las que se eligen después con las miniaturas no. `sizes`:
+            la columna de la galería, el ancho entero en móvil y lo que deja
+            la columna de 440 px en escritorio. */}
         <Image
           src={seleccionada.url}
           alt={seleccionada.alt || nombre}
           fill
+          sizes="(min-width: 1024px) calc(100vw - 440px), 100vw"
           className="object-cover"
-          priority
+          preload={indiceSeleccionado === 0}
         />
       </div>
 
@@ -67,7 +73,13 @@ export function ProductGallery({ imagenes, nombre }: ProductGalleryProps) {
                 indice === indiceSeleccionado ? "border-negro" : "border-transparent"
               }`}
             >
-              <Image src={imagen.url} alt={imagen.alt || nombre} fill className="object-cover" />
+              <Image
+                src={imagen.url}
+                alt={imagen.alt || nombre}
+                fill
+                sizes="(min-width: 1024px) 15vw, 25vw"
+                className="object-cover"
+              />
             </button>
           ))}
         </div>

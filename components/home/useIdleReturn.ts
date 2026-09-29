@@ -106,20 +106,51 @@ export function useCicloCarrusel({
     ir("interactuando");
   }, [ir, limpiar]);
 
+  // La fase vigente, leída por alVolver sin pasar por un updater de setFase:
+  // Camara lo llama en CADA frame hasta que la fase cambia, y un updater con
+  // efectos (antes llamaba a setFaseInicio adentro) React lo puede correr dos
+  // veces. El ref se adelanta en el mismo llamado para que los frames que
+  // llegan antes del re-render no repitan el cambio.
+  const faseRef = useRef(fase);
+  useEffect(() => {
+    faseRef.current = fase;
+  }, [fase]);
+
   const alVolver = useCallback(() => {
-    setFase((actual) => {
-      if (actual !== "volviendo") return actual;
-      setFaseInicio(performance.now());
-      // La vista ya está en su sitio: el giro arranca acá, sin esperar de
-      // nuevo los 5 s (esos ya pasaron antes de empezar a volver).
-      return "girando";
-    });
-  }, []);
+    if (faseRef.current !== "volviendo") return;
+    // La vista ya está en su sitio: el giro arranca acá, sin esperar de
+    // nuevo los 3 s (esos ya pasaron antes de empezar a volver). Con
+    // prefers-reduced-motion no hay giro automático: el modelo se queda
+    // quieto en la vista predeterminada, y como con reduced motion no hay
+    // plazos (efecto de abajo), ahí se queda hasta el próximo gesto.
+    const siguiente: FaseCarrusel = reducedMotion ? "espera-previa" : "girando";
+    faseRef.current = siguiente;
+    ir(siguiente);
+  }, [ir, reducedMotion]);
 
   const reiniciar = useCallback(() => {
     gestoActivo.current = false;
     ir("espera-previa");
   }, [ir]);
+
+  // Mientras el carrusel no está a la vista, el tiempo de la fase no corre:
+  // el ángulo del giro sale de `performance.now() - faseInicio`, y si
+  // faseInicio no se corriera, al volver después de una pausa larga el
+  // modelo aparecía clavado al final de la vuelta (el ángulo ya pasado de
+  // largo) y se quedaba quieto el giro entero más la espera final, ~13 s.
+  const pausadoDesde = useRef<number | null>(null);
+  useEffect(() => {
+    if (!activo) {
+      pausadoDesde.current ??= performance.now();
+      return;
+    }
+    if (pausadoDesde.current === null) return;
+    const pausa = performance.now() - pausadoDesde.current;
+    pausadoDesde.current = null;
+    // Correr el origen de la fase es sincronizar con el reloj, algo que
+    // solo se sabe al reanudar: no es un valor derivable en el render.
+    setFaseInicio((inicio) => inicio + pausa);
+  }, [activo]);
 
   // Los plazos de cada fase salen de PLAN_CICLO (ver ciclo.ts, con test).
   // Se rearman en cada cambio de fase y se congelan cuando el carrusel no
@@ -137,10 +168,13 @@ export function useCicloCarrusel({
     const plan = PLAN_CICLO[fase];
     if (!plan) return; // 'volviendo' termina cuando el rig avisa
 
+    // Lo que FALTA de la fase, no el plazo entero: al reanudar tras una
+    // pausa, la fase ya había consumido parte de su tiempo.
+    const restante = Math.max(0, plan.esperaMs - (performance.now() - faseInicio));
     timer.current = setTimeout(() => {
       if (plan.avanza) onAvanzarRef.current();
       ir(plan.siguiente);
-    }, plan.esperaMs);
+    }, restante);
   }, [fase, faseInicio, activo, reducedMotion, ir, limpiar]);
 
   useEffect(() => limpiar, [limpiar]);

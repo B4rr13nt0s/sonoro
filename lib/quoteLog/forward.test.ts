@@ -54,3 +54,46 @@ test("forwardQuoteLog: nunca lanza si el fetch mismo lanza de forma síncrona", 
     forwardQuoteLog({ url: "https://x.test", token: "t", request: REQUEST, fetchImpl: fetchFalso }),
   );
 });
+
+// El Apps Script responde 200 siempre y avisa las fallas en el cuerpo.
+test("forwardQuoteLog: un {ok:false} del Apps Script queda en el log del servidor", async () => {
+  const errores: unknown[][] = [];
+  const original = console.error;
+  console.error = (...args: unknown[]) => errores.push(args);
+  try {
+    const fetchFalso: typeof fetch = () =>
+      Promise.resolve(Response.json({ ok: false, mensaje: "No autorizado" }, { status: 200 }));
+    await forwardQuoteLog({
+      url: "https://x.test",
+      token: "t",
+      request: REQUEST,
+      fetchImpl: fetchFalso,
+    });
+  } finally {
+    console.error = original;
+  }
+  assert.equal(errores.length, 1);
+  assert.match(String(errores[0][0]), /No autorizado/);
+});
+
+test("forwardQuoteLog: un {ok:true} o un cuerpo que no es JSON no ensucian el log", async () => {
+  const errores: unknown[][] = [];
+  const original = console.error;
+  console.error = (...args: unknown[]) => errores.push(args);
+  try {
+    for (const respuesta of [
+      Response.json({ ok: true, mensaje: "Registrado" }),
+      new Response("no es json", { status: 200 }),
+    ]) {
+      await forwardQuoteLog({
+        url: "https://x.test",
+        token: "t",
+        request: REQUEST,
+        fetchImpl: () => Promise.resolve(respuesta),
+      });
+    }
+  } finally {
+    console.error = original;
+  }
+  assert.equal(errores.length, 0);
+});

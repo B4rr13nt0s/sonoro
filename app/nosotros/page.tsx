@@ -23,7 +23,7 @@ export default async function NosotrosPage() {
         <div className="text-texto-terciario font-mono text-[12px] tracking-[0.18em] uppercase">
           Nosotros
         </div>
-        <h1 className="text-44 sm:text-56 lg:text-68 leading-[1.05] font-semibold tracking-[-0.035em] text-balance">
+        <h1 className="text-44 sm:text-48 lg:text-64 leading-[1.05] font-semibold tracking-[-0.035em] text-balance">
           Importamos a Guatemala todo lo que necesitas para elevar tu vehículo a otro nivel.
         </h1>
         <p className="text-texto-secundario max-w-[700px] text-[18px] leading-[1.5] sm:text-[21px]">
@@ -40,7 +40,7 @@ export default async function NosotrosPage() {
 
       <section className="grid grid-cols-1 gap-10 px-6 py-16 sm:grid-cols-2 sm:px-12 sm:py-22">
         <div className="flex flex-col gap-4">
-          <h2 className="text-26 sm:text-36 font-semibold tracking-[-0.025em]">Cómo trabajamos</h2>
+          <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.025em]">Cómo trabajamos</h2>
           <p className="text-texto-secundario text-[16px] leading-[1.6] sm:text-[17px]">
             Compramos por contenedor a marcas y distribuidores autorizados, así que lo que vendemos
             es producto nuevo con respaldo de marca. Nada de excedentes ni equipo reacondicionado.
@@ -51,7 +51,7 @@ export default async function NosotrosPage() {
           </p>
         </div>
         <div className="flex flex-col gap-4">
-          <h2 className="text-26 sm:text-36 font-semibold tracking-[-0.025em]">Qué vendemos</h2>
+          <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.025em]">Qué vendemos</h2>
           <p className="text-texto-secundario text-[16px] leading-[1.6] sm:text-[17px]">
             Bocinas, subwoofers, amplificadores, radios, pantallas, ecualizadores, kits de cable,
             insonorización y accesorios; con varias gamas disponibles para ajustarnos a lo que

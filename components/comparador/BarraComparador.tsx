@@ -16,7 +16,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-import { construirHrefComparar, useComparador } from "@/lib/comparador/index.ts";
+import { construirHrefComparar, MAX_COMPARAR, useComparador } from "@/lib/comparador/index.ts";
 import { useAvisoComparador } from "./avisoComparador.ts";
 
 export function BarraComparador() {
@@ -62,7 +62,8 @@ export function BarraComparador() {
               {aviso.tipo === "lleno" ? (
                 <>
                   <span className="text-texto-secundario">
-                    Ya estás comparando 4 productos, que es el máximo. Quita uno para agregar otro.
+                    Ya estás comparando {MAX_COMPARAR} productos, que es el máximo. Quita uno para
+                    agregar otro.
                   </span>
                   <button
                     type="button"

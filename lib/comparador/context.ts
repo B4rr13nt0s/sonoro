@@ -16,6 +16,7 @@ import {
   useContext,
   useEffect,
   useReducer,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -23,7 +24,7 @@ import {
 import { reconcile, type CambioComparador } from "./reconcile.ts";
 import { evaluarToggle, type ResultadoToggle } from "./seleccion.ts";
 import { comparadorReducer } from "./reducer.ts";
-import { loadSeleccion, saveSeleccion } from "./storage.ts";
+import { COMPARADOR_STORAGE_KEY, loadSeleccion, saveSeleccion } from "./storage.ts";
 import { crearSeleccionVacia, type CatalogoComparable } from "./types.ts";
 
 export type ProductoComparable = { sku: string; categoria: string };
@@ -79,8 +80,31 @@ export function ComparadorProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Otra pestaña cambió la selección: se adopta. Sin esto cada pestaña
+  // guardaba SU copia y la última en escribir borraba lo que agregó la otra
+  // — el mismo bug que ya se corrigió en el carrito (lib/cart/context.ts),
+  // con el mismo remedio: lo que llega de afuera se aplica pero no se vuelve
+  // a guardar, para que dos pestañas con catálogos distintos no se corrijan
+  // una a la otra en bucle.
+  const vinoDeOtraPestaña = useRef(false);
   useEffect(() => {
     if (!hydrated) return;
+    function alCambiarEnOtraPestaña(evento: StorageEvent) {
+      if (evento.key !== COMPARADOR_STORAGE_KEY && evento.key !== null) return;
+      const { seleccion: reconciliada } = reconcile(loadSeleccion(), catalogo);
+      vinoDeOtraPestaña.current = true;
+      dispatch({ type: "hidratar", seleccion: reconciliada });
+    }
+    window.addEventListener("storage", alCambiarEnOtraPestaña);
+    return () => window.removeEventListener("storage", alCambiarEnOtraPestaña);
+  }, [hydrated, catalogo]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (vinoDeOtraPestaña.current) {
+      vinoDeOtraPestaña.current = false;
+      return;
+    }
     saveSeleccion(seleccion);
   }, [seleccion, hydrated]);
 

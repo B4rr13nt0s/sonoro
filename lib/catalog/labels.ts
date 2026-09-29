@@ -1,6 +1,10 @@
 // ÚNICA fuente de traducción de los valores normalizados del catálogo a texto
-// para el cliente. La usan el importador (para GENERAR las specs legibles),
-// los filtros y el comparador. Si una etiqueta se traduce en dos lugares, en
+// para el cliente. Hoy la usan el importador (para GENERAR las specs
+// legibles de catalog.json) y lib/catalog/types.ts (los enums del esquema);
+// la interfaz muestra esas specs ya traducidas, sin importar este módulo. Un
+// filtro o comparador por atributo que se agregue tiene que traducir desde
+// acá —compareMeasures() ya ordena medidas por magnitud para eso—, no con una
+// tabla propia. Si una etiqueta se traduce en dos lugares, en
 // el primer cambio el catálogo generado y la interfaz dicen cosas distintas y
 // nadie lo nota hasta que lo ve un cliente — por eso nada de esto se duplica.
 //

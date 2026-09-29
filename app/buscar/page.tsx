@@ -26,6 +26,10 @@ export default async function BuscarPage() {
     nombre: producto.nombre,
     marca: producto.marca,
     categoria: producto.categoria,
+    // Para agrupar los Sistemas en sus categorías, como los listados.
+    ...(producto.categoriasSecundarias
+      ? { categoriasSecundarias: producto.categoriasSecundarias }
+      : {}),
     precioCents: producto.precioCents,
     disponibilidad: producto.disponibilidad,
     destacado: producto.destacado,

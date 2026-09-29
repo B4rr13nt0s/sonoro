@@ -29,6 +29,13 @@ import { OG_FONTS } from "@/lib/og/fonts.ts";
 // clic. Si algún día no lo fuera, se baja este número.
 export const revalidate = 604800;
 
+// Solo los slugs de generateStaticParams. La configuración de segmento es
+// POR ARCHIVO: el `dynamicParams = false` de la ficha (page.tsx) no cubre esta
+// ruta, y sin esto cualquier slug inventado respondía 200 con una tarjeta
+// genérica, se armaba en una función y quedaba en caché una semana — un
+// rastreador o un curioso llenaban la caché con URLs al azar.
+export const dynamicParams = false;
+
 // Mismo conjunto que las fichas (app/producto/[slug]/page.tsx): los dados de
 // baja también la llevan, porque un enlace viejo compartido por WhatsApp
 // sigue mostrando su tarjeta aunque la página responda 410.
@@ -50,7 +57,10 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
   const nombre = producto?.nombre ?? "Sonoro";
   const marca = producto?.marca ?? "";
-  const precio = producto ? formatQ(producto.precioCents) : "";
+  // Un producto retirado no lleva precio: su tarjeta sigue saliendo en los
+  // enlaces viejos compartidos por WhatsApp, y con el precio parecía que
+  // seguía a la venta aunque la página responda 410.
+  const precio = producto?.activo ? formatQ(producto.precioCents) : "";
 
   return new ImageResponse(
     <div

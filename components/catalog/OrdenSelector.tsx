@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-import type { Orden } from "@/lib/catalog/index.ts";
+import { ORDEN_DEFECTO, type Orden } from "@/lib/catalog/types.ts";
 
 // Mismo control que FiltroMarca, para el orden: píldora que abre un bottom
 // sheet en móvil y un dropdown anclado en escritorio. Reemplaza al botón que
@@ -59,7 +59,10 @@ export function OrdenSelector({ orden, hrefs }: OrdenSelectorProps) {
   // se pone en negro cuando el usuario pidió un orden distinto. Así la fila de
   // controles muestra de un vistazo qué se tocó y qué está como viene.
   const seleccion = OPCIONES.find((opcion) => opcion.valor === orden);
-  const esDefecto = orden === "relevancia";
+  // Contra ORDEN_DEFECTO, igual que los builders de lib/catalog/href.ts que
+  // lo omiten de la URL: si algún día cambia el default, cambia la constante
+  // y nada más (CLAUDE.md § Rutas).
+  const esDefecto = orden === ORDEN_DEFECTO;
 
   // Se renderiza dos veces (bottom sheet en móvil, dropdown anclado en
   // escritorio) — misma lista de opciones, dos contenedores visualmente
@@ -71,8 +74,7 @@ export function OrdenSelector({ orden, hrefs }: OrdenSelectorProps) {
           key={opcion.valor}
           href={hrefs[opcion.valor]}
           onClick={() => setAbierto(false)}
-          role="option"
-          aria-selected={opcion.valor === orden}
+          aria-current={opcion.valor === orden ? "true" : undefined}
           className={`px-4 py-3 text-[14px] lg:py-2 ${
             opcion.valor === orden ? "text-negro font-medium" : "text-texto-secundario"
           }`}
@@ -89,7 +91,6 @@ export function OrdenSelector({ orden, hrefs }: OrdenSelectorProps) {
         type="button"
         onClick={() => setAbierto((valor) => !valor)}
         aria-expanded={abierto}
-        aria-haspopup="listbox"
         className={`rounded-full border px-4.5 py-3 text-[13px] lg:py-2 ${
           esDefecto ? "border-borde-pildora text-texto-nav" : "border-negro bg-negro text-white"
         }`}
@@ -106,7 +107,7 @@ export function OrdenSelector({ orden, hrefs }: OrdenSelectorProps) {
             aria-hidden="true"
           />
           <div
-            role="listbox"
+            role="group"
             aria-label="Ordenar"
             className="border-borde-tarjeta rounded-t-card-lg fixed inset-x-0 bottom-0 z-50 flex max-h-[70vh] flex-col border-t bg-white pb-[max(1rem,env(safe-area-inset-bottom))] lg:hidden"
           >
@@ -129,7 +130,7 @@ export function OrdenSelector({ orden, hrefs }: OrdenSelectorProps) {
               pegado al borde de la sección, así que abrirlo hacia la izquierda
               lo mantiene dentro de la página. */}
           <div
-            role="listbox"
+            role="group"
             aria-label="Ordenar"
             className="border-borde-tarjeta rounded-card absolute top-full right-0 z-10 mt-2 hidden w-44 flex-col border bg-white py-2 lg:flex"
           >

@@ -347,7 +347,7 @@ def main():
             bpy.data.objects.remove(o, do_unlink=True)
 
     obj = join_objects(parts, "sound-deadening")
-    finalize(obj, "sound-deadening", expected_dims=(None, None, None))
+    finalize(obj, "sound-deadening-2", expected_dims=(None, None, None))
 
 
 if __name__ == "__main__":

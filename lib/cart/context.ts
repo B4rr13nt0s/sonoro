@@ -37,7 +37,12 @@ import {
 } from "./storage.ts";
 import { itemCount, subtotalCents } from "./totals.ts";
 import type { Disponibilidad } from "../catalog/types.ts";
-import { crearCarritoVacio, type CartItem, type CatalogoSku } from "./types.ts";
+import {
+  crearCarritoVacio,
+  MAX_CANTIDAD_POR_LINEA,
+  type CartItem,
+  type CatalogoSku,
+} from "./types.ts";
 
 type NuevoItem = Pick<
   CartItem,
@@ -56,10 +61,11 @@ type CartContextValue = {
   itemCount: number;
   // Lo que reconcile() corrigió y el cliente todavía no vio: líneas quitadas
   // por dejar de existir, quedar inactivas o agotarse, o con precio
-  // actualizado. Se
-  // guardan en localStorage hasta que /carrito los muestra y llama a
-  // descartarCambios() — así salen una sola vez, aunque la corrección haya
-  // pasado en otra página o en otra pestaña (components/cart/avisos.ts).
+  // actualizado. Lo corregido AL CARGAR se guarda en localStorage hasta que
+  // /carrito lo muestra y llama a descartarCambios(), así sale una sola vez
+  // aunque la corrección haya pasado en otra página. Lo que esta pestaña
+  // corrige del carrito que guardó OTRA vive solo en memoria de esta pestaña
+  // (ver `locales` abajo). components/cart/avisos.ts arma las frases.
   cambios: CambioCarrito[];
   descartarCambios: () => void;
   // Disponibilidad ACTUAL de cada sku, del mismo catálogo que usa
@@ -77,7 +83,12 @@ type CartContextValue = {
   // Devuelve si lo agregó: no agrega lo que reconcile() quitaría en la
   // carga siguiente (agotado, inactivo, fuera del catálogo), y quien llama
   // necesita saberlo para no confirmar ni medir un agregado que no pasó.
-  addItem: (item: NuevoItem) => boolean;
+  //
+  // Lo que devuelve son las unidades que de verdad entraron: 0 si no aceptó
+  // el producto, y menos de las pedidas si la línea llegó al tope de 99. Con
+  // un booleano, 99 en el carrito + 5 decía «Has añadido 5» y lo medía así,
+  // aunque el reducer no agregara ninguna.
+  addItem: (item: NuevoItem) => number;
   removeItem: (sku: string) => void;
   setQty: (sku: string, qty: number) => void;
   clear: () => void;
@@ -152,7 +163,13 @@ export function CartProvider({
   // diría «Se quitó X» con X a la vista — y lo daría por visto por esta.
   // Como no se guarda el carrito corregido, cada escritura de la otra trae
   // la misma corrección: `yaAvisadas` evita avisarla más de una vez.
-  const [locales, setLocales] = useState<CambioCarrito[]>([]);
+  // Atados al carrito que corrigieron, igual que los de localStorage: si ese
+  // carrito ya no es el actual —se pidió desde la otra pestaña y nació uno
+  // nuevo—, un «Se quitó X» sobre el pedido que ya salió no dice nada.
+  const [locales, setLocales] = useState<{ createdAt: string; cambios: CambioCarrito[] }>({
+    createdAt: "",
+    cambios: [],
+  });
   const yaAvisadas = useRef(new Set<string>());
   // El listener de abajo vive mientras dure la pestaña; lee el carrito
   // actual de acá para saber de qué carrito son los avisos que llegan.
@@ -182,7 +199,15 @@ export function CartProvider({
         yaAvisadas.current.add(clave);
         return true;
       });
-      if (nuevos.length > 0) setLocales((previos) => acumularCambios(previos, nuevos));
+      if (nuevos.length > 0) {
+        setLocales((previos) => ({
+          createdAt: reconciliado.createdAt,
+          cambios:
+            previos.createdAt === reconciliado.createdAt
+              ? acumularCambios(previos.cambios, nuevos)
+              : nuevos,
+        }));
+      }
     }
     window.addEventListener("storage", alCambiarEnOtraPestaña);
     return () => window.removeEventListener("storage", alCambiarEnOtraPestaña);
@@ -206,14 +231,17 @@ export function CartProvider({
 
   const descartarCambios = useCallback(() => {
     marcarCambiosVistos(Date.now());
-    setLocales([]);
+    setLocales({ createdAt: "", cambios: [] });
     setCambios([]);
   }, []);
 
   // Los guardados (de cualquier pestaña) más los que solo son de esta.
   const todosLosCambios = useMemo(
-    () => acumularCambios(cambios ?? [], locales),
-    [cambios, locales],
+    () =>
+      locales.createdAt === cart.createdAt
+        ? acumularCambios(cambios ?? [], locales.cambios)
+        : (cambios ?? []),
+    [cambios, locales, cart.createdAt],
   );
 
   const value: CartContextValue = {
@@ -229,9 +257,12 @@ export function CartProvider({
     // impedirlo: la regla vive acá y no solo en la interfaz, igual que el
     // tope por línea vive en el reducer (CLAUDE.md § Modelo de conversión).
     addItem: (item) => {
-      if ("motivo" in revisarEntrada(catalogoPorSku.get(item.sku))) return false;
+      if ("motivo" in revisarEntrada(catalogoPorSku.get(item.sku))) return 0;
+      const enCarrito = cart.items.find((i) => i.sku === item.sku)?.qty ?? 0;
+      const agregadas = Math.min(MAX_CANTIDAD_POR_LINEA, enCarrito + item.qty) - enCarrito;
+      if (agregadas <= 0) return 0;
       dispatch({ type: "add", item, now: new Date().toISOString() });
-      return true;
+      return agregadas;
     },
     removeItem: (sku) => dispatch({ type: "remove", sku, now: new Date().toISOString() }),
     setQty: (sku, qty) => dispatch({ type: "setQty", sku, qty, now: new Date().toISOString() }),

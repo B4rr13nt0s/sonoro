@@ -33,8 +33,7 @@ export default async function MarcasPage() {
             {titulo}
           </h1>
           <p className="text-texto-secundario max-w-[620px] text-[18px] leading-[1.5] sm:text-[20px]">
-            Nuestra diversidad de marcas nos permite cubrir todo lo que necesitas para mejorar la
-            calidad de sonido de tu vehículo.
+            Nuestra diversidad de marcas cubre equipo de audio para carro, marino y motorsports.
           </p>
         </div>
       </section>

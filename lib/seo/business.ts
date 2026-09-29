@@ -3,10 +3,10 @@
 // repuestos ni mecánica — ElectronicsStore es la clasificación deliberada
 // más cercana a lo que realmente se vende.
 //
-// Dirección, teléfono, correo y horario NO están confirmados (CLAUDE.md §
-// Decisiones abiertas: "teléfono, correo y dirección" siguen sin confirmar).
-// Cada campo se omite si su variable de entorno no está definida — nunca se
-// inventa un valor.
+// Dirección, teléfono, correo e Instagram ya están confirmados (CLAUDE.md §
+// Decisiones abiertas) y viven en variables de entorno, nunca en el código.
+// Cada campo se omite si su variable no está definida en un entorno — nunca
+// se inventa un valor.
 import { absoluteUrl } from "./site.ts";
 
 function buildAddress() {

@@ -10,7 +10,7 @@
 // - La frase de pagos es la fijada, «hasta 6 pagos precio contado» (regla 6).
 //
 // El título se escribe sin «— Sonoro»: lo agrega title.template del layout.
-import type { CATEGORIAS_SITIO } from "@/lib/catalog/categorias.ts";
+import { CATEGORIAS_SITIO } from "../catalog/categorias.ts";
 import { formatQ } from "../format/precio.ts";
 
 // El sitio empezó vendiendo solo audio para carro, y el catálogo ya trae
@@ -165,7 +165,9 @@ export function textosCatalogo({
   }
   return {
     titulo: conPagina(`Catálogo de ${LEMA.toLowerCase()}`, page),
-    descripcion: `Los ${total} productos de Sonoro: bocinas, subwoofers, amplificadores, receptores, kits e insonorización. Hasta 6 pagos precio contado y envíos a todo el país.`,
+    // La lista sale de CATEGORIAS_SITIO: escrita a mano, se había quedado con
+    // seis de las ocho categorías (sin ecualizadores ni accesorios).
+    descripcion: `Los ${total} productos de Sonoro: ${unir(CATEGORIAS_SITIO.map((c) => c.nombre.toLowerCase()))}. Hasta 6 pagos precio contado y envíos a todo el país.`,
   };
 }
 

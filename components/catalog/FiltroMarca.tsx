@@ -56,8 +56,7 @@ export function FiltroMarca({ opciones, hrefTodas, marcaActual }: FiltroMarcaPro
       <Link
         href={hrefTodas}
         onClick={() => setAbierto(false)}
-        role="option"
-        aria-selected={!marcaActual}
+        aria-current={!marcaActual ? "true" : undefined}
         className={`px-4 py-3 text-[14px] lg:py-2 ${
           !marcaActual ? "text-negro font-medium" : "text-texto-secundario"
         }`}
@@ -69,8 +68,7 @@ export function FiltroMarca({ opciones, hrefTodas, marcaActual }: FiltroMarcaPro
           key={opcion.slug}
           href={opcion.href}
           onClick={() => setAbierto(false)}
-          role="option"
-          aria-selected={opcion.slug === marcaActual}
+          aria-current={opcion.slug === marcaActual ? "true" : undefined}
           className={`px-4 py-3 text-[14px] lg:py-2 ${
             opcion.slug === marcaActual ? "text-negro font-medium" : "text-texto-secundario"
           }`}
@@ -87,7 +85,6 @@ export function FiltroMarca({ opciones, hrefTodas, marcaActual }: FiltroMarcaPro
         type="button"
         onClick={() => setAbierto((valor) => !valor)}
         aria-expanded={abierto}
-        aria-haspopup="listbox"
         className={`rounded-full border px-4.5 py-3 text-[13px] lg:py-2 ${
           marcaSeleccionada
             ? "border-negro bg-negro text-white"
@@ -109,7 +106,7 @@ export function FiltroMarca({ opciones, hrefTodas, marcaActual }: FiltroMarcaPro
             aria-hidden="true"
           />
           <div
-            role="listbox"
+            role="group"
             aria-label="Filtrar por marca"
             className="border-borde-tarjeta rounded-t-card-lg fixed inset-x-0 bottom-0 z-50 flex max-h-[70vh] flex-col border-t bg-white pb-[max(1rem,env(safe-area-inset-bottom))] lg:hidden"
           >
@@ -129,7 +126,7 @@ export function FiltroMarca({ opciones, hrefTodas, marcaActual }: FiltroMarcaPro
 
           {/* Dropdown anclado — ≥lg, sin cambios de comportamiento. */}
           <div
-            role="listbox"
+            role="group"
             aria-label="Filtrar por marca"
             className="border-borde-tarjeta rounded-card absolute top-full left-0 z-10 mt-2 hidden max-h-72 w-56 flex-col overflow-y-auto border bg-white py-2 lg:flex"
           >

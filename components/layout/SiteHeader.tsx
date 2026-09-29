@@ -28,6 +28,18 @@ export function SiteHeader() {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const cerrarMenu = () => setMenuAbierto(false);
 
+  // El menú se cierra en CUALQUIER cambio de ruta, no solo en los enlaces que
+  // se acuerdan de llamar a cerrarMenu: el header vive en el layout y no se
+  // desmonta al navegar, así que el carrito del header, atrás y adelante
+  // dejaban el menú abierto encima de la página nueva. Se ajusta durante el
+  // render, no en un efecto: es el patrón de React para derivar estado de
+  // algo que cambió.
+  const [rutaDelMenu, setRutaDelMenu] = useState(pathname);
+  if (pathname !== rutaDelMenu) {
+    setRutaDelMenu(pathname);
+    setMenuAbierto(false);
+  }
+
   return (
     <header className="border-borde-nav sticky top-0 z-40 border-b bg-white">
       <div className="mx-auto flex h-15 max-w-[1280px] items-center gap-10 px-6 sm:px-12">
@@ -51,6 +63,7 @@ export function SiteHeader() {
               <Link
                 key={categoria.slug}
                 href={href}
+                aria-current={activo ? "page" : undefined}
                 className={
                   activo ? "text-negro font-medium" : "text-texto-nav hover:text-texto-secundario"
                 }
@@ -68,6 +81,7 @@ export function SiteHeader() {
               <Link
                 key={enlace.href}
                 href={enlace.href}
+                aria-current={activo ? "page" : undefined}
                 className={
                   activo ? "text-negro font-medium" : "text-texto-nav hover:text-texto-secundario"
                 }
@@ -94,7 +108,7 @@ export function SiteHeader() {
           >
             <SearchIcon />
           </Link>
-          <CartLink />
+          <CartLink onClick={cerrarMenu} />
           <button
             type="button"
             aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
@@ -117,6 +131,7 @@ export function SiteHeader() {
                 <Link
                   key={categoria.slug}
                   href={href}
+                  aria-current={activo ? "page" : undefined}
                   onClick={cerrarMenu}
                   className={`border-borde-tarjeta border-b py-4 text-[17px] ${
                     activo ? "text-negro font-medium" : "text-negro"
@@ -134,6 +149,7 @@ export function SiteHeader() {
                 <Link
                   key={enlace.href}
                   href={enlace.href}
+                  aria-current={activo ? "page" : undefined}
                   onClick={cerrarMenu}
                   className={`border-borde-tarjeta border-b py-4 text-[15px] ${
                     activo ? "text-negro font-medium" : "text-texto-secundario"
@@ -150,11 +166,12 @@ export function SiteHeader() {
   );
 }
 
-function CartLink() {
+function CartLink({ onClick }: { onClick?: () => void }) {
   // useCart() exige un <CartProvider> arriba (lo monta app/layout.tsx) —
   // itemCount es 0 hasta hidratar, así que el contador no parpadea con un
   // número viejo de otra sesión antes de leer localStorage.
   const { itemCount, hydrated } = useCart();
+  const enCarrito = esEnlaceActivo(usePathname(), "/carrito");
   const [animar, setAnimar] = useState(false);
   const itemCountAnterior = useRef(itemCount);
   const yaHidrato = useRef(false);
@@ -185,6 +202,8 @@ function CartLink() {
   return (
     <Link
       href="/carrito"
+      onClick={onClick}
+      aria-current={enCarrito ? "page" : undefined}
       className={`bg-negro rounded-full px-4 py-3 text-[13px] text-white xl:py-[7px] ${
         animar ? "animate-cart-pop" : ""
       }`}
@@ -197,9 +216,16 @@ function CartLink() {
 
 function SearchIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <circle cx="9" cy="9" r="5.5" stroke="#0B0B0C" strokeWidth="1.5" />
-      <path d="M13.2 13.2L17 17" stroke="#0B0B0C" strokeWidth="1.5" strokeLinecap="round" />
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      className="text-negro"
+      aria-hidden="true"
+    >
+      <circle cx="9" cy="9" r="5.5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M13.2 13.2L17 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -207,14 +233,38 @@ function SearchIcon() {
 function MenuIcon({ abierto }: { abierto: boolean }) {
   if (abierto) {
     return (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <path d="M4 4L16 16M16 4L4 16" stroke="#0B0B0C" strokeWidth="1.5" strokeLinecap="round" />
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        className="text-negro"
+        aria-hidden="true"
+      >
+        <path
+          d="M4 4L16 16M16 4L4 16"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
       </svg>
     );
   }
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <path d="M3 5H17M3 10H17M3 15H17" stroke="#0B0B0C" strokeWidth="1.5" strokeLinecap="round" />
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      className="text-negro"
+      aria-hidden="true"
+    >
+      <path
+        d="M3 5H17M3 10H17M3 15H17"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

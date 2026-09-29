@@ -231,6 +231,14 @@ export function useRotateGesture(
     (e: PointerEvent) => {
       if (!activos.current.delete(e.pointerId)) return;
       pellizco.current = activos.current.size >= 2 ? medirPellizco() : null;
+      // De dos dedos a uno: el que queda sigue desplazando, y su próximo
+      // movimiento se mide contra `ultimo`. Durante la pinza nadie lo
+      // actualizaba (la rama de dos dedos vuelve antes), así que seguía en el
+      // PRIMER toque y el modelo saltaba toda la distancia recorrida.
+      if (activos.current.size === 1) {
+        const [restante] = activos.current.values();
+        ultimo.current = { x: restante.x, y: restante.y };
+      }
       if (activos.current.size > 0) return;
       soltarTodo.current?.();
       modo.current = "indefinido";

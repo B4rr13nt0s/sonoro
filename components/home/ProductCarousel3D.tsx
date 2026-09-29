@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { MODELS, MODEL_IDS } from "@/lib/models3d.ts";
 
+import { SinCanvasSiFalla } from "./SinCanvasSiFalla";
 import { useCicloCarrusel } from "./useIdleReturn";
 import { useMediaQuery } from "./useMediaQuery";
 import { useRotateGesture } from "./useRotateGesture";
@@ -82,6 +83,14 @@ export function ProductCarousel3D() {
   const [direction, setDirection] = useState(1);
   const [enCuadro, setEnCuadro] = useState(false);
   const [pestanaVisible, setPestanaVisible] = useState(true);
+  // Accesibilidad del avance automático (WCAG 2.2.2): mientras el foco del
+  // teclado está DENTRO del carrusel, el ciclo se detiene —si no, el enlace
+  // de categoría que se está leyendo cambia de destino a mitad de lectura—,
+  // y el contador solo se anuncia cuando el cambio lo pidió el usuario con
+  // las flechas o los puntos: con el anuncio en cada vuelta, un lector de
+  // pantalla repetía «3 / 9» cada 16 s sin fin.
+  const [conFoco, setConFoco] = useState(false);
+  const [cambioManual, setCambioManual] = useState(false);
 
   const contenedor = useRef<HTMLDivElement>(null);
   const canvasListo = useCanvasDiferido();
@@ -90,13 +99,14 @@ export function ProductCarousel3D() {
   const chrome = anchoSm ? CHROME_SM : CHROME_MOVIL;
 
   const avanzar = useCallback(() => {
+    setCambioManual(false);
     setDirection(1);
     setIndex((actual) => (actual + 1) % MODEL_IDS.length);
   }, []);
 
   const { fase, faseInicio, notifyInteraction, beginGesture, endGesture, alVolver, reiniciar } =
     useCicloCarrusel({
-      activo: enCuadro && pestanaVisible,
+      activo: enCuadro && pestanaVisible && !conFoco,
       reducedMotion,
       onAvanzar: avanzar,
     });
@@ -113,6 +123,7 @@ export function ProductCarousel3D() {
   // índice, así que se llega al producto ya encuadrado.
   const ir = useCallback(
     (siguiente: number, dir: number) => {
+      setCambioManual(true);
       setDirection(dir);
       setIndex(((siguiente % MODEL_IDS.length) + MODEL_IDS.length) % MODEL_IDS.length);
       reiniciar();
@@ -162,18 +173,24 @@ export function ProductCarousel3D() {
       style={{ touchAction: "pan-y" }}
       className={`bg-fondo-alt relative mt-7 w-full cursor-grab touch-pan-y overflow-hidden rounded-t-2xl select-none active:cursor-grabbing ${ALTO}`}
       {...handlers}
+      onFocus={() => setConFoco(true)}
+      onBlur={(evento) => {
+        if (!evento.currentTarget.contains(evento.relatedTarget)) setConFoco(false);
+      }}
     >
       {canvasListo ? (
-        <CarouselCanvas
-          index={index}
-          direction={direction}
-          fase={fase}
-          faseInicio={faseInicio}
-          chrome={chrome}
-          pendienteRef={pendienteRef}
-          alVolver={alVolver}
-          frameloop={frameloop}
-        />
+        <SinCanvasSiFalla>
+          <CarouselCanvas
+            index={index}
+            direction={direction}
+            fase={fase}
+            faseInicio={faseInicio}
+            chrome={chrome}
+            pendienteRef={pendienteRef}
+            alVolver={alVolver}
+            frameloop={frameloop}
+          />
+        </SinCanvasSiFalla>
       ) : null}
 
       {/* Toda la interfaz vive en el DOM, encima del canvas, nunca dentro.
@@ -199,7 +216,7 @@ export function ProductCarousel3D() {
 
       {/* Abajo a la izquierda: en qué producto vamos */}
       <div
-        aria-live="polite"
+        aria-live={cambioManual ? "polite" : "off"}
         className="text-texto-terciario pointer-events-none absolute bottom-0 left-0 p-5 font-mono text-[11px] tracking-[0.14em] uppercase sm:p-7"
       >
         {index + 1} / {total}

@@ -30,6 +30,21 @@ export async function forwardQuoteLog(params: {
     });
     if (!response.ok) {
       console.error(`[quote-log] QUOTE_LOG_URL respondió ${response.status}`);
+      return;
+    }
+    // El Apps Script responde SIEMPRE 200 —ContentService no puede poner
+    // otro código— y avisa las fallas en el cuerpo: {ok:false, mensaje}.
+    // Mirar solo el status tomaba un token desincronizado ("No autorizado")
+    // o un script sin configurar por éxito, y los pedidos se perdían de la
+    // hoja sin dejar rastro en el log del servidor.
+    const cuerpo: unknown = await response.json().catch(() => null);
+    if (
+      typeof cuerpo === "object" &&
+      cuerpo !== null &&
+      (cuerpo as { ok?: unknown }).ok === false
+    ) {
+      const mensaje = (cuerpo as { mensaje?: unknown }).mensaje;
+      console.error(`[quote-log] QUOTE_LOG_URL rechazó el registro: ${String(mensaje)}`);
     }
   } catch (error) {
     console.error("[quote-log] no se pudo registrar la cotización:", error);

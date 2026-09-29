@@ -7,13 +7,18 @@ import { Pagination } from "@/components/catalog/Pagination";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildProductosHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
-import { listBrands, listProducts, parseOrden, parsePagina } from "@/lib/catalog/index.ts";
+import {
+  listAllProducts,
+  listBrands,
+  listProducts,
+  marcasDelFiltro,
+  nombreDeMarca,
+  parseOrden,
+  parsePagina,
+  primeroDeQuery,
+} from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 import { textosDestacados } from "@/lib/seo/textos.ts";
-
-function primeroDeQuery(valor: string | string[] | undefined): string | undefined {
-  return Array.isArray(valor) ? valor[0] : valor;
-}
 
 export async function generateMetadata(props: PageProps<"/productos">): Promise<Metadata> {
   const searchParams = await props.searchParams;
@@ -23,9 +28,7 @@ export async function generateMetadata(props: PageProps<"/productos">): Promise<
   // marca/page preservados.
   const canonical = buildProductosHref({ marca: marcaSlug, page });
 
-  const marcaFiltro = marcaSlug
-    ? ((await listBrands()).find((marca) => marca.slug === marcaSlug)?.nombre ?? marcaSlug)
-    : undefined;
+  const marcaFiltro = nombreDeMarca(await listBrands(), marcaSlug);
   const { total } = await listProducts({ marca: marcaFiltro, destacado: true, activo: true });
   const { titulo, descripcion } = textosDestacados({ total, marcaFiltro, page });
 
@@ -45,9 +48,10 @@ export default async function ProductosPage(props: PageProps<"/productos">) {
   // Mismo criterio que /catalogo/[categoria]: un slug que no resuelve a
   // marca real filtra por el slug crudo — "sin resultados", no el listado
   // completo sin filtrar por error.
-  const marcaNombre = marcaSlug
-    ? (marcas.find((marca) => marca.slug === marcaSlug)?.nombre ?? marcaSlug)
-    : undefined;
+  const marcaNombre = nombreDeMarca(marcas, marcaSlug);
+
+  // Para ofrecer en el filtro solo las marcas con destacados.
+  const destacados = await listAllProducts({ destacado: true, activo: true });
 
   const { items, total, page, pageSize } = await listProducts({
     destacado: true,
@@ -77,7 +81,7 @@ export default async function ProductosPage(props: PageProps<"/productos">) {
 
         <div className="flex flex-wrap items-center gap-2.5 text-[13px]">
           <FiltroMarca
-            opciones={marcas.map((marca) => ({
+            opciones={marcasDelFiltro(marcas, destacados, marcaSlug).map((marca) => ({
               slug: marca.slug,
               nombre: marca.nombre,
               href: buildProductosHref({ marca: marca.slug, orden }),
