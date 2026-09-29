@@ -153,21 +153,49 @@ test("useCicloCarrusel: con el avance en pausa sigue girando pero no pasa al sig
 
 test("useCicloCarrusel: fuera de cuadro el tiempo de la fase no corre, y al volver no salta", async () => {
   await conCarrusel(async ({ estado, pasar, props }) => {
+    // Como lo lee el canvas: con el número de fase de su propio render.
+    const tiempo = () => estado().transcurrido(estado().numeroDeFase);
     await pasar(ESPERA_MS);
     await pasar(4_000);
     assert.equal(estado().fase, "girando");
-    assert.equal(estado().transcurrido(), 4_000);
+    assert.equal(tiempo(), 4_000);
 
     await props({ activo: false, pausarAvance: false });
     await pasar(30_000);
-    assert.equal(estado().transcurrido(), 4_000, "clavado mientras no está a la vista");
+    assert.equal(tiempo(), 4_000, "clavado mientras no está a la vista");
 
     // Lo que lee el canvas para el ángulo: el mismo punto de la vuelta en
     // el que se fue, sin la pausa encima.
     await props({ activo: true, pausarAvance: false });
-    assert.equal(estado().transcurrido(), 4_000, "sin salto al volver");
+    assert.equal(tiempo(), 4_000, "sin salto al volver");
     await pasar(GIRO_MS - 4_000);
     assert.equal(estado().fase, "espera-final", "termina la vuelta a su tiempo");
+  });
+});
+
+test("useCicloCarrusel: entre una interacción y su render, la fase vieja conserva su tiempo", async () => {
+  await conCarrusel(async ({ estado, pasar }) => {
+    await pasar(ESPERA_MS);
+    await pasar(4_000);
+    // Lo que tiene el canvas: el último render, a 4 s de la vuelta.
+    const render = estado();
+    assert.equal(render.fase, "girando");
+
+    await act(async () => {
+      // La rueda (o el primer arrastre) llega por un listener nativo: el
+      // reloj cambia de fase en el acto, pero React todavía no re-renderizó
+      // —dentro de act() el render espera al final del bloque—, así que este
+      // es el hueco donde el navegador puede dibujar un frame.
+      render.notifyInteraction();
+      assert.equal(
+        render.transcurrido(render.numeroDeFase),
+        4_000,
+        "el frame con la fase vieja ve el tiempo en el que la dejó, no 0",
+      );
+    });
+
+    assert.equal(estado().fase, "interactuando");
+    assert.equal(estado().transcurrido(estado().numeroDeFase), 0);
   });
 });
 

@@ -87,6 +87,20 @@ test("RelojFase: una fase nueva empieza en cero, también en plena pausa", () =>
   assert.equal(reloj.transcurrido(33_000), 3_000);
 });
 
+test("RelojFase: quien todavía dibuja la fase anterior ve el tiempo con el que terminó", () => {
+  const reloj = new RelojFase(0);
+  const girando = reloj.numero;
+  // A media vuelta llega una interacción: el reloj cambia de fase en el acto.
+  const interactuando = reloj.reiniciar(4_000);
+  assert.notEqual(interactuando, girando);
+  // El canvas, que todavía no recibió la fase nueva, pregunta por la vieja:
+  // 4 s, no 0 — si recibiera 0, dibujaría el modelo en el ángulo del inicio
+  // de la vuelta.
+  assert.equal(reloj.transcurrido(4_050, girando), 4_000);
+  assert.equal(reloj.transcurrido(4_050, interactuando), 50);
+  assert.equal(reloj.transcurrido(4_050), 50, "sin número, la fase en curso");
+});
+
 test("el ángulo se satura en una vuelta y es 0 fuera de la fase de giro", () => {
   assert.equal(anguloDelCiclo("girando", GIRO_MS * 3), -2 * Math.PI);
   assert.equal(anguloDelCiclo("girando", -500), 0);

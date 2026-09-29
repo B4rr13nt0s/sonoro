@@ -38,11 +38,15 @@ export const RETURN_EPSILON = 0.01;
 
 export interface CicloCarrusel {
   fase: FaseCarrusel;
+  /** El número de `fase` en el reloj: cambia con cada cambio de fase. */
+  numeroDeFase: number;
   /**
-   * Cuánto lleva la fase actual, en ms, sin contar las pausas (RelojFase en
-   * ciclo.ts). El giro se calcula desde acá, frame a frame.
+   * Cuánto lleva la fase `numero`, en ms, sin contar las pausas (RelojFase en
+   * ciclo.ts). El giro se calcula desde acá, frame a frame, pasando el
+   * `numeroDeFase` con el que se renderizó: si el reloj ya cambió de fase y
+   * el render todavía no llegó, devuelve lo que la vieja llevaba al terminar.
    */
-  transcurrido: () => number;
+  transcurrido: (numero: number) => number;
   /** Empieza un gesto sostenido: pausa el ciclo hasta que termine. */
   beginGesture: () => void;
   /** Termina el gesto y arranca la cuenta de los 3 s. */
@@ -78,9 +82,13 @@ export function useCicloCarrusel({
     () => new RelojFase(typeof performance === "undefined" ? 0 : performance.now()),
   );
   // Cambia en cada ir(), aunque la fase sea la misma (otra interacción en
-  // plena `interactuando`): es lo que rearma el plazo.
-  const [numeroDeFase, setNumeroDeFase] = useState(0);
-  const transcurrido = useCallback(() => reloj.transcurrido(performance.now()), [reloj]);
+  // plena `interactuando`): es lo que rearma el plazo, y lo que el canvas le
+  // pasa al reloj para no mezclar la fase de un render con el tiempo de otra.
+  const [numeroDeFase, setNumeroDeFase] = useState(() => reloj.numero);
+  const transcurrido = useCallback(
+    (numero: number) => reloj.transcurrido(performance.now(), numero),
+    [reloj],
+  );
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const gestoActivo = useRef(false);
   const onAvanzarRef = useRef(onAvanzar);
@@ -96,9 +104,8 @@ export function useCicloCarrusel({
   const ir = useCallback(
     (siguiente: FaseCarrusel) => {
       limpiar();
-      reloj.reiniciar(performance.now());
+      setNumeroDeFase(reloj.reiniciar(performance.now()));
       setFase(siguiente);
-      setNumeroDeFase((n) => n + 1);
     },
     [limpiar, reloj],
   );
@@ -188,7 +195,7 @@ export function useCicloCarrusel({
 
     // Lo que FALTA de la fase, no el plazo entero: al reanudar tras una
     // pausa, la fase ya había consumido parte de su tiempo.
-    const restante = Math.max(0, plan.esperaMs - transcurrido());
+    const restante = Math.max(0, plan.esperaMs - transcurrido(numeroDeFase));
     timer.current = setTimeout(() => {
       if (plan.avanza) onAvanzarRef.current();
       ir(plan.siguiente);
@@ -197,5 +204,14 @@ export function useCicloCarrusel({
 
   useEffect(() => limpiar, [limpiar]);
 
-  return { fase, transcurrido, beginGesture, endGesture, notifyInteraction, alVolver, reiniciar };
+  return {
+    fase,
+    numeroDeFase,
+    transcurrido,
+    beginGesture,
+    endGesture,
+    notifyInteraction,
+    alVolver,
+    reiniciar,
+  };
 }

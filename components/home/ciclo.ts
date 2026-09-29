@@ -63,21 +63,44 @@ export function duracionProductoMs(): number {
  * pregunta entre la reanudación y el re-render ve el tiempo todavía clavado,
  * que es exactamente el que había.
  *
+ * Cada fase lleva un NÚMERO, y quien dibuja pregunta por la fase con la
+ * que se renderizó. El reloj cambia de fase en el acto, pero la fase nueva
+ * le llega al canvas un render después —y el canvas de three.js es otro
+ * árbol de React, que puede llegar todavía más tarde—: si en ese hueco se
+ * dibujaba con la fase vieja y el tiempo nuevo (≈ 0), un modelo agarrado a
+ * media vuelta saltaba al ángulo del inicio de la vuelta y se quedaba ahí.
+ * Con el número, quien todavía está en la fase anterior recibe el tiempo
+ * clavado donde esa fase terminó.
+ *
  * Recibe `ahora` en cada llamada en vez de leer el reloj: sin DOM, y con
  * test.
  */
 export class RelojFase {
   #origen: number;
   #pausadoDesde: number | null = null;
+  #numero = 0;
+  // Cuánto llevaba la fase anterior cuando terminó.
+  #finAnterior = 0;
 
   constructor(ahora: number) {
     this.#origen = ahora;
   }
 
-  /** Fase nueva: el tiempo vuelve a cero. Si estaba en pausa, sigue en pausa. */
-  reiniciar(ahora: number): void {
+  /** El número de la fase en curso. */
+  get numero(): number {
+    return this.#numero;
+  }
+
+  /**
+   * Fase nueva: el tiempo vuelve a cero. Si estaba en pausa, sigue en pausa.
+   * Devuelve el número de la fase nueva.
+   */
+  reiniciar(ahora: number): number {
+    this.#finAnterior = this.transcurrido(ahora);
+    this.#numero += 1;
     this.#origen = ahora;
     if (this.#pausadoDesde !== null) this.#pausadoDesde = ahora;
+    return this.#numero;
   }
 
   pausar(ahora: number): void {
@@ -90,7 +113,12 @@ export class RelojFase {
     this.#pausadoDesde = null;
   }
 
-  transcurrido(ahora: number): number {
+  /**
+   * Cuánto lleva la fase `numero` (por defecto, la en curso). Para una fase
+   * que ya terminó, lo que llevaba al terminar.
+   */
+  transcurrido(ahora: number, numero: number = this.#numero): number {
+    if (numero !== this.#numero) return this.#finAnterior;
     return (this.#pausadoDesde ?? ahora) - this.#origen;
   }
 }
