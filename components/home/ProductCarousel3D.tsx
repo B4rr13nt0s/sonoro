@@ -136,7 +136,7 @@ export function ProductCarousel3D() {
   const anterior = useCallback(() => ir(index - 1, -1), [ir, index]);
   const siguiente = useCallback(() => ir(index + 1, 1), [ir, index]);
 
-  // IntersectionObserver: fuera del viewport el render pasa de 'always' a
+  // IntersectionObserver: fuera del viewport el render pasa de 'demand' a
   // 'never'. Un carrusel 3D que nadie está viendo no debe consumir GPU.
   useEffect(() => {
     const nodo = contenedor.current;
@@ -159,7 +159,7 @@ export function ProductCarousel3D() {
   }, []);
 
   const actual = MODELS[MODEL_IDS[index]];
-  const frameloop = enCuadro && pestanaVisible ? "always" : "never";
+  const frameloop = enCuadro && pestanaVisible ? "demand" : "never";
 
   // 44x44 en el teléfono —el mínimo para el dedo, y acá se usan justo con el
   // dedo— y los 40 del handoff desde sm, donde se apunta con el mouse.
@@ -195,6 +195,7 @@ export function ProductCarousel3D() {
             pendienteRef={pendienteRef}
             alVolver={alVolver}
             frameloop={frameloop}
+            dprMax={anchoSm ? 2 : 1.5}
           />
         </SinCanvasSiFalla>
       ) : null}
@@ -230,8 +231,15 @@ export function ProductCarousel3D() {
 
       {/* Abajo a la derecha: puntos y flechas */}
       <div className="pointer-events-none absolute right-0 bottom-0 flex flex-col items-end gap-3 p-5 sm:p-7">
+        {/* El punto se ve de 10 px, pero el botón mide 24×24 y van pegados:
+            WCAG 2.5.8 pide esa área táctil, y con los botones del tamaño
+            del punto y 8 px entre ellos, Lighthouse los marcaba (Accesibilidad
+            96 en escritorio). El margen negativo devuelve los 7 px que el
+            botón sobresale del punto por cada lado, así que el bloque de la
+            esquina conserva su alto y el último punto sigue alineado con el
+            borde de las flechas. */}
         <ul
-          className="pointer-events-auto hidden gap-2 sm:flex"
+          className="pointer-events-auto -m-[7px] hidden sm:flex"
           aria-label="Categorías del carrusel"
         >
           {MODEL_IDS.map((id, i) => (
@@ -241,11 +249,16 @@ export function ProductCarousel3D() {
                 onClick={() => ir(i, i > index ? 1 : -1)}
                 aria-label={`Ver ${MODELS[id].label}`}
                 aria-current={i === index ? "true" : undefined}
-                // El punto inactivo va relleno, no con borde: sobre
-                // fondo-alt (#F5F5F3) el borde de píldora (#E4E4E0) da
-                // 1.1:1 y desaparece.
-                className={`h-2.5 w-2.5 rounded-full ${i === index ? "bg-negro" : "bg-negro/25"}`}
-              />
+                className="flex h-6 w-6 items-center justify-center rounded-full"
+              >
+                {/* El punto inactivo va relleno, no con borde: sobre
+                    fondo-alt (#F5F5F3) el borde de píldora (#E4E4E0) da
+                    1.1:1 y desaparece. */}
+                <span
+                  aria-hidden="true"
+                  className={`h-2.5 w-2.5 rounded-full ${i === index ? "bg-negro" : "bg-negro/25"}`}
+                />
+              </button>
             </li>
           ))}
         </ul>

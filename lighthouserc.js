@@ -18,10 +18,12 @@ const PRESUPUESTO = {
 // El puntaje de Performance pesa 30% en Total Blocking Time y 10% en Speed
 // Index, y las dos miden lo mismo: cuánto tiempo el hilo principal está
 // ocupado. El carrusel 3D del hero (CLAUDE.md § Modelos 3D) dibuja cuadro a
-// cuadro mientras está a la vista, a propósito, así que el hilo nunca queda
-// quieto y Lighthouse —que mide con el procesador frenado 4×— convierte cada
-// cuadro en una "tarea larga": 167 s de TBT y 28.7 s de Speed Index, con el
-// puntaje global en 0.59 aunque la página se vea completa en 2.2 s.
+// cuadro mientras el modelo gira, a propósito —desde septiembre de 2026 ya
+// no durante las esperas, pero la vuelta dura 10 s de cada 16—, así que el
+// hilo casi no queda quieto y Lighthouse —que mide con el procesador frenado
+// 4× y sin GPU, emulando WebGL en el procesador— convierte cada cuadro en
+// una "tarea larga": 167 s de TBT y 28.7 s de Speed Index, con el puntaje
+// global en 0.59 aunque la página se vea completa en 2.2 s.
 //
 // Bajar el minScore a secas dejaría pasar cualquier regresión por debajo de
 // ese número. En su lugar se asierta lo que SÍ describe la experiencia de
