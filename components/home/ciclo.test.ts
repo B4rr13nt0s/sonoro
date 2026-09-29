@@ -60,45 +60,66 @@ test("el giro va de derecha a izquierda y da exactamente una vuelta", () => {
 });
 
 test("RelojFase: la pausa no cuenta, ni siquiera antes de reanudar", () => {
-  const reloj = new RelojFase(1_000);
-  assert.equal(reloj.transcurrido(5_000), 4_000);
+  const reloj = new RelojFase("girando", 1_000);
+  assert.equal(reloj.transcurrido("girando", 5_000), 4_000);
 
   reloj.pausar(5_000);
   // En pausa el tiempo queda clavado: esto es lo que ve el canvas en los
   // frames entre que el carrusel vuelve a la vista y React re-renderiza.
-  assert.equal(reloj.transcurrido(35_000), 4_000);
+  assert.equal(reloj.transcurrido("girando", 35_000), 4_000);
   reloj.pausar(20_000); // pausar dos veces no mueve el inicio de la pausa
-  assert.equal(reloj.transcurrido(35_000), 4_000);
+  assert.equal(reloj.transcurrido("girando", 35_000), 4_000);
 
   reloj.reanudar(35_000);
-  assert.equal(reloj.transcurrido(35_000), 4_000, "sin salto al reanudar");
-  assert.equal(reloj.transcurrido(36_000), 5_000);
+  assert.equal(reloj.transcurrido("girando", 35_000), 4_000, "sin salto al reanudar");
+  assert.equal(reloj.transcurrido("girando", 36_000), 5_000);
   reloj.reanudar(40_000); // reanudar sin pausa no hace nada
-  assert.equal(reloj.transcurrido(40_000), 9_000);
+  assert.equal(reloj.transcurrido("girando", 40_000), 9_000);
 });
 
 test("RelojFase: una fase nueva empieza en cero, también en plena pausa", () => {
-  const reloj = new RelojFase(0);
+  const reloj = new RelojFase("espera-final", 0);
   reloj.pausar(8_000);
   // Una flecha durante la pausa: la fase nueva no arrastra la pausa vieja.
-  reloj.reiniciar(30_000);
-  assert.equal(reloj.transcurrido(30_000), 0);
+  reloj.cambiar("espera-previa", 30_000);
+  assert.equal(reloj.fase, "espera-previa");
+  assert.equal(reloj.transcurrido("espera-previa", 30_000), 0);
   reloj.reanudar(30_000);
-  assert.equal(reloj.transcurrido(33_000), 3_000);
+  assert.equal(reloj.transcurrido("espera-previa", 33_000), 3_000);
+  // Y la fase que terminó en pausa guarda el tiempo clavado, no el de reloj.
+  assert.equal(reloj.transcurrido("espera-final", 33_000), 8_000);
 });
 
-test("RelojFase: quien todavía dibuja la fase anterior ve el tiempo con el que terminó", () => {
-  const reloj = new RelojFase(0);
-  const girando = reloj.numero;
+test("RelojFase: quien todavía dibuja una fase terminada ve el tiempo con el que terminó", () => {
+  const reloj = new RelojFase("girando", 0);
   // A media vuelta llega una interacción: el reloj cambia de fase en el acto.
-  const interactuando = reloj.reiniciar(4_000);
-  assert.notEqual(interactuando, girando);
-  // El canvas, que todavía no recibió la fase nueva, pregunta por la vieja:
+  reloj.cambiar("interactuando", 4_000);
+  // El canvas, que todavía no recibió la fase nueva, pregunta por la suya:
   // 4 s, no 0 — si recibiera 0, dibujaría el modelo en el ángulo del inicio
   // de la vuelta.
-  assert.equal(reloj.transcurrido(4_050, girando), 4_000);
-  assert.equal(reloj.transcurrido(4_050, interactuando), 50);
-  assert.equal(reloj.transcurrido(4_050), 50, "sin número, la fase en curso");
+  assert.equal(reloj.transcurrido("girando", 4_050), 4_000);
+  assert.equal(reloj.transcurrido("interactuando", 4_050), 50);
+});
+
+test("RelojFase: varios cambios antes del render no pisan el final de la vuelta", () => {
+  // El caso que rompía la versión con «solo la fase anterior»: una ráfaga de
+  // rueda cambia de fase varias veces antes de que el canvas re-renderice.
+  const reloj = new RelojFase("girando", 0);
+  reloj.cambiar("interactuando", 4_000);
+  reloj.cambiar("interactuando", 4_005);
+  reloj.cambiar("interactuando", 4_010);
+  assert.equal(reloj.transcurrido("girando", 4_050), 4_000, "sigue siendo el de la vuelta");
+  assert.equal(reloj.transcurrido("interactuando", 4_050), 40, "la en curso, desde la última");
+
+  // Terminado el regreso, la vuelta nueva cuenta desde cero, no desde 4 s.
+  reloj.cambiar("volviendo", 7_010);
+  reloj.cambiar("girando", 7_800);
+  assert.equal(reloj.transcurrido("girando", 8_800), 1_000);
+});
+
+test("RelojFase: una fase que nunca corrió da 0", () => {
+  const reloj = new RelojFase("espera-previa", 0);
+  assert.equal(reloj.transcurrido("girando", 5_000), 0);
 });
 
 test("el ángulo se satura en una vuelta y es 0 fuera de la fase de giro", () => {

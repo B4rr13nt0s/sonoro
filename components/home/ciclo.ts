@@ -63,44 +63,55 @@ export function duracionProductoMs(): number {
  * pregunta entre la reanudación y el re-render ve el tiempo todavía clavado,
  * que es exactamente el que había.
  *
- * Cada fase lleva un NÚMERO, y quien dibuja pregunta por la fase con la
- * que se renderizó. El reloj cambia de fase en el acto, pero la fase nueva
- * le llega al canvas un render después —y el canvas de three.js es otro
- * árbol de React, que puede llegar todavía más tarde—: si en ese hueco se
- * dibujaba con la fase vieja y el tiempo nuevo (≈ 0), un modelo agarrado a
- * media vuelta saltaba al ángulo del inicio de la vuelta y se quedaba ahí.
- * Con el número, quien todavía está en la fase anterior recibe el tiempo
- * clavado donde esa fase terminó.
+ * El reloj sabe EN QUÉ FASE está, y quien pregunta dice por cuál fase
+ * pregunta: la que tiene renderizada. El reloj cambia de fase en el acto,
+ * pero la fase nueva le llega al canvas un render después —y el canvas de
+ * three.js es otro árbol de React, que puede llegar todavía más tarde—. Si
+ * en ese hueco el canvas dibujaba con la fase vieja y el tiempo de la nueva
+ * (≈ 0), un modelo agarrado a media vuelta saltaba al ángulo del inicio de
+ * la vuelta y se quedaba ahí. Por eso, preguntar por una fase que ya no es
+ * la actual devuelve lo que ESA fase llevaba la última vez que terminó.
+ *
+ * Por tipo de fase y no por un número de cambio: hasta septiembre de 2026 se
+ * guardaba solo el final de la fase inmediatamente anterior, y dos cambios
+ * antes del render (dos eventos de rueda seguidos: `girando → interactuando
+ * → interactuando`) le devolvían al canvas, todavía en `girando`, los
+ * milisegundos de la intermedia — el mismo salto. Por tipo, `girando`
+ * conserva su final pase lo que pase después. Lo único que eso no distingue
+ * es una vuelta de la siguiente, y no hace falta: entre dos vueltas hay por
+ * lo menos 3 s y una fase (`espera-previa` o `volviendo`) que el canvas
+ * tiene que dibujar — `volviendo` solo termina cuando el canvas avisa.
  *
  * Recibe `ahora` en cada llamada en vez de leer el reloj: sin DOM, y con
  * test.
  */
 export class RelojFase {
+  #fase: FaseCarrusel;
   #origen: number;
   #pausadoDesde: number | null = null;
-  #numero = 0;
-  // Cuánto llevaba la fase anterior cuando terminó.
-  #finAnterior = 0;
+  // Lo que llevaba cada fase la última vez que terminó.
+  #finales: Partial<Record<FaseCarrusel, number>> = {};
 
-  constructor(ahora: number) {
+  constructor(fase: FaseCarrusel, ahora: number) {
+    this.#fase = fase;
     this.#origen = ahora;
   }
 
-  /** El número de la fase en curso. */
-  get numero(): number {
-    return this.#numero;
+  /** La fase en curso, ya cambiada aunque React todavía no haya re-renderizado. */
+  get fase(): FaseCarrusel {
+    return this.#fase;
   }
 
   /**
-   * Fase nueva: el tiempo vuelve a cero. Si estaba en pausa, sigue en pausa.
-   * Devuelve el número de la fase nueva.
+   * Pasa a `fase` (puede ser la misma: otra interacción en plena
+   * `interactuando` vuelve a contar desde cero). Si estaba en pausa, sigue en
+   * pausa.
    */
-  reiniciar(ahora: number): number {
-    this.#finAnterior = this.transcurrido(ahora);
-    this.#numero += 1;
+  cambiar(fase: FaseCarrusel, ahora: number): void {
+    this.#finales[this.#fase] = this.transcurrido(this.#fase, ahora);
+    this.#fase = fase;
     this.#origen = ahora;
     if (this.#pausadoDesde !== null) this.#pausadoDesde = ahora;
-    return this.#numero;
   }
 
   pausar(ahora: number): void {
@@ -114,11 +125,11 @@ export class RelojFase {
   }
 
   /**
-   * Cuánto lleva la fase `numero` (por defecto, la en curso). Para una fase
-   * que ya terminó, lo que llevaba al terminar.
+   * Cuánto lleva `fase` si es la en curso; si no, lo que llevaba la última
+   * vez que terminó (0 si nunca corrió).
    */
-  transcurrido(ahora: number, numero: number = this.#numero): number {
-    if (numero !== this.#numero) return this.#finAnterior;
+  transcurrido(fase: FaseCarrusel, ahora: number): number {
+    if (fase !== this.#fase) return this.#finales[fase] ?? 0;
     return (this.#pausadoDesde ?? ahora) - this.#origen;
   }
 }

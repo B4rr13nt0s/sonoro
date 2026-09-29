@@ -105,21 +105,13 @@ export function ProductCarousel3D() {
     setIndex((actual) => (actual + 1) % MODEL_IDS.length);
   }, []);
 
-  const {
-    fase,
-    numeroDeFase,
-    transcurrido,
-    notifyInteraction,
-    beginGesture,
-    endGesture,
-    alVolver,
-    reiniciar,
-  } = useCicloCarrusel({
-    activo: enCuadro && pestanaVisible,
-    pausarAvance: conFoco,
-    reducedMotion,
-    onAvanzar: avanzar,
-  });
+  const { fase, transcurrido, notifyInteraction, beginGesture, endGesture, alVolver, reiniciar } =
+    useCicloCarrusel({
+      activo: enCuadro && pestanaVisible,
+      pausarAvance: conFoco,
+      reducedMotion,
+      onAvanzar: avanzar,
+    });
 
   const { pendienteRef, handlers } = useRotateGesture(
     contenedor,
@@ -198,7 +190,6 @@ export function ProductCarousel3D() {
             index={index}
             direction={direction}
             fase={fase}
-            numeroDeFase={numeroDeFase}
             transcurrido={transcurrido}
             chrome={chrome}
             pendienteRef={pendienteRef}

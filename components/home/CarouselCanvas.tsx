@@ -55,15 +55,13 @@ export interface CarouselCanvasProps {
   /** Dirección del último cambio de índice: +1 siguiente, −1 anterior. */
   direction: number;
   fase: FaseCarrusel;
-  /** El número de `fase` en el reloj; viaja junto con ella en cada render. */
-  numeroDeFase: number;
   /**
-   * Cuánto lleva la fase `numero`, en ms, sin contar las pausas (RelojFase).
-   * Se le pasa el `numeroDeFase` de ESTE render: el reloj cambia de fase
-   * antes de que el render llegue acá, y sin el número un frame en el hueco
+   * Cuánto lleva `fase`, en ms, sin contar las pausas (RelojFase). Se le pasa
+   * la `fase` de ESTE render: el reloj cambia de fase antes de que el render
+   * llegue acá, y si se le pidiera «la actual», un frame en el hueco
    * mezclaba la fase vieja con el tiempo de la nueva.
    */
-  transcurrido: (numero: number) => number;
+  transcurrido: (fase: FaseCarrusel) => number;
   /**
    * Espacio que ocupa el chrome del carrusel, en píxeles CSS: `v` es el
    * alto de las bandas de arriba y abajo (etiqueta, contador, flechas) y
@@ -200,7 +198,6 @@ function Escena({
   index,
   direction,
   fase,
-  numeroDeFase,
   transcurrido,
   chrome,
   pendienteRef,
@@ -285,7 +282,6 @@ function Escena({
         actual={actual}
         siguiente={siguiente}
         fase={fase}
-        numeroDeFase={numeroDeFase}
         transcurrido={transcurrido}
         chrome={chrome}
         azimutCamaraRef={azimutCamaraRef}
@@ -325,7 +321,6 @@ function Deslizador({
   actual,
   siguiente,
   fase,
-  numeroDeFase,
   transcurrido,
   chrome,
   azimutCamaraRef,
@@ -336,8 +331,7 @@ function Deslizador({
   actual: ModelId;
   siguiente: ModelId;
   fase: FaseCarrusel;
-  numeroDeFase: number;
-  transcurrido: (numero: number) => number;
+  transcurrido: (fase: FaseCarrusel) => number;
   chrome: { v: number; h: number };
   azimutCamaraRef: React.RefObject<number>;
 }) {
@@ -415,7 +409,7 @@ function Deslizador({
     // Solo gira el modelo que está en cuadro; los vecinos esperan su turno
     // en la pose predeterminada.
     if (fase === "girando") {
-      anguloRef.current = anguloBase.current + anguloDelCiclo(fase, transcurrido(numeroDeFase));
+      anguloRef.current = anguloBase.current + anguloDelCiclo(fase, transcurrido(fase));
     }
   });
 

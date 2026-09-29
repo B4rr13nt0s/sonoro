@@ -38,15 +38,13 @@ export const RETURN_EPSILON = 0.01;
 
 export interface CicloCarrusel {
   fase: FaseCarrusel;
-  /** El número de `fase` en el reloj: cambia con cada cambio de fase. */
-  numeroDeFase: number;
   /**
-   * Cuánto lleva la fase `numero`, en ms, sin contar las pausas (RelojFase en
-   * ciclo.ts). El giro se calcula desde acá, frame a frame, pasando el
-   * `numeroDeFase` con el que se renderizó: si el reloj ya cambió de fase y
-   * el render todavía no llegó, devuelve lo que la vieja llevaba al terminar.
+   * Cuánto lleva `fase`, en ms, sin contar las pausas (RelojFase en
+   * ciclo.ts). El giro se calcula desde acá, frame a frame, pasando la
+   * `fase` con la que se renderizó: si el reloj ya pasó a otra y el render
+   * todavía no llegó, devuelve lo que esa fase llevaba al terminar.
    */
-  transcurrido: (numero: number) => number;
+  transcurrido: (fase: FaseCarrusel) => number;
   /** Empieza un gesto sostenido: pausa el ciclo hasta que termine. */
   beginGesture: () => void;
   /** Termina el gesto y arranca la cuenta de los 3 s. */
@@ -77,16 +75,18 @@ export function useCicloCarrusel({
   pausarAvance?: boolean;
   onAvanzar: () => void;
 }): CicloCarrusel {
+  // `fase` es la RENDERIZADA; la vigente, adelantada al render, es
+  // `reloj.fase` (ciclo.ts explica por qué las dos).
   const [fase, setFase] = useState<FaseCarrusel>("espera-previa");
   const [reloj] = useState(
-    () => new RelojFase(typeof performance === "undefined" ? 0 : performance.now()),
+    () =>
+      new RelojFase("espera-previa", typeof performance === "undefined" ? 0 : performance.now()),
   );
   // Cambia en cada ir(), aunque la fase sea la misma (otra interacción en
-  // plena `interactuando`): es lo que rearma el plazo, y lo que el canvas le
-  // pasa al reloj para no mezclar la fase de un render con el tiempo de otra.
-  const [numeroDeFase, setNumeroDeFase] = useState(() => reloj.numero);
+  // plena `interactuando`): es lo que rearma el plazo.
+  const [cambios, setCambios] = useState(0);
   const transcurrido = useCallback(
-    (numero: number) => reloj.transcurrido(performance.now(), numero),
+    (de: FaseCarrusel) => reloj.transcurrido(de, performance.now()),
     [reloj],
   );
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -104,8 +104,9 @@ export function useCicloCarrusel({
   const ir = useCallback(
     (siguiente: FaseCarrusel) => {
       limpiar();
-      setNumeroDeFase(reloj.reiniciar(performance.now()));
+      reloj.cambiar(siguiente, performance.now());
       setFase(siguiente);
+      setCambios((n) => n + 1);
     },
     [limpiar, reloj],
   );
@@ -128,27 +129,21 @@ export function useCicloCarrusel({
     ir("interactuando");
   }, [ir, limpiar]);
 
-  // La fase vigente, leída por alVolver sin pasar por un updater de setFase:
-  // Camara lo llama en CADA frame hasta que la fase cambia, y un updater con
-  // efectos (antes llamaba a setFaseInicio adentro) React lo puede correr dos
-  // veces. El ref se adelanta en el mismo llamado para que los frames que
-  // llegan antes del re-render no repitan el cambio.
-  const faseRef = useRef(fase);
-  useEffect(() => {
-    faseRef.current = fase;
-  }, [fase]);
-
+  // Camara la llama en CADA frame mientras dibuja `volviendo` y ya llegó a
+  // destino. Mira la fase VIGENTE del reloj, no la renderizada: los frames
+  // que llegan antes del re-render no repiten el cambio, y si en el medio el
+  // usuario volvió a agarrar el modelo (el reloj ya está en
+  // `interactuando`), no se pisa su gesto con un giro. Con un ref que se
+  // actualizaba en un efecto, esos frames todavía veían `volviendo`.
   const alVolver = useCallback(() => {
-    if (faseRef.current !== "volviendo") return;
+    if (reloj.fase !== "volviendo") return;
     // La vista ya está en su sitio: el giro arranca acá, sin esperar de
     // nuevo los 3 s (esos ya pasaron antes de empezar a volver). Con
     // prefers-reduced-motion no hay giro automático: el modelo se queda
     // quieto en la vista predeterminada, y como con reduced motion no hay
     // plazos (efecto de abajo), ahí se queda hasta el próximo gesto.
-    const siguiente: FaseCarrusel = reducedMotion ? "espera-previa" : "girando";
-    faseRef.current = siguiente;
-    ir(siguiente);
-  }, [ir, reducedMotion]);
+    ir(reducedMotion ? "espera-previa" : "girando");
+  }, [ir, reducedMotion, reloj]);
 
   const reiniciar = useCallback(() => {
     gestoActivo.current = false;
@@ -192,21 +187,25 @@ export function useCicloCarrusel({
     // Con el avance en pausa, la espera final no se cumple: el modelo se
     // queda en cuadro hasta que el foco sale, y ahí sigue el ciclo.
     if (plan.avanza && pausarAvance) return;
+    // Entre este render y su efecto el reloj ya pasó a otra fase (un evento
+    // en el medio): este plazo es de una fase terminada, y armarlo podía
+    // pisar la nueva al vencer. El cambio ya pidió otro render, cuyo efecto
+    // arma el plazo que corresponde.
+    if (reloj.fase !== fase) return;
 
     // Lo que FALTA de la fase, no el plazo entero: al reanudar tras una
     // pausa, la fase ya había consumido parte de su tiempo.
-    const restante = Math.max(0, plan.esperaMs - transcurrido(numeroDeFase));
+    const restante = Math.max(0, plan.esperaMs - transcurrido(fase));
     timer.current = setTimeout(() => {
       if (plan.avanza) onAvanzarRef.current();
       ir(plan.siguiente);
     }, restante);
-  }, [fase, numeroDeFase, activo, reducedMotion, pausarAvance, ir, limpiar, transcurrido]);
+  }, [fase, cambios, activo, reducedMotion, pausarAvance, ir, limpiar, reloj, transcurrido]);
 
   useEffect(() => limpiar, [limpiar]);
 
   return {
     fase,
-    numeroDeFase,
     transcurrido,
     beginGesture,
     endGesture,

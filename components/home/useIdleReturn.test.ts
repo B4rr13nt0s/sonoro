@@ -153,8 +153,8 @@ test("useCicloCarrusel: con el avance en pausa sigue girando pero no pasa al sig
 
 test("useCicloCarrusel: fuera de cuadro el tiempo de la fase no corre, y al volver no salta", async () => {
   await conCarrusel(async ({ estado, pasar, props }) => {
-    // Como lo lee el canvas: con el número de fase de su propio render.
-    const tiempo = () => estado().transcurrido(estado().numeroDeFase);
+    // Como lo lee el canvas: con la fase de su propio render.
+    const tiempo = () => estado().transcurrido(estado().fase);
     await pasar(ESPERA_MS);
     await pasar(4_000);
     assert.equal(estado().fase, "girando");
@@ -173,29 +173,57 @@ test("useCicloCarrusel: fuera de cuadro el tiempo de la fase no corre, y al volv
   });
 });
 
-test("useCicloCarrusel: entre una interacción y su render, la fase vieja conserva su tiempo", async () => {
+for (const rafaga of [1, 3, 5]) {
+  test(`useCicloCarrusel: entre ${rafaga} interacción(es) y su render, la vuelta conserva su tiempo`, async () => {
+    await conCarrusel(async ({ estado, pasar }) => {
+      await pasar(ESPERA_MS);
+      await pasar(4_000);
+      // Lo que tiene el canvas: el último render, a 4 s de la vuelta.
+      const render = estado();
+      assert.equal(render.fase, "girando");
+
+      await act(async () => {
+        // La rueda (o el primer arrastre) llega por un listener nativo: el
+        // reloj cambia de fase en el acto, pero React todavía no
+        // re-renderizó —dentro de act() el render espera al final del
+        // bloque—, así que este es el hueco donde el navegador puede dibujar
+        // un frame. Varias seguidas: una ráfaga de rueda.
+        for (let k = 0; k < rafaga; k++) {
+          render.notifyInteraction();
+          mock.timers.tick(5);
+        }
+        assert.equal(
+          render.transcurrido(render.fase),
+          4_000,
+          "el frame con la fase vieja ve el tiempo en el que la dejó, no 0",
+        );
+      });
+
+      assert.equal(estado().fase, "interactuando");
+      assert.equal(estado().transcurrido(estado().fase), 5, "desde la última interacción");
+    });
+  });
+}
+
+test("useCicloCarrusel: el fin del regreso no pisa una interacción que llegó antes del render", async () => {
   await conCarrusel(async ({ estado, pasar }) => {
+    await act(async () => estado().notifyInteraction());
     await pasar(ESPERA_MS);
-    await pasar(4_000);
-    // Lo que tiene el canvas: el último render, a 4 s de la vuelta.
+    // Lo que tiene el canvas: `volviendo`, y en el próximo frame avisa que
+    // llegó a destino.
     const render = estado();
-    assert.equal(render.fase, "girando");
+    assert.equal(render.fase, "volviendo");
 
     await act(async () => {
-      // La rueda (o el primer arrastre) llega por un listener nativo: el
-      // reloj cambia de fase en el acto, pero React todavía no re-renderizó
-      // —dentro de act() el render espera al final del bloque—, así que este
-      // es el hueco donde el navegador puede dibujar un frame.
+      // El usuario vuelve a tocar la rueda justo antes de ese frame…
       render.notifyInteraction();
-      assert.equal(
-        render.transcurrido(render.numeroDeFase),
-        4_000,
-        "el frame con la fase vieja ve el tiempo en el que la dejó, no 0",
-      );
+      // …y el frame, con el render viejo todavía en `volviendo`, avisa.
+      render.alVolver();
     });
 
+    // Con el ref de antes (actualizado en un efecto, un render tarde) esto
+    // pasaba a `girando` y el modelo giraba bajo la mano del usuario.
     assert.equal(estado().fase, "interactuando");
-    assert.equal(estado().transcurrido(estado().numeroDeFase), 0);
   });
 });
 
