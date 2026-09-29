@@ -61,9 +61,10 @@ export function CarritoView() {
   // segundo plano también ve el carrito que guarda otra (evento `storage`),
   // y si descartara sus avisos nadie los habría visto.
   const visible = useSyncExternalStore(suscribirVisibilidad, pestañaVisible, () => false);
-  const [vistos, setVistos] = useState<{ createdAt: string; cambios: CambioCarrito[] } | null>(
-    null,
-  );
+  const [vistos, setVistos] = useState<{
+    createdAt: string;
+    cambios: readonly CambioCarrito[];
+  } | null>(null);
   useEffect(() => {
     if (!hydrated || !visible || cambios.length === 0) return;
     // Copiar al estado local ES el propósito: el contexto los descarta en la

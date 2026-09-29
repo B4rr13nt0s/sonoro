@@ -28,8 +28,11 @@ export type CambioCarrito =
       precioActualCents: number;
     };
 
-// Compartida y sin mutar nunca: ver el final de reconcile().
-export const SIN_CAMBIOS: CambioCarrito[] = [];
+// Compartida entre todos los carritos sin cambios (ver el final de
+// reconcile()), así que de solo lectura en el tipo Y congelada: un `push` o
+// un `sort` sobre ella en cualquier consumidor le pondría avisos fantasma a
+// todos los carritos siguientes.
+export const SIN_CAMBIOS: readonly CambioCarrito[] = Object.freeze([]);
 
 /**
  * Si una línea con esta entrada del catálogo puede estar en el carrito: la
@@ -52,7 +55,7 @@ export function revisarEntrada(
 export function reconcile(
   cart: Cart,
   catalogo: CatalogoSku[],
-): { cart: Cart; cambios: CambioCarrito[] } {
+): { cart: Cart; cambios: readonly CambioCarrito[] } {
   const porSku = new Map(catalogo.map((p) => [p.sku, p]));
   const cambios: CambioCarrito[] = [];
 

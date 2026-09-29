@@ -154,6 +154,12 @@ export function useCicloCarrusel({
   // propio origen y no hay nada que correr.
   const congelado = !activo || (pausarAvance && (PLAN_CICLO[fase]?.avanza ?? false));
   const pausa = useRef<{ desde: number; faseInicio: number } | null>(null);
+  // El corrimiento recién pedido, para el efecto de plazos de ESTE mismo
+  // commit: corre justo después, todavía con el `faseInicio` viejo, y sin
+  // esto calculaba el plazo como vencido y armaba un setTimeout(0). Si ese
+  // timer ganaba al re-render que trae el origen corrido —depende del orden
+  // de tareas del navegador—, el producto cambiaba al instante igual.
+  const corrimiento = useRef<{ faseInicio: number; ms: number } | null>(null);
   useEffect(() => {
     if (congelado) {
       if (pausa.current?.faseInicio !== faseInicio) {
@@ -165,6 +171,7 @@ export function useCicloCarrusel({
     if (pendiente === null) return;
     pausa.current = null;
     const duracion = performance.now() - pendiente.desde;
+    corrimiento.current = { faseInicio: pendiente.faseInicio, ms: duracion };
     // Correr el origen de la fase es sincronizar con el reloj, algo que
     // solo se sabe al reanudar: no es un valor derivable en el render.
     setFaseInicio((inicio) => (inicio === pendiente.faseInicio ? inicio + duracion : inicio));
@@ -190,8 +197,13 @@ export function useCicloCarrusel({
     if (plan.avanza && pausarAvance) return;
 
     // Lo que FALTA de la fase, no el plazo entero: al reanudar tras una
-    // pausa, la fase ya había consumido parte de su tiempo.
-    const restante = Math.max(0, plan.esperaMs - (performance.now() - faseInicio));
+    // pausa, la fase ya había consumido parte de su tiempo. Con el origen
+    // ya corrido si la pausa acaba de terminar en este commit (ver
+    // `corrimiento` arriba); en el render siguiente `faseInicio` ya lo trae.
+    const pendiente = corrimiento.current;
+    const inicio =
+      pendiente && pendiente.faseInicio === faseInicio ? faseInicio + pendiente.ms : faseInicio;
+    const restante = Math.max(0, plan.esperaMs - (performance.now() - inicio));
     timer.current = setTimeout(() => {
       if (plan.avanza) onAvanzarRef.current();
       ir(plan.siguiente);

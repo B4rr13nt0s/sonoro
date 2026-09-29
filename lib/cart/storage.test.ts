@@ -252,3 +252,57 @@ test("loadCart: una línea guardada con más de 99 unidades se topa en 99", asyn
   });
   assert.equal(cargado.items[0].qty, MAX_CANTIDAD_POR_LINEA);
 });
+
+// Solo lo normalizado se reescribe al hidratar (lib/cart/context.ts): cada
+// escritura despierta a las demás pestañas con un evento `storage`.
+test("leerCarrito: marca como normalizado solo lo que hubo que corregir para leerlo", async () => {
+  const { leerCarrito, saveCart, CART_STORAGE_KEY } = await import("./storage.ts");
+  const { crearCarritoVacio } = await import("./types.ts");
+  const conLinea = (qty: number) => ({
+    ...crearCarritoVacio("2026-08-21T09:00:00.000Z"),
+    items: [
+      {
+        sku: "SQ12-D2",
+        qty,
+        unitPriceCents: 245000,
+        currency: "GTQ" as const,
+        nombreSnapshot: 'Serie SQ 12" D2',
+        imagenSnapshot: null,
+        addedAt: "2026-08-21T09:00:00.000Z",
+      },
+    ],
+  });
+  const normalizado = (preparar: () => void) =>
+    conLocalStorageVacio(() => {
+      preparar();
+      return leerCarrito().normalizado;
+    });
+
+  assert.equal(
+    normalizado(() => {}),
+    false,
+    "nada guardado",
+  );
+  assert.equal(
+    normalizado(() => saveCart(conLinea(2))),
+    false,
+    "guardado válido",
+  );
+  assert.equal(
+    normalizado(() => saveCart(conLinea(198))),
+    true,
+    "topado en 99",
+  );
+  assert.equal(
+    normalizado(() => window.localStorage.setItem(CART_STORAGE_KEY, "{ corrupto")),
+    true,
+    "corrupto",
+  );
+  assert.equal(
+    normalizado(() =>
+      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ schemaVersion: 999 })),
+    ),
+    true,
+    "versión sin migración",
+  );
+});

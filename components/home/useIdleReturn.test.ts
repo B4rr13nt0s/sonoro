@@ -21,6 +21,8 @@ async function conCarrusel(
     avances: () => number;
     pasar: (ms: number) => Promise<void>;
     props: (p: Props) => Promise<void>;
+    /** Los plazos (ms) de cada setTimeout armado desde la última llamada. */
+    armados: () => number[];
   }) => Promise<void>,
 ) {
   const dom = new JSDOM("<!doctype html><html><body><div id='root'></div></body></html>");
@@ -37,6 +39,15 @@ async function conCarrusel(
   const nowOriginal = performance.now;
   mock.timers.enable({ apis: ["setTimeout", "Date"], now: 1000 });
   performance.now = () => Date.now();
+  // Cada plazo que el hook arma, aunque después lo limpie: act() procesa el
+  // re-render antes de que corra cualquier timer, así que un setTimeout(0)
+  // armado por error no llegaría a disparar acá — en el navegador sí puede.
+  let plazos: number[] = [];
+  const setTimeoutSimulado = globalThis.setTimeout;
+  globalThis.setTimeout = ((fn: () => void, ms?: number) => {
+    plazos.push(ms ?? 0);
+    return setTimeoutSimulado(fn, ms);
+  }) as typeof setTimeout;
 
   let root: Root | null = null;
   try {
@@ -75,6 +86,11 @@ async function conCarrusel(
         }
       },
       props,
+      armados: () => {
+        const vistos = plazos;
+        plazos = [];
+        return vistos;
+      },
     });
   } finally {
     if (root) {
@@ -104,7 +120,7 @@ test("useCicloCarrusel: espera, gira, espera y pasa al siguiente", async () => {
 });
 
 test("useCicloCarrusel: con el avance en pausa sigue girando pero no pasa al siguiente", async () => {
-  await conCarrusel(async ({ estado, avances, pasar, props }) => {
+  await conCarrusel(async ({ estado, avances, pasar, props, armados }) => {
     await props({ activo: true, pausarAvance: true });
     // El giro no se detiene: esa era la regresión de pausar con cualquier foco.
     await pasar(ESPERA_MS);
@@ -117,7 +133,17 @@ test("useCicloCarrusel: con el avance en pausa sigue girando pero no pasa al sig
 
     // Al salir el foco, la espera final se cumple ENTERA: sin correr el
     // origen de la fase, el plazo ya estaba vencido y cambiaba al instante.
+    armados();
     await props({ activo: true, pausarAvance: false });
+    // Ni siquiera un timer transitorio con el plazo vencido: el efecto de
+    // plazos del mismo commit ya usa el origen corrido.
+    const alSoltar = armados();
+    assert.ok(alSoltar.length > 0, "se arma el plazo de la espera final");
+    assert.deepEqual(
+      alSoltar.filter((ms) => ms !== ESPERA_MS),
+      [],
+      `plazos armados al soltar el foco: ${alSoltar.join(", ")}`,
+    );
     await pasar(ESPERA_MS - 1);
     assert.equal(avances(), 0);
     await pasar(1);

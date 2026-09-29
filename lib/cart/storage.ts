@@ -39,37 +39,51 @@ function toparCantidades(cart: Cart): Cart {
   };
 }
 
-export function loadCart(): Cart {
-  if (typeof window === "undefined") return crearCarritoVacio(new Date().toISOString());
+/**
+ * El carrito guardado, y si hubo que NORMALIZARLO para leerlo: migrado de
+ * una versión vieja, topado en 99 o descartado por corrupto. Solo en ese
+ * caso vale la pena volver a guardarlo — reescribirlo en cada carga
+ * disparaba `storage` en todas las demás pestañas abiertas, que volvían a
+ * leer y a renderizar sin que nada hubiera cambiado. Nunca lanza.
+ */
+export function leerCarrito(): { cart: Cart; normalizado: boolean } {
+  const vacio = (normalizado: boolean) => ({
+    cart: crearCarritoVacio(new Date().toISOString()),
+    normalizado,
+  });
+  const conTope = (cart: Cart, normalizado: boolean) => {
+    const topado = toparCantidades(cart);
+    return { cart: topado, normalizado: normalizado || topado !== cart };
+  };
+  if (typeof window === "undefined") return vacio(false);
 
   try {
     const raw = window.localStorage.getItem(CART_STORAGE_KEY);
-    if (!raw) return crearCarritoVacio(new Date().toISOString());
+    // Nada guardado: un carrito vacío no hace falta escribirlo.
+    if (!raw) return vacio(false);
 
     const parsed: unknown = JSON.parse(raw);
-    if (typeof parsed !== "object" || parsed === null) {
-      return crearCarritoVacio(new Date().toISOString());
-    }
+    if (typeof parsed !== "object" || parsed === null) return vacio(true);
 
     const version = (parsed as Record<string, unknown>).schemaVersion;
     if (version !== SCHEMA_VERSION) {
       const migrar = typeof version === "number" ? MIGRATIONS[version] : undefined;
       const migrado = migrar ? migrar(parsed as Record<string, unknown>) : null;
-      if (!migrado) return crearCarritoVacio(new Date().toISOString());
+      if (!migrado) return vacio(true);
 
       const resultado = CartSchema.safeParse(migrado);
-      return resultado.success
-        ? toparCantidades(resultado.data)
-        : crearCarritoVacio(new Date().toISOString());
+      return resultado.success ? conTope(resultado.data, true) : vacio(true);
     }
 
     const resultado = CartSchema.safeParse(parsed);
-    return resultado.success
-      ? toparCantidades(resultado.data)
-      : crearCarritoVacio(new Date().toISOString());
+    return resultado.success ? conTope(resultado.data, false) : vacio(true);
   } catch {
-    return crearCarritoVacio(new Date().toISOString());
+    return vacio(true);
   }
+}
+
+export function loadCart(): Cart {
+  return leerCarrito().cart;
 }
 
 export function saveCart(cart: Cart): void {

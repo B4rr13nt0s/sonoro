@@ -8,7 +8,7 @@
 // transitoria, haya guardado un carrito vacío.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createElement } from "react";
+import { createElement, useLayoutEffect } from "react";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { JSDOM } from "jsdom";
@@ -116,10 +116,9 @@ test("CartProvider: montar con un carrito ya guardado no lo pisa con el estado v
       );
     }
 
-    assert.ok(
-      escrituras.length >= 1,
-      "se esperaba al menos una escritura (la del carrito hidratado)",
-    );
+    // Y ninguna escritura en absoluto: lo leído ya estaba guardado tal cual,
+    // y reescribirlo despertaba a todas las demás pestañas en cada carga.
+    assert.equal(escrituras.length, 0, "un carrito que no cambió no se reescribe");
     assert.equal(probeState.valor?.items.length, 1);
     assert.equal(probeState.valor?.items[0].sku, "SQ12-D2");
 
@@ -440,6 +439,142 @@ test("CartProvider: deriva el carrito corregido y los avisos sin reescribir lo g
     });
     assert.deepEqual(probeState.valor?.cambios, []);
     assert.equal(probeState.valor?.createdAt, "2026-09-28T12:00:00.000Z");
+
+    await act(async () => {
+      root.unmount();
+    });
+  } finally {
+    globalAny.window = anteriores.window;
+    globalAny.document = anteriores.document;
+    if (descriptorNavigatorOriginal) {
+      Object.defineProperty(globalThis, "navigator", descriptorNavigatorOriginal);
+    }
+    globalAny.IS_REACT_ACT_ENVIRONMENT = anteriores.IS_REACT_ACT_ENVIRONMENT;
+  }
+});
+
+// El almacén del carrito (AlmacenCarrito en lib/cart/context.ts): lo que se
+// hace antes de hidratar no se pierde, el carrito leído y la marca de
+// hidratación llegan en el mismo render, cada cambio se guarda en el mismo
+// llamado, y lo que hubo que normalizar al leer sí se reescribe.
+test("CartProvider: lo previo a hidratar se conserva, un solo render hidratado y guardado en el acto", async () => {
+  const dom = new JSDOM("<!doctype html><html><body><div id='root'></div></body></html>", {
+    url: "http://localhost/",
+  });
+  const globalAny = globalThis as Record<string, unknown>;
+  const descriptorNavigatorOriginal = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const anteriores = {
+    window: globalAny.window,
+    document: globalAny.document,
+    IS_REACT_ACT_ENVIRONMENT: globalAny.IS_REACT_ACT_ENVIRONMENT,
+  };
+  globalAny.window = dom.window;
+  globalAny.document = dom.window.document;
+  Object.defineProperty(globalThis, "navigator", {
+    value: dom.window.navigator,
+    configurable: true,
+    writable: true,
+  });
+  globalAny.IS_REACT_ACT_ENVIRONMENT = true;
+
+  try {
+    const CREADO = "2026-09-20T10:00:00.000Z";
+    const linea = (sku: string, unitPriceCents: number, qty: number) => ({
+      sku,
+      qty,
+      unitPriceCents,
+      currency: "GTQ" as const,
+      nombreSnapshot: sku,
+      imagenSnapshot: null,
+      addedAt: CREADO,
+    });
+    // Guardado antes del tope de 99: leerCarrito() lo normaliza, así que
+    // esta vez sí hay que reescribirlo.
+    window.localStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify({
+        schemaVersion: SCHEMA_VERSION,
+        items: [linea("SQ12-D2", 200000, 150)],
+        createdAt: CREADO,
+        updatedAt: CREADO,
+      }),
+    );
+    const catalogo: CatalogoSku[] = [
+      { sku: "SQ12-D2", activo: true, disponibilidad: "disponible", precioCents: 245000 },
+      { sku: "PRX60C", activo: true, disponibilidad: "disponible", precioCents: 118000 },
+      { sku: "KSL-8B", activo: true, disponibilidad: "disponible", precioCents: 190000 },
+    ];
+    const nuevo = (sku: string, unitPriceCents: number) => ({
+      sku,
+      qty: 1,
+      unitPriceCents,
+      currency: "GTQ" as const,
+      nombreSnapshot: sku,
+      imagenSnapshot: null,
+    });
+
+    // Cada render que ve un consumidor: hidratado o no, y qué muestra.
+    const renders: { hydrated: boolean; skus: string[] }[] = [];
+    const probeState: { valor: ReturnType<typeof useCart> | null } = { valor: null };
+    const previo: { agregadas: number | null } = { agregadas: null };
+    function Probe() {
+      const carrito = useCart();
+      probeState.valor = carrito;
+      renders.push({ hydrated: carrito.hydrated, skus: carrito.items.map((i) => i.sku) });
+      // Un efecto de LAYOUT corre antes que los efectos pasivos del
+      // provider, o sea antes de leer localStorage: es el clic que React
+      // reproduce durante la hidratación de la página.
+      useLayoutEffect(() => {
+        previo.agregadas = carrito.addItem(nuevo("PRX60C", 118000));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
+      return null;
+    }
+    const contenedor = document.getElementById("root");
+    if (!contenedor) throw new Error("no se encontró #root en el DOM de prueba");
+    const root = createRoot(contenedor);
+    await act(async () => {
+      // eslint-disable-next-line react/no-children-prop
+      root.render(createElement(CartProvider, { catalogo, children: createElement(Probe) }));
+    });
+
+    // Lo agregado antes de hidratar sigue ahí, encima del carrito leído, y
+    // quedó guardado junto con el tope aplicado.
+    assert.equal(previo.agregadas, 1);
+    assert.deepEqual(
+      probeState.valor?.items.map((i) => [i.sku, i.qty]),
+      [
+        ["SQ12-D2", 99],
+        ["PRX60C", 1],
+      ],
+    );
+    assert.deepEqual(
+      loadCart().items.map((i) => [i.sku, i.qty]),
+      [
+        ["SQ12-D2", 99],
+        ["PRX60C", 1],
+      ],
+    );
+
+    // Ningún render mostró el carrito leído sin la marca de hidratación: si
+    // llegaran por separado, habría un frame con el carrito sin corregir.
+    assert.deepEqual(
+      renders.filter((r) => !r.hydrated && r.skus.includes("SQ12-D2")),
+      [],
+      "el carrito leído llega junto con hydrated = true",
+    );
+
+    // Cada cambio propio queda en localStorage EN EL MISMO LLAMADO, antes de
+    // que React vuelva a renderizar: no hay hueco donde un evento `storage`
+    // de otra pestaña se lleve lo agregado.
+    await act(async () => {
+      probeState.valor?.addItem(nuevo("KSL-8B", 190000));
+      assert.deepEqual(
+        loadCart().items.map((i) => i.sku),
+        ["SQ12-D2", "PRX60C", "KSL-8B"],
+        "guardado antes del re-render",
+      );
+    });
 
     await act(async () => {
       root.unmount();

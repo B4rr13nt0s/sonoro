@@ -24,7 +24,13 @@ import {
 
 import { cartReducer, type CartAction } from "./reducer.ts";
 import { reconcile, revisarEntrada, SIN_CAMBIOS, type CambioCarrito } from "./reconcile.ts";
-import { CART_STORAGE_KEY, limpiarClavesViejas, loadCart, saveCart } from "./storage.ts";
+import {
+  CART_STORAGE_KEY,
+  leerCarrito,
+  limpiarClavesViejas,
+  loadCart,
+  saveCart,
+} from "./storage.ts";
 import { itemCount, subtotalCents } from "./totals.ts";
 import type { Disponibilidad } from "../catalog/types.ts";
 import {
@@ -56,7 +62,7 @@ type CartContextValue = {
   // por dejar de existir, quedar inactivas o agotarse, o con precio
   // actualizado. components/cart/avisos.ts arma las frases. Desaparecen
   // cuando /carrito los muestra y llama a descartarCambios().
-  cambios: CambioCarrito[];
+  cambios: readonly CambioCarrito[];
   // Guarda el carrito corregido: a partir de ahí no hay diferencia que avisar.
   descartarCambios: () => void;
   // Disponibilidad ACTUAL de cada sku, del mismo catálogo que usa
@@ -104,6 +110,12 @@ class AlmacenCarrito {
   // useState aparte, un frame mostraba el carrito recién leído sin corregir.
   #estado: { guardado: Cart; hidratado: boolean };
   #oyentes = new Set<() => void>();
+  // Lo que se hizo ANTES de leer localStorage (un clic que React reproduce
+  // al hidratar la página, antes del efecto de montaje del provider). Se
+  // muestra enseguida, y hidratar() lo vuelve a aplicar sobre el carrito
+  // leído: sin esto, «Has añadido 1» salía y el producto desaparecía al
+  // cargar el carrito real.
+  #pendientes: CartAction[] = [];
 
   constructor(inicial: Cart) {
     this.#estado = { guardado: inicial, hidratado: false };
@@ -117,25 +129,32 @@ class AlmacenCarrito {
   };
 
   /**
-   * El carrito leído de localStorage. Se vuelve a guardar para dejar
-   * persistida una migración o un tope aplicado por loadCart().
+   * El carrito leído de localStorage, con lo pendiente aplicado encima. Solo
+   * se vuelve a guardar si algo cambió: lo normalizado por leerCarrito()
+   * (migración, tope, corrupto) o lo pendiente. Reescribirlo en cada carga
+   * hacía que todas las demás pestañas volvieran a leer y a renderizar.
    */
-  hidratar = (cart: Cart): void => {
-    this.#estado = { guardado: cart, hidratado: true };
-    saveCart(cart);
+  hidratar = ({ cart, normalizado }: { cart: Cart; normalizado: boolean }): void => {
+    const guardado = this.#pendientes.reduce(cartReducer, cart);
+    const cambio = normalizado || this.#pendientes.length > 0;
+    this.#pendientes = [];
+    this.#estado = { guardado, hidratado: true };
+    if (cambio) saveCart(guardado);
     this.#avisar();
   };
 
   /**
    * Toda mutación pasa por acá. `guardar: false` es para lo que ya está
    * guardado (lo que llega de otra pestaña). Antes de hidratar no se guarda
-   * nada: el carrito vacío inicial pisaría uno real.
+   * nada —el carrito vacío inicial pisaría uno real—: se muestra y queda
+   * pendiente para hidratar().
    */
   aplicar = (accion: CartAction, guardar: boolean): void => {
     const siguiente = cartReducer(this.#estado.guardado, accion);
     if (siguiente === this.#estado.guardado) return;
     this.#estado = { ...this.#estado, guardado: siguiente };
-    if (guardar && this.#estado.hidratado) saveCart(siguiente);
+    if (!this.#estado.hidratado) this.#pendientes.push(accion);
+    else if (guardar) saveCart(siguiente);
     this.#avisar();
   };
 
@@ -189,25 +208,27 @@ export function CartProvider({
     // cliente — leerlo es inherentemente un efecto secundario que solo
     // puede correr después de montar (CLAUDE.md § Modelo de conversión:
     // "nunca crashear con un carrito viejo").
-    almacen.hidratar(loadCart());
+    almacen.hidratar(leerCarrito());
     limpiarClavesViejas();
-  }, [almacen]);
 
-  // Otra pestaña cambió el carrito. Sin esto, cada pestaña guardaba SU copia
-  // y la última en escribir borraba lo que agregó la otra: abrir una ficha
-  // desde un enlace de WhatsApp, agregarla, y seguir en la pestaña de antes
-  // perdía ese producto al siguiente cambio. `storage` solo se dispara en las
-  // OTRAS pestañas, nunca en la que escribió. Lo que llega se adopta tal cual
-  // y no se vuelve a guardar: es exactamente lo que ya está guardado.
-  useEffect(() => {
-    if (!hydrated) return;
+    // Otra pestaña cambió el carrito. Sin esto, cada pestaña guardaba SU
+    // copia y la última en escribir borraba lo que agregó la otra: abrir una
+    // ficha desde un enlace de WhatsApp, agregarla, y seguir en la pestaña de
+    // antes perdía ese producto al siguiente cambio. `storage` solo se
+    // dispara en las OTRAS pestañas, nunca en la que escribió. Lo que llega se
+    // adopta tal cual y no se vuelve a guardar: es lo que ya está guardado.
+    //
+    // En el MISMO efecto que la lectura, sin que corra nada entre las dos:
+    // con el listener en otro efecto, a la espera del render hidratado, un
+    // evento que llegaba en ese hueco se perdía y esta pestaña seguía con un
+    // carrito viejo que su próxima escritura guardaba encima del de la otra.
     function alCambiarEnOtraPestaña(evento: StorageEvent) {
       if (evento.key !== CART_STORAGE_KEY && evento.key !== null) return;
-      aplicar({ type: "hydrate", cart: loadCart() }, false);
+      almacen.aplicar({ type: "hydrate", cart: loadCart() }, false);
     }
     window.addEventListener("storage", alCambiarEnOtraPestaña);
     return () => window.removeEventListener("storage", alCambiarEnOtraPestaña);
-  }, [hydrated, aplicar]);
+  }, [almacen]);
 
   // Lo que se muestra: el guardado corregido contra el catálogo. Antes de
   // hidratar no hay nada que corregir ni que avisar.
@@ -232,6 +253,9 @@ export function CartProvider({
   // Lo que reconcile() quitaría no entra, aunque un botón se olvide de
   // impedirlo: la regla vive acá y no solo en la interfaz, igual que el
   // tope por línea vive en el reducer (CLAUDE.md § Modelo de conversión).
+  // Antes de hidratar, la cuenta es contra lo que se ve —el carrito todavía
+  // vacío—: si el guardado ya traía esa línea cerca de 99, el reducer la topa
+  // igual al aplicar lo pendiente, y solo el número del aviso sale de más.
   const addItem = useCallback(
     (item: NuevoItem) => {
       if ("motivo" in revisarEntrada(catalogoPorSku.get(item.sku))) return 0;
