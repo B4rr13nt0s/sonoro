@@ -10,16 +10,16 @@ export { ESPERA_MS, GIRO_MS, anguloDelCiclo, type FaseCarrusel } from "./ciclo.t
  * Ciclo del carrusel. Cada producto pasa por el mismo recorrido, y el
  * ciclo corre siempre mientras el carrusel esté a la vista:
  *
- *   espera-previa (5 s)  →  girando (15 s, una vuelta)  →
- *   espera-final (5 s)   →  siguiente producto  →  espera-previa …
+ *   espera-previa (3 s)  →  girando (10 s, una vuelta)  →
+ *   espera-final (3 s)   →  siguiente producto  →  espera-previa …
  *
  * Y si el usuario toma el modelo:
  *
- *   interactuando  →  (5 s desde que SUELTA)  →  volviendo (≈0.8 s)  →
+ *   interactuando  →  (3 s desde que SUELTA)  →  volviendo (≈0.8 s)  →
  *   girando …
  *
  * Es decir: primero se recupera la vista y el zoom predeterminados, y
- * recién entonces arranca el giro. La cuenta de los 5 s no corre mientras
+ * recién entonces arranca el giro. La cuenta de los 3 s no corre mientras
  * hay un gesto en curso — con un solo aviso en el `pointerdown`, un
  * arrastre lento más largo que ese plazo se cancelaba solo a mitad de
  * camino, y se veía como si el modelo se negara a quedarse donde uno lo
@@ -42,7 +42,7 @@ export interface CicloCarrusel {
   faseInicio: number;
   /** Empieza un gesto sostenido: pausa el ciclo hasta que termine. */
   beginGesture: () => void;
-  /** Termina el gesto y arranca la cuenta de los 5 s. */
+  /** Termina el gesto y arranca la cuenta de los 3 s. */
   endGesture: () => void;
   /** Input suelto (la rueda): reinicia la cuenta si no hay gesto activo. */
   notifyInteraction: () => void;
@@ -145,19 +145,30 @@ export function useCicloCarrusel({
   // faseInicio no se corriera, al volver después de una pausa larga el
   // modelo aparecía clavado al final de la vuelta (el ángulo ya pasado de
   // largo) y se quedaba quieto el giro entero más la espera final, ~13 s.
-  const pausadoDesde = useRef<number | null>(null);
+  //
+  // Lo mismo con el avance en pausa (foco del teclado adentro) durante la
+  // fase que avanza: sin correr el origen, al salir el foco el plazo ya
+  // estaba vencido y el producto cambiaba en el mismo instante, sin su
+  // espera final. La pausa queda atada a la fase en la que empezó: si en el
+  // medio la fase cambió (una flecha reinicia el ciclo), la nueva ya trae su
+  // propio origen y no hay nada que correr.
+  const congelado = !activo || (pausarAvance && (PLAN_CICLO[fase]?.avanza ?? false));
+  const pausa = useRef<{ desde: number; faseInicio: number } | null>(null);
   useEffect(() => {
-    if (!activo) {
-      pausadoDesde.current ??= performance.now();
+    if (congelado) {
+      if (pausa.current?.faseInicio !== faseInicio) {
+        pausa.current = { desde: performance.now(), faseInicio };
+      }
       return;
     }
-    if (pausadoDesde.current === null) return;
-    const pausa = performance.now() - pausadoDesde.current;
-    pausadoDesde.current = null;
+    const pendiente = pausa.current;
+    if (pendiente === null) return;
+    pausa.current = null;
+    const duracion = performance.now() - pendiente.desde;
     // Correr el origen de la fase es sincronizar con el reloj, algo que
     // solo se sabe al reanudar: no es un valor derivable en el render.
-    setFaseInicio((inicio) => inicio + pausa);
-  }, [activo]);
+    setFaseInicio((inicio) => (inicio === pendiente.faseInicio ? inicio + duracion : inicio));
+  }, [congelado, faseInicio]);
 
   // Los plazos de cada fase salen de PLAN_CICLO (ver ciclo.ts, con test).
   // Se rearman en cada cambio de fase y se congelan cuando el carrusel no

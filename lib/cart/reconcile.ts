@@ -28,6 +28,9 @@ export type CambioCarrito =
       precioActualCents: number;
     };
 
+// Compartida y sin mutar nunca: ver el final de reconcile().
+export const SIN_CAMBIOS: CambioCarrito[] = [];
+
 /**
  * Si una línea con esta entrada del catálogo puede estar en el carrito: la
  * entrada, o el motivo por el que no. Es LA regla: reconcile() quita lo que
@@ -77,6 +80,11 @@ export function reconcile(
     return acumulado;
   }, []);
 
+  // Sin nada que corregir, el MISMO carrito y la misma lista vacía:
+  // lib/cart/context.ts deriva esto en cada render, y un objeto nuevo cada
+  // vez hacía que todo lo que depende de `items` o `cambios` se recalculara
+  // aunque nada hubiera cambiado.
+  if (cambios.length === 0) return { cart, cambios: SIN_CAMBIOS };
   return { cart: { ...cart, items }, cambios };
 }
 

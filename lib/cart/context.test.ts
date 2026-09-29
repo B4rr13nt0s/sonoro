@@ -1,5 +1,5 @@
-// Cubre la carrera de hidratación que el flag `hydrated` de
-// lib/cart/context.ts existe para evitar: sin él, el primer efecto de
+// Cubre la carrera de hidratación que la marca de hidratación de
+// lib/cart/context.ts (AlmacenCarrito) existe para evitar: sin ella, el primer
 // guardado correría con el carrito vacío inicial ANTES de leer localStorage,
 // pisando un carrito real de una sesión anterior. Una aserción que solo mire
 // el estado final de localStorage no detectaría esa regresión (React
@@ -359,6 +359,27 @@ test("CartProvider: deriva el carrito corregido y los avisos sin reescribir lo g
       ],
     );
 
+    // Sumar desde la ficha a la línea con el precio viejo no borra el aviso:
+    // lo guardado conserva el precio con el que el cliente la armó.
+    await act(async () => {
+      probeState.valor?.addItem({
+        sku: "SQ12-D2",
+        qty: 1,
+        unitPriceCents: 245000,
+        currency: "GTQ",
+        nombreSnapshot: "SQ12-D2",
+        imagenSnapshot: null,
+      });
+    });
+    assert.deepEqual(probeState.valor?.cambios, [precio, agotado]);
+    assert.deepEqual(
+      loadCart().items.map((i) => [i.sku, i.unitPriceCents, i.qty]),
+      [
+        ["SQ12-D2", 200000, 2],
+        ["P1T-S", 145000, 1],
+      ],
+    );
+
     // /carrito los mostró: se guarda el corregido y no queda nada que avisar.
     await act(async () => {
       probeState.valor?.descartarCambios();
@@ -379,17 +400,19 @@ test("CartProvider: deriva el carrito corregido y los avisos sin reescribir lo g
       imagenSnapshot: null,
     });
     const entradas: (number | undefined)[] = [];
-    for (const item of [nuevo("P1T-S"), nuevo("NO-EXISTE"), nuevo("SQ12-D2", 97)]) {
+    for (const item of [nuevo("P1T-S"), nuevo("NO-EXISTE"), nuevo("SQ12-D2", 96)]) {
       await act(async () => {
         entradas.push(probeState.valor?.addItem(item));
       });
     }
-    for (const item of [nuevo("SQ12-D2", 5), nuevo("SQ12-D2", 5)]) {
-      await act(async () => {
-        entradas.push(probeState.valor?.addItem(item));
-      });
-    }
-    assert.deepEqual(entradas, [0, 0, 97, 1, 0]);
+    // Dos agregados en el MISMO render (doble clic): el segundo ya ve lo que
+    // agregó el primero, aunque React todavía no haya re-renderizado.
+    await act(async () => {
+      const { addItem } = probeState.valor ?? {};
+      entradas.push(addItem?.(nuevo("SQ12-D2", 5)));
+      entradas.push(addItem?.(nuevo("SQ12-D2", 5)));
+    });
+    assert.deepEqual(entradas, [0, 0, 96, 1, 0]);
     assert.equal(probeState.valor?.items[0].qty, 99);
 
     // Otra pestaña (con un catálogo viejo) guardó el carrito con el agotado:

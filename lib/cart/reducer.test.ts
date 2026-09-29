@@ -39,6 +39,19 @@ test("add: mismo sku suma qty en vez de duplicar la línea", () => {
   assert.equal(conDos.items[0].addedAt, T0); // no se reemplaza el addedAt original
 });
 
+test("add: sumar a una línea existente conserva su precio guardado", () => {
+  const conUno = cartReducer(carritoVacio(), { type: "add", item: ITEM_A, now: T0 });
+  // La ficha ya muestra otro precio: el guardado no lo adopta, para que
+  // /carrito todavía vea la diferencia y la avise.
+  const conDos = cartReducer(conUno, {
+    type: "add",
+    item: { ...ITEM_A, unitPriceCents: ITEM_A.unitPriceCents + 10000 },
+    now: T1,
+  });
+  assert.equal(conDos.items[0].qty, 2);
+  assert.equal(conDos.items[0].unitPriceCents, ITEM_A.unitPriceCents);
+});
+
 test("remove: quita la línea por sku", () => {
   const conItem = cartReducer(carritoVacio(), { type: "add", item: ITEM_A, now: T0 });
   const resultado = cartReducer(conItem, { type: "remove", sku: ITEM_A.sku, now: T1 });

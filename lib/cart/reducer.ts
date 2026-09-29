@@ -28,11 +28,21 @@ export type CartAction =
 export function cartReducer(cart: Cart, action: CartAction): Cart {
   switch (action.type) {
     case "add": {
+      // Una línea que ya existe CONSERVA su precio: el guardado es el carrito
+      // tal como lo armó el cliente, y un precio que cambió desde entonces se
+      // corrige y se avisa en /carrito (lib/cart/context.ts, «Guardado vs.
+      // mostrado»). Pisarlo acá con el precio de la ficha borraba el aviso sin
+      // que el cliente lo viera — el total subía sin explicación.
       const existente = cart.items.find((i) => i.sku === action.item.sku);
       const items = existente
         ? cart.items.map((i) =>
             i.sku === action.item.sku
-              ? { ...i, ...action.item, qty: topar(i.qty + action.item.qty) }
+              ? {
+                  ...i,
+                  ...action.item,
+                  unitPriceCents: i.unitPriceCents,
+                  qty: topar(i.qty + action.item.qty),
+                }
               : i,
           )
         : [...cart.items, { ...action.item, qty: topar(action.item.qty), addedAt: action.now }];
