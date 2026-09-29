@@ -478,8 +478,6 @@ Mientras el carrusel no está a la vista, **el tiempo de la fase no corre**, y e
 
 `volviendo` es la única fase sin plazo: la corta el rig cuando la interpolación llegó a destino. Un temporizador la cortaría antes o después según cuánto hubiera que desandar.
 
-**El canvas dibuja solo lo que se mueve** (`frameloop="demand"`, `CarouselCanvas.tsx`): durante las esperas no dibuja nada. Piden cuadro, desde su `useFrame`, el deslizamiento entre slides, el giro, la cámara mientras está en `interactuando` o `volviendo` y el zoom que todavía no llegó; y todo render de React pide uno. Algo nuevo que se anime solo tiene que pedir su cuadro, o se queda congelado — sin error. En el teléfono (bajo 640 px) la densidad de píxeles tope es 1.5 y no 2.
-
 La cuenta de los 3 s **no corre mientras hay un gesto en curso**. Con un solo aviso en el `pointerdown`, un arrastre lento más largo que ese plazo se cancelaba solo a mitad de camino, y se veía como si el modelo se negara a quedarse donde uno lo dejaba.
 
 #### El bug del riel: por qué el modelo no giraba en horizontal

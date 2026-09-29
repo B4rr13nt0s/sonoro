@@ -44,12 +44,6 @@ const TRANSICION_MS = 600;
  */
 const SUAVIZADO_ZOOM = 12;
 
-/**
- * A menos de esto, en metros, el zoom suavizado se da por llegado: una
- * décima de milímetro, invisible a cualquier distancia del encuadre.
- */
-const ZOOM_LLEGADA = 1e-4;
-
 /** Aire mínimo contra el borde redondeado del cuadro, en píxeles CSS. */
 const MARGEN_BORDE_PX = 16;
 
@@ -79,17 +73,7 @@ export interface CarouselCanvasProps {
   pendienteRef: React.RefObject<GestoPendiente>;
   /** La cámara avisa que terminó de volver a la vista predeterminada. */
   alVolver: () => void;
-  /**
-   * `demand` a la vista, `never` fuera de ella. Nunca `always`: ver
-   * «Dibujar solo lo que se mueve» en `Escena`.
-   */
-  frameloop: "demand" | "never";
-  /**
-   * Techo de la densidad de píxeles. 2 en general —en pantallas de DPR 3 el
-   * costo se triplica sin ganancia perceptible a este tamaño de modelo— y
-   * 1.5 en el teléfono, que es donde el costo de cada cuadro se siente.
-   */
-  dprMax: number;
+  frameloop: "always" | "never";
 }
 
 /**
@@ -101,7 +85,9 @@ export function CarouselCanvas(props: CarouselCanvasProps) {
   return (
     <Canvas
       frameloop={props.frameloop}
-      dpr={[1, props.dprMax]}
+      // Techo en 2: en pantallas de DPR 3 el costo se triplica sin
+      // ganancia perceptible a este tamaño de modelo.
+      dpr={[1, 2]}
       camera={{ fov: FOV, near: 0.02, far: 20, position: [0, 0, 1] }}
       gl={{ antialias: true, powerPreference: "high-performance" }}
     >
@@ -378,7 +364,7 @@ function Deslizador({
   const anguloBase = useRef(0);
   const faseColocada = useRef(fase);
 
-  useFrame((estado) => {
+  useFrame(() => {
     if (indiceColocado.current !== index) {
       indiceColocado.current = index;
       t.current = 1;
@@ -425,10 +411,6 @@ function Deslizador({
     if (fase === "girando") {
       anguloRef.current = anguloBase.current + anguloDelCiclo(fase, transcurrido(fase));
     }
-
-    // Deslizando o girando, el cuadro siguiente ya es distinto. El último
-    // cuadro del deslizamiento (t = 0) no pide otro: ya quedó en su lugar.
-    if (t.current > 0 || fase === "girando") estado.invalidate();
   });
 
   return (
@@ -517,28 +499,7 @@ function Camara({
   const arriba = useRef(new Vector3());
   const aux = useRef(new Vector3());
 
-  /**
-   * DIBUJAR SOLO LO QUE SE MUEVE. El canvas va con `frameloop="demand"`: no
-   * dibuja un cuadro si nadie lo pide. Con `always` dibujaba a 60 o 120 por
-   * segundo también durante las esperas, 6 de cada 16 s con el modelo quieto,
-   * y con movimiento reducido el modelo quieto todo el tiempo; en un celular
-   * de gama baja eso es batería, y en Lighthouse —que no tiene GPU y emula
-   * WebGL en el procesador— cada cuadro era una tarea larga.
-   *
-   * Piden cuadro, cada uno desde su useFrame, los que se mueven: Deslizador
-   * mientras desliza o gira el modelo, y esta cámara mientras el usuario lo
-   * maneja, mientras vuelve a reposo y mientras el zoom no llegó a destino.
-   * Y todo render de React pide uno: cambió la fase, el producto, el chrome
-   * o el tamaño del canvas, y alguien tiene que dibujarlo — por eso este
-   * efecto va sin dependencias. Si se agrega algo que se anime solo, tiene
-   * que pedir su cuadro, o se queda congelado en el primero.
-   */
-  const invalidate = useThree((estado) => estado.invalidate);
-  useEffect(() => {
-    invalidate();
-  });
-
-  useFrame((estado, delta) => {
+  useFrame((_estado, delta) => {
     const v = vista.current;
 
     // El primer frame trae el canvas en 0×0 y una distancia de reposo que
@@ -640,10 +601,6 @@ function Camara({
     // mismo que a 60 Hz.
     v.distanciaSuave +=
       (v.distancia - v.distanciaSuave) * (1 - Math.exp(-SUAVIZADO_ZOOM * Math.min(delta, 0.1)));
-    // El decaimiento nunca llega a cero: sin este corte, el zoom pediría
-    // cuadros para siempre.
-    const zoomEnCamino = Math.abs(v.distancia - v.distanciaSuave) > ZOOM_LLEGADA;
-    if (!zoomEnCamino) v.distanciaSuave = v.distancia;
 
     // --- colocar la cámara: esférica → cartesiana, alrededor de la mira
     const sinPol = Math.sin(v.polar);
@@ -658,12 +615,6 @@ function Camara({
     camera.updateMatrix();
 
     azimutCamaraRef.current = v.azimut;
-
-    // Mientras el usuario lo maneja, se dibuja cada cuadro: los incrementos
-    // del gesto llegan por `pendienteRef` desde eventos del DOM, que no
-    // despiertan al canvas. Eso incluye los 3 s de «interactuando» después
-    // de soltar, que es lo que dura esa fase.
-    if (fase === "interactuando" || fase === "volviendo" || zoomEnCamino) estado.invalidate();
   });
 
   return null;

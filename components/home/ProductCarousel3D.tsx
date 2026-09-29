@@ -136,7 +136,7 @@ export function ProductCarousel3D() {
   const anterior = useCallback(() => ir(index - 1, -1), [ir, index]);
   const siguiente = useCallback(() => ir(index + 1, 1), [ir, index]);
 
-  // IntersectionObserver: fuera del viewport el render pasa de 'demand' a
+  // IntersectionObserver: fuera del viewport el render pasa de 'always' a
   // 'never'. Un carrusel 3D que nadie está viendo no debe consumir GPU.
   useEffect(() => {
     const nodo = contenedor.current;
@@ -159,7 +159,7 @@ export function ProductCarousel3D() {
   }, []);
 
   const actual = MODELS[MODEL_IDS[index]];
-  const frameloop = enCuadro && pestanaVisible ? "demand" : "never";
+  const frameloop = enCuadro && pestanaVisible ? "always" : "never";
 
   // 44x44 en el teléfono —el mínimo para el dedo, y acá se usan justo con el
   // dedo— y los 40 del handoff desde sm, donde se apunta con el mouse.
@@ -195,7 +195,6 @@ export function ProductCarousel3D() {
             pendienteRef={pendienteRef}
             alVolver={alVolver}
             frameloop={frameloop}
-            dprMax={anchoSm ? 2 : 1.5}
           />
         </SinCanvasSiFalla>
       ) : null}
