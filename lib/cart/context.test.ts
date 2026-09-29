@@ -14,12 +14,7 @@ import { createRoot } from "react-dom/client";
 import { JSDOM } from "jsdom";
 
 import { CartProvider, useCart } from "./context.ts";
-import {
-  agregarCambiosPendientes,
-  CAMBIOS_STORAGE_KEY,
-  CART_STORAGE_KEY,
-  loadCambiosPendientes,
-} from "./storage.ts";
+import { CART_STORAGE_KEY, loadCart } from "./storage.ts";
 import { SCHEMA_VERSION, type CatalogoSku } from "./types.ts";
 
 test("CartProvider: montar con un carrito ya guardado no lo pisa con el estado vacío inicial", async () => {
@@ -278,10 +273,10 @@ test("CartProvider: adopta lo que otra pestaña guardó, sin reescribirlo, y lo 
   }
 });
 
-// Los avisos de lo que reconcile() corrigió: se guardan al hidratar, salen
-// por useCart() hasta que /carrito los descarta, y lo que otra pestaña
-// guarda llega por `storage` — pero solo si es del mismo carrito.
-test("CartProvider: guarda los avisos al hidratar, los descarta y adopta los de otra pestaña", async () => {
+// Guardado vs. mostrado (lib/cart/context.ts): lo guardado es el carrito tal
+// como lo armó el cliente; lo mostrado y los avisos se DERIVAN contra el
+// catálogo, y solo descartarCambios() guarda el carrito corregido.
+test("CartProvider: deriva el carrito corregido y los avisos sin reescribir lo guardado", async () => {
   const dom = new JSDOM("<!doctype html><html><body><div id='root'></div></body></html>", {
     url: "http://localhost/",
   });
@@ -303,24 +298,25 @@ test("CartProvider: guarda los avisos al hidratar, los descarta y adopta los de 
 
   try {
     const CREADO = "2026-09-20T10:00:00.000Z";
+    const linea = (sku: string, unitPriceCents: number, qty = 1) => ({
+      sku,
+      qty,
+      unitPriceCents,
+      currency: "GTQ" as const,
+      nombreSnapshot: sku,
+      imagenSnapshot: null,
+      addedAt: CREADO,
+    });
+    const carrito = (items: ReturnType<typeof linea>[], createdAt = CREADO) => ({
+      schemaVersion: SCHEMA_VERSION,
+      items,
+      createdAt,
+      updatedAt: createdAt,
+    });
+    // Un precio viejo y un producto que se agotó después de agregarlo.
     window.localStorage.setItem(
       CART_STORAGE_KEY,
-      JSON.stringify({
-        schemaVersion: SCHEMA_VERSION,
-        items: [
-          {
-            sku: "SQ12-D2",
-            qty: 1,
-            unitPriceCents: 200000,
-            currency: "GTQ",
-            nombreSnapshot: "SQ12-D2",
-            imagenSnapshot: null,
-            addedAt: CREADO,
-          },
-        ],
-        createdAt: CREADO,
-        updatedAt: CREADO,
-      }),
+      JSON.stringify(carrito([linea("SQ12-D2", 200000), linea("P1T-S", 145000)])),
     );
     const catalogo: CatalogoSku[] = [
       { sku: "SQ12-D2", activo: true, disponibilidad: "disponible", precioCents: 245000 },
@@ -333,6 +329,7 @@ test("CartProvider: guarda los avisos al hidratar, los descarta y adopta los de 
       precioAnteriorCents: 200000,
       precioActualCents: 245000,
     };
+    const agotado = { tipo: "eliminado_agotado" as const, sku: "P1T-S", nombreSnapshot: "P1T-S" };
 
     const probeState: { valor: ReturnType<typeof useCart> | null } = { valor: null };
     function Probe() {
@@ -347,116 +344,79 @@ test("CartProvider: guarda los avisos al hidratar, los descarta y adopta los de 
       root.render(createElement(CartProvider, { catalogo, children: createElement(Probe) }));
     });
 
-    assert.deepEqual(probeState.valor?.cambios, [precio]);
-    assert.deepEqual(loadCambiosPendientes(CREADO), [precio], "quedan guardados para /carrito");
+    // Lo mostrado ya está corregido, y los avisos son la diferencia...
+    assert.deepEqual(
+      probeState.valor?.items.map((i) => [i.sku, i.unitPriceCents]),
+      [["SQ12-D2", 245000]],
+    );
+    assert.deepEqual(probeState.valor?.cambios, [precio, agotado]);
+    // ...pero lo guardado sigue como lo armó el cliente: la evidencia queda.
+    assert.deepEqual(
+      loadCart().items.map((i) => [i.sku, i.unitPriceCents]),
+      [
+        ["SQ12-D2", 200000],
+        ["P1T-S", 145000],
+      ],
+    );
 
+    // /carrito los mostró: se guarda el corregido y no queda nada que avisar.
     await act(async () => {
       probeState.valor?.descartarCambios();
     });
     assert.deepEqual(probeState.valor?.cambios, []);
-    assert.deepEqual(loadCambiosPendientes(CREADO), [], "no vuelven en la próxima carga");
+    assert.deepEqual(
+      loadCart().items.map((i) => [i.sku, i.unitPriceCents]),
+      [["SQ12-D2", 245000]],
+    );
 
-    // Otra pestaña guarda un aviso de OTRO carrito: no es de acá.
-    agregarCambiosPendientes("2026-01-01T00:00:00.000Z", [precio], Date.now() + 1);
-    await act(async () => {
-      dom.window.dispatchEvent(
-        new dom.window.StorageEvent("storage", { key: CAMBIOS_STORAGE_KEY }),
-      );
-    });
-    assert.deepEqual(probeState.valor?.cambios, []);
-
-    // Y uno de ESTE carrito: sí.
-    agregarCambiosPendientes(CREADO, [precio], Date.now() + 2);
-    await act(async () => {
-      dom.window.dispatchEvent(
-        new dom.window.StorageEvent("storage", { key: CAMBIOS_STORAGE_KEY }),
-      );
-    });
-    assert.deepEqual(probeState.valor?.cambios, [precio]);
-
-    // Lo que reconcile() quitaría no entra, aunque el botón no lo haya
-    // impedido — y addItem() lo dice, para que nadie confirme ni mida.
-    const nuevo = (sku: string) => ({
+    // Lo que reconcile() quitaría no entra, y addItem() dice cuánto entró.
+    const nuevo = (sku: string, qty = 1) => ({
       sku,
-      qty: 1,
-      unitPriceCents: 145000,
+      qty,
+      unitPriceCents: 245000,
       currency: "GTQ" as const,
       nombreSnapshot: sku,
       imagenSnapshot: null,
     });
-    const aceptados: (number | undefined)[] = [];
-    await act(async () => {
-      probeState.valor?.descartarCambios();
-      aceptados.push(probeState.valor?.addItem(nuevo("P1T-S")));
-      aceptados.push(probeState.valor?.addItem(nuevo("NO-EXISTE")));
-    });
-    assert.deepEqual(aceptados, [0, 0]);
-    assert.deepEqual(
-      probeState.valor?.items.map((i) => i.sku),
-      ["SQ12-D2"],
-    );
-
-    // Otra pestaña, con un catálogo viejo, sí lo agregó y guardó el carrito:
-    // esta lo quita y lo avisa...
-    const conAgotado = JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) ?? "null");
-    conAgotado.items.push({ ...nuevo("P1T-S"), addedAt: CREADO });
-    const guardarDeLaOtra = async () => {
-      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(conAgotado));
-      await act(async () => {
-        dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: CART_STORAGE_KEY }));
-      });
-    };
-    await guardarDeLaOtra();
-    assert.deepEqual(
-      probeState.valor?.items.map((i) => i.sku),
-      ["SQ12-D2"],
-    );
-    const agotado = { tipo: "eliminado_agotado", sku: "P1T-S", nombreSnapshot: "P1T-S" };
-    assert.deepEqual(probeState.valor?.cambios, [agotado]);
-    // ...pero solo acá: la otra todavía lo tiene en su carrito, y si leyera
-    // el aviso diría «Se quitó X» con X a la vista.
-    assert.deepEqual(loadCambiosPendientes(CREADO), []);
-
-    // Si la otra pestaña pide —el carrito se vacía con otro createdAt—, el
-    // aviso se va con el carrito que corregía: no puede salir sobre el nuevo.
-    const vacio = {
-      schemaVersion: SCHEMA_VERSION,
-      items: [],
-      createdAt: "2026-09-28T12:00:00.000Z",
-      updatedAt: "2026-09-28T12:00:00.000Z",
-    };
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(vacio));
-    await act(async () => {
-      dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: CART_STORAGE_KEY }));
-    });
-    assert.deepEqual(probeState.valor?.cambios, [], "el aviso no sale sobre el carrito nuevo");
-    // Vuelve el carrito de antes (para seguir con el resto del test).
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(conAgotado));
-    await act(async () => {
-      dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: CART_STORAGE_KEY }));
-    });
-
-    // addItem devuelve lo que de verdad entró: con la línea cerca del tope,
-    // menos de lo pedido; en el tope, nada.
     const entradas: (number | undefined)[] = [];
-    await act(async () => {
-      entradas.push(probeState.valor?.addItem({ ...nuevo("SQ12-D2"), qty: 97 }));
-    });
-    await act(async () => {
-      entradas.push(probeState.valor?.addItem({ ...nuevo("SQ12-D2"), qty: 5 }));
-    });
-    await act(async () => {
-      entradas.push(probeState.valor?.addItem({ ...nuevo("SQ12-D2"), qty: 5 }));
-    });
-    assert.deepEqual(entradas, [97, 1, 0]);
-    assert.equal(probeState.valor?.items.find((i) => i.sku === "SQ12-D2")?.qty, 99);
+    for (const item of [nuevo("P1T-S"), nuevo("NO-EXISTE"), nuevo("SQ12-D2", 97)]) {
+      await act(async () => {
+        entradas.push(probeState.valor?.addItem(item));
+      });
+    }
+    for (const item of [nuevo("SQ12-D2", 5), nuevo("SQ12-D2", 5)]) {
+      await act(async () => {
+        entradas.push(probeState.valor?.addItem(item));
+      });
+    }
+    assert.deepEqual(entradas, [0, 0, 97, 1, 0]);
+    assert.equal(probeState.valor?.items[0].qty, 99);
 
-    // Cada escritura de la otra trae la misma corrección: se avisa una vez.
+    // Otra pestaña (con un catálogo viejo) guardó el carrito con el agotado:
+    // esta lo adopta, lo muestra corregido y lo avisa, sin reescribirlo.
+    const deLaOtra = JSON.stringify(carrito([linea("SQ12-D2", 245000), linea("P1T-S", 145000)]));
+    window.localStorage.setItem(CART_STORAGE_KEY, deLaOtra);
     await act(async () => {
-      probeState.valor?.descartarCambios();
+      dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: CART_STORAGE_KEY }));
     });
-    await guardarDeLaOtra();
-    assert.deepEqual(probeState.valor?.cambios, [], "no vuelve a avisar lo ya visto");
+    assert.deepEqual(
+      probeState.valor?.items.map((i) => i.sku),
+      ["SQ12-D2"],
+    );
+    assert.deepEqual(probeState.valor?.cambios, [agotado]);
+    assert.equal(window.localStorage.getItem(CART_STORAGE_KEY), deLaOtra, "no lo reescribe");
+
+    // La otra pestaña pide: el carrito se vacía con otro createdAt, y el
+    // aviso se va con el carrito que corregía.
+    window.localStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify(carrito([], "2026-09-28T12:00:00.000Z")),
+    );
+    await act(async () => {
+      dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key: CART_STORAGE_KEY }));
+    });
+    assert.deepEqual(probeState.valor?.cambios, []);
+    assert.equal(probeState.valor?.createdAt, "2026-09-28T12:00:00.000Z");
 
     await act(async () => {
       root.unmount();

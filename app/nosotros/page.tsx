@@ -27,9 +27,9 @@ export default async function NosotrosPage() {
           Importamos a Guatemala todo lo que necesitas para elevar tu vehículo a otro nivel.
         </h1>
         <p className="text-texto-secundario max-w-[700px] text-[18px] leading-[1.5] sm:text-[21px]">
-          Sonoro es una empresa de car audio donde importamos marcas de calidad y renombre a nivel
-          internacional, con el objetivo de ofrecer productos que hagan que manejar se convierta en
-          una experiencia excepcional.
+          Sonoro es una empresa de audio para carro, marino y motorsports donde importamos marcas de
+          calidad y renombre a nivel internacional, con el objetivo de ofrecer productos que hagan
+          de cada recorrido una experiencia excepcional.
         </p>
       </section>
 

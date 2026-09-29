@@ -3,16 +3,7 @@ export { cartReducer } from "./reducer.ts";
 export type { CartAction } from "./reducer.ts";
 export { acumularCambios, reconcile } from "./reconcile.ts";
 export type { CambioCarrito } from "./reconcile.ts";
-export {
-  loadCart,
-  saveCart,
-  loadCambiosPendientes,
-  agregarCambiosPendientes,
-  marcarCambiosVistos,
-  CART_STORAGE_KEY,
-  CAMBIOS_STORAGE_KEY,
-  CAMBIOS_VISTOS_STORAGE_KEY,
-} from "./storage.ts";
+export { loadCart, saveCart, CART_STORAGE_KEY } from "./storage.ts";
 export { subtotalCents, itemCount } from "./totals.ts";
 export {
   crearCarritoVacio,

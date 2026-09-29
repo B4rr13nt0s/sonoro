@@ -55,12 +55,19 @@ export interface CicloCarrusel {
 export function useCicloCarrusel({
   activo,
   reducedMotion,
+  pausarAvance = false,
   onAvanzar,
 }: {
   /** El carrusel está a la vista y la pestaña visible. Con `false` el ciclo se congela. */
   activo: boolean;
   /** Con `prefers-reduced-motion` no hay giro ni avance automáticos. */
   reducedMotion: boolean;
+  /**
+   * Detiene SOLO el paso al producto siguiente; el giro sigue. Lo usa el
+   * carrusel mientras el foco del teclado está adentro (WCAG 2.2.2): lo que
+   * no puede pasar es que el producto cambie mientras alguien lo lee.
+   */
+  pausarAvance?: boolean;
   onAvanzar: () => void;
 }): CicloCarrusel {
   const [fase, setFase] = useState<FaseCarrusel>("espera-previa");
@@ -167,6 +174,9 @@ export function useCicloCarrusel({
 
     const plan = PLAN_CICLO[fase];
     if (!plan) return; // 'volviendo' termina cuando el rig avisa
+    // Con el avance en pausa, la espera final no se cumple: el modelo se
+    // queda en cuadro hasta que el foco sale, y ahí sigue el ciclo.
+    if (plan.avanza && pausarAvance) return;
 
     // Lo que FALTA de la fase, no el plazo entero: al reanudar tras una
     // pausa, la fase ya había consumido parte de su tiempo.
@@ -175,7 +185,7 @@ export function useCicloCarrusel({
       if (plan.avanza) onAvanzarRef.current();
       ir(plan.siguiente);
     }, restante);
-  }, [fase, faseInicio, activo, reducedMotion, ir, limpiar]);
+  }, [fase, faseInicio, activo, reducedMotion, pausarAvance, ir, limpiar]);
 
   useEffect(() => limpiar, [limpiar]);
 

@@ -51,14 +51,15 @@ export function CarritoView() {
   } = useCart();
 
   // Los avisos salen UNA vez: al llegar a esta página se copian acá y se
-  // descartan del carrito (y de localStorage), así que la próxima visita ya
-  // no los trae. Quedan atados al carrito en el que se mostraron: al pedir
-  // por WhatsApp el carrito se vacía con un `createdAt` nuevo, y un «Se quitó
-  // X» sobre el pedido que ya salió no dice nada.
+  // descartan —descartarCambios() guarda el carrito corregido, y la
+  // diferencia de la que salen desaparece—, así que la próxima visita ya no
+  // los trae. Quedan atados al carrito en el que se mostraron: al pedir por
+  // WhatsApp el carrito se vacía con un `createdAt` nuevo, y un «Se quitó X»
+  // sobre el pedido que ya salió no dice nada.
   //
   // Solo con la pestaña a la vista: una pestaña de /carrito abierta en
-  // segundo plano también recibe los avisos que escribe otra (evento
-  // `storage`), y si los tomara los descartaría sin que nadie los viera.
+  // segundo plano también ve el carrito que guarda otra (evento `storage`),
+  // y si descartara sus avisos nadie los habría visto.
   const visible = useSyncExternalStore(suscribirVisibilidad, pestañaVisible, () => false);
   const [vistos, setVistos] = useState<{ createdAt: string; cambios: CambioCarrito[] } | null>(
     null,

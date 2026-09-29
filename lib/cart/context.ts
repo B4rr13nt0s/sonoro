@@ -2,8 +2,8 @@
 
 // Provider + hook del carrito. Compone lib/cart/reducer.ts (mutaciones),
 // lib/cart/storage.ts (persistencia) y lib/cart/reconcile.ts (corrección
-// contra el catálogo actual al hidratar) — pero no conoce WhatsApp
-// (CLAUDE.md § Modelo de conversión). `catalogo` lo trae un Server
+// contra el catálogo actual, derivada en cada render) — pero no conoce
+// WhatsApp (CLAUDE.md § Modelo de conversión). `catalogo` lo trae un Server
 // Component (hoy app/layout.tsx) porque el adaptador de lib/catalog lee el
 // filesystem y no corre en el navegador — mismo patrón que /buscar.
 //
@@ -24,17 +24,8 @@ import {
 } from "react";
 
 import { cartReducer } from "./reducer.ts";
-import { acumularCambios, reconcile, revisarEntrada, type CambioCarrito } from "./reconcile.ts";
-import {
-  agregarCambiosPendientes,
-  CAMBIOS_STORAGE_KEY,
-  CAMBIOS_VISTOS_STORAGE_KEY,
-  CART_STORAGE_KEY,
-  loadCambiosPendientes,
-  loadCart,
-  marcarCambiosVistos,
-  saveCart,
-} from "./storage.ts";
+import { reconcile, revisarEntrada, type CambioCarrito } from "./reconcile.ts";
+import { CART_STORAGE_KEY, limpiarClavesViejas, loadCart, saveCart } from "./storage.ts";
 import { itemCount, subtotalCents } from "./totals.ts";
 import type { Disponibilidad } from "../catalog/types.ts";
 import {
@@ -50,6 +41,8 @@ type NuevoItem = Pick<
 >;
 
 type CartContextValue = {
+  // El carrito YA CORREGIDO contra el catálogo (ver «Guardado vs. mostrado»
+  // abajo): es lo que se muestra, se suma y se pide por WhatsApp.
   items: CartItem[];
   // `createdAt` del carrito — estable mientras no se llame clear() ni se
   // agregue el primer ítem de una sesión nueva. lib/whatsapp/ref.ts lo usa
@@ -59,14 +52,12 @@ type CartContextValue = {
   createdAt: string;
   subtotalCents: number;
   itemCount: number;
-  // Lo que reconcile() corrigió y el cliente todavía no vio: líneas quitadas
+  // La diferencia entre el carrito guardado y el corregido: líneas quitadas
   // por dejar de existir, quedar inactivas o agotarse, o con precio
-  // actualizado. Lo corregido AL CARGAR se guarda en localStorage hasta que
-  // /carrito lo muestra y llama a descartarCambios(), así sale una sola vez
-  // aunque la corrección haya pasado en otra página. Lo que esta pestaña
-  // corrige del carrito que guardó OTRA vive solo en memoria de esta pestaña
-  // (ver `locales` abajo). components/cart/avisos.ts arma las frases.
+  // actualizado. components/cart/avisos.ts arma las frases. Desaparecen
+  // cuando /carrito los muestra y llama a descartarCambios().
   cambios: CambioCarrito[];
+  // Guarda el carrito corregido: a partir de ahí no hay diferencia que avisar.
   descartarCambios: () => void;
   // Disponibilidad ACTUAL de cada sku, del mismo catálogo que usa
   // reconcile(). El CartItem no la guarda —es un snapshot de lo que se
@@ -80,14 +71,10 @@ type CartContextValue = {
   // durante SSR, así que el primer render del cliente es inevitablemente
   // vacío).
   hydrated: boolean;
-  // Devuelve si lo agregó: no agrega lo que reconcile() quitaría en la
-  // carga siguiente (agotado, inactivo, fuera del catálogo), y quien llama
-  // necesita saberlo para no confirmar ni medir un agregado que no pasó.
-  //
-  // Lo que devuelve son las unidades que de verdad entraron: 0 si no aceptó
-  // el producto, y menos de las pedidas si la línea llegó al tope de 99. Con
-  // un booleano, 99 en el carrito + 5 decía «Has añadido 5» y lo medía así,
-  // aunque el reducer no agregara ninguna.
+  // Devuelve las unidades que de verdad entraron: 0 si no acepta el producto
+  // —lo que reconcile() quitaría: agotado, inactivo, fuera del catálogo— o si
+  // la línea ya está en el tope de 99, y menos de las pedidas si lo toca. Con
+  // un booleano, 99 en el carrito + 5 decía «Has añadido 5» y lo medía así.
   addItem: (item: NuevoItem) => number;
   removeItem: (sku: string) => void;
   setQty: (sku: string, qty: number) => void;
@@ -96,6 +83,22 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
+// Guardado vs. mostrado.
+//
+// localStorage guarda el carrito TAL COMO LO ARMÓ EL CLIENTE, sin corregir.
+// Lo que se muestra se DERIVA en cada render con reconcile() contra el
+// catálogo actual, y los avisos son la diferencia entre los dos. Solo
+// /carrito, al mostrar los avisos con la pestaña a la vista, guarda el
+// carrito corregido (descartarCambios), y ahí la diferencia desaparece sola.
+//
+// Hasta septiembre de 2026 se hacía al revés: cada carga guardaba el carrito
+// ya corregido, y eso borraba la evidencia de qué había cambiado. Para no
+// perder los avisos había que guardarlos aparte, con su hora, una marca de
+// «visto hasta» contra carreras entre pestañas, avisos solo en memoria para
+// lo corregido de un carrito ajeno y una deduplicación de esos — y cada
+// revisión encontraba un bug nuevo en esa maquinaria. Derivando, ninguna
+// pestaña escribe correcciones por su cuenta, así que tampoco hay dos
+// pestañas con catálogos distintos corrigiéndose una a la otra en bucle.
 export function CartProvider({
   catalogo,
   children,
@@ -107,111 +110,41 @@ export function CartProvider({
   // cliente — localStorage no existe en el server, así que hidratar ahí
   // produciría contenido distinto entre ambos. El carrito real llega en el
   // efecto de abajo, después de montar.
-  const [cart, dispatch] = useReducer(cartReducer, null, () =>
+  const [guardado, dispatch] = useReducer(cartReducer, null, () =>
     crearCarritoVacio(new Date().toISOString()),
   );
-  // `null` = todavía no se leyó localStorage. Sirve dos propósitos con un
-  // solo useState: es el resultado de reconcile() Y la señal de "ya
-  // hidraté" que gatea el efecto de guardado de abajo — sin ella, el primer
-  // render (carrito vacío) se persistiría antes de leer localStorage y
-  // pisaría un carrito real guardado en una sesión anterior.
-  const [cambios, setCambios] = useState<CambioCarrito[] | null>(null);
-  const hydrated = cambios !== null;
+  // Gatea el efecto de guardado: sin él, el primer render (carrito vacío) se
+  // persistiría antes de leer localStorage y pisaría un carrito real.
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     // localStorage no existe durante SSR ni en el primer render del
     // cliente — leerlo es inherentemente un efecto secundario que solo
-    // puede correr después de montar, no algo derivable en render
-    // (CLAUDE.md § Modelo de conversión: "nunca crashear con un carrito
-    // viejo"). setCambios aquí es la señal de hidratación, no un valor
-    // derivable de props/estado existente.
-    const cargado = loadCart();
-    const { cart: reconciliado, cambios: cambiosDetectados } = reconcile(cargado, catalogo);
-    dispatch({ type: "hydrate", cart: reconciliado });
-    // El carrito se guarda ya corregido (efecto de abajo), así que lo que se
-    // corrigió se guarda también, sumado a lo que quedó sin avisar de antes
-    // DEL MISMO carrito (lib/cart/storage.ts).
-    const pendientes = agregarCambiosPendientes(
-      reconciliado.createdAt,
-      cambiosDetectados,
-      Date.now(),
-    );
+    // puede correr después de montar (CLAUDE.md § Modelo de conversión:
+    // "nunca crashear con un carrito viejo").
+    dispatch({ type: "hydrate", cart: loadCart() });
+    limpiarClavesViejas();
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setCambios(pendientes);
-    // `catalogo` es el snapshot que trajo el Server Component contenedor al
-    // renderizar esta página — no cambia durante la vida de la pestaña, así
-    // que hidratar solo debe correr una vez al montar.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setHydrated(true);
   }, []);
 
   // Otra pestaña cambió el carrito. Sin esto, cada pestaña guardaba SU copia
   // y la última en escribir borraba lo que agregó la otra: abrir una ficha
   // desde un enlace de WhatsApp, agregarla, y seguir en la pestaña de antes
   // perdía ese producto al siguiente cambio. `storage` solo se dispara en las
-  // OTRAS pestañas, nunca en la que escribió.
-  //
-  // Lo que llega de afuera se aplica pero NO se vuelve a guardar
-  // (`vinoDeOtraPestaña`): reconcile() puede corregir un precio, y si dos
-  // pestañas cargaron catálogos distintos —una abierta antes de un deploy—
-  // cada una corregiría a su versión y lo reescribiría, pisándose en bucle.
-  // Se guarda recién cuando esta pestaña cambie algo por su cuenta.
+  // OTRAS pestañas, nunca en la que escribió. Lo que llega se adopta tal cual
+  // y no se vuelve a guardar: es exactamente lo que ya está guardado.
   const vinoDeOtraPestaña = useRef(false);
-  // Lo que ESTA pestaña corrigió del carrito que guardó otra (una abierta
-  // antes de un deploy puede agregar algo que acá ya está agotado). Se avisa
-  // solo acá, en memoria, y no en localStorage: la otra pestaña, con su
-  // catálogo, todavía tiene ese producto en su carrito, y si leyera el aviso
-  // diría «Se quitó X» con X a la vista — y lo daría por visto por esta.
-  // Como no se guarda el carrito corregido, cada escritura de la otra trae
-  // la misma corrección: `yaAvisadas` evita avisarla más de una vez.
-  // Atados al carrito que corrigieron, igual que los de localStorage: si ese
-  // carrito ya no es el actual —se pidió desde la otra pestaña y nació uno
-  // nuevo—, un «Se quitó X» sobre el pedido que ya salió no dice nada.
-  const [locales, setLocales] = useState<{ createdAt: string; cambios: CambioCarrito[] }>({
-    createdAt: "",
-    cambios: [],
-  });
-  const yaAvisadas = useRef(new Set<string>());
-  // El listener de abajo vive mientras dure la pestaña; lee el carrito
-  // actual de acá para saber de qué carrito son los avisos que llegan.
-  const createdAtActual = useRef(cart.createdAt);
-  useEffect(() => {
-    createdAtActual.current = cart.createdAt;
-  }, [cart.createdAt]);
   useEffect(() => {
     if (!hydrated) return;
     function alCambiarEnOtraPestaña(evento: StorageEvent) {
-      // Otra pestaña guardó avisos nuevos o ya los mostró: esta se queda con
-      // la misma lista, para no volver a avisar lo que el cliente ya vio.
-      if (
-        evento.key === CAMBIOS_STORAGE_KEY ||
-        evento.key === CAMBIOS_VISTOS_STORAGE_KEY ||
-        evento.key === null
-      ) {
-        setCambios(loadCambiosPendientes(createdAtActual.current));
-      }
       if (evento.key !== CART_STORAGE_KEY && evento.key !== null) return;
-      const { cart: reconciliado, cambios: corregidos } = reconcile(loadCart(), catalogo);
       vinoDeOtraPestaña.current = true;
-      dispatch({ type: "hydrate", cart: reconciliado });
-      const nuevos = corregidos.filter((cambio) => {
-        const clave = JSON.stringify([reconciliado.createdAt, cambio]);
-        if (yaAvisadas.current.has(clave)) return false;
-        yaAvisadas.current.add(clave);
-        return true;
-      });
-      if (nuevos.length > 0) {
-        setLocales((previos) => ({
-          createdAt: reconciliado.createdAt,
-          cambios:
-            previos.createdAt === reconciliado.createdAt
-              ? acumularCambios(previos.cambios, nuevos)
-              : nuevos,
-        }));
-      }
+      dispatch({ type: "hydrate", cart: loadCart() });
     }
     window.addEventListener("storage", alCambiarEnOtraPestaña);
     return () => window.removeEventListener("storage", alCambiarEnOtraPestaña);
-  }, [hydrated, catalogo]);
+  }, [hydrated]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -219,8 +152,16 @@ export function CartProvider({
       vinoDeOtraPestaña.current = false;
       return;
     }
-    saveCart(cart);
-  }, [cart, hydrated]);
+    saveCart(guardado);
+  }, [guardado, hydrated]);
+
+  // Lo que se muestra: el guardado corregido contra el catálogo. Antes de
+  // hidratar no hay nada que corregir ni que avisar.
+  const { cart, cambios } = useMemo(
+    () =>
+      hydrated ? reconcile(guardado, catalogo) : { cart: guardado, cambios: [] as CambioCarrito[] },
+    [guardado, catalogo, hydrated],
+  );
 
   const disponibilidadPorSku = useMemo(
     () => Object.fromEntries(catalogo.map((p) => [p.sku, p.disponibilidad])),
@@ -230,26 +171,15 @@ export function CartProvider({
   const catalogoPorSku = useMemo(() => new Map(catalogo.map((p) => [p.sku, p])), [catalogo]);
 
   const descartarCambios = useCallback(() => {
-    marcarCambiosVistos(Date.now());
-    setLocales({ createdAt: "", cambios: [] });
-    setCambios([]);
-  }, []);
-
-  // Los guardados (de cualquier pestaña) más los que solo son de esta.
-  const todosLosCambios = useMemo(
-    () =>
-      locales.createdAt === cart.createdAt
-        ? acumularCambios(cambios ?? [], locales.cambios)
-        : (cambios ?? []),
-    [cambios, locales, cart.createdAt],
-  );
+    dispatch({ type: "hydrate", cart });
+  }, [cart]);
 
   const value: CartContextValue = {
     items: cart.items,
     createdAt: cart.createdAt,
     subtotalCents: subtotalCents(cart.items),
     itemCount: itemCount(cart.items),
-    cambios: todosLosCambios,
+    cambios,
     descartarCambios,
     disponibilidadPorSku,
     hydrated,
@@ -258,7 +188,7 @@ export function CartProvider({
     // tope por línea vive en el reducer (CLAUDE.md § Modelo de conversión).
     addItem: (item) => {
       if ("motivo" in revisarEntrada(catalogoPorSku.get(item.sku))) return 0;
-      const enCarrito = cart.items.find((i) => i.sku === item.sku)?.qty ?? 0;
+      const enCarrito = guardado.items.find((i) => i.sku === item.sku)?.qty ?? 0;
       const agregadas = Math.min(MAX_CANTIDAD_POR_LINEA, enCarrito + item.qty) - enCarrito;
       if (agregadas <= 0) return 0;
       dispatch({ type: "add", item, now: new Date().toISOString() });

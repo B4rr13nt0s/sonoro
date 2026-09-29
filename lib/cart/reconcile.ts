@@ -1,38 +1,32 @@
-// Reconciliación del snapshot contra el catálogo actual. Corre al hidratar
-// (lib/cart/context.tsx), fuera del reducer — es una función pura que no
-// muta nada, solo calcula el carrito corregido y la lista de cambios.
+// Reconciliación del snapshot contra el catálogo actual. Corre en cada
+// render del CartProvider (lib/cart/context.ts), fuera del reducer — es una
+// función pura que no muta nada, solo calcula el carrito corregido y la
+// lista de cambios. Lo que se muestra y se pide es SIEMPRE su resultado; lo
+// guardado es el carrito tal como lo armó el cliente.
 //
 // Nunca se envía por WhatsApp un precio que Sonoro ya no honra, ni un
-// producto que ya no vende o que está agotado — así que esto corre ANTES de
-// que el carrito hidratado quede disponible al resto de la app. /carrito le
-// avisa al cliente qué cambió (components/cart/avisos.ts).
+// producto que ya no vende o que está agotado. /carrito le avisa al cliente
+// qué cambió (components/cart/avisos.ts).
 //
 // Lo agotado se QUITA, igual que lo inactivo: desde septiembre de 2026 no se
 // puede pedir (el botón de la ficha queda deshabilitado), así que una línea
-// agregada antes de agotarse tampoco. Se reporta una sola vez, porque la
-// línea ya no está en la carga siguiente. Lo bajo pedido sí se puede pedir y
+// agregada antes de agotarse tampoco. Se avisa hasta que /carrito guarda el
+// carrito corregido. Lo bajo pedido sí se puede pedir y
 // no es un cambio: /carrito lo lee de la disponibilidad actual
 // (useCart().disponibilidadPorSku).
-import { z } from "zod";
-
 import type { Cart, CartItem, CatalogoSku } from "./types.ts";
 
-// Con esquema porque los cambios todavía no avisados se guardan en
-// localStorage (./storage.ts) hasta que el cliente abre /carrito, y lo que
-// sale de ahí se valida antes de usarse.
-export const CambioCarritoSchema = z.discriminatedUnion("tipo", [
-  z.object({ tipo: z.literal("eliminado_no_existe"), sku: z.string(), nombreSnapshot: z.string() }),
-  z.object({ tipo: z.literal("eliminado_inactivo"), sku: z.string(), nombreSnapshot: z.string() }),
-  z.object({ tipo: z.literal("eliminado_agotado"), sku: z.string(), nombreSnapshot: z.string() }),
-  z.object({
-    tipo: z.literal("precio_actualizado"),
-    sku: z.string(),
-    nombreSnapshot: z.string(),
-    precioAnteriorCents: z.number().int().nonnegative(),
-    precioActualCents: z.number().int().nonnegative(),
-  }),
-]);
-export type CambioCarrito = z.infer<typeof CambioCarritoSchema>;
+export type CambioCarrito =
+  | { tipo: "eliminado_no_existe"; sku: string; nombreSnapshot: string }
+  | { tipo: "eliminado_inactivo"; sku: string; nombreSnapshot: string }
+  | { tipo: "eliminado_agotado"; sku: string; nombreSnapshot: string }
+  | {
+      tipo: "precio_actualizado";
+      sku: string;
+      nombreSnapshot: string;
+      precioAnteriorCents: number;
+      precioActualCents: number;
+    };
 
 /**
  * Si una línea con esta entrada del catálogo puede estar en el carrito: la

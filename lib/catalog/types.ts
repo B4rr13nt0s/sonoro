@@ -120,6 +120,9 @@ export const ProductoSchema = z
     // catálogo.
     specsFicha: z.array(SpecSchema).min(4).max(10),
     precioCents: z.number().int().nonnegative(), // entero, centavos, IVA incluido
+    // Referencia del historial de precio para el negocio: NO se muestra en el
+    // sitio, a propósito (decisión de septiembre de 2026). Que ningún
+    // componente lo lea no es un olvido.
     precioAntesCents: z.number().int().nonnegative().optional(),
     moneda: MonedaSchema,
     disponibilidad: DisponibilidadSchema,

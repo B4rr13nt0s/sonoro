@@ -84,8 +84,9 @@ export function ProductCarousel3D() {
   const [enCuadro, setEnCuadro] = useState(false);
   const [pestanaVisible, setPestanaVisible] = useState(true);
   // Accesibilidad del avance automático (WCAG 2.2.2): mientras el foco del
-  // teclado está DENTRO del carrusel, el ciclo se detiene —si no, el enlace
-  // de categoría que se está leyendo cambia de destino a mitad de lectura—,
+  // teclado está DENTRO del carrusel, no se pasa al producto siguiente —si
+  // no, el enlace de categoría que se está leyendo cambia de destino a mitad
+  // de lectura; el modelo sí sigue girando—,
   // y el contador solo se anuncia cuando el cambio lo pidió el usuario con
   // las flechas o los puntos: con el anuncio en cada vuelta, un lector de
   // pantalla repetía «3 / 9» cada 16 s sin fin.
@@ -106,7 +107,8 @@ export function ProductCarousel3D() {
 
   const { fase, faseInicio, notifyInteraction, beginGesture, endGesture, alVolver, reiniciar } =
     useCicloCarrusel({
-      activo: enCuadro && pestanaVisible && !conFoco,
+      activo: enCuadro && pestanaVisible,
+      pausarAvance: conFoco,
       reducedMotion,
       onAvanzar: avanzar,
     });
@@ -173,7 +175,11 @@ export function ProductCarousel3D() {
       style={{ touchAction: "pan-y" }}
       className={`bg-fondo-alt relative mt-7 w-full cursor-grab touch-pan-y overflow-hidden rounded-t-2xl select-none active:cursor-grabbing ${ALTO}`}
       {...handlers}
-      onFocus={() => setConFoco(true)}
+      // Solo el foco de TECLADO (:focus-visible) pausa el avance. Con
+      // cualquier foco, un clic del mouse en una flecha —que le da el foco al
+      // botón— congelaba el carrusel entero: el producto nuevo no giraba
+      // hasta que se tocaba el modelo y el foco salía.
+      onFocus={(evento) => setConFoco(evento.target.matches(":focus-visible"))}
       onBlur={(evento) => {
         if (!evento.currentTarget.contains(evento.relatedTarget)) setConFoco(false);
       }}
