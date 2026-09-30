@@ -2,12 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { IconoCorreo, IconoInstagram, IconoTelefono } from "@/components/ui/IconosContacto";
-
-const ENLACES_LEGALES = [
-  { href: "/legal/terminos", nombre: "Términos" },
-  { href: "/legal/privacidad", nombre: "Privacidad" },
-  { href: "/legal/garantias", nombre: "Garantías" },
-] as const;
+import { ENLACES_LEGALES } from "@/lib/legal.ts";
 
 // Ciudad, teléfono, correo e Instagram vienen de las mismas env vars que ya
 // usa lib/seo/business.ts para el JSON-LD LocalBusiness, así que cada

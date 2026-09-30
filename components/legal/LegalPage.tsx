@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { ENLACES_LEGALES } from "@/lib/legal.ts";
+
 // Plantilla compartida por las 3 páginas de /legal/* — misma forma en las
 // tres (etiqueta, h1, fecha, secciones de título+párrafos, enlaces
 // cruzados), así que una sola plantilla evita triplicar el layout. No hay
@@ -7,12 +9,6 @@ import Link from "next/link";
 // el espaciado se toman de app/nosotros/page.tsx, la página de texto más
 // cercana que ya existe.
 export type LegalSeccion = { titulo: string; parrafos: string[] };
-
-const ENLACES_LEGALES = [
-  { href: "/legal/terminos", nombre: "Términos" },
-  { href: "/legal/privacidad", nombre: "Privacidad" },
-  { href: "/legal/garantias", nombre: "Garantías" },
-] as const;
 
 type LegalPageProps = {
   etiqueta: string;

@@ -5,6 +5,7 @@ import { useRef } from "react";
 
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import type { Brand } from "@/lib/catalog/index.ts";
+import { tituloMarcas } from "@/lib/seo/textos.ts";
 
 // Los botones ← → del handoff son <span> decorativos (sin lógica, como todo
 // el prototipo). Aquí sí desplazan el carrusel — un botón que no hace nada
@@ -26,9 +27,7 @@ export function MarcasScroller({ marcas }: { marcas: Brand[] }) {
             Marcas que vendemos
           </div>
           <h2 className="text-26 sm:text-40 font-semibold tracking-[-0.03em]">
-            {marcas.length === 1
-              ? "Una marca, importada de forma directa."
-              : `${marcas.length} marcas, importadas de forma directa.`}
+            {tituloMarcas(marcas.length)}
           </h2>
         </div>
         <div className="hidden flex-none gap-2.5 sm:flex">

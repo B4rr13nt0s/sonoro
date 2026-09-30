@@ -30,10 +30,7 @@ export function ProductGallery({ imagenes, nombre }: ProductGalleryProps) {
         />
         <div className="grid grid-cols-4 gap-2.5">
           {Array.from({ length: 4 }, (_, indice) => (
-            <div
-              key={indice}
-              className="rounded-field h-[100px] bg-[repeating-linear-gradient(135deg,#efefec_0_8px,#f7f7f5_8px_16px)]"
-            />
+            <PlaceholderImage key={indice} label="" className="rounded-field h-[100px]" />
           ))}
         </div>
       </div>

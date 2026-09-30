@@ -7,6 +7,7 @@ import {
   textosMarca,
   textosProducto,
   TITULO_SITIO,
+  tituloMarcas,
 } from "./textos.ts";
 
 test("textosCategoria: solo nombra lancha y UTV donde el catálogo los tiene", () => {
@@ -89,4 +90,9 @@ test("ningún texto usa «gratis» sin sus restricciones (regla 7)", () => {
 test("masFrecuentes: de más a menos, desempate estable por código", () => {
   assert.deepEqual(masFrecuentes(["B", "A", "B", "C", "A", "B"]), ["B", "A", "C"]);
   assert.deepEqual(masFrecuentes(["b", "a"]), ["a", "b"]);
+});
+
+test("tituloMarcas: singular y plural", () => {
+  assert.equal(tituloMarcas(1), "Una marca, importada de forma directa.");
+  assert.equal(tituloMarcas(8), "8 marcas, importadas de forma directa.");
 });

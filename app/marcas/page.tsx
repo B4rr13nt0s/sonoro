@@ -4,7 +4,7 @@ import Link from "next/link";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { listBrands } from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
-import { textosMarcas } from "@/lib/seo/textos.ts";
+import { textosMarcas, tituloMarcas } from "@/lib/seo/textos.ts";
 
 export async function generateMetadata(): Promise<Metadata> {
   const marcas = await listBrands();
@@ -17,10 +17,7 @@ export default async function MarcasPage() {
 
   // "Nueve marcas" en el handoff es el conteo fijo del mockup — con datos
   // reales el número de marcas puede cambiar, así que se calcula.
-  const titulo =
-    marcas.length === 1
-      ? "Una marca, importada de forma directa."
-      : `${marcas.length} marcas, importadas de forma directa.`;
+  const titulo = tituloMarcas(marcas.length);
 
   return (
     <div className="flex flex-col">

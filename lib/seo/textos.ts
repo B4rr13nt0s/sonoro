@@ -208,6 +208,13 @@ export function textosProducto(producto: {
   };
 }
 
+// El titular de /marcas y de la sección de marcas de /nosotros.
+export function tituloMarcas(cantidad: number): string {
+  return cantidad === 1
+    ? "Una marca, importada de forma directa."
+    : `${cantidad} marcas, importadas de forma directa.`;
+}
+
 export function textosMarcas(marcas: string[]): Textos {
   return {
     titulo: `Marcas de ${LEMA.toLowerCase()}`,
