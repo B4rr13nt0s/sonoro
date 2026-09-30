@@ -359,21 +359,30 @@ No inventes valores para estos puntos. Si el trabajo los necesita, pregunta.
 - **Redondeo de la cuota.** Este documento fija `Math.ceil` al centavo (`Q 408.34`). El handoff mostraba `Q 408.33`, que suma Q 2,449.98 en seis pagos. Si el negocio prefiere 408.33, cambiar aquí y definir que la última cuota absorbe la diferencia.
 - **Datos supuestos en el handoff, todos por confirmar:** precios, conteos de producto y países de origen de las marcas. La dirección, el teléfono (+502 5295 5555, el mismo de WhatsApp), el correo (sonoro502@gmail.com) y el Instagram (sonoro.gt) ya están confirmados: viven en variables de entorno —`NEXT_PUBLIC_WHATSAPP_NUMBER`, `BUSINESS_PHONE`, `BUSINESS_EMAIL`, `BUSINESS_INSTAGRAM` y la dirección en `BUSINESS_ADDRESS_STREET`, `BUSINESS_ADDRESS_LOCALITY`, `BUSINESS_ADDRESS_REGION`, `BUSINESS_ADDRESS_POSTAL_CODE` y `BUSINESS_ADDRESS_COUNTRY` (formato en `.env.example`)—, nunca incrustados en el código, y se muestran en el pie y en `/nosotros`. Una variable que falta no da error: ese dato simplemente no aparece, así que un despliegue nuevo hay que armarlo desde `.env.example`.
 
-<!-- BEGIN:nextjs-agent-rules -->
-
 ---
 
 ## Modelos 3D
 
-Los nueve modelos del carrusel del home (`components/home/ProductCarousel3D.tsx`) son **iconos de categoría**, no SKUs: sin logos, sin texto legible, sin marca. Viven en `public/models/` y se generan con Blender desde `scripts/models3d_v2/`.
+Los nueve modelos del carrusel del home (`components/home/ProductCarousel3D.tsx`) son **iconos de categoría**, no SKUs: sin logos, sin texto legible, sin marca. Viven en `public/models/` y se generan con Blender desde `scripts/models3d_v3/`.
 
 ### Regenerar un modelo
 
 ```bash
-blender --background --python scripts/models3d_v2/subwoofer.py
+blender --background --python-exit-code 1 --python scripts/models3d_v3/subwoofer.py
+python scripts/models3d_v3/manifest.py   # los números para lib/models3d.ts
 ```
 
-Un script por modelo, más `_common.py` con la biblioteca compartida (primitivas, materiales, limpieza de malla, normalización de origen y export). El script escribe directo a `public/models/<id>-N.glb` —el nombre con su versión, el mismo del campo `archivo` de `lib/models3d.ts`; ver § Caché— y reporta triángulos, dimensiones y peso. `scripts/models3d/` es la **primera versión, superada**: no la uses. No está versionada (`.gitignore`); si no la tenés en disco, no hace falta.
+**Blender 4.5 LTS.** Con otra versión el script avisa, y el .glb puede salir distinto. **Siempre con `--python-exit-code 1`**: sin esa opción Blender termina con código 0 aunque el script lance una excepción, y un error de validación pasa inadvertido en una corrida por lotes. También corre con el módulo `bpy` 4.5 de pip (`python scripts/models3d_v3/subwoofer.py`), que es como se generaron los nueve actuales.
+
+Un script por modelo, más:
+
+- `_common.py`: la biblioteca compartida (primitivas, paleta, sombreado, limpieza, normalización, export y **validación**).
+- `screen_ui.py`: dibuja con numpy lo que muestran las pantallas encendidas (ver Convenciones).
+- `manifest.py`: calcula `radius`, `height`, `displayScale`, `FRAME_RADIUS` y `FRAME_HEIGHT` desde `medidas/<id>.json`, que escribe cada export. Imprime el bloque para `lib/models3d.ts`; no lo edita.
+
+Cada script tiene una constante `ARCHIVO = "<id>-N"`: escribe `public/models/<id>-N.glb` —el mismo nombre del campo `archivo` de `lib/models3d.ts`; ver § Caché— y reporta triángulos, medidas, aristas duras y peso. El encabezado de cada script trae el historial de correcciones de ese modelo: leerlo antes de tocar la geometría.
+
+`scripts/models3d/` (v1) y `scripts/models3d_v2/` están **superadas**: no las uses. La v3 porta la geometría de la v1, que es la que generó los nueve modelos publicados hasta septiembre de 2026 (la v2 no generó los de bocina, subwoofer, insonorización ni RCA). La v1 no está versionada (`.gitignore`); si no la tenés en disco, no hace falta.
 
 ### Convenciones (no negociables)
 
@@ -386,41 +395,64 @@ Un script por modelo, más `_common.py` con la biblioteca compartida (primitivas
   ```
 
   Debe imprimir el nodo **sin** campo `translation`.
-- **+Y up.** Blender es Z-up; la conversión la hace el export glTF (`export_yup=True`). **No se rota la malla.**
+- **+Y up.** Blender es Z-up; la conversión la hace el export glTF (`export_yup=True`). No se rota la malla para eso.
+- **Frente hacia −Z del glTF** (+Y de Blender), que es hacia donde mira la cámara del carrusel. Cada script declara hacia dónde construyó el frente —`finalize(obj, ARCHIVO, front="-Y")`, o `front="top"` en los drivers, que miran hacia arriba— y `finalize` gira la malla. Por eso el manifiesto ya no tiene `giroBase`.
+- **Aristas duras marcadas a mano, por pieza.** Desde Blender 4.1, `bpy.ops.object.shade_auto_smooth()` agrega un modificador de nodos que sale de la biblioteca de assets; con `--background` la biblioteca no termina de cargar, el operador **no falla** y el modelo sale 100 % suavizado. Así salieron siete de los nueve modelos de la v1: caras planas abombadas, el vidrio de la pantalla como de televisor de tubo, aluminio que refleja como plástico. La v3 marca las aristas con bmesh antes de unir las piezas, con un ángulo según el tipo de pieza (`shading()` en `_common.py`), y las piezas biseladas llevan normales ponderadas por área. No volver a `shade_auto_smooth`.
+- **Biseles a escala de pantalla.** En el carrusel un milímetro ocupa entre 0.4 px (móvil) y 1.2 px (escritorio): un bisel de 1 mm no se ve. Los cantos principales van con 2–4 mm.
+- **`finalize()` valida y corta con error**: 0 aristas duras, nodo con traslación, sin Draco, que no apoye en z = 0, descentrado, fuera del presupuesto de triángulos o de peso, o una imagen en un modelo que no la declara.
+- **Materiales de una sola cara** (backface culling): todas las piezas son sólidos cerrados. Si una pieza desaparece vista de un lado, está abierta o tiene las normales al revés: se cierra, no se vuelve a `doubleSided`.
 - **Draco obligatorio** (`KHR_draco_mesh_compression` en `extensionsRequired`), nivel 6, cuantización de posición 14.
-- **Sin cámaras, sin luces, sin texturas de imagen.** Materiales PBR por valores.
-- 5,000–25,000 triángulos y menos de 300 KB por modelo. Los nueve suman 315 KB.
+- **Sin cámaras ni luces. Materiales PBR por valores, sin texturas de imagen**, con una excepción: **las pantallas encendidas** (la de `screen` y el LCD de `head-unit`). Lo que muestran lo dibuja `screen_ui.py` en cada export —una interfaz genérica: glifos propios, barras donde iría texto, ningún logo de app ni marca— y va como textura emisiva WebP (`EXT_texture_webp`). No es un archivo del repo. El script lo declara con `finalize(..., texture=True)`; cualquier otro modelo con una imagen hace fallar el export.
+- **Una sola pieza transparente:** la tapa del portafusible del kit (`clear-plastic`, alphaMode BLEND).
+- 5,000–25,000 triángulos y menos de 300 KB por modelo. Los nueve suman ~425 KB, de los que 27 KB son las dos texturas de pantalla.
 - Nombres de objetos y materiales en inglés, kebab-case.
 
 ### Paleta de materiales compartida
 
-`PALETTE` en `scripts/models3d_v2/_common.py` — hex, roughness, metallic:
+`PALETTE` en `scripts/models3d_v3/_common.py` — hex, roughness, metallic y extras:
 
-| Material | Hex | Rough | Metal |
-|---|---|---|---|
-| `matte-black` | `#1A1A1A` | 0.85 | 0 |
-| `textured-black` | `#232323` | 0.95 | 0 |
-| `brushed-alu` | `#B8BCC0` | 0.35 | 1 |
-| `chrome` | `#E8EAED` | 0.08 | 1 |
-| `rubber` | `#101010` | 0.98 | 0 |
-| `copper` | `#B87333` | 0.30 | 1 |
-| `screen-glass` | `#0A0C10` | 0.05 | 0 |
-| `accent-orange` | `#FF6A00` | 0.50 | 0 |
-| `cable-red` | `#C41E1E` | 0.90 | 0 |
-| `cable-blue` | `#1B4FA8` | 0.90 | 0 |
-| `cable-white` | `#E6E6E6` | 0.85 | 0 |
+| Material | Hex | Rough | Metal | Extras |
+|---|---|---|---|---|
+| `rubber` | `#0F0F10` | 0.92 | 0 | |
+| `gloss-black` | `#0C0C0D` | 0.22 | 0 | clearcoat |
+| `matte-black` | `#1B1B1C` | 0.72 | 0 | |
+| `satin-black` | `#1F1F21` | 0.46 | 0 | |
+| `textured-black` | `#2A2A2B` | 0.90 | 0 | |
+| `anodized-black` | `#2A2A2E` | 0.40 | 1 | |
+| `brushed-alu` | `#B8BCC0` | 0.33 | 1 | |
+| `chrome` | `#E8EAED` | 0.08 | 1 | |
+| `copper` | `#B87333` | 0.30 | 1 | |
+| `gold` | `#C9A34E` | 0.28 | 1 | |
+| `white-plastic` | `#E4E1DA` | 0.45 | 0 | |
+| `clear-plastic` | `#F2F4F6` | 0.05 | 0 | alpha 0.20, clearcoat |
+| `screen-glass` | `#0A0C10` | 0.05 | 0 | clearcoat |
+| `display-glass` | `#05070A` | 0.04 | 0 | emisivo `#16283D`, clearcoat (sin uso hoy) |
+| `accent-orange` | `#FF6A00` | 0.50 | 0 | |
+| `cable-red` | `#C41E1E` | 0.34 | 0 | |
+| `cable-black` | `#161617` | 0.36 | 0 | |
+| `cable-blue` | `#1B4FA8` | 0.34 | 0 | |
+| `cable-white` | `#E6E6E6` | 0.40 | 0 | |
+| `connector-red` | `#8E0F14` | 0.25 | 0 | |
+| `connector-smoke` | `#2B2B2E` | 0.25 | 0 | |
+| `zip-clear` | `#D9D9D9` | 0.40 | 0 | (sin uso hoy) |
 
-`cable-red`, `cable-blue` y `cable-white` **no son colores de acento de marca**: son código de color eléctrico (positivo, remoto, negativo) y solo aparecen en `install-kit` y `rca-cable`. Lo mismo `accent-orange`, que marca conectores. La regla de «sin color de acento» de § Sistema visual sigue aplicando a la interfaz; estos son colores del producto representado.
+Las pantallas encendidas no usan la paleta: `display_material()` arma un vidrio negro con clearcoat y la imagen de `screen_ui.py` como emisión.
+
+Los negros se separan por valor **y** por rugosidad (de más oscuro a más claro: `rubber`, `gloss-black`, `matte-black`, `satin-black`, `textured-black`). En la v1 eran tres casi iguales y los modelos negros se leían como siluetas. Con la iluminación del carrusel, la rugosidad es lo que decide si un canto agarra brillo. `anodized-black` es metálico: refleja el estudio y dibuja la forma (chasis del ecualizador).
+
+Los forros de cable llevan brillo a propósito (rugosidad ~0.35): mates, los cables se leían como mangueras o plastilina.
+
+`cable-red`, `cable-black`, `cable-blue` y `cable-white` **no son colores de acento de marca**: son código de color eléctrico (positivo, negativo, remoto) y solo aparecen en `install-kit` y `rca-cable`. Lo mismo `accent-orange`, que marca conectores. La regla de «sin color de acento» de § Sistema visual sigue aplicando a la interfaz; estos son colores del producto representado.
 
 ### El exponente 0.65 de `displayScale`
 
-`lib/models3d.ts` guarda un `displayScale` por modelo, y **está calculado: no lo recalcules ni lo redondees, y no lo sustituyas por auto-fit ni por escala real.**
+`lib/models3d.ts` guarda un `displayScale` por modelo, y **lo calcula `scripts/models3d_v3/manifest.py`: no lo calcules a mano ni lo redondees, y no lo sustituyas por auto-fit ni por escala real.**
 
 Entre el más chico (speaker, 165 mm) y el más grande (sound-deadening, 395 mm) hay una relación de 1 a 3. A escala real el speaker ocuparía un tercio del cuadro. Con auto-fit por modelo pasa lo contrario: speaker y subwoofer se verían idénticos pese a medir 165 y 302 mm, y el carrusel dejaría de comunicar tamaño.
 
 `displayScale` es la **escala real elevada a 0.65**, normalizada al modelo más grande: conserva el orden de tamaños y acerca los extremos. Si alguien regenera el manifiesto sin saber del exponente, los tamaños relativos se rompen sin que nada falle ni avise.
 
-`FRAME_RADIUS` (0.248) y `FRAME_HEIGHT` (0.1936) son el radio y la altura ya escalados del modelo más grande (hoy `sound-deadening`, con `displayScale` 1.0000; los valores vigentes viven en `lib/models3d.ts`), y de ahí sale el encuadre de cámara. `FRAME_RADIUS` es el radio del **cilindro** que barre el modelo al girar sobre Y — verificado midiendo los vértices de los nueve `.glb` en el navegador. Para comprobarlo no sirve `Box3.setFromObject`: transforma la caja de cada geometría en vez de sus vértices, así que sobre un modelo girado devuelve una caja inflada por la diagonal (hasta √2 de más).
+`FRAME_RADIUS` (0.248) y `FRAME_HEIGHT` (0.1937) son el radio y la altura ya escalados del modelo más grande (hoy `sound-deadening`, con `displayScale` 1.0000; los valores vigentes viven en `lib/models3d.ts`), y de ahí sale el encuadre de cámara. `FRAME_RADIUS` es el radio del **cilindro** que barre el modelo al girar sobre Y — verificado midiendo los vértices de los nueve `.glb` en el navegador. Para comprobarlo no sirve `Box3.setFromObject`: transforma la caja de cada geometría en vez de sus vértices, así que sobre un modelo girado devuelve una caja inflada por la diagonal (hasta √2 de más).
 
 ### Cámara del carrusel
 
@@ -440,7 +472,7 @@ No es caballera estricta y no pretende serlo: la caballera es una proyección OB
 
 **El azimut es 150° y no 30° porque los `.glb` tienen su frente hacia −Z.** Una cámara en el cuadrante +Z los muestra de espaldas. Por lo mismo, la luz principal va en `(1.6, 2, −1.2)`: dejarla en +Z deja a contraluz justo la cara que se ve.
 
-Pero **ese giro global no alcanza: cada modelo decidió por su cuenta hacia dónde apunta su frente.** Para eso está `giroBase` en el manifiesto, un giro sobre Y por modelo, aplicado sobre la malla sin tocarla. Hoy lo llevan `amplifier`, `head-unit`, `screen`, `equalizer` y `sound-deadening`. Si un producto aparece de espaldas, eso es lo que hay que ajustar — nunca el azimut global, que movería a los nueve.
+Hasta la v2 ese giro global no alcanzaba: cada modelo había decidido por su cuenta hacia dónde apuntaba su frente, y el manifiesto lo corregía con un `giroBase` por modelo. **Desde la v3 `finalize(front=...)` deja todos los frentes hacia −Z y `giroBase` no existe.** Si un producto aparece de espaldas, se corrige el `front` de su script y se regenera — nunca el azimut global, que movería a los nueve.
 
 Cuidado al juzgar «de frente o de espaldas» a ojo: en el ecualizador, los RCA traseros llevan aro `accent-orange` y se parecen bastante a perillas. La fila de controles reales es la de cilindros oscuros del canto frontal.
 
@@ -533,9 +565,9 @@ La órbita es **libre en los dos ejes**: azimut sin tope y polar de polo a polo,
 
 **Consecuencia: regenerar un modelo exige cambiar el nombre del archivo.** Un navegador que ya cacheó `subwoofer.glb` con `immutable` no lo vuelve a pedir nunca — ni con recarga forzada, en varios navegadores. Si no se renombra, hay usuarios viendo la versión vieja por un año.
 
-Por eso cada entrada de `MODELS` en `lib/models3d.ts` tiene un campo **`archivo`** aparte del id: el id (`sound-deadening`) es semántico y permanente, y el archivo lleva la versión (`sound-deadening-2.glb`). Al regenerar se sube el número en los dos lados —el `finalize(obj, "<id>-N")` del script de Blender y el `archivo` del manifiesto— y nada más cambia.
+Por eso cada entrada de `MODELS` en `lib/models3d.ts` tiene un campo **`archivo`** aparte del id: el id (`sound-deadening`) es semántico y permanente, y el archivo lleva la versión (`sound-deadening-3.glb`). Al regenerar se sube el número en los dos lados —la constante `ARCHIVO` del script de Blender y el `archivo` del manifiesto— y nada más cambia.
 
-**Si el modelo nuevo cambia de tamaño, hay que recalcular los NUEVE `displayScale`,** porque la normalización cuelga del más grande. Al reemplazar `sound-deadening` (radio 0.2545 → 0.2482) el mayor pasó a ser `rca-cable`, y con él se recalculó todo; después se achicó el `rca-cable` (radio 0.2533 → 0.1631) y la referencia volvió a ser `sound-deadening`. La cuenta es siempre la misma:
+**Si el modelo nuevo cambia de tamaño, cambian los NUEVE `displayScale`,** porque la normalización cuelga del más grande: se corre `manifest.py` y se copian los nueve valores y el encuadre que imprime. Al reemplazar `sound-deadening` (radio 0.2545 → 0.2482) el mayor pasó a ser `rca-cable`, y con él se recalculó todo; después se achicó el `rca-cable` (radio 0.2533 → 0.1631) y la referencia volvió a ser `sound-deadening`. La cuenta es siempre la misma:
 
 ```
 displayScale_i = (diámetro_mayor / diámetro_i) ^ 0.35      // diámetro = 2 · radius
@@ -544,6 +576,11 @@ FRAME_HEIGHT   = max(height_i · displayScale_i)
 ```
 
 El decoder de Draco (`public/draco/`) se copia de `node_modules/three/examples/jsm/libs/draco/gltf/` y se sirve local a propósito: el CDN de Google sería un tercero en el critical path del home. `lib/models3d.ts` exporta `DRACO_DECODER_PATH` y `ProductModel3D` se lo pasa a `useGLTF`; sin ese segundo argumento drei cae al CDN.
+
+<!-- El bloque de abajo lo escribe `next dev` cuando lo corre un agente de IA, y lo
+     reemplaza entero entre sus dos marcas. Nada propio ahí adentro: se borra. -->
+
+<!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know
 

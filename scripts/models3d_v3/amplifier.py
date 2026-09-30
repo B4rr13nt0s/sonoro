@@ -1,16 +1,32 @@
 """
-Sonoro — categoría "amplificadores" (amplifier).
+Sonoro — categoría "amplificadores" (amplifier), versión 3.
 Clase D de 4 canales, formato compacto.
 
-    blender --background --python scripts/models3d/amplifier.py
+    blender --background --python-exit-code 1 --python scripts/models3d_v3/amplifier.py
 
-Referencia de medidas (metros):
+Geometría portada de scripts/models3d/amplifier.py (v1), que generó el
+amplifier.glb publicado. Medidas sin cambios:
+
     largo  0.260 (eje X)   <- paneles cortos en -X (entradas) y +X (potencia)
-    ancho  0.175 (eje Y)   <- mas las 2 orejas de montaje, que sobresalen
+    ancho  0.175 (eje Y)   <- más las 2 orejas de montaje, que sobresalen
     alto   0.055 (eje Z)   <- pies 3 + cuerpo 40 + aletas 12
 
 El rasgo silueta es el disipador: 14 aletas longitudinales corriendo los
 260 mm. Nada de booleanos en las piezas estructurales.
+
+El script construye con el frente hacia −Y (el costado largo con la oreja;
+junto con el panel de entradas en −X es lo que ve la cámara en tres
+cuartos). `finalize` lo gira a +Y: ya no necesita `giroBase`.
+
+Qué cambia respecto de la v1
+----------------------------
+  - Normales: la v1 salía 100 % suavizada (ver _common.py, nota 1).
+  - Aletas con bisel de 1 mm en dos pasos: cada aleta agarra una línea de
+    brillo en el canto, que es lo que dibuja el disipador a tamaño de
+    carrusel. Cuerpo con bisel de 3 mm en cuatro pasos.
+  - Placa central negra, ahora VISIBLE: en la v1 quedaba enterrada 3 mm
+    bajo la tapa (con su logo), así que no se veía. Sin logo.
+  - Perillas y cilindros a 32 segmentos (antes 24).
 """
 
 import math
@@ -19,30 +35,29 @@ import sys
 
 
 def _locate_common():
-    cands = []
+    """Sirve headless (--python) y desde el Text Editor de Blender."""
+    cands = [os.path.dirname(os.path.abspath(__file__)), os.getcwd(),
+             os.path.join(os.getcwd(), "scripts", "models3d_v3")]
     try:
         import bpy
-        cands.append(os.path.dirname(os.path.abspath(bpy.path.abspath(__file__))))
         for t in bpy.data.texts:
             if t.filepath:
-                cands.append(os.path.dirname(
-                    os.path.abspath(bpy.path.abspath(t.filepath))))
+                cands.append(os.path.dirname(os.path.abspath(bpy.path.abspath(t.filepath))))
     except Exception:
         pass
-    cands.append(os.path.dirname(os.path.abspath(__file__)))
-    cands.append(os.getcwd())
-    cands.append(os.path.join(os.getcwd(), "scripts", "models3d"))
     for d in cands:
-        if d and os.path.isfile(os.path.join(d, "_common.py")):
+        if os.path.isfile(os.path.join(d, "_common.py")):
             return d
-    raise RuntimeError(
-        "no encuentro _common.py. Agrega su carpeta a mano en la Python "
-        "Console de Blender:\n"
-        "    import sys; sys.path.append(r'C:\\ruta\\al\\repo\\scripts\\models3d')")
+    raise RuntimeError("no encuentro _common.py de scripts/models3d_v3")
 
 
 sys.path.insert(0, _locate_common())
-from _common import *  # noqa: F401,F403,E402
+import importlib                                            # noqa: E402
+import _common                                              # noqa: E402
+importlib.reload(_common)   # Blender cachea los módulos entre corridas
+from _common import *       # noqa: F401,F403,E402
+
+ARCHIVO = "amplifier-3"
 
 L = 0.2600                  # largo total (X)
 W = 0.1750                  # ancho del cuerpo (Y)
@@ -65,26 +80,25 @@ FIN_W = 0.0040
 FIN_PITCH = 0.0119
 FIN_LEN = L - 0.0100
 
-PLATE_X = 0.1200            # placa central hundida 120 x 90
+PLATE_X = 0.1200            # placa central 120 x 90, entre las aletas
 PLATE_Y = 0.0900
-PLATE_SINK = 0.0030
 
-SEG_ROUND = 24
+SEG_ROUND = 32
 
 
 def build_body():
     body = box("chassis", (L, W, H_BODY),
                location=(0.0, 0.0, Z_BODY_BOT + H_BODY / 2.0),
                material=brushed_alu())
-    apply_bevel(body, 0.0030, segments=3)
+    bevel(body, 0.0030, segments=4)
     return body
 
 
 def build_fins():
     """
     14 aletas longitudinales. Las que cruzan la placa central se parten en dos
-    tramos para dejarla libre — asi se evita un boolean y se lee como la placa
-    de identificacion que tienen los amplificadores reales.
+    tramos para dejarla libre: así se evita un boolean y se lee como la placa
+    de identificación que tienen los amplificadores reales.
     """
     parts = []
     z = Z_BODY_TOP + H_FIN / 2.0
@@ -103,49 +117,44 @@ def build_fins():
             fin = box("heatsink-fin-%02d%s" % (i + 1, "ab"[k] if len(spans) > 1 else ""),
                       (length, FIN_W, H_FIN), location=(cx, y, z),
                       material=brushed_alu())
-            apply_bevel(fin, 0.0008, segments=1)
+            bevel(fin, 0.0010, segments=2)
             parts.append(fin)
     return parts
 
 
 def build_badge_plate():
-    """Placa central hundida 3 mm + logo abstracto (solo geometria)."""
-    parts = []
-    z_plate = Z_BODY_TOP - PLATE_SINK
-    parts.append(box("badge-plate", (PLATE_X, PLATE_Y, 0.0040),
-                     location=(0.0, 0.0, z_plate - 0.0020),
-                     material=matte_black()))
+    """
+    Placa central negra, en el hueco que dejan las aletas. Negra mate y no
+    piano: con brillo reflejaba entera la luz cenital del estudio y se veía
+    como una placa gris con una mancha.
 
-    z_logo = z_plate + 0.0006
-    parts.append(torus("logo-ring", 0.0230, 0.0022, major_segments=40,
-                       minor_segments=8, location=(0.0, 0.0, z_logo),
-                       material=brushed_alu()))
-    for i, (dx, w) in enumerate(((-0.0060, 0.0260), (0.0060, 0.0180))):
-        bar = box("logo-bar-%d" % (i + 1), (0.0035, w, 0.0030),
-                  location=(dx, 0.0, z_logo), material=brushed_alu())
-        apply_bevel(bar, 0.0006, segments=1)
-        parts.append(bar)
-    return parts
+    En la v1 la placa (y el «logo» de aro y barras) quedaba 3 mm POR DEBAJO
+    de la tapa del cuerpo, o sea enterrada: en el .glb publicado no se veía
+    nada, solo el aluminio de la tapa. Aquí asoma 0.4 mm. El logo se quita:
+    los modelos son iconos de categoría, sin logos.
+    """
+    thick = 0.0040
+    plate = box("badge-plate", (PLATE_X, PLATE_Y, thick),
+                location=(0.0, 0.0, Z_BODY_TOP + 0.0004 - thick / 2.0),
+                material=matte_black())
+    bevel(plate, 0.0012, segments=3)
+    return [plate]
 
 
 def build_input_panel():
     """
-    Panel corto A (-X): 4 RCA hembra, 2 potenciometros, 2 switches.
-
-    Reparto en Y con holgura uniforme de 9 mm entre bordes de piezas vecinas
-    (no entre centros), y el grupo completo centrado en el panel. Los RCA
-    conservan paso constante entre si y los potenciometros tambien.
+    Panel corto A (-X): 4 RCA hembra, 2 potenciómetros, 2 switches. Holgura
+    uniforme de 9 mm entre BORDES de piezas vecinas y grupo centrado.
     """
     parts = []
     x = -X_FACE
     z = Z_BODY_BOT + H_BODY / 2.0
     rot = (0.0, math.pi / 2.0, 0.0)          # eje de los cilindros sobre X
 
-    y_switch = 0.0737                        # simetrico: -y_switch y +y_switch
+    y_switch = 0.0737
     y_rca = (-0.0519, -0.0313, -0.0107, 0.0099)   # paso 20.6 mm
     y_pot = (0.0307, 0.0517)                      # paso 21.0 mm
 
-    # 4 jacks RCA de 9 mm, aros alternados
     for i, y in enumerate(y_rca):
         parts.append(cylinder("rca-jack-%d" % (i + 1), 0.0045, 0.0090,
                               segments=SEG_ROUND, location=(x - 0.0030, y, z),
@@ -155,27 +164,26 @@ def build_input_panel():
                           segments=SEG_ROUND, location=(x - 0.0012, y, z),
                           rotation=rot, material=ring_mat))
         parts.append(cylinder("rca-pin-%d" % (i + 1), 0.0012, 0.0060,
-                              segments=10, location=(x - 0.0020, y, z),
+                              segments=12, location=(x - 0.0020, y, z),
                               rotation=rot, material=chrome()))
 
-    # 2 potenciometros de ganancia de 12 mm con muesca indicadora
     for i, y in enumerate(y_pot):
         knob = cylinder("gain-pot-%d" % (i + 1), 0.0060, 0.0070,
                         segments=SEG_ROUND, location=(x - 0.0025, y, z),
-                        rotation=rot, material=matte_black())
-        apply_bevel(knob, 0.0008, segments=1)
+                        rotation=rot, material=satin_black())
+        bevel(knob, 0.0010, segments=2)
         parts.append(knob)
         parts.append(box("gain-pot-notch-%d" % (i + 1), (0.0020, 0.0012, 0.0048),
                          location=(x - 0.0055, y, z + 0.0028),
                          material=brushed_alu()))
 
-    # 2 switches deslizables de 14 x 5 mm
     for i, y in enumerate((-y_switch, y_switch)):
         parts.append(box("switch-well-%d" % (i + 1), (0.0030, 0.0140, 0.0080),
-                         location=(x - 0.0010, y, z), material=matte_black()))
-        parts.append(box("switch-lever-%d" % (i + 1), (0.0026, 0.0050, 0.0055),
-                         location=(x - 0.0022, y - 0.0035, z),
-                         material=brushed_alu()))
+                         location=(x - 0.0010, y, z), material=textured_black()))
+        lever = box("switch-lever-%d" % (i + 1), (0.0026, 0.0050, 0.0055),
+                    location=(x - 0.0022, y - 0.0035, z), material=brushed_alu())
+        bevel(lever, 0.0005, segments=2)
+        parts.append(lever)
     return parts
 
 
@@ -195,7 +203,7 @@ def build_power_panel():
     def terminal(name, size, y, z, socket_r):
         blk = box(name, (0.0060, size, size), location=(x + 0.0030, y, z),
                   material=matte_black())
-        apply_bevel(blk, 0.0008, segments=1)
+        bevel(blk, 0.0010, segments=2)
         parts.append(blk)
         parts.append(hex_socket(name + "-socket", socket_r, 0.0055,
                                 (x + 0.0042, y, z), rot, chrome()))
@@ -203,33 +211,28 @@ def build_power_panel():
     terminal("power-terminal-positive", 0.0160, -0.0640, z_mid, 0.0042)
     terminal("power-terminal-ground", 0.0160, -0.0430, z_mid, 0.0042)
     terminal("remote-terminal", 0.0080, -0.0270, z_mid, 0.0022)
-
     for i in range(4):
-        y = 0.0000 + i * 0.0180
-        terminal("speaker-terminal-%d" % (i + 1), 0.0120, y, z_mid, 0.0030)
+        terminal("speaker-terminal-%d" % (i + 1), 0.0120, i * 0.0180, z_mid, 0.0030)
     return parts
 
 
 def build_feet_and_ears():
     parts = []
     for i, (sx, sy) in enumerate(((-1, -1), (-1, 1), (1, -1), (1, 1))):
-        foot = cylinder("rubber-foot-%d" % (i + 1), 0.0060, H_FOOT,
-                        segments=SEG_ROUND,
-                        location=(sx * (L / 2.0 - 0.0200),
-                                  sy * (Y_HALF - 0.0200), H_FOOT / 2.0),
-                        material=rubber())
-        parts.append(foot)
-
+        parts.append(cylinder("rubber-foot-%d" % (i + 1), 0.0060, H_FOOT,
+                              segments=SEG_ROUND,
+                              location=(sx * (L / 2.0 - 0.0200),
+                                        sy * (Y_HALF - 0.0200), H_FOOT / 2.0),
+                              material=rubber()))
     for i, sy in enumerate((-1, 1)):
         ear = box("mount-ear-%d" % (i + 1), (0.0250, 0.0200, 0.0040),
-                  location=(0.0, sy * (Y_HALF + 0.0090),
-                            Z_BODY_BOT + 0.0060),
+                  location=(0.0, sy * (Y_HALF + 0.0090), Z_BODY_BOT + 0.0060),
                   material=brushed_alu())
-        apply_bevel(ear, 0.0010, segments=2)
+        bevel(ear, 0.0012, segments=2)
         parts.append(ear)
         parts.append(hex_socket("mount-ear-bolt-%d" % (i + 1), 0.0030, 0.0050,
-                                (0.0, sy * (Y_HALF + 0.0130),
-                                 Z_BODY_BOT + 0.0060), (0, 0, 0), chrome()))
+                                (0.0, sy * (Y_HALF + 0.0130), Z_BODY_BOT + 0.0060),
+                                (0, 0, 0), chrome()))
     return parts
 
 
@@ -243,14 +246,12 @@ def main():
     parts += build_feet_and_ears()
 
     print("\npiezas: %d" % len(parts))
-    keep = {p.name for p in parts}
-    for o in list(bpy.context.scene.objects):
-        if o.type == "MESH" and o.name not in keep:
-            print("  descartando objeto huerfano: %s" % o.name)
-            bpy.data.objects.remove(o, do_unlink=True)
-
+    discard_orphans(parts)
     obj = join_objects(parts, "amplifier")
-    finalize(obj, "amplifier", expected_dims=(0.260, None, 0.055))
+    # en X no se compara: los 260 mm son del cuerpo, y los conectores de los
+    # dos paneles cortos suman 14 mm al bbox (0.274)
+    finalize(obj, ARCHIVO, front="-Y", expected_dims=(None, None, 0.055),
+             ao="--ao" in sys.argv)
 
 
 if __name__ == "__main__":

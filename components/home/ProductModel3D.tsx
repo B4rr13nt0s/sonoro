@@ -38,10 +38,10 @@ export function ProductModel3D({ id, offsetX = 0, anguloRef }: ProductModel3DPro
   const spinner = useRef<Group>(null);
 
   useFrame(() => {
-    // El giro base orienta el producto hacia la cámara en la vista
-    // predeterminada; el del ciclo se suma encima.
-    if (spinner.current)
-      spinner.current.rotation.y = (entry.giroBase ?? 0) + (anguloRef?.current ?? 0);
+    // Solo el giro del ciclo: los .glb ya traen el frente hacia −Z, que es
+    // hacia donde mira la cámara en la vista predeterminada (CLAUDE.md
+    // § Modelos 3D). No hay giro base por modelo.
+    if (spinner.current) spinner.current.rotation.y = anguloRef?.current ?? 0;
   });
 
   // Los .glb apoyan en Y = 0 (Ymin = 0 es convención del pipeline). Para

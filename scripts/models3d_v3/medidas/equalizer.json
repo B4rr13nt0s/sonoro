@@ -1,0 +1,17 @@
+{
+  "id": "equalizer",
+  "archivo": "equalizer-3.glb",
+  "radius": 0.1037,
+  "height": 0.026,
+  "tris": 11376,
+  "bytes": 36432,
+  "materials": [
+    "accent-orange",
+    "anodized-black",
+    "brushed-alu",
+    "chrome",
+    "satin-black",
+    "textured-black"
+  ],
+  "blender": "4.5.14 LTS"
+}

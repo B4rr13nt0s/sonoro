@@ -1,0 +1,16 @@
+{
+  "id": "rca-cable",
+  "archivo": "rca-cable-3.glb",
+  "radius": 0.1368,
+  "height": 0.0433,
+  "tris": 9800,
+  "bytes": 42028,
+  "materials": [
+    "cable-black",
+    "cable-red",
+    "chrome",
+    "connector-red",
+    "connector-smoke"
+  ],
+  "blender": "4.5.14 LTS"
+}

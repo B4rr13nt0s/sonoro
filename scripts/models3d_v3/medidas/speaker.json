@@ -1,0 +1,18 @@
+{
+  "id": "speaker",
+  "archivo": "speaker-3.glb",
+  "radius": 0.0825,
+  "height": 0.055,
+  "tris": 19200,
+  "bytes": 61672,
+  "materials": [
+    "accent-orange",
+    "chrome",
+    "gloss-black",
+    "matte-black",
+    "rubber",
+    "satin-black",
+    "textured-black"
+  ],
+  "blender": "4.5.14 LTS"
+}

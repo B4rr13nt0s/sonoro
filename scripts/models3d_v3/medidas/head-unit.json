@@ -1,0 +1,20 @@
+{
+  "id": "head-unit",
+  "archivo": "head-unit-3.glb",
+  "radius": 0.1271,
+  "height": 0.05,
+  "tris": 7204,
+  "bytes": 35792,
+  "materials": [
+    "accent-orange",
+    "brushed-alu",
+    "chrome",
+    "display-lcd",
+    "gloss-black",
+    "matte-black",
+    "rubber",
+    "satin-black",
+    "textured-black"
+  ],
+  "blender": "4.5.14 LTS"
+}

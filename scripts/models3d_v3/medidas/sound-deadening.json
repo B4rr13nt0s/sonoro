@@ -1,0 +1,16 @@
+{
+  "id": "sound-deadening",
+  "archivo": "sound-deadening-3.glb",
+  "radius": 0.248,
+  "height": 0.1118,
+  "tris": 15054,
+  "bytes": 40700,
+  "materials": [
+    "brushed-alu",
+    "chrome",
+    "matte-black",
+    "rubber",
+    "satin-black"
+  ],
+  "blender": "4.5.14 LTS"
+}

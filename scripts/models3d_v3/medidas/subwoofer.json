@@ -1,0 +1,17 @@
+{
+  "id": "subwoofer",
+  "archivo": "subwoofer-3.glb",
+  "radius": 0.1575,
+  "height": 0.1652,
+  "tris": 15602,
+  "bytes": 54404,
+  "materials": [
+    "accent-orange",
+    "brushed-alu",
+    "matte-black",
+    "rubber",
+    "satin-black",
+    "textured-black"
+  ],
+  "blender": "4.5.14 LTS"
+}

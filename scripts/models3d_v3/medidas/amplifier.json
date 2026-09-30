@@ -1,0 +1,18 @@
+{
+  "id": "amplifier",
+  "archivo": "amplifier-3.glb",
+  "radius": 0.1557,
+  "height": 0.055,
+  "tris": 7232,
+  "bytes": 26836,
+  "materials": [
+    "accent-orange",
+    "brushed-alu",
+    "chrome",
+    "matte-black",
+    "rubber",
+    "satin-black",
+    "textured-black"
+  ],
+  "blender": "4.5.14 LTS"
+}

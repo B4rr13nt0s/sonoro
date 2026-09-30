@@ -10,6 +10,9 @@ design
 CLAUDE.md
 docs
 public/draco
+# Medidas que escriben los scripts de Blender (`finalize` en
+# scripts/models3d_v3/_common.py) y lee manifest.py: son salida generada.
+scripts/models3d_v3/medidas
 # Worktrees de otras sesiones de Claude Code: copias completas del repo que
 # no son de este checkout.
 .claude

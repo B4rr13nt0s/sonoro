@@ -1,9 +1,9 @@
 // Manifiesto de los nueve modelos 3D del carrusel del home.
 //
-// Los .glb viven en public/models/ y están validados: metros, Ymin = 0,
-// centro XZ en (0,0), +Y up, Draco obligatorio, sin cámaras ni luces ni
-// texturas (ver CLAUDE.md § Modelos 3D). Este archivo no los toca: solo
-// declara cómo se muestran.
+// Los .glb viven en public/models/ y los genera scripts/models3d_v3/, que
+// los valida al exportar: metros, Ymin = 0, centro XZ en (0,0), +Y up,
+// FRENTE HACIA −Z, Draco obligatorio, sin cámaras ni luces (ver CLAUDE.md
+// § Modelos 3D). Este archivo no los toca: solo declara cómo se muestran.
 import { CATEGORIAS_SITIO } from "./catalog/categorias.ts";
 
 export const MODEL_IDS = [
@@ -32,13 +32,10 @@ export interface ModelEntry {
   displayScale: number; // escala real^0.65, normalizada al modelo más grande
   radius: number; // radio horizontal en metros, sin escalar
   height: number; // altura en metros, sin escalar (el modelo apoya en Y=0)
-  /**
-   * Giro base sobre Y, en radianes, para que el producto mire a la cámara
-   * en la vista predeterminada. Cada .glb decidió por su cuenta hacia
-   * dónde apunta su frente, así que no hay una orientación global que
-   * sirva para los nueve: esto lo corrige por modelo, sin tocar la malla.
-   */
-  giroBase?: number;
+  // No hay giro por modelo: desde la v3 todos los .glb salen con el frente
+  // hacia −Z (`front=` en su script de Blender). El antiguo `giroBase`
+  // corregía acá lo que cada .glb había decidido por su cuenta. Si un
+  // producto aparece de espaldas, se arregla el `front` del script.
   label: string; // etiqueta visible, va en el DOM
   href: CategoriaHref; // ruta de la categoría en el catálogo
 }
@@ -50,20 +47,21 @@ export interface ModelEntry {
 // versión. Ver CLAUDE.md § Modelos 3D.
 //
 // displayScale = escala real elevada a 0.65, normalizada al modelo más
-// grande — en la práctica, `(diámetro mayor / diámetro propio) ^ 0.35`.
+// grande — en la práctica, `(radio mayor / radio propio) ^ 0.35`.
 // NO es auto-fit ni escala real: a escala real el speaker (165 mm)
 // ocuparía un tercio del cuadro frente al sound-deadening (496 mm), y con
 // auto-fit por modelo el speaker y el subwoofer se verían idénticos pese a
 // medir 165 y 315 mm. El exponente 0.65 conserva el orden de tamaños y
 // acerca los extremos.
 //
-// Los nueve valores se RECALCULAN de golpe cada vez que cambia el modelo
-// más grande, porque la normalización cuelga de él. Al achicarse el
-// rca-cable (radio 0.2533 → 0.1631) la referencia volvió a ser
+// radius, height y displayScale NO se calculan a mano: los imprime
+// `python scripts/models3d_v3/manifest.py` a partir de las medidas que
+// escribe cada export (scripts/models3d_v3/medidas/). Salen los nueve
+// juntos, porque la normalización cuelga del modelo más grande: hoy
 // sound-deadening (radio 0.2480, displayScale 1.0000).
 export const MODELS: Record<ModelId, ModelEntry> = {
   speaker: {
-    archivo: "speaker-2.glb",
+    archivo: "speaker-3.glb",
     displayScale: 1.4699,
     radius: 0.0825,
     height: 0.055,
@@ -71,43 +69,39 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     href: "/catalogo/bocinas",
   },
   equalizer: {
-    archivo: "equalizer-2.glb",
-    displayScale: 1.3573,
-    radius: 0.1036,
+    archivo: "equalizer-3.glb",
+    displayScale: 1.3569,
+    radius: 0.1037,
     height: 0.026,
-    giroBase: Math.PI,
     label: "Ecualizadores",
     href: "/catalogo/ecualizadores",
   },
   "head-unit": {
-    archivo: "head-unit.glb",
-    displayScale: 1.2632,
-    radius: 0.1272,
+    archivo: "head-unit-3.glb",
+    displayScale: 1.2636,
+    radius: 0.1271,
     height: 0.05,
-    giroBase: Math.PI,
     label: "Receptores",
     href: "/catalogo/receptores",
   },
   screen: {
-    archivo: "screen.glb",
+    archivo: "screen-3.glb",
     displayScale: 1.234,
     radius: 0.136,
     height: 0.1,
-    giroBase: Math.PI,
     label: "Pantallas",
     href: "/catalogo/receptores",
   },
   amplifier: {
-    archivo: "amplifier.glb",
-    displayScale: 1.1767,
-    radius: 0.1558,
+    archivo: "amplifier-3.glb",
+    displayScale: 1.1769,
+    radius: 0.1557,
     height: 0.055,
-    giroBase: Math.PI,
     label: "Amplificadores",
     href: "/catalogo/amplificadores",
   },
   subwoofer: {
-    archivo: "subwoofer-2.glb",
+    archivo: "subwoofer-3.glb",
     displayScale: 1.1722,
     radius: 0.1575,
     height: 0.1652,
@@ -115,35 +109,33 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     href: "/catalogo/subwoofers",
   },
   "install-kit": {
-    archivo: "install-kit.glb",
-    displayScale: 1.1244,
-    radius: 0.1774,
-    height: 0.03,
+    archivo: "install-kit-3.glb",
+    displayScale: 1.0874,
+    radius: 0.1952,
+    height: 0.027,
     label: "Kits de instalación",
     href: "/catalogo/kits",
   },
   "sound-deadening": {
-    archivo: "sound-deadening-2.glb",
+    archivo: "sound-deadening-3.glb",
     displayScale: 1.0,
     radius: 0.248,
-    height: 0.1119,
-    giroBase: Math.PI,
+    height: 0.1118,
     label: "Insonorización",
     href: "/catalogo/insonorizacion",
   },
   "rca-cable": {
-    archivo: "rca-cable-2.glb",
-    displayScale: 1.158,
-    radius: 0.1631,
-    height: 0.0426,
-    giroBase: Math.PI,
+    archivo: "rca-cable-3.glb",
+    displayScale: 1.2315,
+    radius: 0.1368,
+    height: 0.0433,
     label: "Accesorios",
     href: "/catalogo/accesorios",
   },
 };
 
 export const FRAME_RADIUS = 0.248; // radio horizontal máximo ya escalado
-export const FRAME_HEIGHT = 0.1936; // altura máxima ya escalada
+export const FRAME_HEIGHT = 0.1937; // altura máxima ya escalada
 
 export const modelUrl = (id: ModelId) => `/models/${MODELS[id].archivo}`;
 

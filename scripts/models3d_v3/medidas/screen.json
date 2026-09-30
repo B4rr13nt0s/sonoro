@@ -1,0 +1,21 @@
+{
+  "id": "screen",
+  "archivo": "screen-3.glb",
+  "radius": 0.136,
+  "height": 0.1,
+  "tris": 5412,
+  "bytes": 52932,
+  "materials": [
+    "accent-orange",
+    "brushed-alu",
+    "chrome",
+    "display-ui",
+    "gloss-black",
+    "matte-black",
+    "rubber",
+    "satin-black",
+    "screen-glass",
+    "textured-black"
+  ],
+  "blender": "4.5.14 LTS"
+}
