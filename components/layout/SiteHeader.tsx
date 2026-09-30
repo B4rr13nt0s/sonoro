@@ -19,6 +19,11 @@ const ENLACES_SECUNDARIOS = [
   { href: "/buscar", nombre: "Buscar" },
 ] as const;
 
+// A partir de cuándo el nav completo reemplaza al menú móvil (`xl:` de
+// Tailwind, 1280 px). Si el menú sigue abierto cuando la ventana crece, queda
+// oculto por CSS pero con el scroll de la página bloqueado.
+const MEDIA_NAV_COMPLETO = "(min-width: 1280px)";
+
 function esEnlaceActivo(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
@@ -27,6 +32,8 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [menuAbierto, setMenuAbierto] = useState(false);
   const cerrarMenu = () => setMenuAbierto(false);
+  const encabezado = useRef<HTMLElement>(null);
+  const botonMenu = useRef<HTMLButtonElement>(null);
 
   // El menú se cierra en CUALQUIER cambio de ruta, no solo en los enlaces que
   // se acuerdan de llamar a cerrarMenu: el header vive en el layout y no se
@@ -40,8 +47,60 @@ export function SiteHeader() {
     setMenuAbierto(false);
   }
 
+  // El menú abierto es una capa que tapa la página, y se comporta como tal:
+  // Escape lo cierra y devuelve el foco al botón, el foco no se sale a la
+  // página de detrás (Tab da la vuelta dentro del encabezado, que sigue a la
+  // vista arriba de la capa), y el fondo no hace scroll. Sin esto, Tab
+  // después del último enlace caía en el contenido oculto debajo de la capa.
+  useEffect(() => {
+    if (!menuAbierto) return;
+    const raiz = encabezado.current;
+    if (!raiz) return;
+
+    const overflowPrevio = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    raiz.querySelector<HTMLElement>("#menu-movil a")?.focus();
+
+    function alTeclear(evento: KeyboardEvent) {
+      if (evento.key === "Escape") {
+        setMenuAbierto(false);
+        botonMenu.current?.focus();
+        return;
+      }
+      if (evento.key !== "Tab" || !raiz) return;
+
+      // Solo lo que se ve: el nav de escritorio está oculto por CSS.
+      const enfocables = [...raiz.querySelectorAll<HTMLElement>("a[href], button")].filter(
+        (elemento) => elemento.getClientRects().length > 0,
+      );
+      const primero = enfocables[0];
+      const ultimo = enfocables[enfocables.length - 1];
+      if (!primero || !ultimo) return;
+      if (evento.shiftKey && document.activeElement === primero) {
+        evento.preventDefault();
+        ultimo.focus();
+      } else if (!evento.shiftKey && document.activeElement === ultimo) {
+        evento.preventDefault();
+        primero.focus();
+      }
+    }
+
+    const escritorio = window.matchMedia(MEDIA_NAV_COMPLETO);
+    function alCambiarAncho() {
+      if (escritorio.matches) setMenuAbierto(false);
+    }
+
+    document.addEventListener("keydown", alTeclear);
+    escritorio.addEventListener("change", alCambiarAncho);
+    return () => {
+      document.body.style.overflow = overflowPrevio;
+      document.removeEventListener("keydown", alTeclear);
+      escritorio.removeEventListener("change", alCambiarAncho);
+    };
+  }, [menuAbierto]);
+
   return (
-    <header className="border-borde-nav sticky top-0 z-40 border-b bg-white">
+    <header ref={encabezado} className="border-borde-nav sticky top-0 z-40 border-b bg-white">
       <div className="mx-auto flex h-15 max-w-[1280px] items-center gap-10 px-6 sm:px-12">
         <Link
           href="/"
@@ -110,9 +169,11 @@ export function SiteHeader() {
           </Link>
           <CartLink onClick={cerrarMenu} />
           <button
+            ref={botonMenu}
             type="button"
             aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuAbierto}
+            aria-controls="menu-movil"
             onClick={() => setMenuAbierto((abierto) => !abierto)}
             className="flex h-11 w-11 flex-none items-center justify-center"
           >
@@ -122,7 +183,10 @@ export function SiteHeader() {
       </div>
 
       {menuAbierto ? (
-        <div className="fixed inset-x-0 top-15 bottom-0 z-30 overflow-y-auto bg-white px-6 py-6 xl:hidden">
+        <div
+          id="menu-movil"
+          className="fixed inset-x-0 top-15 bottom-0 z-30 overflow-y-auto bg-white px-6 py-6 xl:hidden"
+        >
           <nav className="flex flex-col">
             {CATEGORIAS.map((categoria) => {
               const href = `/catalogo/${categoria.slug}`;
