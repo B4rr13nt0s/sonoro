@@ -43,5 +43,15 @@ export function compararPrecioDesc(a: ProductoTarjeta, b: ProductoTarjeta): numb
 }
 
 function compararSku(a: ProductoTarjeta, b: ProductoTarjeta): number {
-  return a.sku < b.sku ? -1 : a.sku > b.sku ? 1 : 0;
+  return compararTexto(a.sku, b.sku);
+}
+
+/**
+ * Orden de texto por PUNTOS DE CÓDIGO, no con localeCompare: la salida de ICU
+ * cambia entre versiones de Node, y lo que se ordena con ella (las marcas de
+ * brands.json, que está versionado y se regenera en cada build) dejaría de dar
+ * el mismo resultado en cada máquina.
+ */
+export function compararTexto(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0;
 }

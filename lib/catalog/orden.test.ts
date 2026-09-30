@@ -1,7 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { compararPrecioAsc, compararPrecioDesc, compararRelevancia } from "./orden.ts";
+import {
+  compararPrecioAsc,
+  compararPrecioDesc,
+  compararRelevancia,
+  compararTexto,
+} from "./orden.ts";
 import type { Producto } from "./types.ts";
 
 // Productos sintéticos: estas pruebas fijan el COMPARADOR, no el catálogo.
@@ -111,4 +116,19 @@ test("órdenes por precio: el mismo precio se desempata por sku, sin importar el
       "KBT-C",
     ]);
   }
+});
+
+test("compararTexto: puntos de código, sin depender de ICU", () => {
+  assert.equal(compararTexto("Cerwin Vega", "Focal"), -1);
+  assert.equal(compararTexto("Focal", "Cerwin Vega"), 1);
+  assert.equal(compararTexto("KBT", "KBT"), 0);
+  // Las mayúsculas van antes que las minúsculas: orden fijo, el mismo en
+  // cualquier máquina (localeCompare las intercala según la versión de ICU).
+  assert.deepEqual(["Focal", "JBL", "KBT", "MOJO", "Memphis"].sort(compararTexto), [
+    "Focal",
+    "JBL",
+    "KBT",
+    "MOJO",
+    "Memphis",
+  ]);
 });

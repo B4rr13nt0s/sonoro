@@ -33,6 +33,7 @@ import { fileURLToPath } from "node:url";
 
 import { CATEGORIAS_SITIO, perteneceACategoria } from "../lib/catalog/categorias.ts";
 import { construirConteos } from "../lib/catalog/conteos.ts";
+import { compararTexto } from "../lib/catalog/orden.ts";
 import { construirImagenes, emparejarFotosConSkus } from "../lib/catalog/photos.ts";
 import { ProductoSchema, type Producto } from "../lib/catalog/types.ts";
 import { formatQ } from "../lib/format/precio.ts";
@@ -289,7 +290,7 @@ function agruparPor(productos: Producto[], selector: (p: Producto) => string): G
       slug: slugificar(nombre),
       cantidadProductos,
     }))
-    .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+    .sort((a, b) => compararTexto(a.nombre, b.nombre));
 }
 
 function seccion(
