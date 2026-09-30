@@ -109,7 +109,7 @@ lib/
 content/
   productos/{sku}.mdx       # descripciones largas
 data/
-  source/productos.csv      # FUENTE DE VERDAD, versionada
+  source/catalogo.xlsx      # FUENTE DE VERDAD (antes productos.csv; ver docs/IMPORTADOR.md)
   catalog.json              # generado — no editar a mano
 scripts/
   import-catalog.ts
@@ -125,6 +125,8 @@ reports/                    # salida del importador
 La fase más importante. Si queda bien, el resto es mecánico y las fases futuras son baratas.
 
 ### 2.1 Superficie de edición: Google Sheets
+
+> **Actualización (septiembre de 2026):** este plan nombra `data/source/productos.csv` como artefacto de registro. Ya no existe: la fuente es `data/source/catalogo.xlsx` (una hoja por categoría) y `catalogo.csv` es solo SALIDA del importador, para el diff de Git. Ver `docs/IMPORTADOR.md` y `CLAUDE.md § Fuente de verdad`. Donde esta fase dice `productos.csv`, léase `catalogo.xlsx`.
 
 Separar dos roles que "fuente de verdad" suele confundir:
 
