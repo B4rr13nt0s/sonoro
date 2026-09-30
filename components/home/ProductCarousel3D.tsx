@@ -207,6 +207,7 @@ export function ProductCarousel3D() {
             alVolver={alVolver}
             frameloop={frameloop}
             alCrear={alCrearCanvas}
+            animarEntrada={!reducedMotion}
           />
         </SinCanvasSiFalla>
       ) : null}

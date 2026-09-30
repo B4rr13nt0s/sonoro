@@ -493,6 +493,8 @@ Por lo mismo el cuadro creció en móvil (220 → 300 px): con el chrome descont
 
 Al cambiar de producto —con las flechas, con los puntos o por el ciclo— la vista se repone a esta pose **de golpe, sin interpolar**: el deslizamiento entre slides ya está ocurriendo y un segundo movimiento encima se lee como un tirón.
 
+**Entrada del primer producto.** Al abrir la página, el primer producto llega deslizándose de izquierda a derecha, desde justo fuera de cuadro hasta el centro (`ENTRADA_MS` = 900 ms, con `easeOutCubic`: es una llegada, no un cambio de slide). Arranca en el primer frame en que su .glb ya está montado, y como con `frameloop="never"` no corre ningún frame, si el carrusel no está a la vista espera a que lo esté: no se gasta mientras carga ni fuera de pantalla. Parte de `entrada` (`useEncuadre`), la distancia lateral mínima que deja el modelo más grande entero fuera del frustum en la vista de reposo, y no de `gap`, que cubre el zoom más lejano y dejaría al modelo buena parte de la entrada viajando fuera de cuadro. Cualquier cambio de producto la cancela, y con `prefers-reduced-motion` no hay entrada: el producto aparece en su lugar.
+
 #### El ciclo
 
 Corre siempre mientras el carrusel esté a la vista, y cada producto recorre lo mismo:

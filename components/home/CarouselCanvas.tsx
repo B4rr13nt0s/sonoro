@@ -35,6 +35,13 @@ const FOV = 32;
 const MARGEN = 1.1;
 /** Duración del deslizamiento entre modelos. */
 const TRANSICION_MS = 600;
+/**
+ * Duración de la entrada del primer producto: al abrir la página, el modelo
+ * que se ve primero llega deslizándose de izquierda a derecha, desde fuera
+ * de cuadro hasta el centro. Más larga que la transición entre slides y con
+ * `easeOutCubic` —frena al llegar—: es una llegada, no un cambio de slide.
+ */
+const ENTRADA_MS = 900;
 
 /**
  * Constante del suavizado del zoom, en 1/s. La cámara no salta a la
@@ -77,6 +84,11 @@ export interface CarouselCanvasProps {
   frameloop: "always" | "never";
   /** El contexto WebGL ya existe: hay canvas al que mover y acercar. */
   alCrear: () => void;
+  /**
+   * El primer producto entra deslizándose desde la izquierda (ENTRADA_MS).
+   * `false` con `prefers-reduced-motion`: aparece ya en su lugar.
+   */
+  animarEntrada: boolean;
 }
 
 /**
@@ -195,7 +207,22 @@ function useEncuadre(chrome: { v: number; h: number }) {
   const distanciaTope = Math.max(distanciaPara(0), distanciaMax);
   const gap = tanH * (distanciaTope + FRAME_RADIUS) + FRAME_RADIUS + 0.05;
 
-  return { distanciaReposo, distanciaMin, distanciaMax, gap, tanV, alto };
+  /**
+   * Desde dónde entra el primer producto, sobre el eje horizontal de la
+   * cámara: lo justo para que el modelo más grande quede entero fuera de
+   * cuadro en la vista de reposo. Un punto a esa distancia lateral y a la
+   * profundidad del centro queda a `radio` del plano izquierdo del frustum
+   * (`hypot` pasa la distancia lateral a distancia perpendicular al plano).
+   * El radio es el de la esfera que envuelve al cilindro, porque el plano va
+   * inclinado junto con la cámara.
+   *
+   * No se usa `gap`: cubre el zoom más lejano, y desde ahí el modelo pasaría
+   * buena parte de la entrada viajando fuera de cuadro.
+   */
+  const radioEnvolvente = Math.hypot(FRAME_RADIUS, FRAME_HEIGHT / 2);
+  const entrada = tanH * distanciaReposo + radioEnvolvente * Math.hypot(1, tanH);
+
+  return { distanciaReposo, distanciaMin, distanciaMax, gap, entrada, tanV, alto };
 }
 
 function Escena({
@@ -206,6 +233,7 @@ function Escena({
   chrome,
   pendienteRef,
   alVolver,
+  animarEntrada,
 }: CarouselCanvasProps) {
   const total = MODEL_IDS.length;
   // Montaje: solo tres modelos (anterior, actual, siguiente). Los otros
@@ -289,6 +317,7 @@ function Escena({
         transcurrido={transcurrido}
         chrome={chrome}
         azimutCamaraRef={azimutCamaraRef}
+        animarEntrada={animarEntrada}
       />
 
       {/* Sin shadow maps en tiempo real: una sombra de contacto sobre el
@@ -328,6 +357,7 @@ function Deslizador({
   transcurrido,
   chrome,
   azimutCamaraRef,
+  animarEntrada,
 }: {
   index: number;
   direction: number;
@@ -338,8 +368,9 @@ function Deslizador({
   transcurrido: (fase: FaseCarrusel) => number;
   chrome: { v: number; h: number };
   azimutCamaraRef: React.RefObject<number>;
+  animarEntrada: boolean;
 }) {
-  const { gap } = useEncuadre(chrome);
+  const { gap, entrada: distanciaEntrada } = useEncuadre(chrome);
 
   // `t` va de 1 a 0 durante la transición. En 0 el modelo actual está
   // centrado y los vecinos, a un `gap` de distancia a cada lado.
@@ -367,6 +398,17 @@ function Deslizador({
    */
   const anguloBase = useRef(0);
   const faseColocada = useRef(fase);
+  /**
+   * Entrada del primer producto (ENTRADA_MS). Queda «pendiente» —con el
+   * modelo esperando fuera de cuadro, a la izquierda— hasta el primer frame
+   * en que su .glb ya está montado. Y como con `frameloop="never"` no corre
+   * ningún frame, si el carrusel todavía no está a la vista la entrada
+   * espera a que lo esté: se ve cuando el visitante llega, no se gasta
+   * mientras carga ni fuera de pantalla. Cualquier cambio de producto la da
+   * por hecha: desde ahí manda la transición normal.
+   */
+  const entrada = useRef<"pendiente" | "corriendo" | "hecha">("pendiente");
+  const inicioEntrada = useRef(0);
 
   useFrame(() => {
     if (indiceColocado.current !== index) {
@@ -375,6 +417,7 @@ function Deslizador({
       inicio.current = performance.now();
       anguloBase.current = 0;
       anguloRef.current = 0;
+      entrada.current = "hecha";
     }
     if (faseColocada.current !== fase) {
       faseColocada.current = fase;
@@ -386,6 +429,24 @@ function Deslizador({
       t.current = 1 - easeInOutCubic(k);
     }
     const d = t.current * direction;
+
+    // Cuánto le falta al primer producto para llegar: 1 es fuera de cuadro
+    // a la izquierda, 0 es en su lugar.
+    if (!animarEntrada) entrada.current = "hecha";
+    let faltaEntrar = 0;
+    if (entrada.current === "pendiente") {
+      faltaEntrar = 1;
+      // Mientras el .glb carga, el Suspense no monta nada y el grupo está
+      // vacío. Arrancar antes gastaría la entrada en un cuadro sin modelo.
+      if ((grupoActual.current?.children.length ?? 0) > 0) {
+        entrada.current = "corriendo";
+        inicioEntrada.current = performance.now();
+      }
+    } else if (entrada.current === "corriendo") {
+      const k = Math.min((performance.now() - inicioEntrada.current) / ENTRADA_MS, 1);
+      faltaEntrar = 1 - easeOutCubic(k);
+      if (k >= 1) entrada.current = "hecha";
+    }
 
     // Los vecinos van sobre el eje HORIZONTAL DE LA CÁMARA, no sobre el X
     // del mundo: así quedan siempre fuera de cuadro por los costados sea
@@ -401,13 +462,14 @@ function Deslizador({
     const az = azimutCamaraRef.current;
     const derechaX = Math.cos(az);
     const derechaZ = -Math.sin(az);
-    const colocar = (g: Group | null, ranura: number) => {
+    const colocar = (g: Group | null, ranura: number, extra = 0) => {
       if (!g) return;
-      const o = (ranura + d) * gap;
+      const o = (ranura + d) * gap + extra;
       g.position.set(derechaX * o, 0, derechaZ * o);
     };
     colocar(grupoAnterior.current, -1);
-    colocar(grupoActual.current, 0);
+    // Negativo es a la izquierda de la cámara: entra de izquierda a derecha.
+    colocar(grupoActual.current, 0, -faltaEntrar * distanciaEntrada);
     colocar(grupoSiguiente.current, 1);
 
     // Solo gira el modelo que está en cuadro; los vecinos esperan su turno
