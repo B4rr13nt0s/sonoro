@@ -92,16 +92,12 @@ export default async function NosotrosPage() {
           {/* Teléfono, correo e Instagram salen de las env vars de
               lib/seo/business.ts, las mismas del JSON-LD y del pie: cada
               dato se omite si su variable no está definida. */}
-          <div className="text-texto-secundario flex items-center gap-2 text-[15px] leading-[1.6]">
-            {process.env.BUSINESS_PHONE ? (
-              <>
-                <IconoTelefono />
-                {process.env.BUSINESS_PHONE}
-              </>
-            ) : (
-              "Teléfono por confirmar."
-            )}
-          </div>
+          {process.env.BUSINESS_PHONE ? (
+            <div className="text-texto-secundario flex items-center gap-2 text-[15px] leading-[1.6]">
+              <IconoTelefono />
+              {process.env.BUSINESS_PHONE}
+            </div>
+          ) : null}
           {process.env.BUSINESS_EMAIL ? (
             <div className="text-texto-secundario flex items-center gap-2 text-[15px] leading-[1.6]">
               <IconoCorreo />

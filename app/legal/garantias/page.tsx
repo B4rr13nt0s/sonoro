@@ -17,14 +17,15 @@ export default function GarantiasPage() {
     <LegalPage
       etiqueta="Legal"
       titulo="Garantías"
-      actualizado="Última actualización: 28 de septiembre de 2026"
+      actualizado="Última actualización: 29 de septiembre de 2026"
       secciones={[
         {
           titulo: "Alcance",
-          parrafos: [
-            "La garantía de Sonoro cubre únicamente desperfectos de fábrica: fallas de fabricación del producto, no daños ocurridos después de la venta.",
-          ],
+          parrafos: ["La garantía de Sonoro cubre únicamente desperfectos de fábrica."],
         },
+        // Tampoco está definido el proceso de reclamo (qué se pide, cómo se
+        // gestiona): no se escribe uno hasta que el negocio lo confirme.
+        //
         // Plazo de garantía: SIN DEFINIR (CLAUDE.md § Decisiones abiertas —
         // probablemente varía por marca, según lo que otorgue cada
         // fabricante). Insertar aquí, como una nueva sección
@@ -45,12 +46,6 @@ export default function GarantiasPage() {
           parrafos: [
             "La garantía se pierde si hay evidencia de mal uso del producto, o de una instalación incorrecta hecha fuera de Sonoro.",
             "Si el producto lo instaló un tercero y hay evidencia de que la instalación fue incorrecta, la garantía no cubre ese daño.",
-          ],
-        },
-        {
-          titulo: "Cómo reclamar",
-          parrafos: [
-            "Escríbenos por WhatsApp con el código del producto (el que aparece como «Código» en la ficha) y tu comprobante de compra. Sonoro gestiona la solución con el fabricante o distribuidor correspondiente.",
           ],
         },
         {
