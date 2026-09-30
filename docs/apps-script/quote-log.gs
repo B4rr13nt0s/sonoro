@@ -75,6 +75,10 @@ function configurar() {
     props.setProperty('QUOTE_LOG_TOKEN', token);
   }
 
+  // La zona de la hoja decide cómo SE VE la columna Fecha. El instante que se
+  // guarda ya es exacto, pero una hoja en otra zona mostraría la hora corrida.
+  SpreadsheetApp.getActiveSpreadsheet().setSpreadsheetTimeZone(ZONA);
+
   obtenerHoja();
 
   Logger.log('QUOTE_LOG_TOKEN=' + token);
@@ -103,6 +107,10 @@ function obtenerHoja() {
     hoja.setColumnWidth(7, 240); // Origen
     hoja.getRange('D:D').setNumberFormat('#,##0.00');
   }
+
+  // La columna Fecha se ve como texto legible, en la zona de la hoja
+  // (`configurar` la deja en ZONA). En cada llamada, igual que las de texto.
+  hoja.getRange('A2:A').setNumberFormat('yyyy-mm-dd hh:mm:ss');
 
   // En cada llamada, no solo al crear la hoja: si alguien cambia el formato de
   // una de estas columnas a mano, la siguiente escritura lo repone. Es barato
@@ -208,8 +216,10 @@ function esReenvioReciente(hoja, ref, unidades, subtotal) {
     if (String(fila[1]).trim() !== ref) continue;
     if (Number(fila[2]) !== Number(unidades)) continue;
     if (Number(fila[3]) !== Number(subtotal)) continue;
-    // La columna Fecha puede volver como Date (si la hoja la interpretó) o
-    // como texto; las dos se entienden con new Date(...).
+    // La columna Fecha vuelve como Date. Las filas escritas antes de septiembre
+    // de 2026 pueden traer texto ('yyyy-MM-dd HH:mm:ss', interpretado en la zona
+    // de la hoja): se entienden con new Date(...) igual, y como caducan en
+    // minutos no importa que ese texto sea aproximado.
     const fecha = fila[0] instanceof Date ? fila[0] : new Date(String(fila[0]).replace(' ', 'T'));
     if (!isNaN(fecha.getTime()) && fecha.getTime() >= limite) return true;
   }
@@ -258,7 +268,14 @@ function doPost(e) {
 
     // Fecha: se usa la del servidor, no la que manda el cliente.
     // El reloj del navegador no es una fuente de verdad.
-    const fecha = Utilities.formatDate(new Date(), ZONA, 'yyyy-MM-dd HH:mm:ss');
+    //
+    // Va como FECHA (Date) y no como texto formateado: un texto lo interpreta
+    // la hoja en SU zona horaria, y si no era la de Guatemala el instante que
+    // quedaba guardado se corría horas — esReenvioReciente() lo comparaba
+    // contra Date.now() y dejaba pasar los reenvíos, o descartaba pedidos
+    // legítimos. Un Date es un instante exacto en cualquier zona; la columna
+    // solo le da el formato para mostrarlo.
+    const fecha = new Date();
 
     let unidades = 0;
     const lineas = [];
