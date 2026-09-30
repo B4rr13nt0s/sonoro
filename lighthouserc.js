@@ -37,7 +37,7 @@ const PRESUPUESTO = {
 //
 // Lo que Lighthouse asierta no es ese valor observado sino una ESTIMACIÓN
 // para un celular lento, y esa estimación le suma el trabajo del hilo
-// principal: los mismos 176 s del carrusel. Resultado: el número subía de
+// principal: los mismos 167 s del carrusel. Resultado: el número subía de
 // 3.19 s a 3.40 s entre dos corridas en las que la portada DESCARGABA MENOS
 // que antes (las fotos de categorías salieron de la carga inicial y el canvas
 // 3D dejó de cargarse dentro de la hidratación). Dejó de describir la carga

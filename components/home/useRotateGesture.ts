@@ -107,6 +107,11 @@ export const SIN_PENDIENTE: GestoPendiente = {
   dPanY: 0,
 };
 
+/** ¿El evento nació en un enlace o botón del cuadro? */
+function esInteractivo(objetivo: EventTarget): boolean {
+  return objetivo instanceof Element && objetivo.closest("a, button") !== null;
+}
+
 /** Qué está haciendo el gesto en curso. */
 type Modo = "indefinido" | "rotar" | "desplazar" | "scroll";
 
@@ -127,6 +132,12 @@ export function useRotateGesture(
   onGestureEnd: () => void,
   /** Input suelto sin extremos claros (la rueda): reinicia la cuenta. */
   onInteraction: () => void,
+  /**
+   * La rueda solo se engancha si hay algo que acercar. Sin canvas (WebGL que
+   * falla, o aún no cargado) el `preventDefault` le quitaba a la página el
+   * scroll con la rueda por encima del cuadro, a cambio de nada.
+   */
+  rueda = true,
 ): RotateGesture {
   const pendienteRef = useRef<GestoPendiente>({ ...SIN_PENDIENTE });
   const activos = useRef(new Map<number, { x: number; y: number }>());
@@ -273,6 +284,11 @@ export function useRotateGesture(
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLElement>) => {
+      // Enlaces y botones del cuadro (categoría, flechas, puntos) son de
+      // ellos: un clic ahí no es un gesto sobre el modelo. Además, si el menú
+      // contextual nativo se abre, el `pointerup` puede no llegar nunca y
+      // quedaría un puntero fantasma en `activos`.
+      if (esInteractivo(e.target)) return;
       activos.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
       escuchar();
 
@@ -315,7 +331,7 @@ export function useRotateGesture(
    */
   useEffect(() => {
     const nodo = contenedorRef.current;
-    if (!nodo) return;
+    if (!nodo || !rueda) return;
     const alGirarRueda = (e: WheelEvent) => {
       if (e.deltaY === 0) return;
       if (e.cancelable) e.preventDefault();
@@ -324,11 +340,14 @@ export function useRotateGesture(
     };
     nodo.addEventListener("wheel", alGirarRueda, { passive: false });
     return () => nodo.removeEventListener("wheel", alGirarRueda);
-  }, [contenedorRef, onInteraction]);
+  }, [contenedorRef, onInteraction, rueda]);
 
-  // El botón derecho desplaza, así que no debe abrir el menú contextual;
-  // y arrastrar sobre el canvas no debe iniciar un arrastre nativo.
-  const onContextMenu = useCallback((e: React.MouseEvent<HTMLElement>) => e.preventDefault(), []);
+  // El botón derecho desplaza, así que no debe abrir el menú contextual sobre
+  // el modelo; sobre un enlace o botón sí (abrir en pestaña nueva, copiar la
+  // dirección). Y arrastrar sobre el canvas no debe iniciar un arrastre nativo.
+  const onContextMenu = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    if (!esInteractivo(e.target)) e.preventDefault();
+  }, []);
   const onDragStart = useCallback((e: React.DragEvent<HTMLElement>) => e.preventDefault(), []);
 
   return {

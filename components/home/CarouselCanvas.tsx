@@ -11,6 +11,7 @@ import {
   FRAME_RADIUS,
   MODEL_IDS,
   MODELS,
+  PISO_ESTUDIO_3D,
   type ModelId,
 } from "@/lib/models3d.ts";
 
@@ -74,6 +75,8 @@ export interface CarouselCanvasProps {
   /** La cámara avisa que terminó de volver a la vista predeterminada. */
   alVolver: () => void;
   frameloop: "always" | "never";
+  /** El contexto WebGL ya existe: hay canvas al que mover y acercar. */
+  alCrear: () => void;
 }
 
 /**
@@ -85,6 +88,7 @@ export function CarouselCanvas(props: CarouselCanvasProps) {
   return (
     <Canvas
       frameloop={props.frameloop}
+      onCreated={props.alCrear}
       // Techo en 2: en pantallas de DPR 3 el costo se triplica sin
       // ganancia perceptible a este tamaño de modelo.
       dpr={[1, 2]}
@@ -266,7 +270,7 @@ function Escena({
             brillo general del producto, que era el pedido. */}
         <Lightformer
           intensity={1}
-          color="#33333a"
+          color={PISO_ESTUDIO_3D}
           form="rect"
           position={[0, -5, 0]}
           scale={[14, 14, 1]}

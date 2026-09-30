@@ -513,7 +513,7 @@ Durante un arrastre, `pointermove` y `pointerup` se escuchan en `window`: el ges
 
 #### Zoom
 
-**La rueda va enganchada a mano, no por `onWheel` de React.** React registra los listeners de `wheel` en la raíz como PASIVOS, y en un listener pasivo `preventDefault()` no hace nada: el zoom ocurría y la página scrolleaba al mismo tiempo. Con `{ passive: false }` sobre el contenedor, la rueda encima del carrusel hace zoom y nada más. Consecuencia asumida: con el cursor sobre el cuadro la rueda no scrollea la página; hay que salir del cuadro.
+**La rueda va enganchada a mano, no por `onWheel` de React.** React registra los listeners de `wheel` en la raíz como PASIVOS, y en un listener pasivo `preventDefault()` no hace nada: el zoom ocurría y la página scrolleaba al mismo tiempo. Con `{ passive: false }` sobre el contenedor, la rueda encima del carrusel hace zoom y nada más. Consecuencia asumida: con el cursor sobre el cuadro la rueda no scrollea la página; hay que salir del cuadro. Solo mientras hay canvas vivo (`onCreated`): si el contexto WebGL falla (`SinCanvasSiFalla`) o aún no carga, ni la rueda ni los gestos se arman, porque `volviendo` solo termina cuando la cámara lo avisa. Los enlaces y botones del cuadro quedan fuera del gesto y conservan su menú contextual.
 
 El paso es **fijo, 1.5% por evento, mirando solo el signo** de `deltaY`. Escalarlo con la magnitud —lo que hace OrbitControls— salta de tope a tope en un solo tic en los mouse que mandan deltas grandes. Muchos mouse y trackpads mandan varios eventos por muesca, así que el paso tiene que ser chico.
 

@@ -11,7 +11,10 @@ import { Component, type ReactNode } from "react";
  * «Application error». Con esto se pierde solo el modelo: el cuadro queda con
  * su fondo, y la categoría, las flechas y los enlaces siguen funcionando.
  */
-export class SinCanvasSiFalla extends Component<{ children: ReactNode }, { fallo: boolean }> {
+export class SinCanvasSiFalla extends Component<
+  { children: ReactNode; alFallar?: () => void },
+  { fallo: boolean }
+> {
   state = { fallo: false };
 
   static getDerivedStateFromError() {
@@ -20,6 +23,7 @@ export class SinCanvasSiFalla extends Component<{ children: ReactNode }, { fallo
 
   componentDidCatch(error: unknown) {
     console.error("[carrusel 3D] no se pudo dibujar el modelo:", error);
+    this.props.alFallar?.();
   }
 
   render() {

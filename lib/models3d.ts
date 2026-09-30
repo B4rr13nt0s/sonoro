@@ -157,3 +157,8 @@ export const DRACO_DECODER_PATH = "/draco/";
 // mano en el componente (CLAUDE.md § Sistema visual). No es un token de
 // interfaz: three.js no lee las variables CSS de globals.css.
 export const FONDO_ESTUDIO_3D = "#8e8e94";
+
+// El piso oscuro del estudio (el Lightformer de abajo): la segunda perilla en
+// orden de importancia, la que hace que el metal se lea como metal y no como
+// plástico gris. Mismo criterio que el ciclorama: con nombre acá, no a mano.
+export const PISO_ESTUDIO_3D = "#33333a";

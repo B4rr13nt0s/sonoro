@@ -91,6 +91,11 @@ export function ProductCarousel3D() {
   // las flechas o los puntos: con el anuncio en cada vuelta, un lector de
   // pantalla repetía «3 / 9» cada 16 s sin fin.
   const [conFoco, setConFoco] = useState(false);
+  // Hay canvas vivo: se creó su contexto WebGL y no ha fallado. Sin él el
+  // cuadro no tiene nada que girar ni acercar, y los gestos (la rueda, que
+  // le quita el scroll a la página) no deben armarse: además `volviendo` solo
+  // termina cuando la cámara lo avisa, y sin cámara el ciclo se quedaría ahí.
+  const [canvasVivo, setCanvasVivo] = useState(false);
   const [cambioManual, setCambioManual] = useState(false);
 
   const contenedor = useRef<HTMLDivElement>(null);
@@ -118,7 +123,10 @@ export function ProductCarousel3D() {
     beginGesture,
     endGesture,
     notifyInteraction,
+    canvasVivo,
   );
+  const alCrearCanvas = useCallback(() => setCanvasVivo(true), []);
+  const alFallarCanvas = useCallback(() => setCanvasVivo(false), []);
 
   // Navegación manual: se salta al producto pedido y el ciclo arranca de
   // cero. La cámara repone la vista predeterminada al ver que cambió el
@@ -141,9 +149,12 @@ export function ProductCarousel3D() {
   useEffect(() => {
     const nodo = contenedor.current;
     if (!nodo) return;
-    const observer = new IntersectionObserver(([entrada]) => setEnCuadro(entrada.isIntersecting), {
-      threshold: 0.1,
-    });
+    // Con varios cambios en cola (entró y salió entre dos avisos) manda el
+    // ÚLTIMO: el primero es el más viejo.
+    const observer = new IntersectionObserver(
+      (entradas) => setEnCuadro(entradas[entradas.length - 1].isIntersecting),
+      { threshold: 0.1 },
+    );
     observer.observe(nodo);
     return () => observer.disconnect();
   }, []);
@@ -173,8 +184,8 @@ export function ProductCarousel3D() {
       // rotar o scrollear la toma useRotateGesture en los primeros píxeles
       // del arrastre.
       style={{ touchAction: "pan-y" }}
-      className={`bg-fondo-alt relative mt-7 w-full cursor-grab touch-pan-y overflow-hidden rounded-t-2xl select-none active:cursor-grabbing ${ALTO}`}
-      {...handlers}
+      className={`bg-fondo-alt relative mt-7 w-full touch-pan-y overflow-hidden rounded-t-2xl select-none ${canvasVivo ? "cursor-grab active:cursor-grabbing" : ""} ${ALTO}`}
+      {...(canvasVivo ? handlers : {})}
       // Solo el foco de TECLADO (:focus-visible) pausa el avance. Con
       // cualquier foco, un clic del mouse en una flecha —que le da el foco al
       // botón— congelaba el carrusel entero: el producto nuevo no giraba
@@ -185,7 +196,7 @@ export function ProductCarousel3D() {
       }}
     >
       {canvasListo ? (
-        <SinCanvasSiFalla>
+        <SinCanvasSiFalla alFallar={alFallarCanvas}>
           <CarouselCanvas
             index={index}
             direction={direction}
@@ -195,6 +206,7 @@ export function ProductCarousel3D() {
             pendienteRef={pendienteRef}
             alVolver={alVolver}
             frameloop={frameloop}
+            alCrear={alCrearCanvas}
           />
         </SinCanvasSiFalla>
       ) : null}
@@ -221,11 +233,14 @@ export function ProductCarousel3D() {
       </div>
 
       {/* Abajo a la izquierda: en qué producto vamos */}
-      <div
-        aria-live={cambioManual ? "polite" : "off"}
-        className="text-texto-terciario pointer-events-none absolute bottom-0 left-0 p-5 font-mono text-[11px] tracking-[0.14em] uppercase sm:p-7"
-      >
+      <div className="text-texto-terciario pointer-events-none absolute bottom-0 left-0 p-5 font-mono text-[11px] tracking-[0.14em] uppercase sm:p-7">
         {index + 1} / {total}
+      </div>
+      {/* Región viva SIEMPRE en el DOM y solo con texto cuando el cambio lo
+          pidió el usuario: cambiar `aria-live` en el mismo commit que el texto
+          hacía que la primera vez no se anunciara y la siguiente automática sí. */}
+      <div role="status" aria-live="polite" className="sr-only">
+        {cambioManual ? `${index + 1} de ${total}` : ""}
       </div>
 
       {/* Abajo a la derecha: puntos y flechas */}
