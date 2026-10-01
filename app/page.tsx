@@ -454,7 +454,7 @@ export default async function Home() {
       </section>
 
       {/* Consulta */}
-      <section className="flex flex-col gap-4 px-6 pb-16 sm:flex-row sm:px-12 sm:pb-24">
+      <section className="flex flex-col gap-4 px-6 pt-16 pb-16 sm:flex-row sm:px-12 sm:pt-22 sm:pb-24">
         <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
           <div className="text-26 font-semibold tracking-[-0.025em]">Consulta existencias</div>
           <div className="text-texto-secundario text-[15px] leading-[1.55]">
