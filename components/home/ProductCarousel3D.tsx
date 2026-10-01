@@ -89,7 +89,7 @@ export function ProductCarousel3D() {
   // de lectura; el modelo sí sigue girando—,
   // y el contador solo se anuncia cuando el cambio lo pidió el usuario con
   // las flechas o los puntos: con el anuncio en cada vuelta, un lector de
-  // pantalla repetía «3 / 9» cada 16 s sin fin.
+  // pantalla repetía «3 / 9» cada 12 s sin fin.
   const [conFoco, setConFoco] = useState(false);
   // Hay canvas vivo: se creó su contexto WebGL y no ha fallado. Sin él el
   // cuadro no tiene nada que girar ni acercar, y los gestos (la rueda, que

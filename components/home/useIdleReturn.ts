@@ -2,24 +2,25 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { PLAN_CICLO, RelojFase, type FaseCarrusel } from "./ciclo.ts";
+import { esperaDeFaseMs, PLAN_CICLO, RelojFase, type FaseCarrusel } from "./ciclo.ts";
 
-export { ESPERA_MS, GIRO_MS, anguloDelCiclo, type FaseCarrusel } from "./ciclo.ts";
+export { ESPERA_CORTA_MS, ESPERA_MS, GIRO_MS, anguloDelCiclo, type FaseCarrusel } from "./ciclo.ts";
 
 /**
  * Ciclo del carrusel. Cada producto pasa por el mismo recorrido, y el
  * ciclo corre siempre mientras el carrusel esté a la vista:
  *
- *   espera-previa (3 s)  →  girando (10 s, una vuelta)  →
- *   espera-final (3 s)   →  siguiente producto  →  espera-previa …
+ *   espera-previa (2 s; 1 s si se llegó solo)  →  girando (10 s)  →
+ *   espera-final (1 s; 2 s si el usuario tocó el modelo)  →
+ *   siguiente producto  →  espera-previa …
  *
  * Y si el usuario toma el modelo:
  *
- *   interactuando  →  (3 s desde que SUELTA)  →  volviendo (≈0.8 s)  →
+ *   interactuando  →  (2 s desde que SUELTA)  →  volviendo (≈0.8 s)  →
  *   girando …
  *
  * Es decir: primero se recupera la vista y el zoom predeterminados, y
- * recién entonces arranca el giro. La cuenta de los 3 s no corre mientras
+ * recién entonces arranca el giro. La cuenta de los 2 s no corre mientras
  * hay un gesto en curso — con un solo aviso en el `pointerdown`, un
  * arrastre lento más largo que ese plazo se cancelaba solo a mitad de
  * camino, y se veía como si el modelo se negara a quedarse donde uno lo
@@ -47,7 +48,7 @@ export interface CicloCarrusel {
   transcurrido: (fase: FaseCarrusel) => number;
   /** Empieza un gesto sostenido: pausa el ciclo hasta que termine. */
   beginGesture: () => void;
-  /** Termina el gesto y arranca la cuenta de los 3 s. */
+  /** Termina el gesto y arranca la cuenta de los 2 s. */
   endGesture: () => void;
   /** Input suelto (la rueda): reinicia la cuenta si no hay gesto activo. */
   notifyInteraction: () => void;
@@ -91,6 +92,10 @@ export function useCicloCarrusel({
   );
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const gestoActivo = useRef(false);
+  // Deciden qué espera corresponde (esperaDeFaseMs). Refs y no estado: se
+  // escriben justo antes de `ir()`, que ya pide el render cuyo efecto los lee.
+  const llegoSolo = useRef(false);
+  const interactuo = useRef(false);
   const onAvanzarRef = useRef(onAvanzar);
   useEffect(() => {
     onAvanzarRef.current = onAvanzar;
@@ -113,15 +118,21 @@ export function useCicloCarrusel({
 
   const beginGesture = useCallback(() => {
     gestoActivo.current = true;
+    interactuo.current = true;
+    llegoSolo.current = false;
     ir("interactuando");
   }, [ir]);
 
   const endGesture = useCallback(() => {
     gestoActivo.current = false;
+    interactuo.current = true;
+    llegoSolo.current = false;
     ir("interactuando");
   }, [ir]);
 
   const notifyInteraction = useCallback(() => {
+    interactuo.current = true;
+    llegoSolo.current = false;
     if (gestoActivo.current) {
       limpiar();
       return;
@@ -138,22 +149,26 @@ export function useCicloCarrusel({
   const alVolver = useCallback(() => {
     if (reloj.fase !== "volviendo") return;
     // La vista ya está en su sitio: el giro arranca acá, sin esperar de
-    // nuevo los 3 s (esos ya pasaron antes de empezar a volver). Con
+    // nuevo los 2 s (esos ya pasaron antes de empezar a volver). Con
     // prefers-reduced-motion no hay giro automático: el modelo se queda
     // quieto en la vista predeterminada, y como con reduced motion no hay
     // plazos (efecto de abajo), ahí se queda hasta el próximo gesto.
     ir(reducedMotion ? "espera-previa" : "girando");
   }, [ir, reducedMotion, reloj]);
 
+  // El usuario pidió otro producto: espera larga, y el modelo nuevo no
+  // cuenta como tocado.
   const reiniciar = useCallback(() => {
     gestoActivo.current = false;
+    interactuo.current = false;
+    llegoSolo.current = false;
     ir("espera-previa");
   }, [ir]);
 
   // Mientras el carrusel no está a la vista, el tiempo de la fase no corre:
   // si corriera, al volver después de una pausa larga el modelo aparecía
   // clavado al final de la vuelta (el ángulo ya pasado de largo) y se
-  // quedaba quieto el giro entero más la espera final, ~13 s.
+  // quedaba quieto el giro entero más la espera final, ~11 s.
   //
   // Lo mismo con el avance en pausa (foco del teclado adentro) durante la
   // fase que avanza: si el tiempo corriera, al salir el foco el plazo ya
@@ -195,9 +210,19 @@ export function useCicloCarrusel({
 
     // Lo que FALTA de la fase, no el plazo entero: al reanudar tras una
     // pausa, la fase ya había consumido parte de su tiempo.
-    const restante = Math.max(0, plan.esperaMs - transcurrido(fase));
+    const espera = esperaDeFaseMs(fase, {
+      llegoSolo: llegoSolo.current,
+      interactuo: interactuo.current,
+    });
+    const restante = Math.max(0, espera - transcurrido(fase));
     timer.current = setTimeout(() => {
-      if (plan.avanza) onAvanzarRef.current();
+      if (plan.avanza) {
+        // Avanza el tiempo, no el usuario: el producto que entra es nuevo y
+        // nadie lo ha tocado.
+        llegoSolo.current = true;
+        interactuo.current = false;
+        onAvanzarRef.current();
+      }
       ir(plan.siguiente);
     }, restante);
   }, [fase, cambios, activo, reducedMotion, pausarAvance, ir, limpiar, reloj, transcurrido]);

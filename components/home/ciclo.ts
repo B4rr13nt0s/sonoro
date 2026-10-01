@@ -4,12 +4,14 @@
  * Cada producto recorre siempre lo mismo mientras el carrusel esté a la
  * vista:
  *
- *   espera-previa (3 s)  →  girando (10 s, una vuelta completa)  →
- *   espera-final (3 s)   →  [avanza]  →  espera-previa …
+ *   espera-previa (2 s; 1 s si se llegó solo)  →
+ *   girando (10 s, una vuelta completa)  →
+ *   espera-final (1 s; 2 s si el usuario tocó el modelo)  →
+ *   [avanza]  →  espera-previa …
  *
  * Y si el usuario toma el modelo:
  *
- *   interactuando  →  (3 s desde que SUELTA)  →  volviendo  →  girando …
+ *   interactuando  →  (2 s desde que SUELTA)  →  volviendo  →  girando …
  *
  * O sea: primero se recupera la vista y el zoom predeterminados, y recién
  * entonces arranca el giro.
@@ -22,8 +24,20 @@
 export type FaseCarrusel =
   "interactuando" | "volviendo" | "espera-previa" | "girando" | "espera-final";
 
-/** Quietud en la vista predeterminada, antes y después de cada vuelta. */
-export const ESPERA_MS = 3000;
+/**
+ * Quietud en la vista predeterminada antes de girar, y tras soltar el modelo
+ * antes de volver. También es la espera de un producto al que se llegó por
+ * pedido del usuario (flecha o punto).
+ */
+export const ESPERA_MS = 2000;
+
+/**
+ * La espera corta, para cuando nadie tocó nada: el producto al que se llegó
+ * solo, por el paso del tiempo, y el final de una vuelta que el usuario no
+ * interrumpió. Sin interacción, el carrusel no tiene por qué quedarse quieto
+ * tanto como cuando alguien lo está mirando de cerca.
+ */
+export const ESPERA_CORTA_MS = 1000;
 
 /** Lo que tarda una vuelta completa del modelo. */
 export const GIRO_MS = 10000;
@@ -35,6 +49,31 @@ export interface PasoCiclo {
   avanza?: boolean;
 }
 
+/** Lo que decide cuál de las dos esperas corresponde. */
+export interface ContextoCiclo {
+  /** Se llegó a este producto solo, por el paso del tiempo (no por el usuario). */
+  llegoSolo: boolean;
+  /** El usuario tocó el modelo mientras estaba en este producto. */
+  interactuo: boolean;
+}
+
+/**
+ * El plazo de la fase. `PLAN_CICLO` trae el largo; las dos esperas de
+ * quietud acortan a `ESPERA_CORTA_MS` cuando nadie intervino:
+ *
+ * - `espera-previa` de un producto al que se llegó solo.
+ * - `espera-final` de una vuelta que el usuario no tocó. Si la tocó, el
+ *   modelo volvió y giró después de una interacción, y se queda el plazo
+ *   largo.
+ */
+export function esperaDeFaseMs(fase: FaseCarrusel, contexto: ContextoCiclo): number {
+  const plan = PLAN_CICLO[fase];
+  if (!plan) return 0;
+  if (fase === "espera-previa" && contexto.llegoSolo) return ESPERA_CORTA_MS;
+  if (fase === "espera-final" && !contexto.interactuo) return ESPERA_CORTA_MS;
+  return plan.esperaMs;
+}
+
 export const PLAN_CICLO: Record<FaseCarrusel, PasoCiclo | null> = {
   "espera-previa": { siguiente: "girando", esperaMs: ESPERA_MS },
   girando: { siguiente: "espera-final", esperaMs: GIRO_MS },
@@ -43,9 +82,12 @@ export const PLAN_CICLO: Record<FaseCarrusel, PasoCiclo | null> = {
   volviendo: null,
 };
 
-/** Lo que dura un producto en pantalla sin que nadie lo toque. */
+/**
+ * Lo que dura un producto en pantalla sin que nadie lo toque, cuando se
+ * llegó a él solo: espera corta, una vuelta, espera corta.
+ */
 export function duracionProductoMs(): number {
-  return ESPERA_MS + GIRO_MS + ESPERA_MS;
+  return ESPERA_CORTA_MS + GIRO_MS + ESPERA_CORTA_MS;
 }
 
 /**
@@ -79,7 +121,7 @@ export function duracionProductoMs(): number {
  * milisegundos de la intermedia — el mismo salto. Por tipo, `girando`
  * conserva su final pase lo que pase después. Lo único que eso no distingue
  * es una vuelta de la siguiente, y no hace falta: entre dos vueltas hay por
- * lo menos 3 s y una fase (`espera-previa` o `volviendo`) que el canvas
+ * lo menos 1 s y una fase (`espera-previa` o `volviendo`) que el canvas
  * tiene que dibujar — `volviendo` solo termina cuando el canvas avisa.
  *
  * Recibe `ahora` en cada llamada en vez de leer el reloj: sin DOM, y con

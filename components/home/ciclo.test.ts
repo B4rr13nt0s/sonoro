@@ -4,7 +4,9 @@ import assert from "node:assert/strict";
 import {
   anguloDelCiclo,
   duracionProductoMs,
+  ESPERA_CORTA_MS,
   ESPERA_MS,
+  esperaDeFaseMs,
   GIRO_MS,
   PLAN_CICLO,
   RelojFase,
@@ -22,7 +24,8 @@ test("el ciclo recorre espera → giro → espera → siguiente producto", () =>
     recorrido.push(fase);
     const plan: PasoCiclo | null = PLAN_CICLO[fase];
     assert.ok(plan, `la fase ${fase} debería tener plazo`);
-    transcurrido += plan.esperaMs;
+    // Producto al que se llegó solo y que nadie tocó: las dos esperas cortas.
+    transcurrido += esperaDeFaseMs(fase, { llegoSolo: true, interactuo: false });
     if (plan.avanza) avances += 1;
     fase = plan.siguiente;
   }
@@ -31,19 +34,27 @@ test("el ciclo recorre espera → giro → espera → siguiente producto", () =>
   assert.equal(fase, "espera-previa", "tras avanzar vuelve al principio del ciclo");
   assert.equal(avances, 1, "se avanza de producto una sola vez por vuelta");
   assert.equal(transcurrido, duracionProductoMs());
-  assert.equal(transcurrido, 16_000);
+  assert.equal(transcurrido, 12_000);
 });
 
-test("la espera antes y después del giro son iguales, y el giro dura 10 s", () => {
-  assert.equal(PLAN_CICLO["espera-previa"]?.esperaMs, ESPERA_MS);
-  assert.equal(PLAN_CICLO["espera-final"]?.esperaMs, ESPERA_MS);
-  assert.equal(ESPERA_MS, 3_000);
+test("las esperas: 2 s por defecto, 1 s cuando nadie intervino, y el giro dura 10 s", () => {
+  assert.equal(ESPERA_MS, 2_000);
+  assert.equal(ESPERA_CORTA_MS, 1_000);
+  // Producto pedido por el usuario: espera larga antes de girar.
+  assert.equal(esperaDeFaseMs("espera-previa", { llegoSolo: false, interactuo: false }), 2_000);
+  // Producto al que se llegó solo: espera corta.
+  assert.equal(esperaDeFaseMs("espera-previa", { llegoSolo: true, interactuo: false }), 1_000);
+  // Vuelta sin tocar: 1 s antes de cambiar. Tocada: 2 s.
+  assert.equal(esperaDeFaseMs("espera-final", { llegoSolo: true, interactuo: false }), 1_000);
+  assert.equal(esperaDeFaseMs("espera-final", { llegoSolo: false, interactuo: true }), 2_000);
+  // Soltar el modelo: 2 s, sin importar el contexto.
+  assert.equal(esperaDeFaseMs("interactuando", { llegoSolo: true, interactuo: false }), 2_000);
   assert.equal(PLAN_CICLO.girando?.esperaMs, GIRO_MS);
   assert.equal(GIRO_MS, 10_000);
 });
 
 test("tras soltar el modelo se recupera la vista antes de girar", () => {
-  // 3 s desde que se suelta, y recién ahí empieza a volver la cámara.
+  // 2 s desde que se suelta, y recién ahí empieza a volver la cámara.
   assert.deepEqual(PLAN_CICLO.interactuando, { siguiente: "volviendo", esperaMs: ESPERA_MS });
   // 'volviendo' no termina por reloj: la corta el rig cuando llegó a destino.
   assert.equal(PLAN_CICLO.volviendo, null);

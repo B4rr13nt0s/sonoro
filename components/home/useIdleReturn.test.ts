@@ -10,7 +10,7 @@ import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { JSDOM } from "jsdom";
 
-import { ESPERA_MS, GIRO_MS } from "./ciclo.ts";
+import { ESPERA_CORTA_MS, ESPERA_MS, GIRO_MS } from "./ciclo.ts";
 import { useCicloCarrusel, type CicloCarrusel } from "./useIdleReturn.ts";
 
 type Props = { activo: boolean; pausarAvance: boolean };
@@ -113,9 +113,39 @@ test("useCicloCarrusel: espera, gira, espera y pasa al siguiente", async () => {
     await pasar(GIRO_MS);
     assert.equal(estado().fase, "espera-final");
     assert.equal(avances(), 0);
-    await pasar(ESPERA_MS);
+    // Nadie tocó el modelo: solo 1 s entre que deja de girar y el siguiente.
+    await pasar(ESPERA_CORTA_MS);
     assert.equal(avances(), 1);
     assert.equal(estado().fase, "espera-previa");
+
+    // Al producto al que llegó solo le basta 1 s para empezar a girar.
+    await pasar(ESPERA_CORTA_MS);
+    assert.equal(estado().fase, "girando");
+  });
+});
+
+test("useCicloCarrusel: tras una flecha espera 2 s antes de girar", async () => {
+  await conCarrusel(async ({ estado, pasar }) => {
+    await act(async () => estado().reiniciar());
+    await pasar(ESPERA_MS - 1);
+    assert.equal(estado().fase, "espera-previa");
+    await pasar(1);
+    assert.equal(estado().fase, "girando");
+  });
+});
+
+test("useCicloCarrusel: si el usuario tocó el modelo, el final de la vuelta espera 2 s", async () => {
+  await conCarrusel(async ({ estado, avances, pasar }) => {
+    await act(async () => estado().notifyInteraction());
+    await pasar(ESPERA_MS); // suelta y empieza a volver
+    await act(async () => estado().alVolver());
+    assert.equal(estado().fase, "girando");
+    await pasar(GIRO_MS);
+    assert.equal(estado().fase, "espera-final");
+    await pasar(ESPERA_CORTA_MS);
+    assert.equal(avances(), 0, "con interacción no basta 1 s");
+    await pasar(ESPERA_MS - ESPERA_CORTA_MS);
+    assert.equal(avances(), 1);
   });
 });
 
@@ -140,11 +170,11 @@ test("useCicloCarrusel: con el avance en pausa sigue girando pero no pasa al sig
     const alSoltar = armados();
     assert.ok(alSoltar.length > 0, "se arma el plazo de la espera final");
     assert.deepEqual(
-      alSoltar.filter((ms) => ms !== ESPERA_MS),
+      alSoltar.filter((ms) => ms !== ESPERA_CORTA_MS),
       [],
       `plazos armados al soltar el foco: ${alSoltar.join(", ")}`,
     );
-    await pasar(ESPERA_MS - 1);
+    await pasar(ESPERA_CORTA_MS - 1);
     assert.equal(avances(), 0);
     await pasar(1);
     assert.equal(avances(), 1);
