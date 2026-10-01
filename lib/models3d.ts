@@ -36,6 +36,13 @@ export interface ModelEntry {
   // hacia −Z (`front=` en su script de Blender). El antiguo `giroBase`
   // corregía acá lo que cada .glb había decidido por su cuenta. Si un
   // producto aparece de espaldas, se arregla el `front` del script.
+  // Zoom por defecto de ESTE modelo, por encima de lo que le da displayScale:
+  // multiplica la escala con la que se dibuja, y nada más —no toca el
+  // encuadre de la cámara ni FRAME_RADIUS, que dependen del modelo más
+  // grande—. Para un modelo chico al que el cuadro le queda grande. Sin
+  // valor es 1. Úsese con cuidado: pasado de ~1.4 en el speaker el producto
+  // empieza a acercarse a las esquinas del chrome.
+  ajusteVista?: number;
   label: string; // etiqueta visible, va en el DOM
   href: CategoriaHref; // ruta de la categoría en el catálogo
 }
@@ -65,6 +72,7 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     displayScale: 1.4699,
     radius: 0.0825,
     height: 0.055,
+    ajusteVista: 1.25,
     label: "Bocinas",
     href: "/catalogo/bocinas",
   },
@@ -136,6 +144,10 @@ export const MODELS: Record<ModelId, ModelEntry> = {
 
 export const FRAME_RADIUS = 0.248; // radio horizontal máximo ya escalado
 export const FRAME_HEIGHT = 0.1937; // altura máxima ya escalada
+
+/** La escala con la que se dibuja el modelo: displayScale por su ajuste de vista. */
+export const escalaDeVista = (id: ModelId) =>
+  MODELS[id].displayScale * (MODELS[id].ajusteVista ?? 1);
 
 export const modelUrl = (id: ModelId) => `/models/${MODELS[id].archivo}`;
 

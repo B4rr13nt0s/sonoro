@@ -456,6 +456,8 @@ Entre el más chico (speaker, 165 mm) y el más grande (sound-deadening, 395 mm)
 
 `displayScale` es la **escala real elevada a 0.65**, normalizada al modelo más grande: conserva el orden de tamaños y acerca los extremos. Si alguien regenera el manifiesto sin saber del exponente, los tamaños relativos se rompen sin que nada falle ni avise.
 
+Un modelo chico puede llevar además `ajusteVista` en `lib/models3d.ts` (hoy el `speaker`, 1.25): multiplica solo la escala con la que se dibuja (`escalaDeVista`), sin tocar `displayScale` ni el encuadre de cámara, que dependen del modelo más grande. No lo calcula `manifest.py`: es un ajuste a ojo.
+
 `FRAME_RADIUS` (0.248) y `FRAME_HEIGHT` (0.1937) son el radio y la altura ya escalados del modelo más grande (hoy `sound-deadening`, con `displayScale` 1.0000; los valores vigentes viven en `lib/models3d.ts`), y de ahí sale el encuadre de cámara. `FRAME_RADIUS` es el radio del **cilindro** que barre el modelo al girar sobre Y — verificado midiendo los vértices de los nueve `.glb` en el navegador. Para comprobarlo no sirve `Box3.setFromObject`: transforma la caja de cada geometría en vez de sus vértices, así que sobre un modelo girado devuelve una caja inflada por la diagonal (hasta √2 de más).
 
 ### Cámara del carrusel

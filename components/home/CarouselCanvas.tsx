@@ -12,6 +12,7 @@ import {
   MODEL_IDS,
   MODELS,
   PISO_ESTUDIO_3D,
+  escalaDeVista,
   type ModelId,
 } from "@/lib/models3d.ts";
 
@@ -335,7 +336,7 @@ function Escena({
           fijo en -FRAME_HEIGHT/2 solo el subwoofer tocaba su sombra, y los
           modelos bajos flotaban varios centímetros encima. */}
       <ContactShadows
-        position={[0, -(MODELS[actual].height * MODELS[actual].displayScale) / 2, 0]}
+        position={[0, -(MODELS[actual].height * escalaDeVista(actual)) / 2, 0]}
         scale={FRAME_RADIUS * 6}
         blur={2.6}
         far={FRAME_HEIGHT}

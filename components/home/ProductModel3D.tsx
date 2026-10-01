@@ -5,7 +5,13 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import type { Group } from "three";
 
-import { DRACO_DECODER_PATH, MODELS, modelUrl, type ModelId } from "@/lib/models3d.ts";
+import {
+  DRACO_DECODER_PATH,
+  MODELS,
+  escalaDeVista,
+  modelUrl,
+  type ModelId,
+} from "@/lib/models3d.ts";
 
 export interface ProductModel3DProps {
   id: ModelId;
@@ -47,12 +53,13 @@ export function ProductModel3D({ id, offsetX = 0, anguloRef }: ProductModel3DPro
   // Los .glb apoyan en Y = 0 (Ymin = 0 es convención del pipeline). Para
   // que el modelo quede centrado vertical en el cuadro hay que bajarlo
   // media altura ya escalada.
-  const y = -(entry.height * entry.displayScale) / 2;
+  const escala = escalaDeVista(id);
+  const y = -(entry.height * escala) / 2;
 
   return (
     <group position={[offsetX, 0, 0]}>
       <group ref={spinner}>
-        <primitive object={model} scale={entry.displayScale} position={[0, y, 0]} />
+        <primitive object={model} scale={escala} position={[0, y, 0]} />
       </group>
     </group>
   );

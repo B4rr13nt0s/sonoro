@@ -427,7 +427,7 @@ export default async function Home() {
       ) : null}
 
       {/* Producto original */}
-      <section className="bg-negro flex flex-col gap-12 px-6 py-16 text-white sm:px-12 sm:py-24">
+      <section className="bg-negro flex flex-col gap-12 px-6 py-16 text-white sm:px-12">
         <div className="flex flex-col gap-6">
           <h2 className="text-26 sm:text-38 lg:text-44 font-semibold tracking-[-0.03em]">
             Producto original, de marcas reconocidas a nivel mundial.
@@ -454,7 +454,7 @@ export default async function Home() {
       </section>
 
       {/* Consulta */}
-      <section className="flex flex-col gap-4 px-6 pt-16 pb-16 sm:flex-row sm:px-12 sm:pt-22 sm:pb-24">
+      <section className="flex flex-col gap-4 px-6 pt-16 pb-16 sm:flex-row sm:px-12">
         <div className="bg-fondo-alt rounded-card-lg flex flex-1 flex-col gap-3 p-10">
           <div className="text-26 font-semibold tracking-[-0.025em]">Consulta existencias</div>
           <div className="text-texto-secundario text-[15px] leading-[1.55]">
