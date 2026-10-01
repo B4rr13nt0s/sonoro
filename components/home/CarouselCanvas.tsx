@@ -37,11 +37,19 @@ const MARGEN = 1.1;
 const TRANSICION_MS = 600;
 /**
  * Duración de la entrada del primer producto: al abrir la página, el modelo
- * que se ve primero llega deslizándose de izquierda a derecha, desde fuera
- * de cuadro hasta el centro. Más larga que la transición entre slides y con
- * `easeOutCubic` —frena al llegar—: es una llegada, no un cambio de slide.
+ * que se ve primero llega deslizándose de derecha a izquierda —el mismo
+ * sentido en que avanza el carrusel—, desde fuera de cuadro hasta el centro.
+ * Más larga que la transición entre slides y con `easeOutCubic` —frena al
+ * llegar—: es una llegada, no un cambio de slide.
  */
 const ENTRADA_MS = 900;
+/**
+ * Lo más que avanza la entrada en un solo frame, en segundos. La entrada no
+ * se mide con el reloj de pared sino sumando el delta de cada frame con este
+ * tope: un frame trabado (shaders que se compilan, la pestaña que se
+ * duerme) la frena en vez de saltársela.
+ */
+const PASO_MAX_ENTRADA_S = 0.05;
 
 /**
  * Constante del suavizado del zoom, en 1/s. La cámara no salta a la
@@ -85,7 +93,7 @@ export interface CarouselCanvasProps {
   /** El contexto WebGL ya existe: hay canvas al que mover y acercar. */
   alCrear: () => void;
   /**
-   * El primer producto entra deslizándose desde la izquierda (ENTRADA_MS).
+   * El primer producto entra deslizándose desde la derecha (ENTRADA_MS).
    * `false` con `prefers-reduced-motion`: aparece ya en su lugar.
    */
   animarEntrada: boolean;
@@ -211,7 +219,7 @@ function useEncuadre(chrome: { v: number; h: number }) {
    * Desde dónde entra el primer producto, sobre el eje horizontal de la
    * cámara: lo justo para que el modelo más grande quede entero fuera de
    * cuadro en la vista de reposo. Un punto a esa distancia lateral y a la
-   * profundidad del centro queda a `radio` del plano izquierdo del frustum
+   * profundidad del centro queda a `radio` del plano lateral del frustum
    * (`hypot` pasa la distancia lateral a distancia perpendicular al plano).
    * El radio es el de la esfera que envuelve al cilindro, porque el plano va
    * inclinado junto con la cámara.
@@ -399,18 +407,29 @@ function Deslizador({
   const anguloBase = useRef(0);
   const faseColocada = useRef(fase);
   /**
-   * Entrada del primer producto (ENTRADA_MS). Queda «pendiente» —con el
-   * modelo esperando fuera de cuadro, a la izquierda— hasta el primer frame
-   * en que su .glb ya está montado. Y como con `frameloop="never"` no corre
-   * ningún frame, si el carrusel todavía no está a la vista la entrada
-   * espera a que lo esté: se ve cuando el visitante llega, no se gasta
-   * mientras carga ni fuera de pantalla. Cualquier cambio de producto la da
-   * por hecha: desde ahí manda la transición normal.
+   * Entrada del primer producto (ENTRADA_MS). El modelo espera fuera de
+   * cuadro, a la derecha:
+   *
+   *   pendiente   hasta el primer frame en que su .glb ya está montado;
+   *   compilando  mientras se compilan los shaders de la escena;
+   *   corriendo   la entrada en sí, que avanza con el delta de cada frame
+   *               (PASO_MAX_ENTRADA_S), no con el reloj de pared.
+   *
+   * La compilación previa es lo que arregla la primera visita. Fuera de
+   * cuadro el modelo no se dibuja, así que sus shaders se compilaban recién
+   * cuando entraba: en un Chromium sin caché de shaders ese frame tardaba
+   * ~0.7 s (medido), la entrada medida con el reloj ya había terminado, y el
+   * producto aparecía de golpe en el centro. En la segunda visita el
+   * navegador ya tenía los shaders en caché y por eso sí se veía.
+   *
+   * Y como con `frameloop="never"` no corre ningún frame, si el carrusel
+   * todavía no está a la vista la entrada espera a que lo esté. Cualquier
+   * cambio de producto la da por hecha: desde ahí manda la transición normal.
    */
-  const entrada = useRef<"pendiente" | "corriendo" | "hecha">("pendiente");
-  const inicioEntrada = useRef(0);
+  const entrada = useRef<"pendiente" | "compilando" | "corriendo" | "hecha">("pendiente");
+  const avanceEntrada = useRef(0);
 
-  useFrame(() => {
+  useFrame((estado, delta) => {
     if (indiceColocado.current !== index) {
       indiceColocado.current = index;
       t.current = 1;
@@ -431,19 +450,28 @@ function Deslizador({
     const d = t.current * direction;
 
     // Cuánto le falta al primer producto para llegar: 1 es fuera de cuadro
-    // a la izquierda, 0 es en su lugar.
+    // a la derecha, 0 es en su lugar.
     if (!animarEntrada) entrada.current = "hecha";
     let faltaEntrar = 0;
-    if (entrada.current === "pendiente") {
+    if (entrada.current === "pendiente" || entrada.current === "compilando") {
       faltaEntrar = 1;
       // Mientras el .glb carga, el Suspense no monta nada y el grupo está
       // vacío. Arrancar antes gastaría la entrada en un cuadro sin modelo.
-      if ((grupoActual.current?.children.length ?? 0) > 0) {
-        entrada.current = "corriendo";
-        inicioEntrada.current = performance.now();
+      if (entrada.current === "pendiente" && (grupoActual.current?.children.length ?? 0) > 0) {
+        entrada.current = "compilando";
+        // Si en el medio cambió el producto, la entrada ya está «hecha» y
+        // no se reabre. Si la compilación falla, se entra igual: dibujar
+        // compila lo que falte, como antes.
+        const arrancar = () => {
+          if (entrada.current !== "compilando") return;
+          entrada.current = "corriendo";
+          avanceEntrada.current = 0;
+        };
+        estado.gl.compileAsync(estado.scene, estado.camera).then(arrancar, arrancar);
       }
     } else if (entrada.current === "corriendo") {
-      const k = Math.min((performance.now() - inicioEntrada.current) / ENTRADA_MS, 1);
+      avanceEntrada.current += Math.min(delta, PASO_MAX_ENTRADA_S) * 1000;
+      const k = Math.min(avanceEntrada.current / ENTRADA_MS, 1);
       faltaEntrar = 1 - easeOutCubic(k);
       if (k >= 1) entrada.current = "hecha";
     }
@@ -468,8 +496,8 @@ function Deslizador({
       g.position.set(derechaX * o, 0, derechaZ * o);
     };
     colocar(grupoAnterior.current, -1);
-    // Negativo es a la izquierda de la cámara: entra de izquierda a derecha.
-    colocar(grupoActual.current, 0, -faltaEntrar * distanciaEntrada);
+    // Positivo es a la derecha de la cámara: entra de derecha a izquierda.
+    colocar(grupoActual.current, 0, faltaEntrar * distanciaEntrada);
     colocar(grupoSiguiente.current, 1);
 
     // Solo gira el modelo que está en cuadro; los vecinos esperan su turno
