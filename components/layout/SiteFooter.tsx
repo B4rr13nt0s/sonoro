@@ -51,7 +51,7 @@ export function SiteFooter() {
   const { previos, contacto } = segmentosDeContacto();
 
   return (
-    <footer className="border-borde-nav flex flex-col items-center gap-4 border-t px-6 py-10 text-center sm:px-12">
+    <footer className="border-borde-nav flex flex-col items-center gap-6 border-t px-6 py-12 text-center sm:px-12">
       {/* El lockup oficial de public/logos/, no reconstruido en código: ya
           trae la corrección óptica de las dos «s» (CLAUDE.md § El logo).
           34 px de alto como el monograma que reemplaza; el ancho sale de la
@@ -84,8 +84,8 @@ export function SiteFooter() {
           </Link>
         ))}
       </nav>
-      <div className="text-texto-terciario flex flex-col items-center gap-1.5 font-mono text-[11px]">
-        <span className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+      <div className="text-texto-terciario flex flex-col items-center gap-3 font-mono text-[11px]">
+        <span className="flex flex-wrap items-center justify-center gap-x-2 gap-y-2">
           {previos.map((segmento, i) => (
             <span key={segmento}>
               {segmento}

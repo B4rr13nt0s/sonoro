@@ -17,6 +17,7 @@
     "test:e2e": "playwright test",
     "import:catalog": "tsx scripts/import-catalog.ts",
     "fotos:sin-fondo": "node scripts/fotos/quitar-fondo.mjs",
+    "fotos:logos": "node scripts/fotos/logos-marcas.mjs",
     "prepare": "husky"
   },
   "lint-staged": {

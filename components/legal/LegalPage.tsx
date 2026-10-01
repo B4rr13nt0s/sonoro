@@ -1,7 +1,3 @@
-import Link from "next/link";
-
-import { ENLACES_LEGALES } from "@/lib/legal.ts";
-
 // Plantilla compartida por las 3 páginas de /legal/* — misma forma en las
 // tres (etiqueta, h1, fecha, secciones de título+párrafos, enlaces
 // cruzados), así que una sola plantilla evita triplicar el layout. No hay
@@ -58,24 +54,6 @@ export function LegalPage({ etiqueta, titulo, actualizado, intro, secciones }: L
             </div>
           );
         })}
-      </section>
-
-      <section className="border-borde-nav flex flex-wrap gap-5 border-t px-6 py-10 sm:px-12">
-        {ENLACES_LEGALES.map((enlace) => (
-          <Link
-            key={enlace.href}
-            href={enlace.href}
-            className="text-texto-terciario hover:text-texto-secundario font-mono text-[11px] tracking-[0.06em] uppercase"
-          >
-            {enlace.nombre}
-          </Link>
-        ))}
-        <Link
-          href="/"
-          className="text-texto-terciario hover:text-texto-secundario font-mono text-[11px] tracking-[0.06em] uppercase"
-        >
-          Inicio
-        </Link>
       </section>
     </div>
   );

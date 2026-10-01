@@ -4,6 +4,7 @@ import { MarcasScroller } from "@/components/catalog/MarcasScroller";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { IconoCorreo, IconoInstagram, IconoTelefono } from "@/components/ui/IconosContacto";
 import { listBrands } from "@/lib/catalog/index.ts";
+import { ordenarMarcas } from "@/lib/catalog/marcas.ts";
 import { buildWhatsAppUrl, WHATSAPP_NUMBER } from "@/lib/whatsapp/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 import { TEXTOS_NOSOTROS } from "@/lib/seo/textos.ts";
@@ -15,7 +16,7 @@ const MENSAJE_CONSULTA = "Hola Sonoro, quiero consultar disponibilidad de un pro
 export const metadata: Metadata = metadataPagina({ ...TEXTOS_NOSOTROS, ruta: "/nosotros" });
 
 export default async function NosotrosPage() {
-  const marcas = await listBrands();
+  const marcas = ordenarMarcas(await listBrands());
 
   return (
     <div className="flex flex-col">
@@ -29,7 +30,7 @@ export default async function NosotrosPage() {
         <p className="text-texto-secundario max-w-[700px] text-[18px] leading-[1.5] sm:text-[21px]">
           Sonoro es una empresa de audio para carro, marino y motorsports donde importamos marcas de
           calidad y renombre a nivel internacional, con el objetivo de ofrecer productos que hagan
-          de cada recorrido una experiencia excepcional.
+          que manejar se convierta en una experiencia excepcional.
         </p>
       </section>
 
@@ -42,12 +43,9 @@ export default async function NosotrosPage() {
         <div className="flex flex-col gap-4">
           <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.025em]">Cómo trabajamos</h2>
           <p className="text-texto-secundario text-[16px] leading-[1.6] sm:text-[17px]">
-            Compramos por contenedor a marcas y distribuidores autorizados, así que lo que vendemos
-            es producto nuevo con respaldo de marca. Nada de excedentes ni equipo reacondicionado.
-          </p>
-          <p className="text-texto-secundario text-[16px] leading-[1.6] sm:text-[17px]">
-            En el caso de que tengas dudas, te invitamos a nuestro showroom y ver los equipos en
-            persona.
+            Todos nuestros productos son adquiridos directamente con las marcas oficiales o
+            distribuidores autorizados. En nuestro showroom, tenemos a tu disposición una gran
+            variedad de productos en exhibición por si deseas ver nuestros equipos en persona.
           </p>
         </div>
         <div className="flex flex-col gap-4">
@@ -62,8 +60,7 @@ export default async function NosotrosPage() {
               complejo y en cuánto tiempo sigue sin definirse, así que no
               se menciona. */}
           <p className="text-texto-secundario text-[16px] leading-[1.6] sm:text-[17px]">
-            Cada producto incluye la instalación básica. Si lo que compras requiere una instalación
-            más compleja, tiene un costo adicional y te lo informamos al cerrar el pedido.
+            Todos nuestros productos incluyen instalación básica. Aplican restricciones.
           </p>
         </div>
       </section>

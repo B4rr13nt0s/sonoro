@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Fragment } from "react";
 
+import { LogoMarca } from "@/components/catalog/LogoMarca";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { FotosCategoria } from "@/components/home/FotosCategoria";
 import { ProductCarousel3D } from "@/components/home/ProductCarousel3D";
 import { CATEGORIAS_SITIO } from "@/lib/catalog/categorias.ts";
 import { listBrands, listProducts } from "@/lib/catalog/index.ts";
+import { ordenarMarcas } from "@/lib/catalog/marcas.ts";
 import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
 import { buildLocalBusinessJsonLd } from "@/lib/seo/business.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
@@ -96,11 +98,8 @@ const TARJETAS_CATEGORIA: Record<SlugCategoria, TarjetaCategoria> = {
     area: "lg:col-start-1 lg:col-span-2 lg:row-start-1 lg:row-span-2",
     columnas: 2,
     fotos: [
+      foto("MJP6C_pagina_de_inicio.webp", 'Juego de componentes MOJO Pro de 6.5" MJP6C de Memphis'),
       foto("165AS_pagina_de_inicio.webp", 'Componente Access de 6.5" 165 AS de Focal'),
-      foto(
-        "PRX6903_pagina_de_inicio.webp",
-        'Bocinas coaxiales Power Reference de 6x9" PRX6903 de Memphis',
-      ),
     ],
     direccion: "fila",
   },
@@ -108,14 +107,17 @@ const TARJETAS_CATEGORIA: Record<SlugCategoria, TarjetaCategoria> = {
     descripcion: 'De 6.5" a 15", bobina simple, doble y triple.',
     area: "lg:col-start-1 lg:row-start-3 lg:row-span-2",
     columnas: 1,
-    fotos: [foto("SRX1044_pagina_de_inicio.webp", "Subwoofer SRX1044 de Memphis")],
+    fotos: [foto("MJM812_pagina_de_inicio.webp", 'Subwoofer MOJO Mini de 8" MJM812 de Memphis')],
     direccion: "fila",
     dark: true,
     extension: {
       area: "lg:col-start-1 lg:col-span-2 lg:row-start-5 lg:row-span-2",
       columnas: 2,
       fotos: [
-        foto("VR10_pagina_de_inicio.webp", 'Subwoofer amplificado de 10" VR10 de Cerwin Vega'),
+        foto(
+          "P3D4-15_pagina_de_inicio.webp",
+          'Subwoofer Punch P3 de 15" P3D4-15 de Rockford Fosgate',
+        ),
         foto(
           "TS-W312D4_pagina_de_inicio.webp",
           'Subwoofer Champion Series 12" TS-W312D4 de Pioneer',
@@ -130,12 +132,12 @@ const TARJETAS_CATEGORIA: Record<SlugCategoria, TarjetaCategoria> = {
     columnas: 2,
     fotos: [
       foto(
-        "MJP800.4_pagina_de_inicio.webp",
-        "Amplificador MOJO Pro de 4 canales MJP800.4 de Memphis",
-      ),
-      foto(
         "R250X1_pagina_de_inicio.webp",
         "Amplificador monoblock Prime R250X1 de Rockford Fosgate",
+      ),
+      foto(
+        "MJP800.4_pagina_de_inicio.webp",
+        "Amplificador MOJO Pro de 4 canales MJP800.4 de Memphis",
       ),
     ],
     direccion: "fila",
@@ -149,7 +151,7 @@ const TARJETAS_CATEGORIA: Record<SlugCategoria, TarjetaCategoria> = {
     area: "lg:col-start-2 lg:col-span-2 lg:row-start-3 lg:row-span-2",
     columnas: 2,
     fotos: [
-      foto("DMH-Z6350BT_pagina_de_inicio.webp", 'Pantalla de 6.8" DMH-Z6350BT de Pioneer'),
+      foto("AP-6650BT_pagina_de_inicio.webp", 'Pantalla de 9" DMH-AP6650BT de Pioneer'),
       foto("DEH-S4250BT_pagina_de_inicio.webp", "Autoestéreo con CD DEH-S4250BT de Pioneer"),
     ],
     direccion: "fila",
@@ -168,12 +170,7 @@ const TARJETAS_CATEGORIA: Record<SlugCategoria, TarjetaCategoria> = {
     descripcion: "Kits de cable de 0 a 8 AWG, en cobre y CCA.",
     area: "lg:col-start-4 lg:row-start-6 lg:row-span-3",
     columnas: 1,
-    fotos: [
-      foto(
-        "CAK82_pagina_de_inicio.webp",
-        "Kit de amplificador de 2 canales calibre 8 CAK82 de Cerwin Vega",
-      ),
-    ],
+    fotos: [foto("4GKIT_pagina_de_inicio.webp", "Kit de instalación calibre 4 4GKIT de Memphis")],
     direccion: "fila",
     dark: true,
   },
@@ -183,7 +180,7 @@ const TARJETAS_CATEGORIA: Record<SlugCategoria, TarjetaCategoria> = {
     columnas: 1,
     fotos: [
       foto("CLASSIC-BULK-KIT-BLACK_pagina_de_inicio.webp", "Rollo a granel Classic de SoundSkins"),
-      foto("SILENT-STRIP_pagina_de_inicio.webp", "Tira selladora Silent Strip de SoundSkins"),
+      foto("PRO-PLUS-WORKSHOP-KIT_pagina_de_inicio.webp", "Rollo de taller Pro Plus de SoundSkins"),
     ],
     direccion: "columna",
   },
@@ -192,8 +189,11 @@ const TARJETAS_CATEGORIA: Record<SlugCategoria, TarjetaCategoria> = {
     area: "lg:col-start-1 lg:col-span-2 lg:row-start-7 lg:row-span-2",
     columnas: 2,
     fotos: [
-      foto("RCA-Y2F1MB_pagina_de_inicio.webp", "Adaptador Y RCA de 2 hembras a 1 macho de KBT"),
-      foto("ANL1_pagina_de_inicio.webp", "Portafusible tipo ANL ANL1 de Cerwin Vega"),
+      foto("DBLOCK_pagina_de_inicio.webp", "Bloque distribuidor de corriente DBLOCK de Memphis"),
+      foto(
+        "IOEM22_pagina_de_inicio.webp",
+        "Convertidor de línea de 2 canales IOEM22 de Cerwin Vega",
+      ),
     ],
     direccion: "fila",
   },
@@ -267,10 +267,11 @@ const CARACTERISTICAS = [
 ] as const;
 
 export default async function Home() {
-  const [{ items: destacados }, marcas] = await Promise.all([
+  const [{ items: destacados }, todasLasMarcas] = await Promise.all([
     listProducts({ destacado: true, activo: true, pageSize: 4 }),
     listBrands(),
   ]);
+  const marcas = ordenarMarcas(todasLasMarcas);
 
   return (
     <div className="flex flex-col">
@@ -293,9 +294,28 @@ export default async function Home() {
         </div>
         <div className="text-texto-terciario px-4 font-mono text-[11px] tracking-[0.06em]">
           Hasta 6 pagos precio contado · Producto original · Envíos gratis a todo el país. Aplican
-          restricciones según destino y volumen del pedido.
+          restricciones.
         </div>
         <ProductCarousel3D />
+      </section>
+
+      {/* Marcas: los logos llevan a la página de cada una, en el orden del
+          negocio (lib/catalog/marcas.ts). */}
+      <section className="flex flex-col gap-7 px-6 pt-16 sm:px-12 sm:pt-22">
+        <h2 className="text-34 sm:text-40 font-semibold tracking-[-0.025em]">Marcas</h2>
+        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {marcas.map((marca) => (
+            <li key={marca.slug}>
+              <Link
+                href={`/marcas/${marca.slug}`}
+                aria-label={marca.nombre}
+                className="border-borde-tarjeta rounded-card flex h-[104px] items-center justify-center border px-6"
+              >
+                <LogoMarca marca={marca} />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Categorías */}
@@ -408,11 +428,11 @@ export default async function Home() {
 
       {/* Producto original */}
       <section className="bg-negro flex flex-col gap-12 px-6 py-16 text-white sm:px-12 sm:py-24">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="text-26 sm:text-38 lg:text-44 max-w-[620px] font-semibold tracking-[-0.03em]">
+        <div className="flex flex-col gap-6">
+          <h2 className="text-26 sm:text-38 lg:text-44 font-semibold tracking-[-0.03em]">
             Producto original, de marcas reconocidas a nivel mundial.
           </h2>
-          <p className="text-texto-sobre-negro max-w-[380px] text-[17px] leading-[1.55]">
+          <p className="text-texto-sobre-negro max-w-[520px] text-[17px] leading-[1.55]">
             Buscamos siempre ofrecerte productos de calidad, la cual no sólo se ve, se escucha.
           </p>
         </div>
@@ -429,24 +449,6 @@ export default async function Home() {
                 {caracteristica.texto}
               </div>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Marcas */}
-      <section className="flex flex-col gap-8 px-6 pt-16 pb-16 sm:px-12 sm:pt-22 sm:pb-20">
-        <div className="text-texto-terciario font-mono text-[12px] tracking-[0.18em] uppercase">
-          Marcas que vendemos
-        </div>
-        <div className="flex flex-wrap gap-3.5">
-          {marcas.map((marca) => (
-            <Link
-              key={marca.slug}
-              href={`/marcas/${marca.slug}`}
-              className="border-borde-pildora text-texto-pildora rounded-full border px-6.5 py-3 text-[17px]"
-            >
-              {marca.nombre}
-            </Link>
           ))}
         </div>
       </section>

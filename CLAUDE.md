@@ -303,6 +303,10 @@ El recorte es automático —relleno de blanco desde las orillas— salvo dos fo
 
 **Las fotos se piden al acercarse a la sección, no en la carga inicial** (`components/home/FotosCategoria.tsx`), y por eso ese bloque es un componente cliente: con `loading="lazy"` a secas el navegador las bajaba igual durante la carga, 280 KB que paga también quien nunca baja. Por lo mismo el canvas 3D del hero se carga cuando el navegador queda libre. Si se agrega peso a la portada, hay que medir (`lighthouserc.js` explica qué se asierta ahí y qué no).
 
+#### Logos y orden de las marcas
+
+Los logos originales viven en `assets/logos_marcas/` (fuera de `public/`) y `npm run fotos:logos` genera en `public/logos/marcas/<slug>.webp` las copias recortadas: los originales traen mucho margen (el de JBL es de 3840×2160). Las medidas que imprime van a `LOGOS` en `lib/catalog/marcas.ts`; un test falla si una marca del catálogo no tiene logo o archivo. **El orden de las marcas es el del negocio** —Memphis, Rockford Fosgate, Cerwin Vega, Pioneer, KBT, Focal, JBL, SoundSkins— y vive en `ORDEN_MARCAS` (mismo archivo), usado por la portada, `/marcas` y `/nosotros`; una marca nueva cae al final. Los logos llevan a `/marcas/[marca]`.
+
 #### Pipeline de fotos por SKU
 
 Los archivos van en `public/productos/`, con el nombre `SKU_vista.ext`:

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { PlaceholderImage } from "@/components/media/PlaceholderImage";
+import { LogoMarca } from "@/components/catalog/LogoMarca";
 import { listBrands } from "@/lib/catalog/index.ts";
+import { ordenarMarcas } from "@/lib/catalog/marcas.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
-import { textosMarcas, tituloMarcas } from "@/lib/seo/textos.ts";
+import { DISTRIBUIDORES_OFICIALES, textosMarcas, tituloMarcas } from "@/lib/seo/textos.ts";
 
 export async function generateMetadata(): Promise<Metadata> {
   const marcas = await listBrands();
@@ -13,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MarcasPage() {
-  const marcas = await listBrands();
+  const marcas = ordenarMarcas(await listBrands());
 
   // "Nueve marcas" en el handoff es el conteo fijo del mockup — con datos
   // reales el número de marcas puede cambiar, así que se calcula.
@@ -25,12 +26,13 @@ export default async function MarcasPage() {
         <div className="text-texto-terciario font-mono text-[12px] tracking-[0.18em] uppercase">
           Marcas
         </div>
-        <div className="flex max-w-[720px] flex-col gap-5">
+        <div className="flex max-w-[820px] flex-col gap-5">
           <h1 className="text-44 sm:text-64 leading-[1.05] font-semibold tracking-[-0.035em] text-balance">
             {titulo}
           </h1>
-          <p className="text-texto-secundario max-w-[620px] text-[18px] leading-[1.5] sm:text-[20px]">
-            Nuestra diversidad de marcas cubre equipo de audio para carro, marino y motorsports.
+          <p className="text-texto-secundario max-w-[760px] text-[18px] leading-[1.5] sm:text-[20px]">
+            {DISTRIBUIDORES_OFICIALES} Nuestra diversidad de marcas nos permite cubrir equipos de
+            audio para carro, marino y motorsports.
           </p>
         </div>
       </section>
@@ -41,7 +43,9 @@ export default async function MarcasPage() {
             key={marca.slug}
             className="rounded-card-lg border-borde-tarjeta flex flex-col overflow-hidden border"
           >
-            <PlaceholderImage label={`LOGO — ${marca.nombre}`} className="h-[180px] items-center" />
+            <div className="bg-fondo-alt flex h-[180px] items-center justify-center px-8">
+              <LogoMarca marca={marca} className="max-h-[84px] max-w-[220px]" />
+            </div>
             <div className="flex flex-1 flex-col gap-2 p-6">
               {/* País de origen: sin dato real (data/brands.json no lo
                   trae). No se inventa — ver nota en el resumen del turno. */}

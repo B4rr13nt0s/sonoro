@@ -1,7 +1,5 @@
 {
-  "umbral": {
-    "CAK82_pagina_de_inicio.png": 248
-  },
+  "umbral": {},
   "poligono": {},
   "corteAbajo": {},
   "borrarPoligono": {
@@ -36,7 +34,5 @@
     ]
   },
   "borrar": {},
-  "sellar": {
-    "CAK82_pagina_de_inicio.png": 9
-  }
+  "sellar": {}
 }
