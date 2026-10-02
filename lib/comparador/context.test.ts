@@ -91,7 +91,9 @@ test("ComparadorProvider: montar con una selección guardada no la pisa con el e
       );
     }
 
-    assert.ok(escrituras.length >= 1, "se esperaba al menos una escritura (la ya hidratada)");
+    // Lo guardado ya estaba bien y reconcile() no lo corrigió: no se reescribe
+    // (reescribirlo despertaría a las demás pestañas sin que nada cambiara).
+    assert.equal(escrituras.length, 0, "no debía escribir nada al hidratar");
     assert.equal(probeState.valor?.cantidad, 2);
     assert.equal(probeState.valor?.categoria, "Subwoofers");
     assert.equal(probeState.valor?.hydrated, true);
@@ -100,6 +102,20 @@ test("ComparadorProvider: montar con una selección guardada no la pisa con el e
     const final = window.localStorage.getItem(COMPARADOR_STORAGE_KEY);
     assert.ok(final);
     assert.equal(JSON.parse(final).skus.length, 2);
+
+    // La carrera del guardado en un efecto: el cambio se guarda en el MISMO
+    // llamado que la acción, sin esperar a un render. Se lee localStorage
+    // justo después de alternar, DENTRO del act, antes de que React renderice.
+    await act(async () => {
+      probeState.valor?.alternar({ sku: "COR-S124D", categoria: "Subwoofers" });
+      const enseguida = JSON.parse(window.localStorage.getItem(COMPARADOR_STORAGE_KEY) ?? "{}");
+      assert.deepEqual(enseguida.skus, ["SQ12-D2"], "el cambio debe estar guardado al instante");
+      // Y un segundo cambio antes de renderizar parte del ya actualizado.
+      probeState.valor?.alternar({ sku: "SQ12-D2", categoria: "Subwoofers" });
+      const vacia = JSON.parse(window.localStorage.getItem(COMPARADOR_STORAGE_KEY) ?? "{}");
+      assert.deepEqual(vacia.skus, []);
+    });
+    assert.equal(probeState.valor?.cantidad, 0);
 
     await act(async () => {
       root.unmount();
