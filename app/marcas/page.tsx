@@ -44,7 +44,7 @@ export default async function MarcasPage() {
             className="rounded-card-lg border-borde-tarjeta flex flex-col overflow-hidden border"
           >
             <div className="bg-fondo-alt flex h-[180px] items-center justify-center px-8">
-              <LogoMarca marca={marca} className="max-h-[84px] max-w-[220px]" />
+              <LogoMarca marca={marca} className="max-h-[84px] max-w-[220px]" sizes="220px" />
             </div>
             <div className="flex flex-1 flex-col gap-2 p-6">
               {/* País de origen: sin dato real (data/brands.json no lo

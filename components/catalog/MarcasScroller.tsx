@@ -61,7 +61,7 @@ export function MarcasScroller({ marcas }: { marcas: Brand[] }) {
             className="rounded-card-lg border-borde-tarjeta flex w-[232px] flex-none flex-col overflow-hidden border"
           >
             <div className="bg-fondo-alt flex h-[132px] items-center justify-center px-6">
-              <LogoMarca marca={marca} className="max-h-[64px] max-w-[160px]" />
+              <LogoMarca marca={marca} className="max-h-[64px] max-w-[160px]" sizes="160px" />
             </div>
             <div className="px-5 py-5 text-[19px] font-semibold tracking-[-0.02em]">
               {marca.nombre}

@@ -11,9 +11,16 @@ import { logoDeMarca } from "@/lib/catalog/marcas.ts";
 export function LogoMarca({
   marca,
   className = "max-h-[52px] max-w-[150px]",
+  sizes = "150px",
 }: {
   marca: { slug: string; nombre: string };
   className?: string;
+  /**
+   * El ancho al que se dibuja, el mismo del `max-w` de `className`: de ahí
+   * elige el navegador qué copia de /_next/image pide. Con uno fijo, el logo
+   * de /marcas (hasta 220 px) salía de una copia pensada para 150.
+   */
+  sizes?: string;
 }) {
   const logo = logoDeMarca(marca);
   if (!logo) return <span className="text-[17px] font-semibold">{marca.nombre}</span>;
@@ -23,7 +30,7 @@ export function LogoMarca({
       alt={marca.nombre}
       width={logo.ancho}
       height={logo.alto}
-      sizes="150px"
+      sizes={sizes}
       className={`h-auto w-auto object-contain ${className}`}
     />
   );
