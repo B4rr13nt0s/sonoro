@@ -96,6 +96,11 @@ export function ProductCarousel3D() {
   // le quita el scroll a la página) no deben armarse: además `volviendo` solo
   // termina cuando la cámara lo avisa, y sin cámara el ciclo se quedaría ahí.
   const [canvasVivo, setCanvasVivo] = useState(false);
+  // El primer .glb ya está en la escena. El ciclo no corre antes: en un móvil
+  // lento el canvas tarda más que la espera de 2 s, y el producto entraba ya
+  // girando —o, tras ~13 s sin modelo, el contador pasaba al segundo sin que
+  // el primero se hubiera visto—.
+  const [modeloListo, setModeloListo] = useState(false);
   const [cambioManual, setCambioManual] = useState(false);
 
   const contenedor = useRef<HTMLDivElement>(null);
@@ -112,7 +117,7 @@ export function ProductCarousel3D() {
 
   const { fase, transcurrido, notifyInteraction, beginGesture, endGesture, alVolver, reiniciar } =
     useCicloCarrusel({
-      activo: enCuadro && pestanaVisible,
+      activo: enCuadro && pestanaVisible && modeloListo,
       pausarAvance: conFoco,
       reducedMotion,
       onAvanzar: avanzar,
@@ -127,6 +132,7 @@ export function ProductCarousel3D() {
   );
   const alCrearCanvas = useCallback(() => setCanvasVivo(true), []);
   const alFallarCanvas = useCallback(() => setCanvasVivo(false), []);
+  const alModeloListo = useCallback(() => setModeloListo(true), []);
 
   // Navegación manual: se salta al producto pedido y el ciclo arranca de
   // cero. La cámara repone la vista predeterminada al ver que cambió el
@@ -208,6 +214,7 @@ export function ProductCarousel3D() {
             frameloop={frameloop}
             alCrear={alCrearCanvas}
             animarEntrada={!reducedMotion}
+            alModeloListo={alModeloListo}
           />
         </SinCanvasSiFalla>
       ) : null}

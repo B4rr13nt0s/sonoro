@@ -17,6 +17,8 @@ import {
 } from "@/lib/models3d.ts";
 
 import { anguloDelCiclo, type FaseCarrusel } from "./ciclo.ts";
+import { easeInOutCubic, easeOutCubic } from "./easing.ts";
+import { ENTRADA_INICIAL, pasoEntrada, ENTRADA_HECHA } from "./entrada.ts";
 import { ProductModel3D, preloadModel } from "./ProductModel3D";
 import { RETURN_DURATION_MS, RETURN_EPSILON } from "./useIdleReturn";
 import {
@@ -36,21 +38,6 @@ const FOV = 32;
 const MARGEN = 1.1;
 /** Duración del deslizamiento entre modelos. */
 const TRANSICION_MS = 600;
-/**
- * Duración de la entrada del primer producto: al abrir la página, el modelo
- * que se ve primero llega deslizándose de derecha a izquierda —el mismo
- * sentido en que avanza el carrusel—, desde fuera de cuadro hasta el centro.
- * Más larga que la transición entre slides y con `easeOutCubic` —frena al
- * llegar—: es una llegada, no un cambio de slide.
- */
-const ENTRADA_MS = 900;
-/**
- * Lo más que avanza la entrada en un solo frame, en segundos. La entrada no
- * se mide con el reloj de pared sino sumando el delta de cada frame con este
- * tope: un frame trabado (shaders que se compilan, la pestaña que se
- * duerme) la frena en vez de saltársela.
- */
-const PASO_MAX_ENTRADA_S = 0.05;
 
 /**
  * Constante del suavizado del zoom, en 1/s. La cámara no salta a la
@@ -63,9 +50,6 @@ const SUAVIZADO_ZOOM = 12;
 
 /** Aire mínimo contra el borde redondeado del cuadro, en píxeles CSS. */
 const MARGEN_BORDE_PX = 16;
-
-const easeOutCubic = (k: number) => 1 - Math.pow(1 - k, 3);
-const easeInOutCubic = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
 
 export interface CarouselCanvasProps {
   index: number;
@@ -98,6 +82,12 @@ export interface CarouselCanvasProps {
    * `false` con `prefers-reduced-motion`: aparece ya en su lugar.
    */
   animarEntrada: boolean;
+  /**
+   * El primer modelo ya está en la escena. Se avisa una sola vez: hasta
+   * entonces el ciclo del carrusel no corre, para que el producto no empiece
+   * a girar ni el contador a avanzar sin que haya nada que ver.
+   */
+  alModeloListo: () => void;
 }
 
 /**
@@ -243,6 +233,7 @@ function Escena({
   pendienteRef,
   alVolver,
   animarEntrada,
+  alModeloListo,
 }: CarouselCanvasProps) {
   const total = MODEL_IDS.length;
   // Montaje: solo tres modelos (anterior, actual, siguiente). Los otros
@@ -327,6 +318,7 @@ function Escena({
         chrome={chrome}
         azimutCamaraRef={azimutCamaraRef}
         animarEntrada={animarEntrada}
+        alModeloListo={alModeloListo}
       />
 
       {/* Sin shadow maps en tiempo real: una sombra de contacto sobre el
@@ -367,6 +359,7 @@ function Deslizador({
   chrome,
   azimutCamaraRef,
   animarEntrada,
+  alModeloListo,
 }: {
   index: number;
   direction: number;
@@ -378,6 +371,7 @@ function Deslizador({
   chrome: { v: number; h: number };
   azimutCamaraRef: React.RefObject<number>;
   animarEntrada: boolean;
+  alModeloListo: () => void;
 }) {
   const { gap, entrada: distanciaEntrada } = useEncuadre(chrome);
 
@@ -408,27 +402,23 @@ function Deslizador({
   const anguloBase = useRef(0);
   const faseColocada = useRef(fase);
   /**
-   * Entrada del primer producto (ENTRADA_MS). El modelo espera fuera de
-   * cuadro, a la derecha:
+   * Entrada del primer producto: la máquina de estados vive en entrada.ts,
+   * que decide con lo que este frame observó. Acá solo están los efectos:
+   * mirar si el .glb ya se montó y lanzar la compilación de shaders. La
+   * compilación previa es lo que arregla la primera visita: fuera de cuadro
+   * el modelo no se dibuja, así que sus shaders se compilaban recién cuando
+   * entraba, ese frame tardaba ~0.7 s (medido) y el producto aparecía de
+   * golpe en el centro. En la segunda visita el navegador ya tenía los
+   * shaders en caché y por eso sí se veía.
    *
-   *   pendiente   hasta el primer frame en que su .glb ya está montado;
-   *   compilando  mientras se compilan los shaders de la escena;
-   *   corriendo   la entrada en sí, que avanza con el delta de cada frame
-   *               (PASO_MAX_ENTRADA_S), no con el reloj de pared.
-   *
-   * La compilación previa es lo que arregla la primera visita. Fuera de
-   * cuadro el modelo no se dibuja, así que sus shaders se compilaban recién
-   * cuando entraba: en un Chromium sin caché de shaders ese frame tardaba
-   * ~0.7 s (medido), la entrada medida con el reloj ya había terminado, y el
-   * producto aparecía de golpe en el centro. En la segunda visita el
-   * navegador ya tenía los shaders en caché y por eso sí se veía.
-   *
-   * Y como con `frameloop="never"` no corre ningún frame, si el carrusel
+   * Como con `frameloop="never"` no corre ningún frame, si el carrusel
    * todavía no está a la vista la entrada espera a que lo esté. Cualquier
    * cambio de producto la da por hecha: desde ahí manda la transición normal.
    */
-  const entrada = useRef<"pendiente" | "compilando" | "corriendo" | "hecha">("pendiente");
-  const avanceEntrada = useRef(0);
+  const entrada = useRef(ENTRADA_INICIAL);
+  /** `compileAsync` terminó, bien o mal: se entra igual, dibujar compila lo que falte. */
+  const compilado = useRef(false);
+  const modeloAvisado = useRef(false);
 
   useFrame((estado, delta) => {
     if (indiceColocado.current !== index) {
@@ -437,7 +427,7 @@ function Deslizador({
       inicio.current = performance.now();
       anguloBase.current = 0;
       anguloRef.current = 0;
-      entrada.current = "hecha";
+      entrada.current = ENTRADA_HECHA;
     }
     if (faseColocada.current !== fase) {
       faseColocada.current = fase;
@@ -452,30 +442,25 @@ function Deslizador({
 
     // Cuánto le falta al primer producto para llegar: 1 es fuera de cuadro
     // a la derecha, 0 es en su lugar.
-    if (!animarEntrada) entrada.current = "hecha";
-    let faltaEntrar = 0;
-    if (entrada.current === "pendiente" || entrada.current === "compilando") {
-      faltaEntrar = 1;
-      // Mientras el .glb carga, el Suspense no monta nada y el grupo está
-      // vacío. Arrancar antes gastaría la entrada en un cuadro sin modelo.
-      if (entrada.current === "pendiente" && (grupoActual.current?.children.length ?? 0) > 0) {
-        entrada.current = "compilando";
-        // Si en el medio cambió el producto, la entrada ya está «hecha» y
-        // no se reabre. Si la compilación falla, se entra igual: dibujar
-        // compila lo que falte, como antes.
-        const arrancar = () => {
-          if (entrada.current !== "compilando") return;
-          entrada.current = "corriendo";
-          avanceEntrada.current = 0;
-        };
-        estado.gl.compileAsync(estado.scene, estado.camera).then(arrancar, arrancar);
-      }
-    } else if (entrada.current === "corriendo") {
-      avanceEntrada.current += Math.min(delta, PASO_MAX_ENTRADA_S) * 1000;
-      const k = Math.min(avanceEntrada.current / ENTRADA_MS, 1);
-      faltaEntrar = 1 - easeOutCubic(k);
-      if (k >= 1) entrada.current = "hecha";
+    const modeloMontado = (grupoActual.current?.children.length ?? 0) > 0;
+    if (modeloMontado && !modeloAvisado.current) {
+      modeloAvisado.current = true;
+      alModeloListo();
     }
+    const paso = pasoEntrada(entrada.current, {
+      animar: animarEntrada,
+      modeloMontado,
+      compilado: compilado.current,
+      deltaS: delta,
+    });
+    entrada.current = paso.entrada;
+    if (paso.compilar) {
+      const listo = () => {
+        compilado.current = true;
+      };
+      estado.gl.compileAsync(estado.scene, estado.camera).then(listo, listo);
+    }
+    const faltaEntrar = paso.falta;
 
     // Los vecinos van sobre el eje HORIZONTAL DE LA CÁMARA, no sobre el X
     // del mundo: así quedan siempre fuera de cuadro por los costados sea
