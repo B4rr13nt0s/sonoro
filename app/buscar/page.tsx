@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { Busqueda, SearchExperience } from "@/components/catalog/SearchExperience";
-import { listAllProducts } from "@/lib/catalog/index.ts";
+import { clavesDeAtributos } from "@/components/catalog/busqueda.ts";
+import { listAllProducts, listBrands } from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 import { TEXTOS_BUSCAR } from "@/lib/seo/textos.ts";
 
@@ -35,7 +36,11 @@ export default async function BuscarPage() {
     destacado: producto.destacado,
     imagenes: producto.imagenes,
     specsDestacadas: producto.specsDestacadas,
+    // Los atributos como palabras de búsqueda (`12"`, `4ohm`, `clase-d`…):
+    // unas pocas por producto, en lugar de mandar `atributos` entero.
+    claves: clavesDeAtributos(producto.atributos),
   }));
+  const marcas = (await listBrands()).map((marca) => ({ nombre: marca.nombre, slug: marca.slug }));
 
   // Prerenderizada: la búsqueda lee `?q=` con useSearchParams, que no existe
   // al prerenderizar, así que SOLO ese bloque va en un <Suspense>. El HTML
@@ -44,8 +49,8 @@ export default async function BuscarPage() {
   // tendría que armarse en cada visita, y es la más visitada después del
   // inicio: la ruta principal de navegación.
   return (
-    <Suspense fallback={<Busqueda productos={tarjetas} busqueda="" />}>
-      <SearchExperience productos={tarjetas} />
+    <Suspense fallback={<Busqueda productos={tarjetas} marcas={marcas} busqueda="" />}>
+      <SearchExperience productos={tarjetas} marcas={marcas} />
     </Suspense>
   );
 }
