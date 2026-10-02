@@ -334,7 +334,7 @@ Sin imagen, la conversión recae en el texto:
 - [ ] Contraste AA, foco visible, `alt` real, navegación por teclado en el drawer, roles ARIA en filtros
 - [ ] `priority` en la imagen LCP; `lazy` en el resto
 
-**Listo cuando:** Lighthouse móvil ≥ 90 en Performance y ≥ 95 en Accessibility. Excepción: la portada se mide por métricas (FCP, LCP, CLS) y no por el puntaje global, porque el carrusel 3D anima sin parar y hunde el Total Blocking Time — ver el comentario en `lighthouserc.js`.
+**Listo cuando:** Lighthouse móvil ≥ 90 en Performance y ≥ 95 en Accessibility. Excepción: la portada se mide por métricas (FCP y CLS, más Accesibilidad ≥ 95) y no por el puntaje global; el pintado mayor (LCP) tampoco se asierta, a propósito, porque el carrusel 3D anima sin parar y hunde el Total Blocking Time — ver el comentario en `lighthouserc.js`.
 
 ---
 
