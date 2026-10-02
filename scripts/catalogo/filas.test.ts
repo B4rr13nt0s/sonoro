@@ -128,3 +128,24 @@ test("ESPECIALES: categorias se separa por comas, y vacía se rechaza", () => {
     /categorias: obligatorio vacío/,
   );
 });
+
+test("los textos libres colapsan espacios internos; sku y slug no se arreglan en silencio", () => {
+  const r = normalizar("SUBWOOFERS", {
+    ...SUBWOOFER,
+    nombre: '  Subwoofer  Champion Series 12"   TS-W312D4 ',
+    marca: "Rockford  Fosgate",
+    descripcion_corta: "Doble  bobina",
+    spec_1_etiqueta: "Potencia  máxima",
+    spec_1_valor: "1,600   W",
+  });
+  assert.equal(r.ok, true);
+  if (!r.ok) return;
+  assert.equal(r.fila.nombre, 'Subwoofer Champion Series 12" TS-W312D4');
+  assert.equal(r.fila.marca, "Rockford Fosgate");
+  assert.equal(r.fila.descripcionCorta, "Doble bobina");
+  assert.deepEqual(r.fila.libres, [{ etiqueta: "Potencia máxima", valor: "1,600 W" }]);
+
+  // Un sku con doble espacio sigue llegando tal cual: el esquema lo rechaza.
+  const sku = normalizar("SUBWOOFERS", { ...SUBWOOFER, sku: "TS  W312D4" });
+  assert.equal(sku.ok && sku.fila.sku, "TS  W312D4");
+});

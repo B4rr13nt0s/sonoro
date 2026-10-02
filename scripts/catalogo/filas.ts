@@ -45,6 +45,17 @@ function texto(celda: Celda | undefined): string | undefined {
   return String(celda).trim();
 }
 
+// Para lo que el cliente LEE (nombre, marca, descripción, specs libres): además
+// del trim, los espacios de adentro se colapsan a uno. Un doble espacio no se
+// ve en pantalla, pero viaja tal cual al mensaje de WhatsApp, al registro de
+// pedidos, al JSON-LD y al título de la página, y suele ser una palabra
+// borrada de la hoja: «Bocinas coaxiales  de 6.5"». NO se usa en sku, slug ni
+// disponibilidad: ahí un doble espacio es un error que se rechaza, no algo
+// que se arregle en silencio.
+function textoLibre(celda: Celda | undefined): string | undefined {
+  return texto(celda)?.replace(/\s+/g, " ");
+}
+
 function numero(celda: Celda | undefined): number | string | boolean | undefined {
   if (esVacia(celda)) return undefined;
   if (typeof celda === "number" || typeof celda === "boolean") return celda;
@@ -130,9 +141,9 @@ export function normalizarFila(fila: FilaCruda, def: DefHoja): ResultadoFila {
   const comun = {
     sku: texto(c.sku),
     slug: texto(c.slug),
-    nombre: texto(c.nombre),
-    marca: texto(c.marca),
-    descripcion_corta: texto(c.descripcion_corta),
+    nombre: textoLibre(c.nombre),
+    marca: textoLibre(c.marca),
+    descripcion_corta: textoLibre(c.descripcion_corta),
     precio: numero(c.precio),
     precio_antes: numero(c.precio_antes),
     disponibilidad: texto(c.disponibilidad),
@@ -162,8 +173,8 @@ export function normalizarFila(fila: FilaCruda, def: DefHoja): ResultadoFila {
 
   const libres: Spec[] = [];
   for (let n = 1; n <= MAX_SPECS_LIBRES; n++) {
-    const etiqueta = texto(c[`spec_${n}_etiqueta`]);
-    const valor = texto(c[`spec_${n}_valor`]);
+    const etiqueta = textoLibre(c[`spec_${n}_etiqueta`]);
+    const valor = textoLibre(c[`spec_${n}_valor`]);
     if (etiqueta === undefined && valor === undefined) continue;
     if (etiqueta === undefined || valor === undefined) {
       motivos.push(
