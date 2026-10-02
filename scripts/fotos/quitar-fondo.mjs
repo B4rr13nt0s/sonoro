@@ -23,7 +23,7 @@ const BANDA = 3; // px de borde suavizado
 const MAX = 1200;
 // Fotos donde el producto encierra fondo (espirales de cable): también se
 // vacían los huecos blancos cerrados.
-const CON_HUECOS = /^(4GKIT|8GKIT)_/;
+const CON_HUECOS = /^4GKIT_/;
 
 fs.mkdirSync(DESTINO, { recursive: true });
 
