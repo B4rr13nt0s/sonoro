@@ -210,27 +210,25 @@ export function textosProducto(producto: {
 
 // El titular de /marcas.
 export function tituloMarcas(cantidad: number): string {
-  return cantidad === 1
-    ? "Vendemos una marca, importada de forma directa."
-    : `Vendemos ${cantidad} marcas distintas, todas importadas de forma directa.`;
+  return cantidad === 1 ? "Vendemos una marca." : `Vendemos ${cantidad} marcas distintas.`;
 }
 
 // Lo que dice el negocio de sus marcas, en /marcas y en /nosotros. Los
 // nombres están escritos a mano a propósito: cuáles son distribuidas de forma
 // oficial es un dato del negocio, no del catálogo.
 export const DISTRIBUIDORES_OFICIALES =
-  "Somos los distribuidores oficiales de Memphis, Rockford Fosgate, KBT, y SoundSkins para toda Guatemala, además de complementar con marcas de alta calidad como lo son Pioneer, Cerwin Vega, Focal y JBL.";
+  "Somos los distribuidores oficiales de Memphis, Rockford Fosgate, KBT y SoundSkins para toda Guatemala, además de complementar con marcas de alta calidad como lo son Pioneer, Cerwin Vega, Focal y JBL.";
 
 export function textosMarcas(marcas: string[]): Textos {
   return {
     titulo: `Marcas de ${LEMA.toLowerCase()}`,
-    descripcion: `Las ${marcas.length} marcas que importa Sonoro: ${unir(marcas)}. Hasta 6 pagos precio contado y envíos a todo el país.`,
+    descripcion: `Las ${marcas.length} marcas que vende Sonoro: ${unir(marcas)}. Hasta 6 pagos precio contado y envíos a todo el país.`,
   };
 }
 
 export const TEXTOS_NOSOTROS: Textos = {
   titulo: `Nosotros: ${LEMA.toLowerCase()}`,
-  descripcion: `Sonoro importa directamente ${LEMA.toLowerCase()} a Guatemala. Cada producto incluye la instalación básica; una compleja tiene costo adicional.`,
+  descripcion: `Sonoro vende ${LEMA.toLowerCase()} en Guatemala. Cada producto incluye la instalación básica; una compleja tiene costo adicional.`,
 };
 
 export const TEXTOS_BUSCAR: Textos = {

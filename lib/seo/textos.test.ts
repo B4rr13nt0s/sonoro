@@ -93,6 +93,6 @@ test("masFrecuentes: de más a menos, desempate estable por código", () => {
 });
 
 test("tituloMarcas: singular y plural", () => {
-  assert.equal(tituloMarcas(1), "Vendemos una marca, importada de forma directa.");
-  assert.equal(tituloMarcas(8), "Vendemos 8 marcas distintas, todas importadas de forma directa.");
+  assert.equal(tituloMarcas(1), "Vendemos una marca.");
+  assert.equal(tituloMarcas(8), "Vendemos 8 marcas distintas.");
 });

@@ -60,7 +60,9 @@ export default async function NosotrosPage() {
               complejo y en cuánto tiempo sigue sin definirse, así que no
               se menciona. */}
           <p className="text-texto-secundario text-[16px] leading-[1.6] sm:text-[17px]">
-            Todos nuestros productos incluyen instalación básica. Aplican restricciones.
+            Todos nuestros productos incluyen instalación básica. Si lo que compras requiere una
+            instalación más compleja, tiene un costo adicional y te lo informamos al cerrar el
+            pedido.
           </p>
         </div>
       </section>

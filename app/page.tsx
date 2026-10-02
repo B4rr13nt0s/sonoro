@@ -294,7 +294,7 @@ export default async function Home() {
         </div>
         <div className="text-texto-terciario px-4 font-mono text-[11px] tracking-[0.06em]">
           Hasta 6 pagos precio contado · Producto original · Envíos gratis a todo el país. Aplican
-          restricciones.
+          restricciones según destino y volumen del pedido.
         </div>
         <ProductCarousel3D />
       </section>
