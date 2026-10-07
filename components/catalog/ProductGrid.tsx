@@ -5,7 +5,11 @@ import type { ProductoTarjeta } from "@/lib/catalog/index.ts";
 // define estados de carga ni vacío (el handoff es estático), así que los
 // agregamos aquí: `loading` cubre la espera de un fetch/filtro client-side,
 // `productos.length === 0` cubre un filtro sin resultados.
-const CLASES_GRID = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4";
+//
+// Seis por fila desde 1280px (`xl:`), donde cada tarjeta mide ~184px: a 1024px
+// seis tarjetas bajarían de 140px y el nombre se partiría en cinco o seis
+// líneas, así que ahí siguen siendo cuatro.
+const CLASES_GRID = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6";
 
 type ProductGridProps = {
   productos: ProductoTarjeta[];
@@ -56,12 +60,13 @@ function ProductCardSkeleton() {
       className="rounded-card border-borde-tarjeta flex animate-pulse flex-col overflow-hidden border bg-white"
       aria-hidden="true"
     >
-      <div className="bg-fondo-alt h-[200px]" />
-      <div className="flex flex-col gap-2 p-5">
+      <div className="p-3 pb-0">
+        <div className="bg-fondo-alt rounded-field aspect-square" />
+      </div>
+      <div className="flex flex-col gap-2 p-4">
         <div className="bg-fondo-alt h-2.5 w-16 rounded-full" />
         <div className="bg-fondo-alt h-3.5 w-4/5 rounded-full" />
         <div className="bg-fondo-alt h-3.5 w-3/5 rounded-full" />
-        <div className="bg-fondo-alt mt-2 h-3.5 w-2/5 rounded-full" />
         <div className="bg-fondo-alt h-3 w-3/5 rounded-full" />
       </div>
     </div>

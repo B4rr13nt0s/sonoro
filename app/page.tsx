@@ -268,7 +268,7 @@ const CARACTERISTICAS = [
 
 export default async function Home() {
   const [{ items: destacados }, todasLasMarcas] = await Promise.all([
-    listProducts({ destacado: true, activo: true, pageSize: 4 }),
+    listProducts({ destacado: true, activo: true, pageSize: 6 }),
     listBrands(),
   ]);
   const marcas = ordenarMarcas(todasLasMarcas);

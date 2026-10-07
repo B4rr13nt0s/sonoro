@@ -1,13 +1,13 @@
 import Link from "next/link";
 
 import { ProductImage } from "@/components/media/ProductImage";
-import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import type { ProductoTarjeta } from "@/lib/catalog/index.ts";
 import { etiquetaDisponibilidad } from "@/lib/catalog/disponibilidad.ts";
 
-// CLAUDE.md § Patrones que se repiten — "Tarjeta de producto": imagen 200px,
-// etiqueta mono con categoría o marca, nombre 17px/600, especificación 14px
-// gris, precio 17px/600, cuota 13px gris.
+// CLAUDE.md § Patrones que se repiten — "Tarjeta de producto": foto cuadrada
+// con margen, etiqueta mono con categoría o marca, nombre 15px/600 y
+// especificación 13px gris. SIN precio ni cuota (pedido del negocio, octubre
+// de 2026): el precio se ve en la ficha.
 //
 // La tarjeta es Server Component entera: hoy no le queda nada interactivo.
 // Llevaba un <CompararToggle />, que salió con los accesos al comparador
@@ -28,8 +28,14 @@ export function ProductCard({ producto }: { producto: ProductoTarjeta }) {
 
   return (
     <div className="rounded-card border-borde-tarjeta relative flex flex-col overflow-hidden border bg-white">
-      <ProductImage imagenes={producto.imagenes} nombre={producto.nombre} className="h-[200px]" />
-      <div className="flex flex-1 flex-col gap-1.5 p-5">
+      <div className="p-3 pb-0">
+        <ProductImage
+          imagenes={producto.imagenes}
+          nombre={producto.nombre}
+          className="rounded-field aspect-square w-full"
+        />
+      </div>
+      <div className="flex flex-1 flex-col gap-1.5 p-4">
         {/* El estado va en la misma fila mono que la categoría, en negro
             contra el gris: no suma alto a la tarjeta y se ve antes de
             entrar a la ficha. La categoría sola se mantiene igual en los
@@ -47,15 +53,11 @@ export function ProductCard({ producto }: { producto: ProductoTarjeta }) {
         </div>
         <Link
           href={`/producto/${producto.slug}`}
-          className="text-[17px] leading-tight font-semibold tracking-[-0.01em] after:absolute after:inset-0"
+          className="text-[15px] leading-tight font-semibold tracking-[-0.01em] after:absolute after:inset-0"
         >
           {producto.nombre}
         </Link>
-        <div className="text-texto-secundario text-[14px]">{especificacion}</div>
-        <div className="pt-2 text-[17px] font-semibold">{formatQ(producto.precioCents)}</div>
-        <div className="text-texto-secundario text-[13px]">
-          o {formatQ(calcularCuotaCents(producto.precioCents, 6))} al mes × 6
-        </div>
+        <div className="text-texto-secundario text-[13px]">{especificacion}</div>
       </div>
     </div>
   );

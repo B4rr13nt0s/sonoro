@@ -124,12 +124,17 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
         nombre={producto.nombre}
         precioCents={producto.precioCents}
       />
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_440px]">
-        <div className="flex flex-col gap-2.5 px-6 py-8 sm:px-12 lg:py-8 lg:pr-6 lg:pl-12">
-          <ProductGallery imagenes={producto.imagenes} nombre={producto.nombre} />
-        </div>
+      {/* Rejilla de dos columnas y dos filas (escritorio): la foto cuadrada
+          y el panel de información arriba; abajo, la fila de miniaturas junto
+          al bloque de envío. Esa segunda fila toma el alto del bloque de
+          envío, así que el borde inferior de la foto coincide con su línea
+          superior y el de las miniaturas con el fondo de la columna. En móvil
+          todo se apila en este orden. El ancho máximo y los márgenes dejan el
+          contenido centrado, no pegado a las orillas. */}
+      <div className="mx-auto grid w-full max-w-[1424px] grid-cols-1 gap-x-12 px-6 py-8 sm:px-12 lg:grid-cols-[minmax(0,600px)_minmax(0,1fr)]">
+        <ProductGallery imagenes={producto.imagenes} nombre={producto.nombre} />
 
-        <div className="flex flex-col gap-5 px-6 pb-8 sm:px-12 lg:pt-11 lg:pr-12 lg:pb-8 lg:pl-6">
+        <div className="flex flex-col gap-5 pt-6 lg:col-start-2 lg:row-start-1 lg:pt-3">
           {/* CLAUDE.md § Breadcrumbs: "en ficha de producto terminan en la
               marca, no en el nombre del producto" — a diferencia de
               /catalogo/[categoria] y /marcas/[marca], ningún segmento acá
@@ -223,8 +228,10 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
               </>
             )}
           </div>
+        </div>
 
-          <div className="border-borde-nav text-texto-secundario flex flex-col gap-2.5 border-t pt-5 text-[14px]">
+        <div className="border-borde-nav mt-5 flex flex-col gap-2.5 border-t pt-5 lg:col-start-2 lg:row-start-2 lg:mt-0">
+          <div className="text-texto-secundario flex flex-col gap-2.5 text-[14px]">
             <div className="flex justify-between gap-4">
               <span>Envío gratis a todo el país</span>
               <span className="text-negro text-right">Entrega según el departamento</span>
@@ -240,33 +247,35 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
         </div>
       </div>
 
-      <section className="bg-negro flex flex-col gap-10 px-6 py-14 text-white sm:px-12 sm:py-20">
-        <div className="flex flex-col gap-3">
-          <h2 className="text-34 font-semibold tracking-[-0.025em]">Ficha técnica</h2>
-          <p className="text-texto-sobre-negro max-w-[620px] text-[16px] leading-[1.55]">
-            {producto.descripcionCorta}
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-x-16 sm:grid-cols-2">
-          {/* La key lleva el índice: specsFicha no exige etiquetas únicas
+      <section className="bg-negro text-white">
+        <div className="mx-auto flex w-full max-w-[1424px] flex-col gap-10 px-6 py-14 sm:px-12 sm:py-20">
+          <div className="flex flex-col gap-3">
+            <h2 className="text-34 font-semibold tracking-[-0.025em]">Ficha técnica</h2>
+            <p className="text-texto-sobre-negro max-w-[620px] text-[16px] leading-[1.55]">
+              {producto.descripcionCorta}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-x-16 sm:grid-cols-2">
+            {/* La key lleva el índice: specsFicha no exige etiquetas únicas
               (lib/comparador/tabla.ts cuenta los casos que ya existieron), y
               dos filas con la misma key hacen que React pierda una. El
               arreglo es fijo por render, así que el índice es estable. */}
-          {producto.specsFicha.map((spec, indice) => (
-            <div
-              key={`${indice}-${spec.etiqueta}`}
-              className="border-borde-sobre-negro flex justify-between gap-6 border-t py-4 text-[15px]"
-            >
-              <span className="text-texto-sobre-negro">{spec.etiqueta}</span>
-              {/* A la derecha también cuando el valor se parte en varias
+            {producto.specsFicha.map((spec, indice) => (
+              <div
+                key={`${indice}-${spec.etiqueta}`}
+                className="border-borde-sobre-negro flex justify-between gap-6 border-t py-4 text-[15px]"
+              >
+                <span className="text-texto-sobre-negro">{spec.etiqueta}</span>
+                {/* A la derecha también cuando el valor se parte en varias
                   líneas: con justify-between solo la caja va a la derecha, el
                   texto de adentro seguía alineado a la izquierda. */}
-              <span className="text-right">{spec.valor}</span>
-            </div>
-          ))}
-        </div>
-        <div className="text-texto-terciario-sobre-negro font-mono text-[11px]">
-          Datos publicados por el fabricante.
+                <span className="text-right">{spec.valor}</span>
+              </div>
+            ))}
+          </div>
+          <div className="text-texto-terciario-sobre-negro font-mono text-[11px]">
+            Datos publicados por el fabricante.
+          </div>
         </div>
       </section>
     </div>

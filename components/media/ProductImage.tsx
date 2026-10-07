@@ -22,11 +22,12 @@ export function ProductImage({ imagenes, nombre, dark = false, className }: Prod
     return <PlaceholderImage label={`FOTO — ${nombre}`} dark={dark} className={className} />;
   }
 
-  // CLAUDE.md § Imágenes: "Al reemplazar por <img>, conservar la altura del
-  // contenedor" — el contenedor relative con `fill` hereda el alto que le
-  // pase className, igual que PlaceholderImage.
+  // El contenedor relative con `fill` hereda el tamaño que le pase className,
+  // igual que PlaceholderImage (la tarjeta lo pasa cuadrado). Fondo blanco y
+  // `object-contain`: la foto se ve entera, sin recortar, y el blanco de las
+  // fotos se funde con el del contenedor.
   return (
-    <div className={`relative overflow-hidden ${className ?? ""}`}>
+    <div className={`relative overflow-hidden bg-white ${className ?? ""}`}>
       {/* `sizes` con el ancho real de la tarjeta en la rejilla (1, 2 o 4
           columnas, ProductGrid): sin él, `fill` hace que el navegador asuma
           el ancho de la ventana y baje una imagen varias veces más grande. */}
@@ -35,7 +36,7 @@ export function ProductImage({ imagenes, nombre, dark = false, className }: Prod
         alt={imagen.alt || nombre}
         fill
         sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-        className="object-cover"
+        className="object-contain"
       />
     </div>
   );
