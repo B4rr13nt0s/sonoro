@@ -216,14 +216,14 @@ El **texto terciario se oscureció de `#9C9C97` a `#6E6E6E`** (app/globals.css, 
 
 ## El logo
 
-`assets/logos/` trae wordmark, monograma y lockup en SVG (tipografía incrustada) y PNG a 4×, en negro y en blanco.
+El vigente es la **v2** (octubre de 2026): `public/logos/sonoro_v2/` trae monograma, wordmark y lockup, en negro y en blanco, en SVG y PNG. `public/logos/sonoro_v1/` guarda la versión anterior solo como archivo: nada del sitio la usa.
 
-Dos reglas al reconstruirlo en código:
+- **Monograma:** tres ondas sobre la silueta de un carro, en un cuadro de esquinas redondeadas (`rx` 480 de 2048). El del nav no es un archivo: `components/layout/Monogram.tsx` dibuja el mismo trazo en línea, y el cuadro lo pone el `<span>` con el token de radio. Los favicons (`app/favicon.ico`, `app/apple-icon.png`, `public/icons/`) salen del mismo SVG en `#0B0B0C`.
+- **Lockup y wordmark:** «sonoro» en Bakbak One a 200 px y debajo «CAR AUDIO» en JetBrains Mono a **48.6 px con `letter-spacing` 12.3 px**, 1.5 veces lo de la v1. En el lockup el bloque de texto va centrado en el alto del icono. En el lockup el cuadro del monograma va en `#0B0B0C`, el negro de marca, y no en el `#000` del archivo del monograma.
+- **Usos:** el pie (`SiteFooter.tsx`) y las imágenes OG (`lib/og/assets.ts`) usan el **PNG** del lockup, no el SVG. En los SVG el texto sigue siendo `<text>` con la fuente por nombre, y el navegador lo dibuja con la tipografía que tenga a mano.
+- **Los PNG se generan desde los SVG** con Chromium y las dos fuentes cargadas (Bakbak One de `@fontsource/bakbak-one`, JetBrains Mono de `assets/fonts/`): lockup a 2480 × 680, wordmark a 1680 de ancho. Si se toca un SVG, se regenera su PNG; editar el PNG a mano los desincroniza.
 
-1. La «s» del monograma lleva `transform: translateY(-0.095em)` dentro del cuadrado. Es corrección óptica de altura-x, no un error — sin ella la letra se ve caída.
-2. En el lockup, el wordmark lleva la misma corrección dentro de una caja de la altura del icono, para que ambas «s» compartan línea óptica.
-
-En los SVG el texto sigue siendo texto. Antes de imprenta o bordado, convertir a curvas.
+Antes de imprenta o bordado, convertir el texto de los SVG a curvas.
 
 ---
 

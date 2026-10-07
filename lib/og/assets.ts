@@ -7,7 +7,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const logoLockupBlanco = await readFile(
-  join(process.cwd(), "public/logos/sonoro-lockup-blanco.png"),
+  join(process.cwd(), "public/logos/sonoro_v2/sonoro-lockup-blanco.png"),
 );
 
 export const LOGO_LOCKUP_BLANCO_DATA_URI = `data:image/png;base64,${logoLockupBlanco.toString("base64")}`;

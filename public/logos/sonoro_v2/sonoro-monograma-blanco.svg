@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="2048" viewBox="0 0 2048 2048" role="img" aria-labelledby="title desc">
+  <title id="title">Monograma Sonoro invertido</title>
+  <desc id="desc">Monograma blanco con ondas sonoras y silueta inferior negras, centrado.</desc>
+  <rect width="2048" height="2048" rx="480" fill="#fff"/>
+  <g fill="#000" transform="translate(0 30)">
+    <path d="M500 758Q1024 362 1548 758" fill="none" stroke="#000" stroke-width="100" stroke-linecap="butt"/>
+    <path d="M612 924Q1024 596 1436 924" fill="none" stroke="#000" stroke-width="100" stroke-linecap="butt"/>
+    <path d="M712 1074Q1024 846 1336 1074" fill="none" stroke="#000" stroke-width="100" stroke-linecap="butt"/>
+    <path d="M430 1478C430 1400 484 1342 560 1332C704 1320 734 1304 806 1252C884 1192 938 1200 1024 1200C1110 1200 1164 1192 1242 1252C1314 1304 1344 1320 1488 1332C1564 1342 1618 1400 1618 1478H1538C1532 1456 1520 1444 1498 1440C1382 1420 1312 1404 1230 1346C1152 1292 1100 1304 1024 1304C948 1304 896 1292 818 1346C736 1404 666 1420 550 1440C528 1444 516 1456 510 1478Z"/>
+  </g>
+</svg>

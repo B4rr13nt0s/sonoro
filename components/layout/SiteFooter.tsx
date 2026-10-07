@@ -52,8 +52,8 @@ export function SiteFooter() {
 
   return (
     <footer className="border-borde-nav flex flex-col items-center gap-6 border-t px-6 py-12 text-center sm:px-12">
-      {/* El lockup oficial de public/logos/, no reconstruido en código: ya
-          trae la corrección óptica de las dos «s» (CLAUDE.md § El logo).
+      {/* El lockup oficial de public/logos/sonoro_v2/ (monograma v2 de ondas
+          y carro), no reconstruido en código.
           34 px de alto como el monograma que reemplaza; el ancho sale de la
           proporción del archivo (2480 × 680).
 
@@ -64,7 +64,7 @@ export function SiteFooter() {
           no depende de ninguna fuente instalada. */}
       <Link href="/" className="flex items-center">
         <Image
-          src="/logos/sonoro-lockup-negro.png"
+          src="/logos/sonoro_v2/sonoro-lockup-negro.png"
           alt="Sonoro"
           width={124}
           height={34}
