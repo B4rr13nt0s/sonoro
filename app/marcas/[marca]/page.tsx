@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { LogoMarca } from "@/components/catalog/LogoMarca";
 import { OrdenSelector } from "@/components/catalog/OrdenSelector";
 import { Pagination } from "@/components/catalog/Pagination";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { buildMarcaHref, hrefsDeOrden } from "@/lib/catalog/href.ts";
 import {
   listAllProducts,
@@ -20,6 +20,18 @@ import {
 import { CATEGORIA_SISTEMAS, perteneceACategoria } from "@/lib/catalog/categorias.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 import { masFrecuentes, textosMarca } from "@/lib/seo/textos.ts";
+
+// Logos apaisados (de 4:1 a 7:1): con el tope de 380 px de ancho quedaban
+// chicos al lado de los de proporción casi cuadrada, que se limitan por alto.
+// 640 px: los archivos de public/logos/marcas/ llegan a 960 (Cerwin Vega, cuyo
+// original es de 541, es la excepción y se ve un poco más suave).
+const LOGOS_ANCHOS: ReadonlySet<string> = new Set([
+  "memphis",
+  "rockford-fosgate",
+  "cerwin-vega",
+  "pioneer",
+  "focal",
+]);
 
 // Todas las marcas son data estática (data/brands.json, generado en build) —
 // igual que categorías y productos, cualquier slug fuera de esta lista es
@@ -145,10 +157,19 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
               el <title> de generateMetadata) pero visualmente oculto: el
               logo va centrado y solo, sin el nombre escrito a la par. */}
           <h1 className="sr-only">{marca.nombre}</h1>
-          <PlaceholderImage
-            label={`LOGO — ${marca.nombre}`}
-            className="h-[160px] w-full max-w-[380px] items-center justify-center lg:h-[220px]"
-          />
+          <div
+            className={`flex h-[160px] w-full items-center justify-center lg:h-[220px] ${
+              LOGOS_ANCHOS.has(marca.slug) ? "max-w-[640px]" : "max-w-[380px]"
+            }`}
+          >
+            <LogoMarca
+              marca={marca}
+              className={`max-h-[160px] lg:max-h-[220px] ${
+                LOGOS_ANCHOS.has(marca.slug) ? "max-w-[640px]" : "max-w-[380px]"
+              }`}
+              sizes={LOGOS_ANCHOS.has(marca.slug) ? "640px" : "380px"}
+            />
+          </div>
         </div>
       </section>
 

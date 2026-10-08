@@ -23,8 +23,10 @@ export const VALUE_LABELS = {
   configuracion: {
     "coaxial-2v": "Coaxial de 2 vías",
     "coaxial-3v": "Coaxial de 3 vías",
+    "coaxial-4v": "Coaxial de 4 vías",
     "componentes-2v": "Componentes de 2 vías",
     "componentes-3v": "Componentes de 3 vías",
+    "rango-completo": "Rango completo",
     "medio-rango": "Medio rango",
     tweeter: "Tweeter",
   },
@@ -176,6 +178,8 @@ export const MEDIDAS = [
   '2.5"',
   '1.5"',
   '1"',
+  '7/8"',
+  '3/4"',
   "50 mm",
   "44.4 mm",
   "40 mm",
@@ -208,22 +212,28 @@ const EQUIVALENCIAS_MEDIDA: Readonly<Record<Medida, string>> = {
   '2.5"': "6.4 cm",
   '1.5"': "3.8 cm",
   '1"': "2.5 cm",
+  '7/8"': "2.2 cm",
+  '3/4"': "1.9 cm",
   "50 mm": '2"',
   "44.4 mm": '1.75"',
   "40 mm": '1.5"',
 };
 
-// Magnitud de una medida para ordenar. Tres grupos: pulgadas (redondas y
-// ovaladas), milímetros al final, y cualquier texto que no se reconozca
-// después de todo. Un óvalo cuenta por su diámetro equivalente —el de un
-// círculo de la misma área, √(a·b)—, así 6x9" (≈7.3) cae entre 6.75" y 8".
+// Magnitud de una medida para ordenar. Tres grupos: pulgadas (redondas,
+// fraccionarias y ovaladas), milímetros al final, y cualquier texto que no se
+// reconozca después de todo. Una fracción vale su cociente (3/4" = 0.75, antes
+// de 1"). Un óvalo cuenta por su diámetro equivalente —el de un círculo de la
+// misma área, √(a·b)—, así 6x9" (≈7.3) cae entre 6.75" y 8".
 const RE_PULGADAS = /^(\d+(?:\.\d+)?)"$/;
+const RE_FRACCION = /^(\d+)\/(\d+)"$/;
 const RE_OVALO = /^(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)"$/;
 const RE_MILIMETROS = /^(\d+(?:\.\d+)?) mm$/;
 
 function magnitudMedida(medida: string): { grupo: number; magnitud: number } {
   const pulgadas = RE_PULGADAS.exec(medida);
   if (pulgadas) return { grupo: 0, magnitud: Number(pulgadas[1]) };
+  const fraccion = RE_FRACCION.exec(medida);
+  if (fraccion) return { grupo: 0, magnitud: Number(fraccion[1]) / Number(fraccion[2]) };
   const ovalo = RE_OVALO.exec(medida);
   if (ovalo) return { grupo: 0, magnitud: Math.sqrt(Number(ovalo[1]) * Number(ovalo[2])) };
   const milimetros = RE_MILIMETROS.exec(medida);

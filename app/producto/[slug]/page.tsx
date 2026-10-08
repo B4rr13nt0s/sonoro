@@ -131,7 +131,7 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
           superior y el de las miniaturas con el fondo de la columna. En móvil
           todo se apila en este orden. El ancho máximo y los márgenes dejan el
           contenido centrado, no pegado a las orillas. */}
-      <div className="mx-auto grid w-full max-w-[1424px] grid-cols-1 gap-x-12 px-6 py-8 sm:px-12 lg:grid-cols-[minmax(0,600px)_minmax(0,1fr)]">
+      <div className="mx-auto grid w-full max-w-[1520px] grid-cols-1 gap-x-12 px-6 py-8 sm:px-12 lg:grid-cols-[minmax(0,600px)_minmax(0,1fr)] lg:gap-x-20">
         <ProductGallery imagenes={producto.imagenes} nombre={producto.nombre} />
 
         <div className="flex flex-col gap-5 pt-6 lg:col-start-2 lg:row-start-1 lg:pt-3">
@@ -248,7 +248,7 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
       </div>
 
       <section className="bg-negro text-white">
-        <div className="mx-auto flex w-full max-w-[1424px] flex-col gap-10 px-6 py-14 sm:px-12 sm:py-20">
+        <div className="mx-auto flex w-full max-w-[1520px] flex-col gap-10 px-6 py-14 sm:px-12 sm:py-20">
           <div className="flex flex-col gap-3">
             <h2 className="text-34 font-semibold tracking-[-0.025em]">Ficha técnica</h2>
             <p className="text-texto-sobre-negro max-w-[620px] text-[16px] leading-[1.55]">

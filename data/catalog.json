@@ -65,7 +65,16 @@
     "precioCents": 80000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/TS-W312D4_frontal.jpg",
+        "alt": "Subwoofer Champion Series 12\" TS-W312D4 — frontal"
+      },
+      {
+        "url": "/productos/TS-W312D4_trasera.jpg",
+        "alt": "Subwoofer Champion Series 12\" TS-W312D4 — trasera"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -196,12 +205,12 @@
         "valor": "Polipropileno moldeado térmicamente con estructura grado militar"
       },
       {
-        "etiqueta": "Dimensiones",
-        "valor": "356 × 630 mm (105 + 140 mm de perfil)"
+        "etiqueta": "Caja",
+        "valor": "Sencilla porteada, alfombra negra resistente"
       },
       {
-        "etiqueta": "Aplicación",
-        "valor": "Camionetas y vehículos pequeños donde el espacio es limitado"
+        "etiqueta": "Dimensiones",
+        "valor": "356 × 630 mm (105 + 140 mm de perfil)"
       }
     ],
     "precioCents": 290000,
@@ -221,10 +230,10 @@
   {
     "sku": "KSL-8B",
     "slug": "kbt-ksl-8b",
-    "nombre": "Subwoofer plano de 8\" KSL-8B",
+    "nombre": "Subwoofer amplificado bajo asiento de 8\" KSL-8B",
     "marca": "KBT",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer plano de 8 pulgadas de la línea KSL para espacios reducidos",
+    "descripcionCorta": "Subwoofer amplificado compacto de 8 pulgadas de la línea KSL para espacios reducidos, con amplificador integrado",
     "specsDestacadas": [
       {
         "etiqueta": "Diámetro",
@@ -236,7 +245,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Bobina simple de 2 Ω"
+        "valor": "Bobina simple de 4 Ω"
       }
     ],
     "specsFicha": [
@@ -250,7 +259,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Bobina simple de 2 Ω"
+        "valor": "Bobina simple de 4 Ω"
       },
       {
         "etiqueta": "Perfil",
@@ -286,7 +295,7 @@
     "atributos": {
       "medida": "8\"",
       "potencia_rms_w": 150,
-      "impedancia_ohm": 2,
+      "impedancia_ohm": 4,
       "bobinas": "simple"
     }
   },
@@ -334,7 +343,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Doble bobina: permite cablear a 2 Ω o a 8 Ω según el amplificador"
+        "valor": "Doble bobina 4+4 Ω: permite cablear a 2 Ω (paralelo) o a 8 Ω (serie) según el amplificador"
       }
     ],
     "precioCents": 185000,
@@ -1014,7 +1023,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "300 W"
+        "valor": "180 W"
       },
       {
         "etiqueta": "Impedancia",
@@ -1028,7 +1037,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "300 W"
+        "valor": "180 W"
       },
       {
         "etiqueta": "Impedancia",
@@ -1036,7 +1045,7 @@
       },
       {
         "etiqueta": "Tipo",
-        "valor": "Subwoofer con amplificador integrado en caja"
+        "valor": "Subwoofer sellado de 10\" con radiador pasivo y amplificador clase D integrado, resistente al agua IP66"
       },
       {
         "etiqueta": "Perfil",
@@ -1044,11 +1053,11 @@
       },
       {
         "etiqueta": "Serie",
-        "valor": "NANO"
+        "valor": "NANOBOXX"
       },
       {
         "etiqueta": "Ventaja",
-        "valor": "Solución todo en uno para vehículos donde no cabe una cajón convencional"
+        "valor": "Solución todo en uno para vehículos donde no cabe un cajón convencional"
       }
     ],
     "precioCents": 460000,
@@ -1059,7 +1068,7 @@
     "activo": true,
     "atributos": {
       "medida": "10\"",
-      "potencia_rms_w": 300,
+      "potencia_rms_w": 180,
       "impedancia_ohm": 2,
       "bobinas": "simple"
     }
@@ -1082,7 +1091,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina de 2 Ω"
+        "valor": "Triple bobina de 2 Ω"
       }
     ],
     "specsFicha": [
@@ -1096,7 +1105,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina de 2 Ω"
+        "valor": "Triple bobina de 2 Ω"
       },
       {
         "etiqueta": "Sensibilidad",
@@ -1108,7 +1117,7 @@
       },
       {
         "etiqueta": "Serie",
-        "valor": "M7, la línea de mayor desempeño de Memphis"
+        "valor": "M7, el subwoofer más avanzado de la línea M-Series de Memphis"
       },
       {
         "etiqueta": "Aplicación",
@@ -1125,7 +1134,7 @@
       "medida": "15\"",
       "potencia_rms_w": 750,
       "impedancia_ohm": 2,
-      "bobinas": "doble",
+      "bobinas": "triple",
       "sensibilidad_db": 86.1
     }
   },
@@ -1135,7 +1144,7 @@
     "nombre": "Subwoofer MB de 15\" MB1524",
     "marca": "Memphis",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 15 pulgadas con impedancia seleccionable de 2 u 4 ohm",
+    "descripcionCorta": "Subwoofer de 15 pulgadas con impedancia seleccionable de 2 o 4 ohm",
     "specsDestacadas": [
       {
         "etiqueta": "Diámetro",
@@ -1147,7 +1156,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Triple bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       }
     ],
     "specsFicha": [
@@ -1161,7 +1170,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Triple bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       },
       {
         "etiqueta": "Profundidad de montaje",
@@ -1213,7 +1222,7 @@
     "nombre": "Subwoofer MOJO Mini de 8\" MJM812",
     "marca": "Memphis",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer compacto de 8 pulgadas con impedancia seleccionable de 1 u 2 ohm",
+    "descripcionCorta": "Subwoofer compacto de 8 pulgadas con impedancia seleccionable de 1 o 2 ohm",
     "specsDestacadas": [
       {
         "etiqueta": "Diámetro",
@@ -1225,7 +1234,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con impedancia seleccionable a 2 Ω o 1 Ω"
+        "valor": "Doble bobina con impedancia seleccionable a 1 Ω o 2 Ω"
       }
     ],
     "specsFicha": [
@@ -1239,7 +1248,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con impedancia seleccionable a 2 Ω o 1 Ω"
+        "valor": "Doble bobina con impedancia seleccionable a 1 Ω o 2 Ω"
       },
       {
         "etiqueta": "Profundidad de montaje",
@@ -1291,7 +1300,7 @@
     "nombre": "Subwoofer MOJO Mini de 6.5\" MJM612",
     "marca": "Memphis",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer compacto de 6.5 pulgadas con impedancia seleccionable de 1 u 2 ohm",
+    "descripcionCorta": "Subwoofer compacto de 6.5 pulgadas con impedancia seleccionable de 1 o 2 ohm",
     "specsDestacadas": [
       {
         "etiqueta": "Diámetro",
@@ -1303,7 +1312,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con impedancia seleccionable a 2 Ω o 1 Ω"
+        "valor": "Doble bobina con impedancia seleccionable a 1 Ω o 2 Ω"
       }
     ],
     "specsFicha": [
@@ -1317,7 +1326,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con impedancia seleccionable a 2 Ω o 1 Ω"
+        "valor": "Doble bobina con impedancia seleccionable a 1 Ω o 2 Ω"
       },
       {
         "etiqueta": "Profundidad de montaje",
@@ -1325,7 +1334,7 @@
       },
       {
         "etiqueta": "Sensibilidad",
-        "valor": "81 dB"
+        "valor": "82 dB"
       },
       {
         "etiqueta": "Serie",
@@ -1356,7 +1365,7 @@
       "impedancia_ohm": 2,
       "bobinas": "doble",
       "profundidad_mm": 127,
-      "sensibilidad_db": 81
+      "sensibilidad_db": 82
     }
   },
   {
@@ -1589,7 +1598,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Tecnología FLEX, seleccionable a 2 Ω, 1 Ω o 0.5 Ω"
+        "valor": "Tecnología FLEX, seleccionable a 0.5 Ω, 1 Ω o 2 Ω"
       }
     ],
     "specsFicha": [
@@ -1603,7 +1612,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Tecnología FLEX, seleccionable a 2 Ω, 1 Ω o 0.5 Ω"
+        "valor": "Tecnología FLEX, seleccionable a 0.5 Ω, 1 Ω o 2 Ω"
       },
       {
         "etiqueta": "Configuración",
@@ -1640,7 +1649,7 @@
       "medida": "12\"",
       "potencia_rms_w": 800,
       "impedancia_ohm": 2,
-      "bobinas": "doble"
+      "bobinas": "triple"
     }
   },
   {
@@ -1657,11 +1666,11 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "300 W"
+        "valor": "400 W"
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Tecnología FLEX, seleccionable a 4 Ω, 2 Ω o 1 Ω"
+        "valor": "Tecnología FLEX, seleccionable a 1 Ω, 2 Ω o 4 Ω"
       }
     ],
     "specsFicha": [
@@ -1671,11 +1680,11 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "300 W"
+        "valor": "400 W"
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Tecnología FLEX, seleccionable a 4 Ω, 2 Ω o 1 Ω"
+        "valor": "Tecnología FLEX, seleccionable a 1 Ω, 2 Ω o 4 Ω"
       },
       {
         "etiqueta": "Configuración",
@@ -1683,7 +1692,7 @@
       },
       {
         "etiqueta": "Diseño",
-        "valor": "Ventilado con puerto frontal abocinado que reduce distorsión"
+        "valor": "Ventilado con puerto rectangular de disparo frontal y boca plástica abocinada que reduce el ruido de ventilación"
       },
       {
         "etiqueta": "Iluminación",
@@ -1706,9 +1715,9 @@
     "activo": true,
     "atributos": {
       "medida": "12\"",
-      "potencia_rms_w": 300,
+      "potencia_rms_w": 400,
       "impedancia_ohm": 4,
-      "bobinas": "simple"
+      "bobinas": "triple"
     }
   },
   {
@@ -1729,7 +1738,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       }
     ],
     "specsFicha": [
@@ -1743,7 +1752,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       },
       {
         "etiqueta": "Profundidad de montaje",
@@ -1751,7 +1760,7 @@
       },
       {
         "etiqueta": "Sensibilidad",
-        "valor": "86.3 dB"
+        "valor": "86.4 dB"
       },
       {
         "etiqueta": "Cono",
@@ -1782,7 +1791,7 @@
       "impedancia_ohm": 4,
       "bobinas": "doble",
       "profundidad_mm": 76,
-      "sensibilidad_db": 86.3
+      "sensibilidad_db": 86.4
     }
   },
   {
@@ -1803,7 +1812,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       }
     ],
     "specsFicha": [
@@ -1817,7 +1826,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       },
       {
         "etiqueta": "Profundidad de montaje",
@@ -1837,7 +1846,7 @@
       },
       {
         "etiqueta": "Imán",
-        "valor": "50 oz"
+        "valor": "45 oz"
       },
       {
         "etiqueta": "Cono",
@@ -1881,7 +1890,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Triple bobina Tri-Flex, seleccionable a 4 Ω, 2 Ω o 1 Ω"
+        "valor": "Triple bobina Tri-Flex, seleccionable a 1 Ω, 2 Ω o 4 Ω"
       }
     ],
     "specsFicha": [
@@ -1895,7 +1904,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Triple bobina Tri-Flex, seleccionable a 4 Ω, 2 Ω o 1 Ω"
+        "valor": "Triple bobina Tri-Flex, seleccionable a 1 Ω, 2 Ω o 4 Ω"
       },
       {
         "etiqueta": "Iluminación",
@@ -1941,11 +1950,11 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "350 W"
+        "valor": "400 W"
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Triple bobina Tri-Flex, seleccionable a 4 Ω, 2 Ω o 1 Ω"
+        "valor": "Triple bobina Tri-Flex, seleccionable a 1 Ω, 2 Ω o 4 Ω"
       }
     ],
     "specsFicha": [
@@ -1955,11 +1964,11 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "350 W"
+        "valor": "400 W"
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Triple bobina Tri-Flex, seleccionable a 4 Ω, 2 Ω o 1 Ω"
+        "valor": "Triple bobina Tri-Flex, seleccionable a 1 Ω, 2 Ω o 4 Ω"
       },
       {
         "etiqueta": "Iluminación",
@@ -1982,7 +1991,7 @@
     "activo": true,
     "atributos": {
       "medida": "10\"",
-      "potencia_rms_w": 350,
+      "potencia_rms_w": 400,
       "impedancia_ohm": 4,
       "bobinas": "triple"
     }
@@ -2005,7 +2014,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Triple bobina Tri-Flex, seleccionable a 4 Ω, 2 Ω o 1 Ω"
+        "valor": "Triple bobina Tri-Flex, seleccionable a 1 Ω, 2 Ω o 4 Ω"
       }
     ],
     "specsFicha": [
@@ -2019,7 +2028,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Triple bobina Tri-Flex, seleccionable a 4 Ω, 2 Ω o 1 Ω"
+        "valor": "Triple bobina Tri-Flex, seleccionable a 1 Ω, 2 Ω o 4 Ω"
       },
       {
         "etiqueta": "Potencia máxima",
@@ -2065,7 +2074,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Triple bobina Tri-Flex, seleccionable a 4 Ω, 2 Ω o 1 Ω"
+        "valor": "Triple bobina Tri-Flex, seleccionable a 1 Ω, 2 Ω o 4 Ω"
       }
     ],
     "specsFicha": [
@@ -2079,7 +2088,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Triple bobina Tri-Flex, seleccionable a 4 Ω, 2 Ω o 1 Ω"
+        "valor": "Triple bobina Tri-Flex, seleccionable a 1 Ω, 2 Ω o 4 Ω"
       },
       {
         "etiqueta": "Potencia máxima",
@@ -2125,7 +2134,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       }
     ],
     "specsFicha": [
@@ -2139,11 +2148,11 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       },
       {
         "etiqueta": "Profundidad de montaje",
-        "valor": "130 mm"
+        "valor": "99 mm"
       },
       {
         "etiqueta": "Selector",
@@ -2181,7 +2190,7 @@
       "potencia_rms_w": 200,
       "impedancia_ohm": 4,
       "bobinas": "doble",
-      "profundidad_mm": 130
+      "profundidad_mm": 99
     }
   },
   {
@@ -2202,7 +2211,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω mediante jumpers"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω mediante jumpers"
       }
     ],
     "specsFicha": [
@@ -2216,7 +2225,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω mediante jumpers"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω mediante jumpers"
       },
       {
         "etiqueta": "Profundidad de montaje",
@@ -2244,7 +2253,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Papel tratado con suspensión de butilo de doble costura, canasta de acero estampado"
+        "valor": "Polipropileno negro con suspensión de butilo de doble costura, canasta de acero estampado"
       }
     ],
     "precioCents": 80000,
@@ -2276,7 +2285,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "500 W"
+        "valor": "600 W"
       },
       {
         "etiqueta": "Impedancia",
@@ -2290,7 +2299,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "500 W"
+        "valor": "600 W"
       },
       {
         "etiqueta": "Impedancia",
@@ -2333,7 +2342,7 @@
     "activo": true,
     "atributos": {
       "medida": "12\"",
-      "potencia_rms_w": 500,
+      "potencia_rms_w": 600,
       "impedancia_ohm": 2,
       "bobinas": "simple"
     }
@@ -2352,7 +2361,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "250 W"
+        "valor": "300 W"
       },
       {
         "etiqueta": "Impedancia",
@@ -2366,7 +2375,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "250 W"
+        "valor": "300 W"
       },
       {
         "etiqueta": "Impedancia",
@@ -2401,7 +2410,7 @@
     "activo": true,
     "atributos": {
       "medida": "12\"",
-      "potencia_rms_w": 250,
+      "potencia_rms_w": 300,
       "impedancia_ohm": 2,
       "bobinas": "simple"
     }
@@ -2487,10 +2496,10 @@
   {
     "sku": "RZRPRO10SE",
     "slug": "memphis-rzrpro10se",
-    "nombre": "Cajón amplificado 10\" para Polaris RZR",
+    "nombre": "Cajón amplificado 10\" para Polaris RZR PRO XP RZRPRO10SE",
     "marca": "Memphis",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Cajón amplificado de 10 pulgadas de ajuste directo para Polaris RZR con LED RGB",
+    "descripcionCorta": "Cajón amplificado de 10 pulgadas de ajuste directo para Polaris RZR PRO XP 2020+ con LED RGB",
     "specsDestacadas": [
       {
         "etiqueta": "Diámetro",
@@ -2528,7 +2537,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Polaris RZR 2014 y posteriores"
+        "valor": "Polaris RZR PRO XP 2020 y posteriores"
       },
       {
         "etiqueta": "Construcción",
@@ -2574,7 +2583,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       }
     ],
     "specsFicha": [
@@ -2588,7 +2597,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       },
       {
         "etiqueta": "Profundidad de montaje",
@@ -2608,7 +2617,7 @@
       },
       {
         "etiqueta": "Serie",
-        "valor": "MM Marine"
+        "valor": "MXA Marine"
       },
       {
         "etiqueta": "Potencia máxima",
@@ -2648,7 +2657,7 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       }
     ],
     "specsFicha": [
@@ -2662,11 +2671,11 @@
       },
       {
         "etiqueta": "Impedancia",
-        "valor": "Doble bobina con tecnología FLEX, seleccionable a 4 Ω o 2 Ω"
+        "valor": "Doble bobina con tecnología FLEX, seleccionable a 2 Ω o 4 Ω"
       },
       {
         "etiqueta": "Profundidad de montaje",
-        "valor": "116 mm"
+        "valor": "114 mm"
       },
       {
         "etiqueta": "Sensibilidad",
@@ -2682,7 +2691,7 @@
       },
       {
         "etiqueta": "Serie",
-        "valor": "MM Marine"
+        "valor": "MXA Marine"
       },
       {
         "etiqueta": "Potencia máxima",
@@ -2699,8 +2708,8 @@
       "medida": "10\"",
       "potencia_rms_w": 250,
       "impedancia_ohm": 4,
-      "bobinas": "simple",
-      "profundidad_mm": 116,
+      "bobinas": "doble",
+      "profundidad_mm": 114,
       "sensibilidad_db": 86
     }
   },
@@ -2833,11 +2842,11 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Fibra de carbono, PMI y fibra de vidrio con tapa de aluminio y suspensión de espuma con tecnología VAST"
+        "valor": "Fibra de carbono lineal, PMI y fibra de vidrio con tapa de aluminio y suspensión de polímero orgánico sintético supercrítico"
       },
       {
         "etiqueta": "Motor",
-        "valor": "Neodimio de alta temperatura, bobina CCA de 58 mm, Xmax 15 mm"
+        "valor": "Neodimio de alta temperatura, bobina de cobre puro de 63.5 mm (2.5\") de doble devanado, Xmax 15 mm"
       },
       {
         "etiqueta": "Optimizado para",
@@ -3427,7 +3436,7 @@
       },
       {
         "etiqueta": "Protección ambiental",
-        "valor": "Element Ready con certificación IP67, resistente a agua, sal y rayos UV"
+        "valor": "Element Ready con clasificación IPX6, resistente a agua, sal y rayos UV"
       },
       {
         "etiqueta": "Conexión",
@@ -3435,7 +3444,7 @@
       },
       {
         "etiqueta": "Desplazamiento del woofer",
-        "valor": "4.20 litros"
+        "valor": "1.74 litros"
       },
       {
         "etiqueta": "Presentación",
@@ -3491,7 +3500,7 @@
       },
       {
         "etiqueta": "Amplificador",
-        "valor": "Clase D integrado en disipador de aluminio fundido"
+        "valor": "Amplificador integrado en disipador de aluminio fundido"
       },
       {
         "etiqueta": "Potencia máxima",
@@ -3529,7 +3538,7 @@
     "nombre": "Subwoofer amplificado de 10\" VR10",
     "marca": "Cerwin Vega",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 10 pulgadas de la serie VR para caja sellada o ventilada",
+    "descripcionCorta": "Subwoofer amplificado de 10 pulgadas con radiador pasivo para instalación bajo asiento",
     "specsDestacadas": [
       {
         "etiqueta": "Diámetro",
@@ -3567,7 +3576,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Caja sellada o ventilada, alimentado por amplificador monoblock"
+        "valor": "Caja compacta con amplificador integrado y radiador pasivo para instalación bajo asiento"
       }
     ],
     "precioCents": 250000,
@@ -3687,7 +3696,7 @@
       },
       {
         "etiqueta": "Diámetro de corte",
-        "valor": "283 mm"
+        "valor": "236 mm"
       },
       {
         "etiqueta": "Cono",
@@ -3800,7 +3809,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "60 W por bocina"
+        "valor": "50 W por bocina"
       }
     ],
     "specsFicha": [
@@ -3814,7 +3823,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "60 W por bocina"
+        "valor": "50 W por bocina"
       },
       {
         "etiqueta": "Impedancia",
@@ -3832,12 +3841,17 @@
     "precioCents": 60000,
     "moneda": "GTQ",
     "disponibilidad": "agotado",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/TS-R6951S_frontal.jpg",
+        "alt": "Bocinas coaxiales de 6x9\" TS-R6951S — frontal"
+      }
+    ],
     "destacado": false,
     "activo": false,
     "atributos": {
       "medida": "6x9\"",
-      "potencia_rms_w": 60,
+      "potencia_rms_w": 50,
       "impedancia_ohm": 4,
       "configuracion": "coaxial-3v"
     }
@@ -3908,7 +3922,16 @@
     "precioCents": 45000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/TS-R1651S_frontal.jpg",
+        "alt": "Bocinas coaxiales de 6.5\" TS-R1651S — frontal"
+      },
+      {
+        "url": "/productos/TS-R1651S_lateral.jpg",
+        "alt": "Bocinas coaxiales de 6.5\" TS-R1651S — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -3930,7 +3953,7 @@
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
-        "valor": "8\" (20 cm)"
+        "valor": "7/8\" (2.2 cm)"
       },
       {
         "etiqueta": "Configuración",
@@ -3944,7 +3967,7 @@
     "specsFicha": [
       {
         "etiqueta": "Tamaño",
-        "valor": "8\" (20 cm)"
+        "valor": "7/8\" (2.2 cm)"
       },
       {
         "etiqueta": "Configuración",
@@ -3986,11 +4009,20 @@
     "precioCents": 50000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/TS-T110_frontal.jpg",
+        "alt": "Tweeters de 7/8\" TS-T110 — frontal"
+      },
+      {
+        "url": "/productos/TS-T110_grupal.jpg",
+        "alt": "Tweeters de 7/8\" TS-T110 — grupal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
-      "medida": "8\"",
+      "medida": "7/8\"",
       "potencia_rms_w": 40,
       "impedancia_ohm": 4,
       "configuracion": "tweeter",
@@ -4623,7 +4655,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "125 W por bocina"
+        "valor": "175 W por bocina"
       }
     ],
     "specsFicha": [
@@ -4637,7 +4669,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "125 W por bocina"
+        "valor": "175 W por bocina"
       },
       {
         "etiqueta": "Impedancia",
@@ -4660,7 +4692,7 @@
     "activo": true,
     "atributos": {
       "medida": "6.5\"",
-      "potencia_rms_w": 125,
+      "potencia_rms_w": 175,
       "impedancia_ohm": 4,
       "configuracion": "medio-rango"
     }
@@ -4683,7 +4715,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "125 W por bocina"
+        "valor": "150 W por bocina"
       }
     ],
     "specsFicha": [
@@ -4697,7 +4729,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "125 W por bocina"
+        "valor": "150 W por bocina"
       },
       {
         "etiqueta": "Impedancia",
@@ -4720,7 +4752,7 @@
     "activo": true,
     "atributos": {
       "medida": "6.5\"",
-      "potencia_rms_w": 125,
+      "potencia_rms_w": 150,
       "impedancia_ohm": 4,
       "configuracion": "medio-rango"
     }
@@ -4743,7 +4775,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "100 W por bocina"
+        "valor": "50 W por bocina"
       }
     ],
     "specsFicha": [
@@ -4757,7 +4789,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "100 W por bocina"
+        "valor": "50 W por bocina"
       },
       {
         "etiqueta": "Impedancia",
@@ -4780,7 +4812,7 @@
     "activo": true,
     "atributos": {
       "medida": "6.5\"",
-      "potencia_rms_w": 100,
+      "potencia_rms_w": 50,
       "impedancia_ohm": 4,
       "configuracion": "medio-rango"
     }
@@ -5070,7 +5102,7 @@
     "nombre": "Tweeter de punta de bala de 44.4 mm KBT-112",
     "marca": "KBT",
     "categoria": "Bocinas",
-    "descripcionCorta": "Tweeter tipo bala de diafragma de aluminio, 200W RMS y104 dB de sensibilidad",
+    "descripcionCorta": "Tweeter tipo bala de diafragma de titanio, 200 W RMS y 104 dB de sensibilidad",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -5381,7 +5413,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Fibra de carbono con suspensión de butilo"
+        "valor": "Fibra de carbono con suspensión de hule"
       },
       {
         "etiqueta": "Tweeter",
@@ -5413,7 +5445,7 @@
     "nombre": "Bocinas convertibles MClass de 6x9\" MS69V",
     "marca": "Memphis",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de bocinas de 6x9 pulgadas convertibles de coaxial a componentes",
+    "descripcionCorta": "Par de bocinas de 6x9 pulgadas convertibles de coaxial a componentes con el kit MSCKIT (se vende por separado)",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -5463,7 +5495,7 @@
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Domo de aluminio, removible y reposicionable"
+        "valor": "Domo de aluminio multimontaje; para reubicarlo se necesita el kit MSCKIT (se vende aparte)"
       },
       {
         "etiqueta": "Contenido",
@@ -5491,7 +5523,7 @@
     "nombre": "Bocinas convertibles MClass de 6.5\" MS60V",
     "marca": "Memphis",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de bocinas de 6.5 pulgadas sobredimensionadas convertibles de coaxial a componentes",
+    "descripcionCorta": "Par de bocinas de 6.5 pulgadas sobredimensionadas convertibles de coaxial a componentes con el kit MSCKIT (se vende por separado)",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -5529,11 +5561,11 @@
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Domo de aluminio con capacidad de giro"
+        "valor": "Domo de aluminio multimontaje; para reubicarlo se necesita el kit MSCKIT (se vende aparte)"
       },
       {
         "etiqueta": "Crossover",
-        "valor": "En línea, incluido"
+        "valor": "Pasivo externo, incluido, con montaje MClip"
       },
       {
         "etiqueta": "Serie",
@@ -5560,10 +5592,10 @@
   {
     "sku": "MSA1",
     "slug": "memphis-msa1",
-    "nombre": "Tweeter MClass de 1\" MSA1",
+    "nombre": "Tweeters M-Series de 1\" MSA1",
     "marca": "Memphis",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de tweeters de domo de aluminio de 1 pulgada para sistemas de componentes MClass",
+    "descripcionCorta": "Par de tweeters de domo de aluminio de 1 pulgada de la serie M-Series, con crossovers externos",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -5575,7 +5607,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "50 W por bocina"
+        "valor": "75 W por bocina"
       }
     ],
     "specsFicha": [
@@ -5589,7 +5621,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "50 W por bocina"
+        "valor": "75 W por bocina"
       },
       {
         "etiqueta": "Impedancia",
@@ -5597,7 +5629,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Se combina con medios MClass para armar sistemas de 2 o 3 vías"
+        "valor": "Se combina con medios M-Series para armar sistemas de 2 o 3 vías"
       },
       {
         "etiqueta": "Montaje",
@@ -5605,7 +5637,7 @@
       },
       {
         "etiqueta": "Presentación",
-        "valor": "Par de tweeters"
+        "valor": "Par de tweeters con crossovers externos de 2 vías"
       }
     ],
     "precioCents": 175000,
@@ -5616,7 +5648,7 @@
     "activo": true,
     "atributos": {
       "medida": "1\"",
-      "potencia_rms_w": 50,
+      "potencia_rms_w": 75,
       "impedancia_ohm": 4,
       "configuracion": "tweeter"
     }
@@ -5688,7 +5720,7 @@
   {
     "sku": "MS25",
     "slug": "memphis-ms25",
-    "nombre": "Bocinas de rango medio MClass de 2.5\" MS25",
+    "nombre": "Bocinas de rango medio M-Series de 2.5\" MS25",
     "marca": "Memphis",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas de medio rango de 2.5 pulgadas con cono de fibra de carbono",
@@ -5737,7 +5769,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Tercera vía en sistemas de componentes MClass de 3 vías"
+        "valor": "Reemplazo de bocinas de fábrica de 2.5\" (adaptador OEM para GM, Toyota y Mercedes) o tercera vía en sistemas M-Series"
       },
       {
         "etiqueta": "Presentación",
@@ -5810,7 +5842,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Papel tratado con suspensión de tela tipo acordeón y tapa de aluminio"
+        "valor": "Papel rígido con suspensión de tela tipo acordeón y phase plug de aluminio maquinado"
       },
       {
         "etiqueta": "Resistencia",
@@ -5883,7 +5915,7 @@
       },
       {
         "etiqueta": "Potencia máxima",
-        "valor": "250 W o 400 W según la revisión"
+        "valor": "250 W"
       },
       {
         "etiqueta": "Motor",
@@ -5931,7 +5963,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "250 W por bocina"
+        "valor": "200 W por bocina"
       }
     ],
     "specsFicha": [
@@ -5945,7 +5977,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "250 W por bocina"
+        "valor": "200 W por bocina"
       },
       {
         "etiqueta": "Impedancia",
@@ -5961,7 +5993,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Papel tratado con suspensión de tela tipo acordeón"
+        "valor": "Suspensión de tela tipo acordeón; ojiva (phase plug) de aluminio maquinado"
       },
       {
         "etiqueta": "Canasta",
@@ -5984,7 +6016,7 @@
     "activo": true,
     "atributos": {
       "medida": "8\"",
-      "potencia_rms_w": 250,
+      "potencia_rms_w": 200,
       "impedancia_ohm": 4,
       "configuracion": "medio-rango"
     }
@@ -6041,7 +6073,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Papel rígido tratado con suspensión de tela tipo acordeón y tapa de aluminio"
+        "valor": "Suspensión de tela tipo acordeón y ojiva (phase plug) de aluminio maquinado"
       },
       {
         "etiqueta": "Canasta",
@@ -6256,7 +6288,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Polipropileno reforzado con grafito y suspensión de poliuretano"
+        "valor": "Polipropileno reforzado con grafito y suspensión de hule butilo"
       },
       {
         "etiqueta": "Tweeter",
@@ -6334,7 +6366,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Polipropileno reforzado con grafito y suspensión de poliuretano"
+        "valor": "Polipropileno reforzado con grafito y suspensión de hule butilo"
       },
       {
         "etiqueta": "Tweeter",
@@ -6412,7 +6444,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Polipropileno reforzado con grafito y suspensión de poliuretano"
+        "valor": "Polipropileno reforzado con grafito y suspensión de hule butilo"
       },
       {
         "etiqueta": "Tweeter",
@@ -6624,10 +6656,10 @@
   {
     "sku": "PRX27",
     "slug": "memphis-prx27",
-    "nombre": "Bocinas coaxiales Power Reference de 2.75\" PRX27",
+    "nombre": "Bocinas de rango completo Power Reference de 2.75\" PRX27",
     "marca": "Memphis",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de bocinas coaxiales de 2.75 pulgadas de 2 vías",
+    "descripcionCorta": "Par de bocinas de rango completo de 2.75 pulgadas, de reemplazo de fábrica, con cono de papel ligero",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -6635,7 +6667,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Coaxial de 2 vías"
+        "valor": "Rango completo"
       },
       {
         "etiqueta": "Potencia RMS",
@@ -6649,7 +6681,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Coaxial de 2 vías"
+        "valor": "Rango completo"
       },
       {
         "etiqueta": "Potencia RMS",
@@ -6682,7 +6714,7 @@
       "medida": "2.75\"",
       "potencia_rms_w": 15,
       "impedancia_ohm": 4,
-      "configuracion": "coaxial-2v",
+      "configuracion": "rango-completo",
       "sensibilidad_db": 85
     }
   },
@@ -6692,7 +6724,7 @@
     "nombre": "Tweeters Power Reference de 1\" PRX10",
     "marca": "Memphis",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de tweeters de domo PEI de 1 pulgada con crossover de 2 vías incluido",
+    "descripcionCorta": "Par de tweeters de domo PEI de 1 pulgada con crossover de 6 dB integrado",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -6730,7 +6762,7 @@
       },
       {
         "etiqueta": "Crossover",
-        "valor": "De 2 vías, incluido"
+        "valor": "Crossover pasa-altos de 6 dB/octava integrado"
       },
       {
         "etiqueta": "Aplicación",
@@ -6738,7 +6770,7 @@
       },
       {
         "etiqueta": "Presentación",
-        "valor": "Par de tweeters con crossovers"
+        "valor": "Par de tweeters con crossover integrado, carcasas de montaje al ras y de superficie en ángulo"
       }
     ],
     "precioCents": 80000,
@@ -6772,7 +6804,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "125 W por bocina"
+        "valor": "175 W por bocina"
       }
     ],
     "specsFicha": [
@@ -6786,7 +6818,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "125 W por bocina"
+        "valor": "175 W por bocina"
       },
       {
         "etiqueta": "Impedancia",
@@ -6794,7 +6826,7 @@
       },
       {
         "etiqueta": "Potencia máxima",
-        "valor": "250 W"
+        "valor": "350 W"
       },
       {
         "etiqueta": "Tweeter",
@@ -6821,7 +6853,7 @@
     "activo": true,
     "atributos": {
       "medida": "6x9\"",
-      "potencia_rms_w": 125,
+      "potencia_rms_w": 175,
       "impedancia_ohm": 4,
       "configuracion": "coaxial-2v"
     }
@@ -6844,7 +6876,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "125 W por bocina"
+        "valor": "175 W por bocina"
       }
     ],
     "specsFicha": [
@@ -6858,7 +6890,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "125 W por bocina"
+        "valor": "175 W por bocina"
       },
       {
         "etiqueta": "Impedancia",
@@ -6889,7 +6921,7 @@
     "activo": true,
     "atributos": {
       "medida": "8\"",
-      "potencia_rms_w": 125,
+      "potencia_rms_w": 175,
       "impedancia_ohm": 4,
       "configuracion": "coaxial-2v"
     }
@@ -7090,7 +7122,7 @@
       },
       {
         "etiqueta": "Contenido",
-        "valor": "2 medios de 6.5 pulgadas y 2 tweeters de bocina de 4 pulgadas"
+        "valor": "2 medios de 6.5 pulgadas, 2 tweeters de bocina de 4 pulgadas SRXPT y 2 crossovers"
       }
     ],
     "precioCents": 200000,
@@ -7113,7 +7145,7 @@
     "nombre": "Bocinas de medio rango SRX Pro de 8\" SRXP82V2",
     "marca": "Memphis",
     "categoria": "Bocinas",
-    "descripcionCorta": "Bocina de medio rango de 8 pulgadas de alta presión sonora con LED y motor de neodimio",
+    "descripcionCorta": "Bocina de medio rango de 8 pulgadas de alta presión sonora con iluminación LED RGB",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -7151,7 +7183,7 @@
       },
       {
         "etiqueta": "Motor",
-        "valor": "Imán de neodimio, de menor tamaño y peso que uno de ferrita equivalente"
+        "valor": "Imán de 28 oz"
       },
       {
         "etiqueta": "Canasta",
@@ -7163,7 +7195,7 @@
       },
       {
         "etiqueta": "Iluminación",
-        "valor": "LED integrada"
+        "valor": "Iluminación de acento LED RGB"
       },
       {
         "etiqueta": "Serie",
@@ -7231,7 +7263,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Papel tratado ultraligero con relleno de fibra y borde de tela"
+        "valor": "Papel con relleno de fibra de vidrio y borde de tela"
       },
       {
         "etiqueta": "Suspensión",
@@ -7243,7 +7275,7 @@
       },
       {
         "etiqueta": "Iluminación",
-        "valor": "LED RGB en la tapa de polvo"
+        "valor": "Iluminación de acento LED RGB"
       }
     ],
     "precioCents": 140000,
@@ -7633,7 +7665,7 @@
     "nombre": "Tweeters Street Reference SRX1",
     "marca": "Memphis",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de tweeters de 1 pulgada con domo de de mylar",
+    "descripcionCorta": "Par de tweeters de 1 pulgada con domo de mylar",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -7786,7 +7818,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "150 W por bocina"
+        "valor": "200 W por bocina"
       }
     ],
     "specsFicha": [
@@ -7800,7 +7832,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "150 W por bocina"
+        "valor": "200 W por bocina"
       },
       {
         "etiqueta": "Impedancia",
@@ -7812,7 +7844,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Montaje en torre de wakeboard o barra antivuelco"
+        "valor": "Montaje en torre de wakeboard o barra antivuelco de 1.75\" a 3\", con brackets de acero inoxidable fundido giratorios 360°"
       },
       {
         "etiqueta": "Presentación",
@@ -7820,7 +7852,7 @@
       },
       {
         "etiqueta": "Serie",
-        "valor": "MM Marine"
+        "valor": "Torres con tecnología ATAC"
       }
     ],
     "precioCents": 1470000,
@@ -7831,7 +7863,7 @@
     "activo": true,
     "atributos": {
       "medida": "8\"",
-      "potencia_rms_w": 150,
+      "potencia_rms_w": 200,
       "impedancia_ohm": 4,
       "configuracion": "coaxial-2v"
     }
@@ -7888,7 +7920,7 @@
       },
       {
         "etiqueta": "Montaje",
-        "valor": "Herraje de aluminio ajustable con giro de 360°, brackets opcionales para distintas jaulas y barras"
+        "valor": "Herraje de aluminio ajustable con giro de 360°, abrazadera para tubos de 1.5\" a 2.25\""
       },
       {
         "etiqueta": "Iluminación",
@@ -7960,15 +7992,15 @@
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Domo de aluminio de 1\" con montaje giratorio"
+        "valor": "Domo de aluminio con montaje giratorio"
       },
       {
         "etiqueta": "Iluminación",
-        "valor": "Anillos LED RGB integrados, multicolor"
+        "valor": "Rejillas con LED RGB; requieren controlador RGB"
       },
       {
         "etiqueta": "Incluye",
-        "valor": "Dos juegos de rejillas de malla de aluminio resistentes a rayos UV"
+        "valor": "Dos juegos de rejillas, gunmetal y blanco, con malla removible"
       },
       {
         "etiqueta": "Presentación",
@@ -8036,15 +8068,15 @@
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Domo de aluminio de 1\" con montaje giratorio"
+        "valor": "Domo de aluminio con montaje giratorio"
       },
       {
         "etiqueta": "Iluminación",
-        "valor": "Anillos LED RGB integrados, multicolor"
+        "valor": "Rejillas con LED RGB; requieren controlador RGB"
       },
       {
         "etiqueta": "Incluye",
-        "valor": "Dos juegos de rejillas de malla de aluminio resistentes a rayos UV, en negro y plata"
+        "valor": "Dos juegos de rejillas, gunmetal y blanco, con malla removible"
       },
       {
         "etiqueta": "Presentación",
@@ -8116,7 +8148,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Polipropileno moldeado por inyección con suspensión de hule"
+        "valor": "Polipropileno moldeado por inyección"
       },
       {
         "etiqueta": "Tweeter",
@@ -8152,7 +8184,7 @@
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
-        "valor": "4\" (10 cm)"
+        "valor": "3/4\" (1.9 cm)"
       },
       {
         "etiqueta": "Configuración",
@@ -8166,7 +8198,7 @@
     "specsFicha": [
       {
         "etiqueta": "Tamaño",
-        "valor": "4\" (10 cm)"
+        "valor": "3/4\" (1.9 cm)"
       },
       {
         "etiqueta": "Configuración",
@@ -8212,7 +8244,7 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "medida": "4\"",
+      "medida": "3/4\"",
       "potencia_rms_w": 50,
       "impedancia_ohm": 3,
       "configuracion": "tweeter",
@@ -8275,7 +8307,7 @@
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Domo balanceado de PEI de accionamiento perimetral"
+        "valor": "Domo balanceado de PEI"
       },
       {
         "etiqueta": "Contenido",
@@ -8583,7 +8615,7 @@
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Domo de aluminio tratado de 1\", montaje DDC"
+        "valor": "Domo de tela tratada de 1\", montaje DDC"
       },
       {
         "etiqueta": "Contenido",
@@ -8644,7 +8676,7 @@
       },
       {
         "etiqueta": "Sensibilidad",
-        "valor": "91 dB"
+        "valor": "90 dB"
       },
       {
         "etiqueta": "Potencia máxima",
@@ -8656,7 +8688,7 @@
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Doble domo de aluminio de 1\""
+        "valor": "Domo de aluminio de 1\" con supertweeter de aluminio de 1/2\""
       }
     ],
     "precioCents": 200000,
@@ -8670,7 +8702,7 @@
       "potencia_rms_w": 100,
       "impedancia_ohm": 4,
       "configuracion": "coaxial-3v",
-      "sensibilidad_db": 91
+      "sensibilidad_db": 90
     }
   },
   {
@@ -8691,7 +8723,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "80 W por bocina"
+        "valor": "75 W por bocina"
       }
     ],
     "specsFicha": [
@@ -8705,7 +8737,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "80 W por bocina"
+        "valor": "75 W por bocina"
       },
       {
         "etiqueta": "Impedancia",
@@ -8717,7 +8749,7 @@
       },
       {
         "etiqueta": "Potencia máxima",
-        "valor": "160 W"
+        "valor": "150 W"
       },
       {
         "etiqueta": "Respuesta en frecuencia",
@@ -8744,7 +8776,7 @@
     "activo": true,
     "atributos": {
       "medida": "6.5\"",
-      "potencia_rms_w": 80,
+      "potencia_rms_w": 75,
       "impedancia_ohm": 4,
       "configuracion": "coaxial-2v",
       "sensibilidad_db": 88
@@ -8938,12 +8970,12 @@
         "valor": "4 Ω"
       },
       {
-        "etiqueta": "Sensibilidad",
-        "valor": "89 dB"
+        "etiqueta": "Profundidad de montaje",
+        "valor": "79 mm"
       },
       {
-        "etiqueta": "Potencia máxima",
-        "valor": "150 W"
+        "etiqueta": "Sensibilidad",
+        "valor": "89 dB"
       },
       {
         "etiqueta": "Crossover",
@@ -8958,8 +8990,8 @@
         "valor": "Adaptadores específicos por vehículo y geometría de marco rediseñada"
       },
       {
-        "etiqueta": "Serie",
-        "valor": "Punch P1 V2, generación 2025"
+        "etiqueta": "Materiales",
+        "valor": "Plásticos Centrex y ASA resistentes a la radiación UV"
       }
     ],
     "precioCents": 245000,
@@ -8973,6 +9005,7 @@
       "potencia_rms_w": 75,
       "impedancia_ohm": 4,
       "configuracion": "coaxial-3v",
+      "profundidad_mm": 79,
       "sensibilidad_db": 89
     }
   },
@@ -8982,7 +9015,7 @@
     "nombre": "Bocinas coaxiales Punch P1 V2 de 4\" P1V2-4",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
-    "descripcionCorta": "Par de bocinas coaxiales de 4 pulgadas con crossover oculto integrado",
+    "descripcionCorta": "Par de bocinas coaxiales de 4 pulgadas de 3 vías con crossover oculto integrado y bass blocker externo incluido",
     "specsDestacadas": [
       {
         "etiqueta": "Tamaño",
@@ -8990,7 +9023,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Coaxial de 2 vías"
+        "valor": "Coaxial de 3 vías"
       },
       {
         "etiqueta": "Potencia RMS",
@@ -9004,7 +9037,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Coaxial de 2 vías"
+        "valor": "Coaxial de 3 vías"
       },
       {
         "etiqueta": "Potencia RMS",
@@ -9019,10 +9052,6 @@
         "valor": "85 dB"
       },
       {
-        "etiqueta": "Potencia máxima",
-        "valor": "150 W"
-      },
-      {
         "etiqueta": "Crossover",
         "valor": "Integrado y oculto dentro de la canasta"
       },
@@ -9037,6 +9066,10 @@
       {
         "etiqueta": "Serie",
         "valor": "Punch P1 V2, generación 2025"
+      },
+      {
+        "etiqueta": "Potencia máxima",
+        "valor": "150 W"
       }
     ],
     "precioCents": 160000,
@@ -9049,7 +9082,7 @@
       "medida": "4\"",
       "potencia_rms_w": 75,
       "impedancia_ohm": 4,
-      "configuracion": "coaxial-2v",
+      "configuracion": "coaxial-3v",
       "sensibilidad_db": 85
     }
   },
@@ -9144,7 +9177,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Coaxial de 2 vías"
+        "valor": "Coaxial de 4 vías"
       },
       {
         "etiqueta": "Potencia RMS",
@@ -9158,7 +9191,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Coaxial de 2 vías"
+        "valor": "Coaxial de 4 vías"
       },
       {
         "etiqueta": "Potencia RMS",
@@ -9186,11 +9219,11 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Polipropileno inyectado con mica (MIPP)"
+        "valor": "Polipropileno inyectado con carga mineral"
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Domo, configuración de 4 vías"
+        "valor": "Domo de PEI de 3/4\" (19 mm), configuración de 4 vías"
       }
     ],
     "precioCents": 155000,
@@ -9203,7 +9236,7 @@
       "medida": "6x9\"",
       "potencia_rms_w": 75,
       "impedancia_ohm": 4,
-      "configuracion": "coaxial-2v",
+      "configuracion": "coaxial-4v",
       "profundidad_mm": 78,
       "sensibilidad_db": 91
     }
@@ -9321,7 +9354,7 @@
       },
       {
         "etiqueta": "Profundidad de montaje",
-        "valor": "58 mm"
+        "valor": "56 mm"
       },
       {
         "etiqueta": "Sensibilidad",
@@ -9337,7 +9370,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Polipropileno con tecnología VAST"
+        "valor": "Polipropileno inyectado con relleno mineral"
       },
       {
         "etiqueta": "Tweeter",
@@ -9355,7 +9388,7 @@
       "potencia_rms_w": 60,
       "impedancia_ohm": 4,
       "configuracion": "coaxial-2v",
-      "profundidad_mm": 58,
+      "profundidad_mm": 56,
       "sensibilidad_db": 89
     }
   },
@@ -9399,7 +9432,7 @@
       },
       {
         "etiqueta": "Profundidad de montaje",
-        "valor": "44 mm"
+        "valor": "43 mm"
       },
       {
         "etiqueta": "Sensibilidad",
@@ -9415,7 +9448,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Polipropileno con tecnología VAST"
+        "valor": "Polipropileno inyectado con relleno mineral"
       },
       {
         "etiqueta": "Tweeter",
@@ -9433,7 +9466,7 @@
       "potencia_rms_w": 30,
       "impedancia_ohm": 4,
       "configuracion": "coaxial-2v",
-      "profundidad_mm": 44,
+      "profundidad_mm": 43,
       "sensibilidad_db": 86.5
     }
   },
@@ -9477,11 +9510,11 @@
       },
       {
         "etiqueta": "Profundidad de montaje",
-        "valor": "48 mm"
+        "valor": "46 mm"
       },
       {
         "etiqueta": "Sensibilidad",
-        "valor": "87.5 dB"
+        "valor": "90 dB"
       },
       {
         "etiqueta": "Potencia máxima",
@@ -9493,7 +9526,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Polipropileno con tecnología VAST"
+        "valor": "Polipropileno inyectado con relleno mineral"
       },
       {
         "etiqueta": "Tweeter",
@@ -9511,8 +9544,8 @@
       "potencia_rms_w": 35,
       "impedancia_ohm": 4,
       "configuracion": "coaxial-2v",
-      "profundidad_mm": 48,
-      "sensibilidad_db": 87.5
+      "profundidad_mm": 46,
+      "sensibilidad_db": 90
     }
   },
   {
@@ -9586,7 +9619,7 @@
   {
     "sku": "PPS4-8",
     "slug": "rockford-fosgate-pps4-8",
-    "nombre": "Bocinas de medio rango Punch Pro de 8\" PPS4-8",
+    "nombre": "Bocina de medio rango Punch Pro de 8\" PPS4-8",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 8 pulgadas para alta presión sonora",
@@ -9623,7 +9656,7 @@
       },
       {
         "etiqueta": "Sensibilidad",
-        "valor": "95 dB"
+        "valor": "94.5 dB"
       },
       {
         "etiqueta": "Cono",
@@ -9653,13 +9686,13 @@
       "potencia_rms_w": 125,
       "impedancia_ohm": 4,
       "configuracion": "medio-rango",
-      "sensibilidad_db": 95
+      "sensibilidad_db": 94.5
     }
   },
   {
     "sku": "PPS4-6",
     "slug": "rockford-fosgate-pps4-6",
-    "nombre": "Bocinas de medio rango Punch Pro de 6.5\" PPS4-6",
+    "nombre": "Bocina de medio rango Punch Pro de 6.5\" PPS4-6",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de medio rango de 6.5 pulgadas para alta presión sonora",
@@ -9716,7 +9749,7 @@
       },
       {
         "etiqueta": "Estructura",
-        "valor": "Canasta de aluminio fundido, bobina de aluminio de alta temperatura y tapón de fase maquinado"
+        "valor": "Canasta de aluminio estampado y fundido, bobina de aluminio de alta temperatura y tapón de fase de aluminio maquinado"
       }
     ],
     "precioCents": 240000,
@@ -9737,7 +9770,7 @@
   {
     "sku": "PP4-T",
     "slug": "rockford-fosgate-pp4-t",
-    "nombre": "Tweeters Punch Pro de 1.5\" PP4-T",
+    "nombre": "Tweeter Punch Pro de 1.5\" PP4-T",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Tweeters con driver de compresión para sistemas de alta presión sonora",
@@ -10088,7 +10121,7 @@
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Domo de seda montado al poste"
+        "valor": "Domo de seda de 1/2\" montado al ras"
       }
     ],
     "precioCents": 80000,
@@ -10166,7 +10199,7 @@
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Domo de seda montado al poste"
+        "valor": "Domo de seda de 1/2\" montado al ras"
       }
     ],
     "precioCents": 60000,
@@ -10328,7 +10361,7 @@
   {
     "sku": "M2WL-65MB",
     "slug": "rockford-fosgate-m2wl-65mb",
-    "nombre": "Bocinas de torre Marine M2 de 6.5\" M2WL-65MB",
+    "nombre": "Bocinas Moto-Can Color Optix M2 de 6.5\" M2WL-65MB",
     "marca": "Rockford Fosgate",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de torre marina de 6.5 pulgadas con iluminación LED, acabado negro",
@@ -10369,7 +10402,7 @@
       },
       {
         "etiqueta": "Montaje",
-        "valor": "Torre de wakeboard o barra antivuelco"
+        "valor": "Barra antivuelco (ROPS) de 1\" a 2\" de diámetro"
       },
       {
         "etiqueta": "Protección ambiental",
@@ -10457,11 +10490,11 @@
       },
       {
         "etiqueta": "Protección ambiental",
-        "valor": "Element Ready con certificación IP67, resistente a agua, sal y rayos UV"
+        "valor": "Element Ready con clasificación IPX6, resistente a agua, sal y rayos UV"
       },
       {
         "etiqueta": "Conexión",
-        "valor": "Conectores integrados Deutsch y Amphenol"
+        "valor": "Receptáculos Deutsch integrados para bocina y RGB"
       }
     ],
     "precioCents": 660000,
@@ -10683,7 +10716,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Tweeter"
+        "valor": "Coaxial de 2 vías"
       },
       {
         "etiqueta": "Potencia RMS",
@@ -10697,7 +10730,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Tweeter"
+        "valor": "Coaxial de 2 vías"
       },
       {
         "etiqueta": "Potencia RMS",
@@ -10725,7 +10758,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Papel tratado con tweeter cargado"
+        "valor": "Polipropileno con suspensión de tela tratada; tweeter bala de bocina con diafragma de poliimida"
       },
       {
         "etiqueta": "Diámetro de corte",
@@ -10742,7 +10775,7 @@
       "medida": "8\"",
       "potencia_rms_w": 100,
       "impedancia_ohm": 4,
-      "configuracion": "tweeter",
+      "configuracion": "coaxial-2v",
       "profundidad_mm": 105,
       "sensibilidad_db": 93.6
     }
@@ -10761,7 +10794,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Tweeter"
+        "valor": "Coaxial de 2 vías"
       },
       {
         "etiqueta": "Potencia RMS",
@@ -10775,7 +10808,7 @@
       },
       {
         "etiqueta": "Configuración",
-        "valor": "Tweeter"
+        "valor": "Coaxial de 2 vías"
       },
       {
         "etiqueta": "Potencia RMS",
@@ -10803,7 +10836,7 @@
       },
       {
         "etiqueta": "Cono",
-        "valor": "Papel tratado con tweeter cargado"
+        "valor": "Polipropileno con suspensión de tela tratada; tweeter bala de bocina con diafragma de poliimida"
       },
       {
         "etiqueta": "Diámetro de corte",
@@ -10820,7 +10853,7 @@
       "medida": "6x9\"",
       "potencia_rms_w": 60,
       "impedancia_ohm": 4,
-      "configuracion": "tweeter",
+      "configuracion": "coaxial-2v",
       "profundidad_mm": 103,
       "sensibilidad_db": 92.1
     }
@@ -11095,7 +11128,7 @@
   {
     "sku": "CVP69",
     "slug": "cerwin-vega-cvp69",
-    "nombre": "Bocinas de medio rango CVP de 6x9\" CVP69",
+    "nombre": "Bocina de rango completo CVP de 6x9\" CVP69",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de rango completo de 6x9 pulgadas para sistemas de alta presión sonora",
@@ -11144,11 +11177,11 @@
       },
       {
         "etiqueta": "Bobina",
-        "valor": "1.5\" de una capa, alta temperatura"
+        "valor": "1.5\""
       },
       {
         "etiqueta": "Imán",
-        "valor": "20 oz"
+        "valor": "Ferrita"
       },
       {
         "etiqueta": "Canasta",
@@ -11172,7 +11205,7 @@
   {
     "sku": "CVP8",
     "slug": "cerwin-vega-cvp8",
-    "nombre": "Bocinas de medio rango CVP de 8\" CVP8",
+    "nombre": "Bocina de rango completo CVP de 8\" CVP8",
     "marca": "Cerwin Vega",
     "categoria": "Bocinas",
     "descripcionCorta": "Bocina de rango completo de 8 pulgadas para sistemas de alta presión sonora",
@@ -11512,7 +11545,7 @@
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Domo balanceado de metal piezoeléctrico de 3/4\""
+        "valor": "Domo balanceado de metal de 1\""
       },
       {
         "etiqueta": "Incluye",
@@ -11585,7 +11618,7 @@
       },
       {
         "etiqueta": "Tweeter",
-        "valor": "Domo balanceado de metal piezoeléctrico de 1\""
+        "valor": "Domo balanceado de metal de 1\""
       },
       {
         "etiqueta": "Incluye",
@@ -11650,7 +11683,7 @@
       },
       {
         "etiqueta": "Potencia máxima",
-        "valor": "250 W"
+        "valor": "150 W"
       },
       {
         "etiqueta": "Cono",
@@ -11681,7 +11714,7 @@
     "nombre": "Amplificador marino de 5 canales CM-3000X5",
     "marca": "KBT",
     "categoria": "Amplificadores",
-    "descripcionCorta": "Amplificador marino de 5 canales con certificación IP68 para sistema completo con subwoofer",
+    "descripcionCorta": "Amplificador marino de 5 canales con certificación IP67 para sistema completo con subwoofer",
     "specsDestacadas": [
       {
         "etiqueta": "Canales",
@@ -11689,7 +11722,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "1,500 W"
+        "valor": "1,320 W"
       },
       {
         "etiqueta": "Clase",
@@ -11703,7 +11736,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "1,500 W"
+        "valor": "1,320 W"
       },
       {
         "etiqueta": "Clase",
@@ -11715,11 +11748,11 @@
       },
       {
         "etiqueta": "Protección",
-        "valor": "IP68"
+        "valor": "IP67"
       },
       {
         "etiqueta": "Protección ambiental",
-        "valor": "IP68, resistente a agua y polvo"
+        "valor": "IP67, resistente a agua y polvo"
       },
       {
         "etiqueta": "Aplicación",
@@ -11727,7 +11760,7 @@
       },
       {
         "etiqueta": "Línea",
-        "valor": "CM Marine"
+        "valor": "Captain Marino"
       }
     ],
     "precioCents": 400000,
@@ -11737,7 +11770,7 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "potencia_rms_w": 1500,
+      "potencia_rms_w": 1320,
       "canales": 5,
       "clase": "D"
     }
@@ -11748,7 +11781,7 @@
     "nombre": "Amplificador marino monoblock CM-1500X1",
     "marca": "KBT",
     "categoria": "Amplificadores",
-    "descripcionCorta": "Amplificador marino monoblock clase D con certificación IP68 para embarcaciones y todoterreno",
+    "descripcionCorta": "Amplificador marino monoblock clase D con certificación IP67 para embarcaciones y todoterreno",
     "specsDestacadas": [
       {
         "etiqueta": "Canales",
@@ -11778,15 +11811,15 @@
       },
       {
         "etiqueta": "Potencia máxima",
-        "valor": "1,500 W"
+        "valor": "3,000 W @ 1 Ω"
       },
       {
         "etiqueta": "Protección",
-        "valor": "IP68"
+        "valor": "IP67"
       },
       {
         "etiqueta": "Protección ambiental",
-        "valor": "IP68, resistente a agua y polvo"
+        "valor": "IP67, resistente a agua y polvo"
       },
       {
         "etiqueta": "Aplicación",
@@ -11794,7 +11827,7 @@
       },
       {
         "etiqueta": "Línea",
-        "valor": "CM Marine"
+        "valor": "Captain Marino"
       }
     ],
     "precioCents": 380000,
@@ -11815,7 +11848,7 @@
     "nombre": "Amplificador marino de 4 canales CM-1200X4",
     "marca": "KBT",
     "categoria": "Amplificadores",
-    "descripcionCorta": "Amplificador marino de 4 canales con certificación IP68 para embarcaciones y todoterreno",
+    "descripcionCorta": "Amplificador marino de 4 canales con certificación IP67 para embarcaciones y todoterreno",
     "specsDestacadas": [
       {
         "etiqueta": "Canales",
@@ -11823,7 +11856,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "600 W"
+        "valor": "720 W"
       },
       {
         "etiqueta": "Clase",
@@ -11837,7 +11870,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "600 W"
+        "valor": "720 W"
       },
       {
         "etiqueta": "Clase",
@@ -11849,11 +11882,11 @@
       },
       {
         "etiqueta": "Protección",
-        "valor": "IP68"
+        "valor": "IP67"
       },
       {
         "etiqueta": "Protección ambiental",
-        "valor": "IP68, resistente a agua y polvo"
+        "valor": "IP67, resistente a agua y polvo"
       },
       {
         "etiqueta": "Aplicación",
@@ -11861,7 +11894,7 @@
       },
       {
         "etiqueta": "Línea",
-        "valor": "CM Marine"
+        "valor": "Captain Marino"
       }
     ],
     "precioCents": 330000,
@@ -11871,7 +11904,7 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "potencia_rms_w": 600,
+      "potencia_rms_w": 720,
       "canales": 4,
       "clase": "D"
     }
@@ -11965,7 +11998,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "1,200 W"
+        "valor": "1,500 W"
       },
       {
         "etiqueta": "Clase",
@@ -11979,7 +12012,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "1,200 W"
+        "valor": "1,500 W"
       },
       {
         "etiqueta": "Clase",
@@ -12009,7 +12042,7 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "potencia_rms_w": 1200,
+      "potencia_rms_w": 1500,
       "canales": 1,
       "clase": "D"
     }
@@ -12623,11 +12656,11 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "600 W"
+        "valor": "480 W"
       },
       {
         "etiqueta": "Clase",
-        "valor": "AB"
+        "valor": "D"
       }
     ],
     "specsFicha": [
@@ -12637,11 +12670,11 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "600 W"
+        "valor": "480 W"
       },
       {
         "etiqueta": "Clase",
-        "valor": "AB"
+        "valor": "D"
       },
       {
         "etiqueta": "Potencia máxima",
@@ -12667,9 +12700,9 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "potencia_rms_w": 600,
+      "potencia_rms_w": 480,
       "canales": 4,
-      "clase": "AB"
+      "clase": "D"
     }
   },
   {
@@ -12678,7 +12711,7 @@
     "nombre": "Amplificador Soldier monoblock SDR-1200.1",
     "marca": "KBT",
     "categoria": "Amplificadores",
-    "descripcionCorta": "Amplificador monoblock clase D con 600 W RMS a 1 ohm",
+    "descripcionCorta": "Amplificador monoblock clase AB con 600 W RMS a 1 ohm",
     "specsDestacadas": [
       {
         "etiqueta": "Canales",
@@ -12690,7 +12723,7 @@
       },
       {
         "etiqueta": "Clase",
-        "valor": "D"
+        "valor": "AB"
       }
     ],
     "specsFicha": [
@@ -12704,7 +12737,7 @@
       },
       {
         "etiqueta": "Clase",
-        "valor": "D"
+        "valor": "AB"
       },
       {
         "etiqueta": "Potencia máxima",
@@ -12744,7 +12777,7 @@
     "atributos": {
       "potencia_rms_w": 600,
       "canales": 1,
-      "clase": "D"
+      "clase": "AB"
     }
   },
   {
@@ -12911,11 +12944,11 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "1,800 W"
+        "valor": "1,050 W"
       },
       {
         "etiqueta": "Clase",
-        "valor": "D"
+        "valor": "AB"
       }
     ],
     "specsFicha": [
@@ -12925,11 +12958,11 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "1,800 W"
+        "valor": "1,050 W"
       },
       {
         "etiqueta": "Clase",
-        "valor": "D"
+        "valor": "AB"
       },
       {
         "etiqueta": "Potencia máxima",
@@ -12959,9 +12992,9 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "potencia_rms_w": 1800,
+      "potencia_rms_w": 1050,
       "canales": 5,
-      "clase": "D"
+      "clase": "AB"
     }
   },
   {
@@ -13038,7 +13071,7 @@
   {
     "sku": "VIV1100.1V2",
     "slug": "memphis-viv1100-1v2",
-    "nombre": "Amplificador VIV monoblock VIV1100.2",
+    "nombre": "Amplificador VIV monoblock VIV1100.1V2",
     "marca": "Memphis",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador monoblock clase D para subwoofer",
@@ -13292,7 +13325,7 @@
       },
       {
         "etiqueta": "Respuesta en frecuencia",
-        "valor": "11 Hz – 20 kHz"
+        "valor": "11 Hz – 200 Hz"
       },
       {
         "etiqueta": "Crossover",
@@ -13479,7 +13512,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "70 W × 4 + 250 W × 1 @ 4 Ω · 100 W × 4 + 400 W × 1 @ 2 Ω"
+        "valor": "75 W × 4 + 250 W × 1 @ 4 Ω · 100 W × 4 + 400 W × 1 @ 2 Ω"
       },
       {
         "etiqueta": "Clase",
@@ -13493,7 +13526,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "70 W × 4 + 250 W × 1 @ 4 Ω · 100 W × 4 + 400 W × 1 @ 2 Ω"
+        "valor": "75 W × 4 + 250 W × 1 @ 4 Ω · 100 W × 4 + 400 W × 1 @ 2 Ω"
       },
       {
         "etiqueta": "Clase",
@@ -13824,8 +13857,8 @@
         "valor": "Control remoto de nivel de graves"
       },
       {
-        "etiqueta": "Dimensiones",
-        "valor": "8.92\" × 7.87\" × 2.16\" (227 × 200 × 55 mm)"
+        "etiqueta": "Acabado",
+        "valor": "Disipador de aluminio texturizado con franja LED naranja"
       }
     ],
     "precioCents": 260000,
@@ -13967,7 +14000,7 @@
       },
       {
         "etiqueta": "Acabado",
-        "valor": "Iluminación LED naranja de acento"
+        "valor": "Tira de iluminación LED de acento"
       }
     ],
     "precioCents": 260000,
@@ -13988,7 +14021,7 @@
     "nombre": "Amplificador powersports de 4 canales MX800.4",
     "marca": "Memphis",
     "categoria": "Amplificadores",
-    "descripcionCorta": "Amplificador de 4 canales con certificación IP66 para vehículos utilitarios y motocicletas",
+    "descripcionCorta": "Amplificador de 4 canales con certificación IP66 para vehículos powersports (UTV/side-by-side)",
     "specsDestacadas": [
       {
         "etiqueta": "Canales",
@@ -14168,11 +14201,11 @@
       },
       {
         "etiqueta": "Crossover",
-        "valor": "Ajustable, alta y baja"
+        "valor": "Pasa altos/pasa bajos/todo paso ajustable 50–250 Hz a 12 dB/oct (delantero y trasero)"
       },
       {
         "etiqueta": "Punch EQ",
-        "valor": "No"
+        "valor": "Sí (Punch EQ2 delantero: graves 0 a +18 dB @ 45 Hz y agudos; EQ trasero independiente)"
       }
     ],
     "precioCents": 520000,
@@ -14235,15 +14268,15 @@
       },
       {
         "etiqueta": "Punch EQ",
-        "valor": "0 a +18 dB a 45 Hz"
+        "valor": "Hasta +18 dB @ 45 Hz mediante control Punch EQ remoto opcional (accesorio)"
       },
       {
         "etiqueta": "Entradas",
-        "valor": "Nivel alto con encendido automático y RCA diferenciales, con paso de RCA"
+        "valor": "Entradas RCA y de nivel alto (selector High/Low) con encendido automático por offset DC variable 4–6 V"
       },
       {
         "etiqueta": "Ajuste de ganancia",
-        "valor": "C.L.E.A.N. con LED indicadores"
+        "valor": "Ganancia con ajuste de sensibilidad; indicadores LED de Power/Protect y BRT (Boost)"
       },
       {
         "etiqueta": "Dimensiones",
@@ -14306,7 +14339,7 @@
       },
       {
         "etiqueta": "Crossover",
-        "valor": "Butterworth de 12 dB/oct seleccionable"
+        "valor": "Butterworth 12 dB/oct seleccionable: pasa altos fijo 60 u 80 Hz; pasa bajos fijo 80 Hz"
       },
       {
         "etiqueta": "Entradas",
@@ -14318,7 +14351,7 @@
       },
       {
         "etiqueta": "Dimensiones",
-        "valor": "171 × 108 × 38 mm"
+        "valor": "172 × 108 × 39 mm"
       },
       {
         "etiqueta": "Aplicación",
@@ -14452,7 +14485,7 @@
       },
       {
         "etiqueta": "Crossover",
-        "valor": "24 dB/oct pasa bajos 50 – 250 Hz · Infrasónico 15 – 40 Hz"
+        "valor": "Butterworth 12 dB/oct pasa bajos 50 – 250 Hz · Infrasónico 15 – 40 Hz"
       },
       {
         "etiqueta": "Punch EQ",
@@ -14527,7 +14560,7 @@
       },
       {
         "etiqueta": "Crossover",
-        "valor": "24 dB/oct pasa bajos 50 – 250 Hz · Infrasónico 15 – 40 Hz"
+        "valor": "Butterworth 12 dB/oct pasa bajos 50 – 250 Hz · Infrasónico 15 – 40 Hz"
       },
       {
         "etiqueta": "Punch EQ",
@@ -14602,7 +14635,7 @@
       },
       {
         "etiqueta": "Crossover",
-        "valor": "24 dB/oct pasa bajos 50 – 250 Hz · Infrasónico 15 – 40 Hz"
+        "valor": "Butterworth 12 dB/oct pasa bajos 50 – 250 Hz · Infrasónico 15 – 40 Hz"
       },
       {
         "etiqueta": "Punch EQ",
@@ -14677,7 +14710,7 @@
       },
       {
         "etiqueta": "Crossover",
-        "valor": "24 dB/oct pasa bajos 50 – 250 Hz · Infrasónico 15 – 40 Hz"
+        "valor": "Butterworth 12 dB/oct pasa bajos 50 – 250 Hz · Infrasónico 15 – 40 Hz"
       },
       {
         "etiqueta": "Punch EQ",
@@ -14715,7 +14748,7 @@
   {
     "sku": "R2-500X4",
     "slug": "rockford-fosgate-r2-500x4",
-    "nombre": "Amplificador Prime de 5 canales R2-500X4",
+    "nombre": "Amplificador Prime de 4 canales R2-500X4",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
@@ -14790,7 +14823,7 @@
   {
     "sku": "R2-300X4",
     "slug": "rockford-fosgate-r2-300x4",
-    "nombre": "Amplificador Prime de 5 canales R2-300X4",
+    "nombre": "Amplificador Prime de 4 canales R2-300X4",
     "marca": "Rockford Fosgate",
     "categoria": "Amplificadores",
     "descripcionCorta": "Amplificador de 4 canales para bocinas, puenteable a dos canales",
@@ -14876,7 +14909,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "100 W × 4 + 400 W × 1 @ 4 Ω · 100 W × 4 + 600 W × 1 @ 2 Ω · N/A x 4 + 600W x 1 @ 1Ω · 200W x 2 + N/A x 1 @ 4Ω puenteado"
+        "valor": "100 W × 4 + 400 W × 1 @ 4 Ω · 100 W × 4 + 600 W × 1 @ 2 Ω"
       },
       {
         "etiqueta": "Clase",
@@ -14890,7 +14923,7 @@
       },
       {
         "etiqueta": "Potencia RMS",
-        "valor": "100 W × 4 + 400 W × 1 @ 4 Ω · 100 W × 4 + 600 W × 1 @ 2 Ω · N/A x 4 + 600W x 1 @ 1Ω · 200W x 2 + N/A x 1 @ 4Ω puenteado"
+        "valor": "100 W × 4 + 400 W × 1 @ 4 Ω · 100 W × 4 + 600 W × 1 @ 2 Ω"
       },
       {
         "etiqueta": "Clase",
@@ -14898,7 +14931,7 @@
       },
       {
         "etiqueta": "Potencia total",
-        "valor": "1,500 W"
+        "valor": "1,500 W máx. (1,000 W RMS)"
       },
       {
         "etiqueta": "Puenteado",
@@ -14932,7 +14965,7 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "potencia_rms_w": 1500,
+      "potencia_rms_w": 1000,
       "canales": 5,
       "clase": "D"
     }
@@ -15170,7 +15203,7 @@
       },
       {
         "etiqueta": "Reproducción",
-        "valor": "MP3, WMA, AAC, WAV y FLAC vía USB"
+        "valor": "MP3, WMA, AAC y WAV vía USB"
       },
       {
         "etiqueta": "Entrada de cámara",
@@ -15188,7 +15221,12 @@
     "precioCents": 190000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DMH-G225BT_frontal.jpg",
+        "alt": "Pantalla de 6.2\" DMH-G225BT — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -15252,7 +15290,7 @@
       },
       {
         "etiqueta": "Entradas de cámara",
-        "valor": "Doble, delantera y trasera, para estacionar y remolcar con más visibilidad"
+        "valor": "Doble entrada de cámara"
       },
       {
         "etiqueta": "USB",
@@ -15266,7 +15304,12 @@
     "precioCents": 220000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DMH-A375BT_frontal.jpg",
+        "alt": "Pantalla de 7\" DMH-A375BT — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -15344,7 +15387,12 @@
     "precioCents": 400000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DMH-AP6650BT_frontal.jpg",
+        "alt": "Pantalla de 9\" DMH-AP6650BT — frontal"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -15404,15 +15452,15 @@
       },
       {
         "etiqueta": "Espejeo",
-        "valor": "Apple CarPlay y Android Auto por USB, más modo AppRadio+"
+        "valor": "Apple CarPlay y Android Auto por USB"
       },
       {
         "etiqueta": "Ecualizador",
-        "valor": "Gráfico de 13 bandas con MIXTRAX"
+        "valor": "Gráfico de 13 bandas"
       },
       {
         "etiqueta": "Reproducción",
-        "valor": "Video Full HD desde USB en DivX, H.264, MPEG-4 y JPEG · audio MP3, WMA y FLAC"
+        "valor": "Video Full HD desde USB en DivX, MPEG-4 y WMV · fotos JPEG · audio MP3, WMA, AAC, WAV y FLAC"
       },
       {
         "etiqueta": "Entradas de cámara",
@@ -15422,7 +15470,12 @@
     "precioCents": 375000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DMH-Z5150BT_frontal.jpg",
+        "alt": "Pantalla de 7\" DMH-Z5150BT — frontal"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -15496,7 +15549,12 @@
     "precioCents": 490000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DMH-Z5350BT_frontal.jpg",
+        "alt": "Pantalla de 6.8\" DMH-Z5350BT — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -15574,7 +15632,12 @@
     "precioCents": 695000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DMH-Z6350BT_frontal.jpg",
+        "alt": "Pantalla de 6.8\" DMH-Z6350BT con Alexa — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -15626,7 +15689,7 @@
       },
       {
         "etiqueta": "Procesador",
-        "valor": "DSP Pioneer Triple Core de 52 bits con Master Sound Reviver"
+        "valor": "DSP de 52 bits con Master Sound Reviver"
       },
       {
         "etiqueta": "Conectividad",
@@ -15652,7 +15715,12 @@
     "precioCents": 1000000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DMH-ZS9350BT_frontal.jpg",
+        "alt": "Pantalla de 9\" DMH-ZS9350BT Audiophile — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -15670,11 +15738,11 @@
     "nombre": "Pantalla de 6.8\" DMH-A5650BT",
     "marca": "Pioneer",
     "categoria": "Receptores",
-    "descripcionCorta": "Receptor multimedia de 6.8 pulgadas con Apple CarPlay, Android Auto y ajuste de sonido de 3 vías",
+    "descripcionCorta": "Receptor multimedia de 6.8 pulgadas con Apple CarPlay y Android Auto inalámbricos y ajuste de sonido de 3 vías",
     "specsDestacadas": [
       {
         "etiqueta": "Formato",
-        "valor": "Doble DIN"
+        "valor": "1 DIN"
       },
       {
         "etiqueta": "Pantalla",
@@ -15688,7 +15756,7 @@
     "specsFicha": [
       {
         "etiqueta": "Formato",
-        "valor": "Doble DIN"
+        "valor": "1 DIN"
       },
       {
         "etiqueta": "Pantalla",
@@ -15726,11 +15794,16 @@
     "precioCents": 425000,
     "moneda": "GTQ",
     "disponibilidad": "agotado",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DMH-A5650BT_frontal.jpg",
+        "alt": "Pantalla de 6.8\" DMH-A5650BT — frontal"
+      }
+    ],
     "destacado": false,
     "activo": false,
     "atributos": {
-      "formato": "2-din",
+      "formato": "1-din",
       "pantalla_pulg": 6.8,
       "carplay": true,
       "android_auto": true,
@@ -15744,7 +15817,7 @@
     "nombre": "Receptor digital MVH-S235BT",
     "marca": "Pioneer",
     "categoria": "Receptores",
-    "descripcionCorta": "Receptor digital sin mecanismo con Bluetooth, USB y entrada auxiliar",
+    "descripcionCorta": "Receptor digital sin mecanismo con Bluetooth y USB",
     "specsDestacadas": [
       {
         "etiqueta": "Formato",
@@ -15756,7 +15829,7 @@
       },
       {
         "etiqueta": "Conectividad",
-        "valor": "Bluetooth manos libres y audio, USB frontal, AUX 3.5 mm"
+        "valor": "Bluetooth manos libres y audio, USB frontal"
       }
     ],
     "specsFicha": [
@@ -15770,7 +15843,7 @@
       },
       {
         "etiqueta": "Conectividad",
-        "valor": "Bluetooth manos libres y audio, USB frontal, AUX 3.5 mm"
+        "valor": "Bluetooth manos libres y audio, USB frontal"
       },
       {
         "etiqueta": "Potencia de salida",
@@ -15804,7 +15877,12 @@
     "precioCents": 75000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/MVH-S235BT_frontal.jpg",
+        "alt": "Receptor digital MVH-S235BT — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -15882,7 +15960,12 @@
     "precioCents": 100000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/MVH-S325BT_frontal.jpg",
+        "alt": "Receptor digital MVH-S325BT — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -15960,7 +16043,12 @@
     "precioCents": 135000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/MVH-X700BT_frontal.jpg",
+        "alt": "Receptor digital MVH-X700BT — frontal"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -16034,7 +16122,12 @@
     "precioCents": 130000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DEH-S4250BT_frontal.jpg",
+        "alt": "Autoestéreo con CD DEH-S4250BT — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -16112,7 +16205,12 @@
     "precioCents": 145000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DEH-X5000BT_frontal.jpg",
+        "alt": "Autoestéreo con CD DEH-X5000BT — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -16130,25 +16228,33 @@
     "nombre": "Receptor marino PMX-3",
     "marca": "Rockford Fosgate",
     "categoria": "Receptores",
-    "descripcionCorta": "Receptor digital marino resistente a la intemperie con Bluetooth",
+    "descripcionCorta": "Receptor digital marino IPX6 con pantalla a color de 2.7\" y Bluetooth",
     "specsDestacadas": [
       {
         "etiqueta": "Formato",
         "valor": "Específico por vehículo"
       },
       {
-        "etiqueta": "Conectividad",
-        "valor": "Bluetooth"
+        "etiqueta": "Pantalla",
+        "valor": "2.7\""
       },
       {
-        "etiqueta": "Potencia de salida",
-        "valor": "25W x 4 @ 4Ω RMS / 50W x 4 @ 2Ω Pico"
+        "etiqueta": "Salidas preamp",
+        "valor": "2 pares (2 V)"
       }
     ],
     "specsFicha": [
       {
         "etiqueta": "Formato",
         "valor": "Específico por vehículo"
+      },
+      {
+        "etiqueta": "Pantalla",
+        "valor": "2.7\""
+      },
+      {
+        "etiqueta": "Salidas preamp",
+        "valor": "2 pares (2 V)"
       },
       {
         "etiqueta": "Conectividad",
@@ -16179,10 +16285,10 @@
     "activo": true,
     "atributos": {
       "formato": "especifico",
-      "pantalla_pulg": 0,
+      "pantalla_pulg": 2.7,
       "carplay": false,
       "android_auto": false,
-      "salidas_preamp_pares": 0,
+      "salidas_preamp_pares": 2,
       "salidas_preamp_voltaje": 2
     }
   },
@@ -16203,8 +16309,8 @@
         "valor": "3\""
       },
       {
-        "etiqueta": "Conectividad",
-        "valor": "Bluetooth con A2DP y AVRCP, USB con carga de 1.5 A"
+        "etiqueta": "Salidas preamp",
+        "valor": "3 pares (4 V)"
       }
     ],
     "specsFicha": [
@@ -16215,6 +16321,10 @@
       {
         "etiqueta": "Pantalla",
         "valor": "3\""
+      },
+      {
+        "etiqueta": "Salidas preamp",
+        "valor": "3 pares (4 V)"
       },
       {
         "etiqueta": "Conectividad",
@@ -16256,8 +16366,150 @@
       "pantalla_pulg": 3,
       "carplay": false,
       "android_auto": false,
-      "salidas_preamp_pares": 0,
+      "salidas_preamp_pares": 3,
       "salidas_preamp_voltaje": 4
+    }
+  },
+  {
+    "sku": "SMC3",
+    "slug": "memphis-smc3",
+    "nombre": "Radio marino multizona SMC3 con pantalla de 3\"",
+    "marca": "Memphis",
+    "categoria": "Receptores",
+    "descripcionCorta": "Radio marino IP66 con pantalla a color de 3\", AM/FM, Bluetooth, USB, AUX y amplificador integrado de 4 × 50 W",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Formato",
+        "valor": "Específico por vehículo"
+      },
+      {
+        "etiqueta": "Pantalla",
+        "valor": "3\""
+      },
+      {
+        "etiqueta": "Salidas preamp",
+        "valor": "4 pares"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Formato",
+        "valor": "Específico por vehículo"
+      },
+      {
+        "etiqueta": "Pantalla",
+        "valor": "3\""
+      },
+      {
+        "etiqueta": "Salidas preamp",
+        "valor": "4 pares"
+      },
+      {
+        "etiqueta": "Amplificador integrado",
+        "valor": "4 × 50 W"
+      },
+      {
+        "etiqueta": "Fuentes",
+        "valor": "AM/FM, USB, Bluetooth y AUX; 18 presets de FM y 12 de AM"
+      },
+      {
+        "etiqueta": "Protección",
+        "valor": "IP66"
+      },
+      {
+        "etiqueta": "Zonas",
+        "valor": "Multizona: salidas delantera, trasera, subwoofer y zona 2, con control de subwoofer independiente"
+      },
+      {
+        "etiqueta": "Entrada de cámara",
+        "valor": "Sí, para cámara de reversa o de sendero"
+      },
+      {
+        "etiqueta": "Montaje",
+        "valor": "Orificio de 3\"; profundidad de 4\" (10.2 cm); frente de 5.5 × 3.5\""
+      }
+    ],
+    "precioCents": 480000,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": false,
+    "activo": true,
+    "atributos": {
+      "formato": "especifico",
+      "pantalla_pulg": 3,
+      "carplay": false,
+      "android_auto": false,
+      "salidas_preamp_pares": 4
+    }
+  },
+  {
+    "sku": "MXA1MC",
+    "slug": "memphis-mxa1mc",
+    "nombre": "Radio tipo reloj para lancha y powersports MXA1MC",
+    "marca": "Memphis",
+    "categoria": "Receptores",
+    "descripcionCorta": "Radio tipo reloj con AM/FM, Bluetooth, USB y amplificador integrado de 4 × 50 W, para lanchas y powersports",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Formato",
+        "valor": "Específico por vehículo"
+      },
+      {
+        "etiqueta": "Salidas preamp",
+        "valor": "2 pares"
+      },
+      {
+        "etiqueta": "Aplicación",
+        "valor": "Instalaciones powersports y marinas donde no cabe un radio convencional"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Formato",
+        "valor": "Específico por vehículo"
+      },
+      {
+        "etiqueta": "Salidas preamp",
+        "valor": "2 pares"
+      },
+      {
+        "etiqueta": "Aplicación",
+        "valor": "Instalaciones powersports y marinas donde no cabe un radio convencional"
+      },
+      {
+        "etiqueta": "Montaje",
+        "valor": "Tipo reloj (gauge style), se monta en el tablero"
+      },
+      {
+        "etiqueta": "Amplificador integrado",
+        "valor": "4 × 50 W"
+      },
+      {
+        "etiqueta": "Fuentes",
+        "valor": "AM/FM, Bluetooth, USB (reproduce y carga) y AUX"
+      },
+      {
+        "etiqueta": "Control remoto",
+        "valor": "Acepta hasta dos controles alámbricos MXA1MCR (se venden aparte)"
+      },
+      {
+        "etiqueta": "Serie",
+        "valor": "MXA"
+      }
+    ],
+    "precioCents": 280000,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": false,
+    "activo": true,
+    "atributos": {
+      "formato": "especifico",
+      "pantalla_pulg": 0,
+      "carplay": false,
+      "android_auto": false,
+      "salidas_preamp_pares": 2
     }
   },
   {
@@ -16270,29 +16522,25 @@
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
-        "valor": "Ecualizador gráfico"
-      },
-      {
-        "etiqueta": "Bandas",
-        "valor": "5 bandas"
+        "valor": "Ecualizador paramétrico"
       },
       {
         "etiqueta": "Canales",
-        "valor": "4 canales"
+        "valor": "7 canales"
+      },
+      {
+        "etiqueta": "Control",
+        "valor": "Refuerzo de graves ajustable"
       }
     ],
     "specsFicha": [
       {
         "etiqueta": "Tipo",
-        "valor": "Ecualizador gráfico"
-      },
-      {
-        "etiqueta": "Bandas",
-        "valor": "5 bandas"
+        "valor": "Ecualizador paramétrico"
       },
       {
         "etiqueta": "Canales",
-        "valor": "4 canales"
+        "valor": "7 canales"
       },
       {
         "etiqueta": "Control",
@@ -16308,7 +16556,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Realzar el audio en sistemas con radio de fábrica o de reemplazo"
+        "valor": "Realzar los bajos en sistemas con radio de fábrica o de reemplazo"
       }
     ],
     "precioCents": 110000,
@@ -16318,9 +16566,8 @@
     "destacado": true,
     "activo": true,
     "atributos": {
-      "canales": 4,
-      "tipo_ecualizador": "grafico",
-      "bandas": 5
+      "canales": 7,
+      "tipo_ecualizador": "parametrico"
     }
   },
   {
@@ -16549,7 +16796,7 @@
   {
     "sku": "DSP66LCD",
     "slug": "cerwin-vega-dsp66lcd",
-    "nombre": "Procesador con pantalla DSP66LCD",
+    "nombre": "Procesador DSP de 6 canales con pantalla LCD DSP66LCD",
     "marca": "Cerwin Vega",
     "categoria": "Ecualizadores",
     "descripcionCorta": "Procesador digital de señal de 6 entradas y 6 salidas con pantalla LCD de control",
@@ -16644,7 +16891,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Sistemas de competencia y configuraciones de tres o más vías activas"
+        "valor": "Carro, moto, marino y motorsports; sistemas de fábrica o personalizados con varias vías activas"
       },
       {
         "etiqueta": "Instalación",
@@ -16852,7 +17099,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Puertas, piso, techo, cajuela y salpicadera; corte a medida"
+        "valor": "Puertas, piso, techo, cajuela, cofre y pared de fuego (firewall); corte a medida"
       },
       {
         "etiqueta": "Uso recomendado",
@@ -16915,7 +17162,7 @@
       },
       {
         "etiqueta": "Acabado",
-        "valor": "Disponible en foil plateado clásico o negro discreto"
+        "valor": "Foil negro (Stealth Black)"
       },
       {
         "etiqueta": "Aplicación",
@@ -17169,7 +17416,7 @@
   {
     "sku": "TAPE",
     "slug": "soundskins-tape",
-    "nombre": "Foil Tape - Cinta de espuma acústica",
+    "nombre": "Foam Tape - Cinta de espuma acústica",
     "marca": "SoundSkins",
     "categoria": "Insonorización",
     "descripcionCorta": "Juego de cuatro rollos de cinta de espuma de celda cerrada para eliminar rechinidos",
@@ -17727,7 +17974,7 @@
       },
       {
         "etiqueta": "Portafusible",
-        "valor": "Tipo AFS con fusible de 60 A incluido"
+        "valor": "Tipo AFS con dos fusibles de 60 A incluidos"
       },
       {
         "etiqueta": "Cables RCA incluidos",
@@ -17785,7 +18032,7 @@
       },
       {
         "etiqueta": "Contenido",
-        "valor": "Corriente, tierra, remoto y RCA"
+        "valor": "Corriente, tierra, remoto, RCA, cable de bocina, portafusible y fusible"
       },
       {
         "etiqueta": "Longitud del cable de corriente",
@@ -17805,7 +18052,7 @@
       },
       {
         "etiqueta": "Portafusible",
-        "valor": "Incluido"
+        "valor": "Tipo AGU, con fusible de 100 A"
       }
     ],
     "precioCents": 100000,
@@ -17838,7 +18085,7 @@
       },
       {
         "etiqueta": "Contenido",
-        "valor": "Corriente, tierra, remoto y RCA"
+        "valor": "Corriente, tierra, remoto, RCA, cable de bocina, portafusible y fusible"
       }
     ],
     "specsFicha": [
@@ -17852,7 +18099,7 @@
       },
       {
         "etiqueta": "Contenido",
-        "valor": "Corriente, tierra, remoto y RCA"
+        "valor": "Corriente, tierra, remoto, RCA, cable de bocina, portafusible y fusible"
       },
       {
         "etiqueta": "Cables RCA incluidos",
@@ -18210,7 +18457,7 @@
     "nombre": "Adaptador Y de 2 hembras a 1 macho RCA",
     "marca": "KBT",
     "categoria": "Accesorios",
-    "descripcionCorta": "Adaptador Y para señal RCA de dos entradas hembra a una salida macho",
+    "descripcionCorta": "Adaptador Y divisor RCA de un conector macho a dos hembras",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
@@ -18218,7 +18465,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Combinar dos salidas preamplificadas en una sola entrada"
+        "valor": "Dividir una salida RCA hacia dos amplificadores"
       },
       {
         "etiqueta": "Configuración",
@@ -18232,7 +18479,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Combinar dos salidas preamplificadas en una sola entrada"
+        "valor": "Dividir una salida RCA hacia dos amplificadores"
       },
       {
         "etiqueta": "Configuración",
@@ -18263,7 +18510,7 @@
     "nombre": "Cable RCA de 1m RCA-1MBR",
     "marca": "KBT",
     "categoria": "Accesorios",
-    "descripcionCorta": "Cable de señal RCA de 1 metros con blindaje trenzado",
+    "descripcionCorta": "Cable de señal RCA de 1 metro con blindaje trenzado",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
@@ -18483,7 +18730,7 @@
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
-        "valor": "Conector"
+        "valor": "Accesorio"
       },
       {
         "etiqueta": "Diámetro",
@@ -18491,13 +18738,13 @@
       },
       {
         "etiqueta": "Color",
-        "valor": "Natural"
+        "valor": "Negro"
       }
     ],
     "specsFicha": [
       {
         "etiqueta": "Tipo",
-        "valor": "Conector"
+        "valor": "Accesorio"
       },
       {
         "etiqueta": "Diámetro",
@@ -18505,7 +18752,7 @@
       },
       {
         "etiqueta": "Color",
-        "valor": "Natural"
+        "valor": "Negro"
       },
       {
         "etiqueta": "Función",
@@ -18523,7 +18770,7 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "tipo_accesorio": "conector"
+      "tipo_accesorio": "otro"
     }
   },
   {
@@ -18536,7 +18783,7 @@
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
-        "valor": "Conector"
+        "valor": "Accesorio"
       },
       {
         "etiqueta": "Diámetro",
@@ -18550,7 +18797,7 @@
     "specsFicha": [
       {
         "etiqueta": "Tipo",
-        "valor": "Conector"
+        "valor": "Accesorio"
       },
       {
         "etiqueta": "Diámetro",
@@ -18576,7 +18823,7 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "tipo_accesorio": "conector"
+      "tipo_accesorio": "otro"
     }
   },
   {
@@ -18589,7 +18836,7 @@
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
-        "valor": "Conector"
+        "valor": "Accesorio"
       },
       {
         "etiqueta": "Diámetro",
@@ -18603,7 +18850,7 @@
     "specsFicha": [
       {
         "etiqueta": "Tipo",
-        "valor": "Conector"
+        "valor": "Accesorio"
       },
       {
         "etiqueta": "Diámetro",
@@ -18629,7 +18876,7 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "tipo_accesorio": "conector"
+      "tipo_accesorio": "otro"
     }
   },
   {
@@ -18638,15 +18885,15 @@
     "nombre": "Cinta de tela adhesiva aislante KCLOTH",
     "marca": "KBT",
     "categoria": "Accesorios",
-    "descripcionCorta": "Cinta de tela adhesiva aislante de color negro para envolver cables reduciendo el aislamiento térmico y el ruido.",
+    "descripcionCorta": "Cinta de tela adhesiva aislante de color negro para envolver cables, protegerlos del calor y reducir ruidos y vibraciones.",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
-        "valor": "Cable RCA"
+        "valor": "Accesorio"
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Aislante para reducir aislamiento térmico y ruido, resistente a altas temperaturas"
+        "valor": "Envoltura aislante que protege del calor y reduce ruidos; resistente a las altas temperaturas del motor"
       },
       {
         "etiqueta": "Material",
@@ -18656,11 +18903,11 @@
     "specsFicha": [
       {
         "etiqueta": "Tipo",
-        "valor": "Cable RCA"
+        "valor": "Accesorio"
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Aislante para reducir aislamiento térmico y ruido, resistente a altas temperaturas"
+        "valor": "Envoltura aislante que protege del calor y reduce ruidos; resistente a las altas temperaturas del motor"
       },
       {
         "etiqueta": "Material",
@@ -18682,16 +18929,16 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "tipo_accesorio": "cable-rca"
+      "tipo_accesorio": "otro"
     }
   },
   {
     "sku": "KSSC-65",
     "slug": "kbt-kssc-65",
-    "nombre": "Separadores para bocina 6.5\" KSSC-65",
+    "nombre": "Protectores de silicón para bocina 6.5\" KSSC-65",
     "marca": "KBT",
     "categoria": "Accesorios",
-    "descripcionCorta": "Par de separadores de montaje para bocinas de 6.5 pulgadas",
+    "descripcionCorta": "Par de protectores de silicón para bocinas de 6.5 pulgadas que sellan la parte trasera y la protegen del agua",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
@@ -18703,7 +18950,7 @@
       },
       {
         "etiqueta": "Contenido",
-        "valor": "Par de separadores"
+        "valor": "Par de protectores"
       }
     ],
     "specsFicha": [
@@ -18717,11 +18964,15 @@
       },
       {
         "etiqueta": "Contenido",
-        "valor": "Par de separadores"
+        "valor": "Par de protectores"
       },
       {
         "etiqueta": "Función",
-        "valor": "Gana profundidad de montaje cuando la bocina de reemplazo no cabe en la ubicación de fábrica"
+        "valor": "Sella la parte trasera de la bocina dentro de la puerta: mejora los graves y la protege del agua y el polvo"
+      },
+      {
+        "etiqueta": "Material",
+        "valor": "Silicón flexible y plegable"
       }
     ],
     "precioCents": 27500,
@@ -18744,7 +18995,7 @@
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
-        "valor": "Cable RCA"
+        "valor": "Adaptador"
       },
       {
         "etiqueta": "Marca",
@@ -18758,7 +19009,7 @@
     "specsFicha": [
       {
         "etiqueta": "Tipo",
-        "valor": "Cable RCA"
+        "valor": "Adaptador"
       },
       {
         "etiqueta": "Marca",
@@ -18788,7 +19039,7 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "tipo_accesorio": "cable-rca"
+      "tipo_accesorio": "adaptador"
     }
   },
   {
@@ -18957,7 +19208,7 @@
       },
       {
         "etiqueta": "Área del puerto",
-        "valor": "27.5\""
+        "valor": "27.5 pulg² (177 cm²)"
       },
       {
         "etiqueta": "Puerto",
@@ -18984,7 +19235,7 @@
     "nombre": "Bocina Bluetooth MFLOWBTK",
     "marca": "Memphis",
     "categoria": "Accesorios",
-    "descripcionCorta": "Módulo receptor Bluetooth para agregar audio inalámbrico al sistema",
+    "descripcionCorta": "Bocina portátil Bluetooth resistente al agua, con batería recargable de hasta 15 horas e iluminación LED",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
@@ -18992,11 +19243,11 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Radios de fábrica o amplificados sin conectividad inalámbrica"
+        "valor": "Uso al aire libre: lancha, piscina, playa o paseo"
       },
       {
-        "etiqueta": "Función",
-        "valor": "Permite transmitir audio desde el teléfono a un sistema que no tiene Bluetooth"
+        "etiqueta": "Conectividad",
+        "valor": "Bluetooth con alcance de 10 m y entrada auxiliar de 3.5 mm; MLINK enlaza dos bocinas"
       }
     ],
     "specsFicha": [
@@ -19006,15 +19257,23 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Radios de fábrica o amplificados sin conectividad inalámbrica"
+        "valor": "Uso al aire libre: lancha, piscina, playa o paseo"
       },
       {
-        "etiqueta": "Función",
-        "valor": "Permite transmitir audio desde el teléfono a un sistema que no tiene Bluetooth"
+        "etiqueta": "Conectividad",
+        "valor": "Bluetooth con alcance de 10 m y entrada auxiliar de 3.5 mm; MLINK enlaza dos bocinas"
       },
       {
-        "etiqueta": "Instalación",
-        "valor": "Se conecta a una entrada auxiliar o de nivel de línea del sistema"
+        "etiqueta": "Batería",
+        "valor": "Litio de 7200 mAh, hasta 15 horas de reproducción; funciona como cargador portátil (1 A)"
+      },
+      {
+        "etiqueta": "Potencia",
+        "valor": "40 W RMS (2 × 20 W)"
+      },
+      {
+        "etiqueta": "Protección",
+        "valor": "IPX7, resistente al agua"
       }
     ],
     "precioCents": 180000,
@@ -19028,24 +19287,24 @@
     }
   },
   {
-    "sku": "MXA1MC",
-    "slug": "memphis-mxa1mc",
-    "nombre": "Controlador tipo reloj MXA1MC",
+    "sku": "MEMBX",
+    "slug": "memphis-membx",
+    "nombre": "Procesador restaurador de graves Memphis MEMBX",
     "marca": "Memphis",
     "categoria": "Accesorios",
-    "descripcionCorta": "Controlador de fuente con formato de reloj para instalaciones powersports y marinas",
+    "descripcionCorta": "Procesador digital que recupera los graves perdidos en la música comprimida, con ecualizador de 5 bandas y control de nivel de subwoofer",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
         "valor": "Accesorio"
       },
       {
-        "etiqueta": "Aplicación",
-        "valor": "Instalaciones powersports y marinas donde no cabe un radio convencional"
+        "etiqueta": "Función",
+        "valor": "Restaura las frecuencias bajas que se pierden en la música comprimida; controla por separado el nivel de subwoofer y de la zona 2"
       },
       {
-        "etiqueta": "Formato",
-        "valor": "Tipo reloj (gauge style), se monta en el tablero"
+        "etiqueta": "Marca",
+        "valor": "Memphis"
       }
     ],
     "specsFicha": [
@@ -19054,19 +19313,31 @@
         "valor": "Accesorio"
       },
       {
-        "etiqueta": "Aplicación",
-        "valor": "Instalaciones powersports y marinas donde no cabe un radio convencional"
+        "etiqueta": "Función",
+        "valor": "Restaura las frecuencias bajas que se pierden en la música comprimida; controla por separado el nivel de subwoofer y de la zona 2"
       },
       {
-        "etiqueta": "Formato",
-        "valor": "Tipo reloj (gauge style), se monta en el tablero"
+        "etiqueta": "Marca",
+        "valor": "Memphis"
       },
       {
-        "etiqueta": "Serie",
-        "valor": "MXA"
+        "etiqueta": "Instalación",
+        "valor": "Entre la fuente y el amplificador; acepta señal de alto y bajo nivel y entrega salida RCA de hasta 9 V"
+      },
+      {
+        "etiqueta": "Compatibilidad",
+        "valor": "Radios de fábrica y de mercado secundario"
+      },
+      {
+        "etiqueta": "Ecualizador",
+        "valor": "5 bandas, independiente para la zona principal y la zona 2"
+      },
+      {
+        "etiqueta": "Entradas",
+        "valor": "Principal, auxiliar y Bluetooth"
       }
     ],
-    "precioCents": 280000,
+    "precioCents": 150000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
     "imagenes": [],
@@ -19077,122 +19348,12 @@
     }
   },
   {
-    "sku": "SMC3",
-    "slug": "memphis-smc3",
-    "nombre": "Controlador de fuente SMC3",
-    "marca": "Memphis",
-    "categoria": "Accesorios",
-    "descripcionCorta": "Controlador de fuente y volumen para sistemas de audio Memphis",
-    "specsDestacadas": [
-      {
-        "etiqueta": "Tipo",
-        "valor": "Cable RCA"
-      },
-      {
-        "etiqueta": "Aplicación",
-        "valor": "Sistemas sin radio convencional, comunes en powersports y uso marino"
-      },
-      {
-        "etiqueta": "Función",
-        "valor": "Selecciona la fuente de audio y ajusta el nivel desde el tablero"
-      }
-    ],
-    "specsFicha": [
-      {
-        "etiqueta": "Tipo",
-        "valor": "Cable RCA"
-      },
-      {
-        "etiqueta": "Aplicación",
-        "valor": "Sistemas sin radio convencional, comunes en powersports y uso marino"
-      },
-      {
-        "etiqueta": "Función",
-        "valor": "Selecciona la fuente de audio y ajusta el nivel desde el tablero"
-      },
-      {
-        "etiqueta": "Protección",
-        "valor": "IP66"
-      },
-      {
-        "etiqueta": "Marca",
-        "valor": "Memphis"
-      },
-      {
-        "etiqueta": "Entradas",
-        "valor": "AM/FM. USB, Bluetooth y AUX"
-      }
-    ],
-    "precioCents": 480000,
-    "moneda": "GTQ",
-    "disponibilidad": "disponible",
-    "imagenes": [],
-    "destacado": false,
-    "activo": true,
-    "atributos": {
-      "tipo_accesorio": "cable-rca"
-    }
-  },
-  {
-    "sku": "MEMBX",
-    "slug": "memphis-membx",
-    "nombre": "Control remoto de graves Memphis MEMBX",
-    "marca": "Memphis",
-    "categoria": "Accesorios",
-    "descripcionCorta": "Control remoto de nivel de graves para amplificadores Memphis",
-    "specsDestacadas": [
-      {
-        "etiqueta": "Tipo",
-        "valor": "Cable RCA"
-      },
-      {
-        "etiqueta": "Función",
-        "valor": "Sube o baja el nivel del canal de subwoofer desde el asiento del conductor"
-      },
-      {
-        "etiqueta": "Marca",
-        "valor": "Memphis"
-      }
-    ],
-    "specsFicha": [
-      {
-        "etiqueta": "Tipo",
-        "valor": "Cable RCA"
-      },
-      {
-        "etiqueta": "Función",
-        "valor": "Sube o baja el nivel del canal de subwoofer desde el asiento del conductor"
-      },
-      {
-        "etiqueta": "Marca",
-        "valor": "Memphis"
-      },
-      {
-        "etiqueta": "Instalación",
-        "valor": "Se conecta al puerto de remoto del amplificador"
-      },
-      {
-        "etiqueta": "Compatibilidad",
-        "valor": "Verificar el modelo de amplificador antes de instalar"
-      }
-    ],
-    "precioCents": 150000,
-    "moneda": "GTQ",
-    "disponibilidad": "disponible",
-    "imagenes": [],
-    "destacado": false,
-    "activo": true,
-    "atributos": {
-      "tipo_accesorio": "cable-rca"
-    }
-  },
-  {
     "sku": "CX23",
     "slug": "memphis-cx23",
-    "nombre": "Crossover pasivo CX23",
+    "nombre": "Crossover electrónico de 3 vías CX23",
     "marca": "Memphis",
     "categoria": "Accesorios",
-    "descripcionCorta": "Crossover pasivo de 2 vías para dividir la señal entre medio y tweeter",
+    "descripcionCorta": "Crossover electrónico de 3 vías que divide la señal antes de los amplificadores, con salida de línea de 7 V",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
@@ -19200,11 +19361,11 @@
       },
       {
         "etiqueta": "Vías",
-        "valor": "2 vías: medio y tweeter"
+        "valor": "3 vías; la salida trasera puede trabajar como pasabanda"
       },
       {
         "etiqueta": "Instalación",
-        "valor": "En línea entre el amplificador y las bocinas"
+        "valor": "Entre la fuente (salidas RCA) y las entradas de los amplificadores"
       }
     ],
     "specsFicha": [
@@ -19214,15 +19375,19 @@
       },
       {
         "etiqueta": "Vías",
-        "valor": "2 vías: medio y tweeter"
+        "valor": "3 vías; la salida trasera puede trabajar como pasabanda"
       },
       {
         "etiqueta": "Instalación",
-        "valor": "En línea entre el amplificador y las bocinas"
+        "valor": "Entre la fuente (salidas RCA) y las entradas de los amplificadores"
       },
       {
         "etiqueta": "Función",
-        "valor": "Envía a cada bocina solo el rango de frecuencia que le corresponde"
+        "valor": "Envía a cada amplificador solo el rango de frecuencia que le corresponde"
+      },
+      {
+        "etiqueta": "Salida",
+        "valor": "Line driver de 7 V, relación señal/ruido mayor a 110 dB"
       }
     ],
     "precioCents": 160000,
@@ -19298,7 +19463,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -19312,7 +19477,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -19343,7 +19508,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 17
+      "longitud_m": 5.18
     }
   },
   {
@@ -19360,7 +19525,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "25 m"
+        "valor": "7.62 m"
       },
       {
         "etiqueta": "Canales",
@@ -19374,7 +19539,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "25 m"
+        "valor": "7.62 m"
       },
       {
         "etiqueta": "Canales",
@@ -19405,7 +19570,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 25
+      "longitud_m": 7.62
     }
   },
   {
@@ -19422,7 +19587,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -19436,7 +19601,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -19467,7 +19632,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 17
+      "longitud_m": 5.18
     }
   },
   {
@@ -19484,7 +19649,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "7 m"
+        "valor": "2.13 m"
       },
       {
         "etiqueta": "Canales",
@@ -19498,7 +19663,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "7 m"
+        "valor": "2.13 m"
       },
       {
         "etiqueta": "Canales",
@@ -19529,7 +19694,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 7
+      "longitud_m": 2.13
     }
   },
   {
@@ -19546,7 +19711,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "3 m"
+        "valor": "0.91 m"
       },
       {
         "etiqueta": "Canales",
@@ -19560,7 +19725,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "3 m"
+        "valor": "0.91 m"
       },
       {
         "etiqueta": "Canales",
@@ -19591,7 +19756,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 3
+      "longitud_m": 0.91
     }
   },
   {
@@ -19608,7 +19773,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "1.5 m"
+        "valor": "0.46 m"
       },
       {
         "etiqueta": "Canales",
@@ -19622,7 +19787,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "1.5 m"
+        "valor": "0.46 m"
       },
       {
         "etiqueta": "Canales",
@@ -19653,7 +19818,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 1.5
+      "longitud_m": 0.46
     }
   },
   {
@@ -19776,7 +19941,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "21 m"
+        "valor": "6.4 m"
       },
       {
         "etiqueta": "Canales",
@@ -19790,7 +19955,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "21 m"
+        "valor": "6.4 m"
       },
       {
         "etiqueta": "Canales",
@@ -19798,19 +19963,19 @@
       },
       {
         "etiqueta": "Construcción",
-        "valor": "Tecnología True Twist de hiper trenzado para máximo rechazo de ruido"
+        "valor": "Pares trenzados con tecnología Memphis True Twist para mejor rechazo de ruido"
       },
       {
         "etiqueta": "Conectores",
-        "valor": "Metálicos maquinados con acabado cromo satinado y punta dividida de níquel"
+        "valor": "Metálicos maquinados Easy-Grip con contactos niquelados"
       },
       {
         "etiqueta": "Forro",
-        "valor": "Translúcido esmerilado de una sola capa, suave y maleable"
+        "valor": "Forro suave y maleable"
       },
       {
         "etiqueta": "Extras",
-        "valor": "Alivio de tensión moldeado integrado"
+        "valor": "Blindaje mejorado"
       },
       {
         "etiqueta": "Línea",
@@ -19825,7 +19990,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 21
+      "longitud_m": 6.4
     }
   },
   {
@@ -19842,7 +20007,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -19856,7 +20021,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -19864,19 +20029,19 @@
       },
       {
         "etiqueta": "Construcción",
-        "valor": "Tecnología True Twist de hiper trenzado para máximo rechazo de ruido"
+        "valor": "Pares trenzados con tecnología Memphis True Twist para mejor rechazo de ruido"
       },
       {
         "etiqueta": "Conectores",
-        "valor": "Metálicos maquinados con acabado cromo satinado y punta dividida de níquel"
+        "valor": "Metálicos maquinados Easy-Grip con contactos niquelados"
       },
       {
         "etiqueta": "Forro",
-        "valor": "Translúcido esmerilado de una sola capa, suave y maleable"
+        "valor": "Forro suave y maleable"
       },
       {
         "etiqueta": "Extras",
-        "valor": "Alivio de tensión moldeado integrado"
+        "valor": "Blindaje mejorado"
       },
       {
         "etiqueta": "Línea",
@@ -19891,7 +20056,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 17
+      "longitud_m": 5.18
     }
   },
   {
@@ -19908,7 +20073,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -19922,7 +20087,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -19930,19 +20095,19 @@
       },
       {
         "etiqueta": "Construcción",
-        "valor": "Tecnología True Twist de hiper trenzado para máximo rechazo de ruido"
+        "valor": "Pares trenzados con tecnología Memphis True Twist para mejor rechazo de ruido"
       },
       {
         "etiqueta": "Conectores",
-        "valor": "Metálicos maquinados con acabado cromo satinado y punta dividida de níquel"
+        "valor": "Metálicos maquinados Easy-Grip con contactos niquelados"
       },
       {
         "etiqueta": "Forro",
-        "valor": "Translúcido esmerilado de una sola capa, suave y maleable"
+        "valor": "Forro suave y maleable"
       },
       {
         "etiqueta": "Extras",
-        "valor": "Alivio de tensión moldeado integrado"
+        "valor": "Blindaje mejorado"
       },
       {
         "etiqueta": "Línea",
@@ -19957,7 +20122,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 17
+      "longitud_m": 5.18
     }
   },
   {
@@ -19974,7 +20139,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "3 m"
+        "valor": "0.91 m"
       },
       {
         "etiqueta": "Canales",
@@ -19988,7 +20153,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "3 m"
+        "valor": "0.91 m"
       },
       {
         "etiqueta": "Canales",
@@ -19996,19 +20161,19 @@
       },
       {
         "etiqueta": "Construcción",
-        "valor": "Tecnología True Twist de hiper trenzado para máximo rechazo de ruido"
+        "valor": "Pares trenzados con tecnología Memphis True Twist para mejor rechazo de ruido"
       },
       {
         "etiqueta": "Conectores",
-        "valor": "Metálicos maquinados con acabado cromo satinado y punta dividida de níquel"
+        "valor": "Metálicos maquinados Easy-Grip con contactos niquelados"
       },
       {
         "etiqueta": "Forro",
-        "valor": "Translúcido esmerilado de una sola capa, suave y maleable"
+        "valor": "Forro suave y maleable"
       },
       {
         "etiqueta": "Extras",
-        "valor": "Alivio de tensión moldeado integrado"
+        "valor": "Blindaje mejorado"
       },
       {
         "etiqueta": "Línea",
@@ -20023,7 +20188,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 3
+      "longitud_m": 0.91
     }
   },
   {
@@ -20040,7 +20205,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "3 m"
+        "valor": "0.91 m"
       },
       {
         "etiqueta": "Aplicación",
@@ -20054,7 +20219,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "3 m"
+        "valor": "0.91 m"
       },
       {
         "etiqueta": "Aplicación",
@@ -20066,11 +20231,11 @@
       },
       {
         "etiqueta": "Construcción",
-        "valor": "Tecnología True Twist de hiper trenzado para rechazo de ruido"
+        "valor": "Pares trenzados con tecnología Memphis True Twist y blindaje mejorado para rechazo de ruido"
       },
       {
         "etiqueta": "Conectores",
-        "valor": "Metálicos maquinados con acabado cromo satinado"
+        "valor": "Metálicos maquinados Easy-Grip con contactos niquelados"
       }
     ],
     "precioCents": 12500,
@@ -20081,7 +20246,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 3
+      "longitud_m": 0.91
     }
   },
   {
@@ -20098,7 +20263,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "6 m"
+        "valor": "1.83 m"
       },
       {
         "etiqueta": "Aplicación",
@@ -20112,7 +20277,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "6 m"
+        "valor": "1.83 m"
       },
       {
         "etiqueta": "Aplicación",
@@ -20124,11 +20289,11 @@
       },
       {
         "etiqueta": "Construcción",
-        "valor": "Tecnología True Twist de hiper trenzado para rechazo de ruido"
+        "valor": "Pares trenzados con tecnología Memphis True Twist y blindaje mejorado para rechazo de ruido"
       },
       {
         "etiqueta": "Conectores",
-        "valor": "Metálicos maquinados con acabado cromo satinado"
+        "valor": "Metálicos maquinados Easy-Grip con contactos niquelados"
       }
     ],
     "precioCents": 15000,
@@ -20139,16 +20304,16 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 6
+      "longitud_m": 1.83
     }
   },
   {
     "sku": "NPBAT",
     "slug": "memphis-npbat",
-    "nombre": "Batería auxiliar Memphis NPBAT",
+    "nombre": "Terminal de batería con distribución Memphis NPBAT",
     "marca": "Memphis",
     "categoria": "Accesorios",
-    "descripcionCorta": "Batería auxiliar para respaldar sistemas de audio de alta demanda",
+    "descripcionCorta": "Terminal para el borne de la batería con entradas para cable calibre 0/4 y una salida calibre 8",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
@@ -20156,11 +20321,11 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Sistemas de alta potencia donde la batería del vehículo no da abasto"
+        "valor": "Conectar los cables de corriente directamente al borne de la batería y derivar una línea adicional"
       },
       {
-        "etiqueta": "Función",
-        "valor": "Estabiliza el voltaje y respalda la corriente en picos de demanda del amplificador"
+        "etiqueta": "Construcción",
+        "valor": "Latón con baño de cromo satinado, terminales de tornillo y tapa protectora"
       }
     ],
     "specsFicha": [
@@ -20170,15 +20335,15 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Sistemas de alta potencia donde la batería del vehículo no da abasto"
+        "valor": "Conectar los cables de corriente directamente al borne de la batería y derivar una línea adicional"
       },
       {
-        "etiqueta": "Función",
-        "valor": "Estabiliza el voltaje y respalda la corriente en picos de demanda del amplificador"
+        "etiqueta": "Construcción",
+        "valor": "Latón con baño de cromo satinado, terminales de tornillo y tapa protectora"
       },
       {
         "etiqueta": "Instalación",
-        "valor": "En paralelo con la batería principal, requiere aislador o distribuidor"
+        "valor": "Se monta directamente sobre el poste de la batería"
       }
     ],
     "precioCents": 25000,
@@ -20529,7 +20694,7 @@
       },
       {
         "etiqueta": "Contenido",
-        "valor": "6 tiras de sellado y 4 paneles de absorción de onda trasera"
+        "valor": "4 tiras de sellado de 27\" (690 mm) + 2 extra, y 4 paneles de espuma Wavy de 120 × 170 mm para la onda trasera"
       },
       {
         "etiqueta": "Compatibilidad",
@@ -20545,7 +20710,7 @@
       },
       {
         "etiqueta": "Rendimiento",
-        "valor": "Alcanza para 6 bocinas o más"
+        "valor": "Alcanza para 4 bocinas o más"
       },
       {
         "etiqueta": "Ventaja",
@@ -20579,7 +20744,7 @@
         "valor": "Espuma de hule de celda cerrada"
       },
       {
-        "etiqueta": "Diámetro",
+        "etiqueta": "Ancho",
         "valor": "3/8\" de ancho (también disponible en 1/2\", 3/4\" y 1\")"
       }
     ],
@@ -20593,7 +20758,7 @@
         "valor": "Espuma de hule de celda cerrada"
       },
       {
-        "etiqueta": "Diámetro",
+        "etiqueta": "Ancho",
         "valor": "3/8\" de ancho (también disponible en 1/2\", 3/4\" y 1\")"
       },
       {
@@ -20686,7 +20851,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "16 m"
+        "valor": "4.88 m"
       },
       {
         "etiqueta": "Canales",
@@ -20700,7 +20865,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "16 m"
+        "valor": "4.88 m"
       },
       {
         "etiqueta": "Canales",
@@ -20735,13 +20900,13 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 16
+      "longitud_m": 4.88
     }
   },
   {
     "sku": "RFI-6",
     "slug": "rockford-fosgate-rfi-6",
-    "nombre": "Cable RCA de 2 canales y 16 pies RFI-6",
+    "nombre": "Cable RCA de 2 canales y 6 pies RFI-6",
     "marca": "Rockford Fosgate",
     "categoria": "Accesorios",
     "descripcionCorta": "Cable de señal RCA de par trenzado de 6 pies con extremos platinados",
@@ -20752,7 +20917,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "6 m"
+        "valor": "1.83 m"
       },
       {
         "etiqueta": "Canales",
@@ -20766,7 +20931,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "6 m"
+        "valor": "1.83 m"
       },
       {
         "etiqueta": "Canales",
@@ -20801,7 +20966,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 6
+      "longitud_m": 1.83
     }
   },
   {
@@ -20867,59 +21032,6 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "distribuidor"
-    }
-  },
-  {
-    "sku": "SB3X",
-    "slug": "cerwin-vega-sb3x",
-    "nombre": "Restaurador de graves SB3X",
-    "marca": "Cerwin Vega",
-    "categoria": "Accesorios",
-    "descripcionCorta": "Procesador restaurador de graves para realzar las bajas frecuencias del sistema",
-    "specsDestacadas": [
-      {
-        "etiqueta": "Tipo",
-        "valor": "Cable RCA"
-      },
-      {
-        "etiqueta": "Aplicación",
-        "valor": "Sistemas con radio de fábrica donde los graves llegan recortados"
-      },
-      {
-        "etiqueta": "Instalación",
-        "valor": "En línea entre la fuente y el amplificador"
-      }
-    ],
-    "specsFicha": [
-      {
-        "etiqueta": "Tipo",
-        "valor": "Cable RCA"
-      },
-      {
-        "etiqueta": "Aplicación",
-        "valor": "Sistemas con radio de fábrica donde los graves llegan recortados"
-      },
-      {
-        "etiqueta": "Instalación",
-        "valor": "En línea entre la fuente y el amplificador"
-      },
-      {
-        "etiqueta": "Marca",
-        "valor": "Cerwin Vega"
-      },
-      {
-        "etiqueta": "Función",
-        "valor": "Refuerza y recupera las bajas frecuencias perdidas en la señal de la fuente"
-      }
-    ],
-    "precioCents": 340000,
-    "moneda": "GTQ",
-    "disponibilidad": "disponible",
-    "imagenes": [],
-    "destacado": false,
-    "activo": true,
-    "atributos": {
-      "tipo_accesorio": "cable-rca"
     }
   },
   {
@@ -21083,7 +21195,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -21097,7 +21209,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -21124,7 +21236,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 17
+      "longitud_m": 5.18
     }
   },
   {
@@ -21141,7 +21253,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "10 m"
+        "valor": "3.05 m"
       },
       {
         "etiqueta": "Canales",
@@ -21155,7 +21267,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "10 m"
+        "valor": "3.05 m"
       },
       {
         "etiqueta": "Canales",
@@ -21182,7 +21294,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 10
+      "longitud_m": 3.05
     }
   },
   {
@@ -21199,7 +21311,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "6 m"
+        "valor": "1.83 m"
       },
       {
         "etiqueta": "Canales",
@@ -21213,7 +21325,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "6 m"
+        "valor": "1.83 m"
       },
       {
         "etiqueta": "Canales",
@@ -21240,7 +21352,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 6
+      "longitud_m": 1.83
     }
   },
   {
@@ -21257,7 +21369,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -21271,7 +21383,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "17 m"
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Canales",
@@ -21298,7 +21410,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 17
+      "longitud_m": 5.18
     }
   },
   {
@@ -21315,7 +21427,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "12 m"
+        "valor": "3.66 m"
       },
       {
         "etiqueta": "Canales",
@@ -21329,7 +21441,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "12 m"
+        "valor": "3.66 m"
       },
       {
         "etiqueta": "Canales",
@@ -21356,7 +21468,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 12
+      "longitud_m": 3.66
     }
   },
   {
@@ -21373,7 +21485,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "6 m"
+        "valor": "1.83 m"
       },
       {
         "etiqueta": "Canales",
@@ -21387,7 +21499,7 @@
       },
       {
         "etiqueta": "Longitud",
-        "valor": "6 m"
+        "valor": "1.83 m"
       },
       {
         "etiqueta": "Canales",
@@ -21414,7 +21526,7 @@
     "activo": true,
     "atributos": {
       "tipo_accesorio": "cable-rca",
-      "longitud_m": 6
+      "longitud_m": 1.83
     }
   },
   {
@@ -21518,7 +21630,7 @@
   {
     "sku": "ANL1",
     "slug": "cerwin-vega-anl1",
-    "nombre": "Portafusible tipo ANL",
+    "nombre": "Portafusible ANL calibre 1/0 ANL1",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Portafusible tipo ANL para la línea principal de corriente",
@@ -21616,7 +21728,7 @@
   {
     "sku": "DB124",
     "slug": "cerwin-vega-db124",
-    "nombre": "Bloque distribuidor de una entrada calibre 0 a dos salidas caibre 4 DB124",
+    "nombre": "Bloque distribuidor de una entrada calibre 1/0 a dos salidas calibre 4 DB124",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
     "descripcionCorta": "Bloque distribuidor con una entrada calibre 1/0 y dos salidas calibre 4, con reductores para calibre 4 y 8",
@@ -21669,10 +21781,10 @@
   {
     "sku": "DB148",
     "slug": "cerwin-vega-db148",
-    "nombre": "Bloque distribuidor de una entrada calibre 4 a dos salidas caibre 8 DB148",
+    "nombre": "Bloque distribuidor de una entrada calibre 4 a cuatro salidas calibre 8 DB148",
     "marca": "Cerwin Vega",
     "categoria": "Accesorios",
-    "descripcionCorta": "Bloque distribuidor de corriente con entrada calibre 1 a 4 y salidas calibre 4 a 8",
+    "descripcionCorta": "Bloque distribuidor de corriente con una entrada calibre 4 y cuatro salidas calibre 8",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
@@ -21684,7 +21796,7 @@
       },
       {
         "etiqueta": "Entrada",
-        "valor": "Calibre 1 a 4"
+        "valor": "Una de calibre 4"
       }
     ],
     "specsFicha": [
@@ -21698,11 +21810,11 @@
       },
       {
         "etiqueta": "Entrada",
-        "valor": "Calibre 1 a 4"
+        "valor": "Una de calibre 4"
       },
       {
         "etiqueta": "Salida",
-        "valor": "Calibre 4 a 8"
+        "valor": "Cuatro de calibre 8"
       }
     ],
     "precioCents": 8000,
@@ -21840,18 +21952,18 @@
   {
     "sku": "X317-STG6",
     "slug": "rockford-fosgate-x317-stg6",
-    "nombre": "Sistema marino X317 Stage 6",
+    "nombre": "Sistema de audio Stage 6 para Can-Am Maverick X3 X317-STG6",
     "marca": "Rockford Fosgate",
     "categoria": "Sistemas",
     "categoriasSecundarias": [
       "Subwoofers",
       "Bocinas"
     ],
-    "descripcionCorta": "Sistema de audio marino completo de ajuste directo, configuración Stage 6",
+    "descripcionCorta": "Sistema de audio completo de 1,500 W de ajuste directo para Can-Am Maverick X3 2017 en adelante, configuración Stage 6",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
-        "valor": "Sistema de audio marino completo, listo para instalar"
+        "valor": "Sistema de audio completo para Can-Am Maverick X3 2017 en adelante (2 y 4 plazas, no Maverick R), listo para instalar"
       },
       {
         "etiqueta": "Configuración",
@@ -21865,7 +21977,7 @@
     "specsFicha": [
       {
         "etiqueta": "Tipo",
-        "valor": "Sistema de audio marino completo, listo para instalar"
+        "valor": "Sistema de audio completo para Can-Am Maverick X3 2017 en adelante (2 y 4 plazas, no Maverick R), listo para instalar"
       },
       {
         "etiqueta": "Configuración",
@@ -21877,11 +21989,11 @@
       },
       {
         "etiqueta": "Contenido",
-        "valor": "Fuente, amplificación, bocinas y subwoofer emparejados de fábrica"
+        "valor": "Radio PMX-3, amplificador M5-1500X5 de 5 canales, dos subwoofers M2 de 10\" en cajón, bocinas M2 de 6.5\" al frente y bocinas tipo corneta M2 de 8\" atrás, controlador de iluminación PMX-RGB, kit de cableado calibre 4 y kit de tablero"
       },
       {
         "etiqueta": "Protección ambiental",
-        "valor": "Componentes Element Ready de grado marino"
+        "valor": "Componentes Element Ready para uso off-road"
       }
     ],
     "precioCents": 7000000,
@@ -21894,17 +22006,18 @@
   {
     "sku": "X317-STG4",
     "slug": "rockford-fosgate-x317-stg4",
-    "nombre": "Sistema marino X317 Stage 4",
+    "nombre": "Sistema de audio Stage 4 para Can-Am Maverick X3 X317-STG4",
     "marca": "Rockford Fosgate",
     "categoria": "Sistemas",
     "categoriasSecundarias": [
+      "Subwoofers",
       "Bocinas"
     ],
-    "descripcionCorta": "Sistema de audio marino completo de ajuste directo, configuración Stage 4",
+    "descripcionCorta": "Sistema de audio completo de 800 W de ajuste directo para Can-Am Maverick X3 2017 en adelante, configuración Stage 4",
     "specsDestacadas": [
       {
         "etiqueta": "Tipo",
-        "valor": "Sistema de audio marino completo, listo para instalar"
+        "valor": "Sistema de audio completo para Can-Am Maverick X3 2017 en adelante (2 y 4 plazas, no Maverick R), listo para instalar"
       },
       {
         "etiqueta": "Configuración",
@@ -21918,7 +22031,7 @@
     "specsFicha": [
       {
         "etiqueta": "Tipo",
-        "valor": "Sistema de audio marino completo, listo para instalar"
+        "valor": "Sistema de audio completo para Can-Am Maverick X3 2017 en adelante (2 y 4 plazas, no Maverick R), listo para instalar"
       },
       {
         "etiqueta": "Configuración",
@@ -21930,11 +22043,11 @@
       },
       {
         "etiqueta": "Contenido",
-        "valor": "Fuente, amplificación y bocinas emparejadas de fábrica"
+        "valor": "Radio PMX-2, amplificador de 4 canales de 800 W, bocinas M1 de 6.5\" al frente, bocinas tipo moto-can M1 de 6.5\" atrás, subwoofer de 10\" en cajón bajo el asiento, controlador de iluminación PMX-RGB, kit de cableado calibre 8 y kit de tablero"
       },
       {
         "etiqueta": "Protección ambiental",
-        "valor": "Componentes Element Ready de grado marino"
+        "valor": "Componentes Element Ready para uso off-road"
       }
     ],
     "precioCents": 4620000,
@@ -21992,15 +22105,15 @@
       },
       {
         "etiqueta": "Bocinas frontales",
-        "valor": "Pods con medios de rango completo TMS65 de 6.5\" y tweeters M2-TS de 1\""
+        "valor": "Cajones frontales con puerto Color Optix (RZR19PXP-FSE) con bocinas TMS6SG de 6.5\" y tweeters M2-TS de 1\""
       },
       {
         "etiqueta": "Bocinas traseras",
-        "valor": "Moto-cans M2 de 8\" con iluminación Color Optix"
+        "valor": "Bocinas tipo corneta (horn) M2WL-8HB de 8\" con iluminación Color Optix"
       },
       {
         "etiqueta": "Subwoofer",
-        "valor": "M2 de 10\" Element Ready en cajón de ajuste exacto con Color Optix"
+        "valor": "M2D4-10IB de 10\" (doble bobina 4 Ω) Element Ready en cajón ventilado de ajuste exacto (RZR19PXP-M2FWE) con puerto sellable"
       },
       {
         "etiqueta": "Instalación",
@@ -22058,7 +22171,7 @@
       },
       {
         "etiqueta": "Aplicación",
-        "valor": "Polaris RZR Pro XP 2019+"
+        "valor": "Polaris RZR Pro XP, Turbo R y Pro R (2 y 4 plazas) 2020–2024 selectos"
       },
       {
         "etiqueta": "Receptor",
@@ -22066,7 +22179,7 @@
       },
       {
         "etiqueta": "Bocinas frontales",
-        "valor": "Pods con medios de rango completo TMS65 de 6.5\""
+        "valor": "Cajones frontales con puerto Color Optix (RZR19PXP-FSE) con dos bocinas TMS6SG de 6.5\""
       },
       {
         "etiqueta": "Bocinas traseras",
@@ -22074,7 +22187,7 @@
       },
       {
         "etiqueta": "Subwoofer",
-        "valor": "M1 de 10\" Element Ready en cajón ventilado con puerto sellable para vadeo"
+        "valor": "M1D4-10B de 10\" (doble bobina 4 Ω) Element Ready en cajón ventilado RZR19PXP-M1FWE con puerto sellable"
       },
       {
         "etiqueta": "Instalación",
@@ -22091,5 +22204,62 @@
     "imagenes": [],
     "destacado": false,
     "activo": false
+  },
+  {
+    "sku": "SB3X",
+    "slug": "cerwin-vega-sb3x",
+    "nombre": "Barra de sonido impermeable de 10 bocinas SB3X",
+    "marca": "Cerwin Vega",
+    "categoria": "Sistemas",
+    "categoriasSecundarias": [
+      "Bocinas"
+    ],
+    "descripcionCorta": "Barra de sonido para intemperie con 10 bocinas, Bluetooth e iluminación RGB, para UTV, ATV, carritos de golf y lanchas",
+    "specsDestacadas": [
+      {
+        "etiqueta": "Aplicación",
+        "valor": "UTV, ATV, carritos de golf y lanchas"
+      },
+      {
+        "etiqueta": "Bocinas",
+        "valor": "Ocho de rango completo de 3\" y dos tweeters de 1\""
+      },
+      {
+        "etiqueta": "Conectividad",
+        "valor": "Bluetooth, entrada auxiliar de 3.5 mm y salida auxiliar para agregar otra barra o un amplificador"
+      }
+    ],
+    "specsFicha": [
+      {
+        "etiqueta": "Aplicación",
+        "valor": "UTV, ATV, carritos de golf y lanchas"
+      },
+      {
+        "etiqueta": "Bocinas",
+        "valor": "Ocho de rango completo de 3\" y dos tweeters de 1\""
+      },
+      {
+        "etiqueta": "Conectividad",
+        "valor": "Bluetooth, entrada auxiliar de 3.5 mm y salida auxiliar para agregar otra barra o un amplificador"
+      },
+      {
+        "etiqueta": "Iluminación",
+        "valor": "LED RGB con control remoto"
+      },
+      {
+        "etiqueta": "Instalación",
+        "valor": "Abrazaderas para barras antivuelco de 1.75\" y 2\"; incluye cableado de corriente"
+      },
+      {
+        "etiqueta": "Medidas",
+        "valor": "86.6 × 8.1 × 9.7 cm (34.1 × 3.2 × 3.8\")"
+      }
+    ],
+    "precioCents": 340000,
+    "moneda": "GTQ",
+    "disponibilidad": "disponible",
+    "imagenes": [],
+    "destacado": false,
+    "activo": true
   }
 ]

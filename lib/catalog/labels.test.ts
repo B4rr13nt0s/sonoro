@@ -234,6 +234,8 @@ test("formatValue: un campo vacío se omite", () => {
 test("compareMeasures: orden por magnitud, milímetros al final", () => {
   const ordenadas = [...MEDIDAS].sort(compareMeasures);
   assert.deepEqual(ordenadas, [
+    '3/4"',
+    '7/8"',
     '1"',
     '1.5"',
     '2.5"',

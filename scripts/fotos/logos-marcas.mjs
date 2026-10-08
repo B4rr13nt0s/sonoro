@@ -11,7 +11,7 @@ import fs from "node:fs";
 
 const ORIGEN = "assets/logos_marcas";
 const DESTINO = "public/logos/marcas";
-const ANCHO_MAX = 480;
+const ANCHO_MAX = 960;
 
 // slug de la marca → archivo original.
 const ARCHIVOS = {

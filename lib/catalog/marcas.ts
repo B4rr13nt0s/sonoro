@@ -37,14 +37,14 @@ export function ordenarMarcas<T extends { slug: string; nombre: string }>(
 // recortados; las medidas son las que imprime. next/image las usa para
 // reservar el espacio: sin ellas la página se movería al cargar cada logo.
 export const LOGOS: Record<string, { src: string; ancho: number; alto: number }> = {
-  memphis: { src: "/logos/marcas/memphis.webp", ancho: 480, alto: 114 },
-  "rockford-fosgate": { src: "/logos/marcas/rockford-fosgate.webp", ancho: 480, alto: 75 },
-  "cerwin-vega": { src: "/logos/marcas/cerwin-vega.webp", ancho: 480, alto: 145 },
-  pioneer: { src: "/logos/marcas/pioneer.webp", ancho: 480, alto: 70 },
-  kbt: { src: "/logos/marcas/kbt.webp", ancho: 480, alto: 446 },
-  focal: { src: "/logos/marcas/focal.webp", ancho: 480, alto: 99 },
-  jbl: { src: "/logos/marcas/jbl.webp", ancho: 480, alto: 402 },
-  soundskins: { src: "/logos/marcas/soundskins.webp", ancho: 480, alto: 252 },
+  memphis: { src: "/logos/marcas/memphis.webp", ancho: 851, alto: 202 },
+  "rockford-fosgate": { src: "/logos/marcas/rockford-fosgate.webp", ancho: 960, alto: 151 },
+  "cerwin-vega": { src: "/logos/marcas/cerwin-vega.webp", ancho: 541, alto: 163 },
+  pioneer: { src: "/logos/marcas/pioneer.webp", ancho: 960, alto: 140 },
+  kbt: { src: "/logos/marcas/kbt.webp", ancho: 494, alto: 459 },
+  focal: { src: "/logos/marcas/focal.webp", ancho: 960, alto: 198 },
+  jbl: { src: "/logos/marcas/jbl.webp", ancho: 960, alto: 804 },
+  soundskins: { src: "/logos/marcas/soundskins.webp", ancho: 960, alto: 503 },
 };
 
 export type Logo = (typeof LOGOS)[string];

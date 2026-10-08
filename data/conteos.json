@@ -27,9 +27,9 @@
   },
   "categorias": {
     "bocinas": {
-      "total": 108,
+      "total": 109,
       "porFiltro": {
-        "cerwin-vega": 16,
+        "cerwin-vega": 17,
         "focal": 7,
         "jbl": 4,
         "kbt": 12,
@@ -40,7 +40,7 @@
       }
     },
     "subwoofers": {
-      "total": 55,
+      "total": 56,
       "porFiltro": {
         "cerwin-vega": 5,
         "focal": 0,
@@ -48,7 +48,7 @@
         "kbt": 14,
         "memphis": 25,
         "pioneer": 1,
-        "rockford-fosgate": 10,
+        "rockford-fosgate": 11,
         "soundskins": 0
       }
     },
@@ -66,13 +66,13 @@
       }
     },
     "receptores": {
-      "total": 14,
+      "total": 16,
       "porFiltro": {
         "cerwin-vega": 0,
         "focal": 0,
         "jbl": 0,
         "kbt": 0,
-        "memphis": 0,
+        "memphis": 2,
         "pioneer": 12,
         "rockford-fosgate": 2,
         "soundskins": 0
@@ -118,13 +118,13 @@
       }
     },
     "accesorios": {
-      "total": 69,
+      "total": 66,
       "porFiltro": {
-        "cerwin-vega": 16,
+        "cerwin-vega": 15,
         "focal": 0,
         "jbl": 0,
         "kbt": 20,
-        "memphis": 27,
+        "memphis": 25,
         "pioneer": 0,
         "rockford-fosgate": 3,
         "soundskins": 3
@@ -135,14 +135,14 @@
     "cerwin-vega": {
       "total": 43,
       "porFiltro": {
-        "bocinas": 16,
+        "bocinas": 17,
         "subwoofers": 5,
         "amplificadores": 0,
         "receptores": 0,
         "ecualizadores": 4,
         "kits": 2,
         "insonorizacion": 0,
-        "accesorios": 16
+        "accesorios": 15
       }
     },
     "focal": {
@@ -190,11 +190,11 @@
         "bocinas": 38,
         "subwoofers": 25,
         "amplificadores": 16,
-        "receptores": 0,
+        "receptores": 2,
         "ecualizadores": 1,
         "kits": 3,
         "insonorizacion": 0,
-        "accesorios": 27
+        "accesorios": 25
       }
     },
     "pioneer": {
@@ -214,7 +214,7 @@
       "total": 57,
       "porFiltro": {
         "bocinas": 29,
-        "subwoofers": 10,
+        "subwoofers": 11,
         "amplificadores": 14,
         "receptores": 2,
         "ecualizadores": 0,
