@@ -9,12 +9,15 @@ import { z } from "zod";
 import {
   AtributosSchema,
   DisponibilidadSchema,
+  USOS,
   type Atributos,
   type Disponibilidad,
   type Spec,
+  type Uso,
 } from "../../lib/catalog/types.ts";
 import { precioACents } from "../precio.ts";
 import { esVacia, separarCategorias, type Celda, type FilaCruda } from "./contrato.ts";
+import { ErrorDeFormato, leerDimensiones, leerPotenciaPorCarga } from "./formatos.ts";
 import { MAX_SPECS_LIBRES, type CampoHoja, type DefHoja } from "./hojas.ts";
 
 export type FilaNormalizada = {
@@ -32,6 +35,9 @@ export type FilaNormalizada = {
   atributos: Atributos;
   libres: Spec[];
   categoriasSecundarias?: string[];
+  uso: Uso[];
+  // Avisos de la fila (specs sin valor) que no la rechazan.
+  omitidas: string[];
 };
 
 export type ResultadoFila = { ok: true; fila: FilaNormalizada } | { ok: false; motivo: string };
@@ -76,9 +82,18 @@ function booleano(celda: Celda | undefined): boolean | string | number | undefin
 
 // Cómo se lee cada campo específico. Record sobre CampoHoja: agregar un campo
 // al esquema sin decir cómo se lee no compila.
-const LECTOR: Record<CampoHoja, (celda: Celda | undefined) => unknown> = {
+const LECTOR: Record<CampoHoja, (celda: Celda | undefined, def: DefHoja) => unknown> = {
   medida: texto,
-  potencia_rms_w: numero,
+  // En Amplificadores es «### W @ # Ω · …», una potencia por impedancia; en
+  // el resto, un número.
+  potencia_rms_w: (celda, def) => {
+    if (def.categoria === "Amplificadores") return leerPotenciaPorCarga(celda);
+    const n = numero(celda);
+    // El esquema admite texto (potencia descriptiva) solo para Amplificadores.
+    return typeof n === "string"
+      ? new ErrorDeFormato(`«${n}» no es un número (en W, sin unidad)`)
+      : n;
+  },
   impedancia_ohm: numero,
   bobinas: texto,
   configuracion: texto,
@@ -102,6 +117,7 @@ const LECTOR: Record<CampoHoja, (celda: Celda | undefined) => unknown> = {
   sensibilidad_db: numero,
   capacidad_w: numero,
   longitud_m: numero,
+  dimensiones: leerDimensiones,
 };
 
 const ComunSchema = z.object({
@@ -140,7 +156,9 @@ export function normalizarFila(fila: FilaCruda, def: DefHoja): ResultadoFila {
 
   const comun = {
     sku: texto(c.sku),
-    slug: texto(c.slug),
+    // Mayúsculas en el slug (p. ej. «…srx1244V», copiado del sku) se llevan a
+    // minúsculas; todo lo demás inválido sigue rechazando la fila.
+    slug: texto(c.slug)?.toLowerCase(),
     nombre: textoLibre(c.nombre),
     marca: textoLibre(c.marca),
     descripcion_corta: textoLibre(c.descripcion_corta),
@@ -152,9 +170,14 @@ export function normalizarFila(fila: FilaCruda, def: DefHoja): ResultadoFila {
     activo: booleano(c.activo),
   };
   const atributosCrudos: Record<string, unknown> = {};
+  // Con formato ilegible ya tienen su motivo: no se repiten como «vacíos».
+  const ilegibles = new Set<CampoHoja>();
   for (const campo of def.campos) {
-    const valor = LECTOR[campo](c[campo]);
-    if (valor !== undefined) atributosCrudos[campo] = valor;
+    const valor = LECTOR[campo](c[campo], def);
+    if (valor instanceof ErrorDeFormato) {
+      motivos.push(`${campo}: ${valor.message}`);
+      ilegibles.add(campo);
+    } else if (valor !== undefined) atributosCrudos[campo] = valor;
   }
 
   // Obligatorios primero, con un mensaje que dice lo que pasó: «obligatorio
@@ -163,8 +186,20 @@ export function normalizarFila(fila: FilaCruda, def: DefHoja): ResultadoFila {
     if (comun[campo] === undefined) motivos.push(`${campo}: obligatorio vacío`);
   }
   for (const campo of def.obligatorios) {
-    if (atributosCrudos[campo] === undefined) motivos.push(`${campo}: obligatorio vacío`);
+    if (atributosCrudos[campo] === undefined && !ilegibles.has(campo))
+      motivos.push(`${campo}: obligatorio vacío`);
   }
+  // Columna `categoria` del libro: el uso. Valor desconocido o repetido
+  // rechaza la fila, igual que una categoría inexistente en ESPECIALES.
+  const uso: Uso[] = [];
+  for (const valor of separarCategorias(c.categoria)) {
+    if (!(USOS as readonly string[]).includes(valor)) {
+      motivos.push(`categoria: "${valor}" no es un uso válido (${USOS.join(", ")})`);
+    } else if (uso.includes(valor as Uso)) {
+      motivos.push(`categoria: "${valor}" repetido`);
+    } else uso.push(valor as Uso);
+  }
+  if (esVacia(c.categoria)) motivos.push("categoria: obligatorio vacío");
   let categoriasSecundarias: string[] | undefined;
   if (def.multicategoria) {
     categoriasSecundarias = separarCategorias(c.categorias);
@@ -172,10 +207,18 @@ export function normalizarFila(fila: FilaCruda, def: DefHoja): ResultadoFila {
   }
 
   const libres: Spec[] = [];
+  const omitidas: string[] = [];
   for (let n = 1; n <= MAX_SPECS_LIBRES; n++) {
     const etiqueta = textoLibre(c[`spec_${n}_etiqueta`]);
     const valor = textoLibre(c[`spec_${n}_valor`]);
     if (etiqueta === undefined && valor === undefined) continue;
+    // Etiqueta sin valor = dato que el fabricante no publica: no hay qué
+    // mostrar, la spec se omite y queda en las alertas. Un valor sin
+    // etiqueta sí rechaza la fila: no se sabe de qué es.
+    if (etiqueta !== undefined && valor === undefined) {
+      omitidas.push(`spec_${n} «${etiqueta}» no tiene valor: no se publica`);
+      continue;
+    }
     if (etiqueta === undefined || valor === undefined) {
       motivos.push(
         `spec_${n} tiene solo etiqueta o solo valor (etiqueta="${etiqueta ?? ""}", valor="${valor ?? ""}")`,
@@ -221,6 +264,8 @@ export function normalizarFila(fila: FilaCruda, def: DefHoja): ResultadoFila {
     activo: base.activo,
     atributos: parseoAtributos.data,
     libres,
+    uso,
+    omitidas,
   };
   if (precioAntesCents !== undefined) normalizada.precioAntesCents = precioAntesCents;
   if (base.garantia_meses !== undefined) normalizada.garantiaMeses = base.garantia_meses;

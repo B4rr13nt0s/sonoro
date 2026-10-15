@@ -90,6 +90,7 @@ function main(): void {
   const productosValidos: Producto[] = [];
   const rechazos: AvisoFila[] = [];
   const avisos: Avisos = { contradiccion: [], recorte: [], marketing: [] };
+  const alertasDeFila: string[] = [];
 
   for (const fila of filas) {
     const def = defHoja(fila.hoja);
@@ -101,7 +102,8 @@ function main(): void {
       rechazos.push({ donde, sku, detalle: normalizada.motivo });
       continue;
     }
-    const { atributos, libres, categoriasSecundarias, ...base } = normalizada.fila;
+    const { atributos, libres, categoriasSecundarias, omitidas, ...base } = normalizada.fila;
+    for (const o of omitidas) alertasDeFila.push(`${donde} (sku "${sku}"): ${o}`);
 
     const specs = construirSpecs(def, atributos, libres);
     for (const advertencia of specs.advertencias) {
@@ -156,6 +158,7 @@ function main(): void {
   // (de sku o de vista) — se reporta junto a las demás alertas de
   // integridad de datos, nunca se ignora en silencio.
   const alertas = [
+    ...alertasDeFila,
     ...detectarAlertas(
       catalogoAnterior,
       productosValidos,

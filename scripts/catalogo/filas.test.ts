@@ -17,6 +17,7 @@ const SUBWOOFER: Record<string, Celda> = {
   garantia_meses: null,
   destacado: "VERDADERO",
   activo: "FALSO",
+  categoria: "carro",
   medida: '12"',
   potencia_rms_w: 500,
   impedancia_ohm: "4", // las columnas con lista llegan como texto
@@ -51,6 +52,8 @@ test("fila válida: tipos convertidos, atributos sin vacíos, libres en orden", 
     disponibilidad: "disponible",
     destacado: true,
     activo: false,
+    uso: ["carro"],
+    omitidas: [],
     atributos: {
       medida: '12"',
       potencia_rms_w: 500,
@@ -111,8 +114,12 @@ test("booleano: acepta celda booleana y VERDADERO/FALSO en cualquier caja", () =
   assert.equal(r.fila.atributos.android_auto, false);
 });
 
-test("spec libre con etiqueta y sin valor", () => {
-  const m = motivo("SUBWOOFERS", { ...SUBWOOFER, spec_2_etiqueta: "Caja" });
+test("spec libre con etiqueta y sin valor: se omite y se avisa; valor sin etiqueta rechaza", () => {
+  const r = normalizar("SUBWOOFERS", { ...SUBWOOFER, spec_2_etiqueta: "Caja" });
+  assert.ok(r.ok);
+  assert.equal(r.fila.libres.length, 1);
+  assert.match(r.fila.omitidas[0], /spec_2 «Caja» no tiene valor/);
+  const m = motivo("SUBWOOFERS", { ...SUBWOOFER, spec_2_valor: "Sellada" });
   assert.match(m, /^spec_2 tiene solo etiqueta o solo valor/);
 });
 
@@ -148,4 +155,78 @@ test("los textos libres colapsan espacios internos; sku y slug no se arreglan en
   // Un sku con doble espacio sigue llegando tal cual: el esquema lo rechaza.
   const sku = normalizar("SUBWOOFERS", { ...SUBWOOFER, sku: "TS  W312D4" });
   assert.equal(sku.ok && sku.fila.sku, "TS  W312D4");
+});
+
+const AMPLIFICADOR: Record<string, Celda> = {
+  sku: "CM-1500X1",
+  slug: "memphis-cm-1500x1",
+  nombre: "Amplificador monoblock CM-1500X1",
+  marca: "Memphis",
+  descripcion_corta: "Amplificador monoblock clase D",
+  precio: 3000,
+  disponibilidad: "disponible",
+  destacado: "FALSO",
+  activo: "VERDADERO",
+  categoria: "marino, motorsports",
+  canales: 1,
+  clase: "D",
+  potencia_rms_w: "1,500 W @ 1 Ω · 900 W @ 2 Ω · 500 W @ 4 Ω",
+  dimensiones: "300 × 200 × 50 mm",
+};
+
+test("amplificador: potencia por impedancia y dimensiones se normalizan", () => {
+  const r = normalizar("AMPLIFICADORES", AMPLIFICADOR);
+  assert.equal(r.ok, true);
+  if (!r.ok) return;
+  assert.deepEqual(r.fila.atributos.potencia_rms_w, [
+    { w: 1500, ohm: 1 },
+    { w: 900, ohm: 2 },
+    { w: 500, ohm: 4 },
+  ]);
+  assert.deepEqual(r.fila.atributos.dimensiones, [300, 200, 50]);
+});
+
+test("amplificador: potencia sin impedancia o dimensiones sin unidad rechazan la fila", () => {
+  const m = motivo("AMPLIFICADORES", {
+    ...AMPLIFICADOR,
+    potencia_rms_w: 1500,
+    dimensiones: "300 × 200 × 50",
+  });
+  assert.match(m, /potencia_rms_w: «1500» no tiene el formato/);
+  assert.match(m, /dimensiones: «300 × 200 × 50» no tiene el formato/);
+  // Un valor ilegible no se repite como «obligatorio vacío».
+  assert.doesNotMatch(m, /obligatorio vacío/);
+});
+
+test("amplificador: dimensiones es obligatoria", () => {
+  assert.match(
+    motivo("AMPLIFICADORES", { ...AMPLIFICADOR, dimensiones: null }),
+    /dimensiones: obligatorio vacío/,
+  );
+});
+
+test("subwoofer: la potencia sigue siendo un número", () => {
+  assert.match(
+    motivo("SUBWOOFERS", { ...SUBWOOFER, potencia_rms_w: "500 W @ 4 Ω" }),
+    /^potencia_rms_w:/,
+  );
+});
+
+test("categoria (uso): lista separada por comas, y vacía o desconocida se rechaza", () => {
+  const r = normalizar("SUBWOOFERS", { ...SUBWOOFER, categoria: "marino, motorsports" });
+  assert.ok(r.ok);
+  assert.deepEqual(r.fila.uso, ["marino", "motorsports"]);
+  assert.match(
+    motivo("SUBWOOFERS", { ...SUBWOOFER, categoria: null }),
+    /categoria: obligatorio vacío/,
+  );
+  assert.match(motivo("SUBWOOFERS", { ...SUBWOOFER, categoria: "lancha" }), /no es un uso válido/);
+  assert.match(motivo("SUBWOOFERS", { ...SUBWOOFER, categoria: "carro, carro" }), /repetido/);
+});
+
+test("amplificador multicanal: la potencia descriptiva se guarda tal cual", () => {
+  const texto = "180 W × 4 @ 2 Ω · 120 W × 4 @ 4 Ω · 360 W × 2 @ 4 Ω puente";
+  const r = normalizar("AMPLIFICADORES", { ...AMPLIFICADOR, potencia_rms_w: texto });
+  assert.ok(r.ok);
+  assert.equal(r.fila.atributos.potencia_rms_w, texto);
 });

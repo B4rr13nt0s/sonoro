@@ -23,6 +23,9 @@ export const COMUN = [
   "garantia_meses",
   "destacado",
   "activo",
+  // Uso (carro, marino, motorsports; varios separados por coma). NO es la
+  // categoría del sitio: esa es la hoja.
+  "categoria",
 ] as const;
 
 // Hojas de referencia para quien edita el libro; el importador no las lee.
@@ -91,9 +94,9 @@ export const HOJAS = {
   },
   AMPLIFICADORES: {
     categoria: "Amplificadores",
-    campos: ["canales", "clase", "potencia_rms_w"],
-    obligatorios: ["canales", "clase", "potencia_rms_w"],
-    generadas: ["canales", "clase", "potencia_rms_w"],
+    campos: ["canales", "clase", "potencia_rms_w", "dimensiones"],
+    obligatorios: ["canales", "clase", "potencia_rms_w", "dimensiones"],
+    generadas: ["canales", "clase", "potencia_rms_w", "dimensiones"],
     destacadas: ["canales", "potencia_rms_w", "clase"],
   },
   RECEPTORES: {

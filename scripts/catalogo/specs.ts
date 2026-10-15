@@ -63,7 +63,14 @@ function numeroDelCampo(campo: Campo, atributos: CamposNormalizados): number | n
     return atributos.medida === undefined ? null : primerNumero(atributos.medida);
   if (campo === "bobinas") return atributos.impedancia_ohm ?? null;
   const valor = atributos[campo];
-  return typeof valor === "number" ? valor : null;
+  if (typeof valor === "number") return valor;
+  // Potencia por carga o dimensiones: el primer número que la hoja escribió,
+  // que es contra el que se compara el primer número del texto de la libre.
+  if (Array.isArray(valor)) {
+    const primero = valor[0];
+    return typeof primero === "number" ? primero : (primero?.w ?? null);
+  }
+  return null;
 }
 
 type Item = { campo: Campo | null; spec: Spec };

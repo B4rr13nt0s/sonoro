@@ -17,8 +17,10 @@ import * as XLSX from "xlsx";
 import { CATEGORIAS_SITIO } from "../../lib/catalog/categorias.ts";
 import { pareceValorMangeado } from "../../lib/catalog/types.ts";
 import {
+  COLUMNAS_SPECS,
   COMUN,
   HOJAS_IGNORADAS,
+  MAX_SPECS_LIBRES,
   NOMBRES_HOJAS,
   columnasEspecificas,
   defHoja,
@@ -117,9 +119,18 @@ export function validarEncabezados(hoja: NombreHoja, encabezados: readonly strin
 
   const esperadas = columnasEspecificas(defHoja(hoja));
   const resto = encabezados.slice(COMUN.length);
-  const faltantes = esperadas.filter((c) => !resto.includes(c));
+  // Los pares spec_N son espacios libres: una hoja puede traer menos de
+  // diez (AMPLIFICADORES trae nueve). Lo que no se acepta es un par a medias.
+  const faltantes = esperadas.filter((c) => !COLUMNAS_SPECS.includes(c) && !resto.includes(c));
   if (faltantes.length > 0) {
     ofensores.push(`${hoja}: faltan columnas: ${faltantes.join(", ")}`);
+  }
+  for (let n = 1; n <= MAX_SPECS_LIBRES; n++) {
+    const e = `spec_${n}_etiqueta`;
+    const v = `spec_${n}_valor`;
+    if (resto.includes(e) !== resto.includes(v)) {
+      ofensores.push(`${hoja}: falta la columna ${resto.includes(e) ? v : e}`);
+    }
   }
   resto.forEach((columna, j) => {
     const i = COMUN.length + j;

@@ -24,9 +24,11 @@ const CAMPOS_EN_ORDEN = [
   ...new Set(NOMBRES_HOJAS.flatMap((hoja): readonly string[] => HOJAS[hoja].campos)),
 ];
 
+// En el CSV «categoria» es la del sitio (la hoja); la columna `categoria` del
+// libro, que es el uso, sale como «uso».
 export const COLUMNAS_CSV: readonly string[] = [
   "categoria",
-  ...COMUN,
+  ...COMUN.map((c) => (c === "categoria" ? "uso" : c)),
   "categorias",
   ...CAMPOS_EN_ORDEN,
   ...COLUMNAS_SPECS,
@@ -50,7 +52,9 @@ export function serializarCsv(filas: readonly FilaCruda[]): string {
   const lineas = filas.map((fila) => {
     const categoria = HOJAS[fila.hoja].categoria;
     const valores = COLUMNAS_CSV.map((columna) =>
-      columna === "categoria" ? categoria : valorCsv(fila.celdas[columna]),
+      columna === "categoria"
+        ? categoria
+        : valorCsv(fila.celdas[columna === "uso" ? "categoria" : columna]),
     );
     return { categoria, sku: valorCsv(fila.celdas.sku), linea: valores.map(escapar).join(",") };
   });

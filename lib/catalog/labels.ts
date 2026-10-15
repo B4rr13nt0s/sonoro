@@ -84,7 +84,10 @@ type ValorLista<C extends CampoLista> = keyof (typeof VALUE_LABELS)[C];
 // `impedancia_ohm` en Subwoofers.
 export type CamposNormalizados = {
   medida?: string;
-  potencia_rms_w?: number;
+  // Número suelto en casi todas las categorías; en Amplificadores, la potencia
+  // POR CARGA (`[{ w: 900, ohm: 4 }, …]`): un amplificador no tiene UNA
+  // potencia, tiene una por impedancia.
+  potencia_rms_w?: number | PotenciaPorCarga[] | string;
   impedancia_ohm?: number;
   bobinas?: ValorLista<"bobinas">;
   configuracion?: ValorLista<"configuracion">;
@@ -108,7 +111,12 @@ export type CamposNormalizados = {
   sensibilidad_db?: number;
   capacidad_w?: number;
   longitud_m?: number;
+  // Largo, ancho y alto (en el orden en que los escribe la hoja), en mm.
+  dimensiones?: Dimensiones;
 };
+
+export type PotenciaPorCarga = { w: number; ohm: number };
+export type Dimensiones = [number, number, number];
 
 // ── Nombre de fila de cada campo ────────────────────────────────────────────
 // Casi todos son un texto fijo; `medida` depende de la categoría, así que se
@@ -146,6 +154,7 @@ export const FIELD_LABELS = {
   sensibilidad_db: "Sensibilidad",
   capacidad_w: "Capacidad recomendada",
   longitud_m: "Longitud",
+  dimensiones: "Dimensiones",
 } as const satisfies Record<string, EtiquetaCampo>;
 
 export type Campo = keyof typeof FIELD_LABELS;
@@ -286,8 +295,12 @@ export function formatValue<C extends Campo>(
   valor: CamposNormalizados[C] | CamposNormalizados,
   categoria: string,
 ): string | null {
+  // Un arreglo (potencia por carga, dimensiones) es el valor de UN campo, no
+  // el registro completo.
   const c: CamposNormalizados =
-    typeof valor === "object" && valor !== null ? valor : { [campo]: valor };
+    typeof valor === "object" && valor !== null && !Array.isArray(valor)
+      ? (valor as CamposNormalizados)
+      : { [campo]: valor };
 
   switch (campo) {
     case "medida": {
@@ -298,7 +311,13 @@ export function formatValue<C extends Campo>(
     }
     case "potencia_rms_w":
       if (c.potencia_rms_w === undefined) return null;
+      if (typeof c.potencia_rms_w === "string") return c.potencia_rms_w;
+      if (Array.isArray(c.potencia_rms_w)) {
+        return c.potencia_rms_w.map((p) => `${num(p.w)} W @ ${num(p.ohm)} Ω`).join(" · ");
+      }
       return `${num(c.potencia_rms_w)} W${categoria === "Bocinas" ? " por bocina" : ""}`;
+    case "dimensiones":
+      return c.dimensiones === undefined ? null : `${c.dimensiones.map(num).join(" × ")} mm`;
     case "impedancia_ohm":
     case "bobinas": {
       // Solo Subwoofers trae `bobinas`: en el resto de categorías no hay

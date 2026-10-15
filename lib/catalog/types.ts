@@ -42,6 +42,12 @@ export const SpecSchema = z.object({
 });
 export type Spec = z.infer<typeof SpecSchema>;
 
+// Para qué se usa el producto. Vive en la columna `categoria` de cada hoja del
+// libro (la lista es `categoria_uso` en LISTAS); no es la categoría del sitio.
+export const USOS = ["carro", "marino", "motorsports"] as const;
+export const UsoSchema = z.enum(USOS);
+export type Uso = z.infer<typeof UsoSchema>;
+
 export const MonedaSchema = z.literal("GTQ");
 export type Moneda = z.infer<typeof MonedaSchema>;
 
@@ -72,7 +78,15 @@ const noNegativo = z.number().nonnegative();
 
 export const AtributosSchema = z.strictObject({
   medida: z.enum(MEDIDAS).optional(),
-  potencia_rms_w: noNegativo.optional(),
+  // Un número, o —en Amplificadores— una potencia por impedancia.
+  potencia_rms_w: z
+    .union([
+      noNegativo,
+      z.array(z.strictObject({ w: z.number().positive(), ohm: z.number().positive() })).min(1),
+      // Descriptiva («180 W × 4 @ 2 Ω · 360 W × 2 @ 4 Ω puente»): se muestra tal cual.
+      z.string().min(1),
+    ])
+    .optional(),
   impedancia_ohm: numeroDeLista(IMPEDANCIAS_OHM).optional(),
   bobinas: enumDe(VALUE_LABELS.bobinas).optional(),
   configuracion: enumDe(VALUE_LABELS.configuracion).optional(),
@@ -96,6 +110,9 @@ export const AtributosSchema = z.strictObject({
   sensibilidad_db: noNegativo.optional(),
   capacidad_w: noNegativo.optional(),
   longitud_m: noNegativo.optional(),
+  dimensiones: z
+    .tuple([z.number().positive(), z.number().positive(), z.number().positive()])
+    .optional(),
 });
 export type Atributos = z.infer<typeof AtributosSchema>;
 
@@ -113,12 +130,15 @@ export const ProductoSchema = z
     // cambia su URL — cada producto tiene una sola.
     categoriasSecundarias: z.array(z.string()).min(1).optional(),
     descripcionCorta: z.string(),
+    // Usos del producto, en el orden de la hoja. Opcional en el esquema para
+    // leer un catalog.json anterior a la columna; el importador lo exige.
+    uso: z.array(UsoSchema).min(1).optional(),
     // Ordenado. Exactamente 3 (Tamaño/Impedancia/Potencia RMS en SQ12-D2) — el
     // "Código" que se ve junto a ellos en la ficha se deriva de sku, no vive aquí.
     specsDestacadas: z.array(SpecSchema).length(3),
-    // Ordenado. Ficha técnica completa: 4 a 10 filas — contrato de la hoja del
+    // Ordenado. Ficha técnica completa: 3 a 10 filas (3 son las destacadas; un accesorio simple no publica más) — contrato de la hoja del
     // catálogo.
-    specsFicha: z.array(SpecSchema).min(4).max(10),
+    specsFicha: z.array(SpecSchema).min(3).max(10),
     precioCents: z.number().int().nonnegative(), // entero, centavos, IVA incluido
     // Referencia del historial de precio para el negocio: NO se muestra en el
     // sitio, a propósito (decisión de septiembre de 2026). Que ningún
@@ -163,6 +183,7 @@ export type ProductoTarjeta = Pick<
   | "marca"
   | "categoria"
   | "categoriasSecundarias"
+  | "uso"
   | "precioCents"
   | "disponibilidad"
   | "destacado"

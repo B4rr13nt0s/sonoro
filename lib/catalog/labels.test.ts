@@ -18,7 +18,7 @@ import {
   type Campo,
   type CampoLista,
 } from "./labels.ts";
-import { DisponibilidadSchema } from "./types.ts";
+import { DisponibilidadSchema, USOS } from "./types.ts";
 
 // La hoja LISTAS de data/source/catalogo.xlsx, leída del archivo — no una
 // copia. Así un valor nuevo en LISTAS sin traducción rompe este test en vez
@@ -73,6 +73,7 @@ test("LISTAS: la hoja no trae una lista que el código no conozca", () => {
     "medida",
     "impedancia_ohm",
     "calibre_awg",
+    "categoria_uso", // columna `categoria` de cada hoja: combinaciones de USOS
     ...CAMPOS_LISTA,
   ]);
   for (const columna of LISTAS.keys()) {
@@ -80,6 +81,15 @@ test("LISTAS: la hoja no trae una lista que el código no conozca", () => {
       conocidas.has(columna),
       `LISTAS trae la columna «${columna}» y el código no la conoce`,
     );
+  }
+});
+
+test("LISTAS: categoria_uso solo combina usos que el esquema conoce", () => {
+  const usos = new Set<string>(USOS);
+  for (const valor of lista("categoria_uso")) {
+    for (const uso of valor.split(",").map((u) => u.trim())) {
+      assert.ok(usos.has(uso), `categoria_uso: «${uso}» no es un uso del esquema`);
+    }
   }
 });
 
@@ -271,4 +281,20 @@ test("compareMeasures: el resultado no depende del orden de entrada", () => {
   assert.deepEqual(invertido, esperado);
   // Lo que no se reconoce va después de todo, no rompe el orden.
   assert.deepEqual(["otra", "40 mm", '8"'].sort(compareMeasures), ['8"', "40 mm", "otra"]);
+});
+
+test("formatValue: potencia por impedancia y dimensiones de un amplificador", () => {
+  assert.equal(
+    formatValue(
+      "potencia_rms_w",
+      [
+        { w: 3000, ohm: 1 },
+        { w: 900, ohm: 4 },
+      ],
+      "Amplificadores",
+    ),
+    "3,000 W @ 1 Ω · 900 W @ 4 Ω",
+  );
+  assert.equal(formatValue("dimensiones", [300, 200, 50], "Amplificadores"), "300 × 200 × 50 mm");
+  assert.equal(fieldLabel("dimensiones", "Amplificadores"), "Dimensiones");
 });

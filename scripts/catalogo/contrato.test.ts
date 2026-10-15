@@ -29,6 +29,7 @@ function fila(hoja: NombreHoja, sku: string, extra: Record<string, Celda> = {}):
     disponibilidad: "disponible",
     destacado: "FALSO",
     activo: "VERDADERO",
+    categoria: "carro",
     categorias: hoja === "ESPECIALES" ? "Subwoofers, Bocinas" : null,
     ...extra,
   };

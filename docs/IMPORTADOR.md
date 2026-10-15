@@ -98,8 +98,9 @@ data/source/catalogo.xlsx con estas hojas:
   INSONORIZACION, KITS, ACCESORIOS  → una categoría cada una
   ESPECIALES  → productos multi-categoría, sin obligatorios de especificación
 
-Usa la librería xlsx (SheetJS) en devDependencies. La hoja es la categoría:
-no existe columna `categoria` en las hojas normales.
+Usa la librería xlsx (SheetJS) en devDependencies. La hoja es la categoría
+DEL SITIO. La columna `categoria` que traen las hojas NO es esa: es el USO del
+producto (carro, marino, motorsports) — ver BLOQUE COMÚN.
 
 Mapeo hoja → categoría del sitio:
   SUBWOOFERS→Subwoofers · BOCINAS→Bocinas · AMPLIFICADORES→Amplificadores
@@ -108,11 +109,18 @@ Mapeo hoja → categoría del sitio:
 
 BLOQUE COMÚN — idéntico en las nueve hojas, en este orden:
   sku · slug · nombre · marca · descripcion_corta · precio · precio_antes
-  disponibilidad · garantia_meses · destacado · activo
+  disponibilidad · garantia_meses · destacado · activo · categoria (uso)
+
+  categoria (uso) — obligatoria. Valores de la lista `categoria_uso` de LISTAS:
+  carro · marino · motorsports, solos o varios separados por coma
+  («marino, motorsports»). Valor desconocido, repetido o vacío rechaza la fila.
+  Se guarda como `uso: string[]` en cada producto (lib/catalog/types.ts) y sale
+  en el CSV de registro como columna `uso`, porque en el CSV `categoria` ya es
+  la del sitio. Hoy ninguna pantalla lo lee: textos.ts sigue a mano.
 
 ABORTAR (sin escribir ningún archivo de salida) si:
   1. Falta una hoja esperada o aparece una desconocida
-  2. Las once columnas comunes no son idénticas en las nueve hojas, en el mismo
+  2. Las doce columnas comunes no son idénticas en las nueve hojas, en el mismo
      orden. Reporta qué hoja difiere y en qué columna
   3. Falta una columna específica de la categoría, o sobra una desconocida
   4. Un sku cumple pareceValorMangeado (fecha o notación científica)
@@ -133,7 +141,7 @@ valor fuera de lista, booleano ilegible, par etiqueta/valor asimétrico.
 CAMPOS OBLIGATORIOS POR HOJA
   SUBWOOFERS      medida · potencia_rms_w · impedancia_ohm · bobinas
   BOCINAS         medida · configuracion · potencia_rms_w · impedancia_ohm
-  AMPLIFICADORES  canales · clase · potencia_rms_w
+  AMPLIFICADORES  canales · clase · potencia_rms_w · dimensiones
   RECEPTORES      formato · pantalla_pulg · carplay · android_auto ·
                   salidas_preamp_pares
   ECUALIZADORES   tipo_ecualizador · canales
@@ -142,7 +150,19 @@ CAMPOS OBLIGATORIOS POR HOJA
   ACCESORIOS      tipo_accesorio
   ESPECIALES      categorias  (ningún campo de especificación)
 Más el bloque común en todas: sku, slug, nombre, marca, descripcion_corta,
-precio, disponibilidad, destacado, activo.
+precio, disponibilidad, destacado, activo y categoria (uso).
+
+SPECS LIBRES (spec_N_etiqueta / spec_N_valor)
+  - Son diez pares, pero una hoja puede traer menos (AMPLIFICADORES trae nueve):
+    un par que no existe no es error. Lo que sí aborta es un par a medias en
+    los ENCABEZADOS (existe _etiqueta y no _valor, o al revés).
+  - En una FILA, etiqueta sin valor = dato que el fabricante no publica: la spec
+    se omite y queda en Alertas de import-errors.md. Valor sin etiqueta rechaza
+    la fila (no se sabe de qué es).
+
+SLUG
+  Se lleva a minúsculas al leer. Cualquier otro carácter fuera de
+  [a-z0-9-] rechaza la fila.
 
 GENERACIÓN DE SPECS — la parte nueva e importante
 El importador CONSTRUYE las specs legibles a partir de los campos
@@ -155,6 +175,17 @@ que usan los filtros y el comparador, no escribas una segunda.
   impedancia_ohm
     + bobinas    → «Impedancia»: Doble bobina de 4 Ω   (Subwoofers)
                    «Impedancia»: 4 Ω                   (resto)
+  potencia_rms_w → en AMPLIFICADORES no es un número. Dos formas:
+                   · estricta, una potencia por impedancia:
+                     «3,000 W @ 1 Ω · 900 W @ 4 Ω» → [{ w, ohm }, …]
+                   · descriptiva, multicanal o en puente:
+                     «180 W × 4 @ 2 Ω · 360 W × 2 @ 4 Ω puente» → se guarda y se
+                     muestra el TEXTO tal cual (espacios colapsados).
+                   Debe nombrar al menos una potencia (W) y una impedancia (Ω);
+                   si no, la fila se rechaza (scripts/catalogo/formatos.ts). En
+                   el resto de categorías sigue siendo un número sin unidad.
+  dimensiones    → «Dimensiones»: 300 × 200 × 50 mm  (solo AMPLIFICADORES; en la
+                   hoja «## × ## × ## mm», con la unidad; se guarda [n, n, n])
   configuracion  → «Configuración»: Coaxial de 2 vías
   canales        → «Canales»: 4 canales · Monoblock (1 canal)
   clase          → «Clase»: D
@@ -207,6 +238,10 @@ etiquetas de marketing: Ventaja, Línea, Serie, Diseño.
 
 ORDEN DE LA FICHA
 Destacadas primero, luego el resto de generadas, luego las libres. Máximo 10.
+Mínimo 3: son las destacadas, y un accesorio simple (fusible, terminal) no
+publica más. Con menos de 3 specs la fila se rechaza. (Hasta octubre de 2026
+el mínimo era 4 y dejaba fuera 15 accesorios y kits válidos.) La ficha de
+producto renderiza lo que haya, no asume cantidad.
 
 ESPECIALES
 La columna `categorias` es una lista separada por comas. Se emite como
