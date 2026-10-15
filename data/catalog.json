@@ -3147,7 +3147,24 @@
     "precioCents": 299500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/VPAS12_cenital.jpg",
+        "alt": "Subwoofer amplificado de 12\" VPAS12 — cenital"
+      },
+      {
+        "url": "/productos/VPAS12_diagonalderecha.jpg",
+        "alt": "Subwoofer amplificado de 12\" VPAS12 — diagonalderecha"
+      },
+      {
+        "url": "/productos/VPAS12_diagonalizquierda.jpg",
+        "alt": "Subwoofer amplificado de 12\" VPAS12 — diagonalizquierda"
+      },
+      {
+        "url": "/productos/VPAS12_frontal.jpg",
+        "alt": "Subwoofer amplificado de 12\" VPAS12 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -3218,7 +3235,20 @@
     "precioCents": 249500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/VR10_diagonalderecha.jpg",
+        "alt": "Subwoofer amplificado de 10\" VR10 — diagonalderecha"
+      },
+      {
+        "url": "/productos/VR10_diagonalizquierda.jpg",
+        "alt": "Subwoofer amplificado de 10\" VR10 — diagonalizquierda"
+      },
+      {
+        "url": "/productos/VR10_frontal.jpg",
+        "alt": "Subwoofer amplificado de 10\" VR10 — frontal"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -3277,7 +3307,24 @@
     "precioCents": 69500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CVP12D4_frontal.jpg",
+        "alt": "Subwoofer CVP de 12\" CVP12D4 — frontal"
+      },
+      {
+        "url": "/productos/CVP12D4_lateral.jpg",
+        "alt": "Subwoofer CVP de 12\" CVP12D4 — lateral"
+      },
+      {
+        "url": "/productos/CVP12D4_lateral2.jpg",
+        "alt": "Subwoofer CVP de 12\" CVP12D4 — lateral2"
+      },
+      {
+        "url": "/productos/CVP12D4_posterior.jpg",
+        "alt": "Subwoofer CVP de 12\" CVP12D4 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -3344,7 +3391,24 @@
     "precioCents": 65000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CVP10D4_frontal.jpg",
+        "alt": "Subwoofer CVP de 10\" CVP10D4 — frontal"
+      },
+      {
+        "url": "/productos/CVP10D4_lateral.jpg",
+        "alt": "Subwoofer CVP de 10\" CVP10D4 — lateral"
+      },
+      {
+        "url": "/productos/CVP10D4_lateral2.jpg",
+        "alt": "Subwoofer CVP de 10\" CVP10D4 — lateral2"
+      },
+      {
+        "url": "/productos/CVP10D4_posterior.jpg",
+        "alt": "Subwoofer CVP de 10\" CVP10D4 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -3416,7 +3480,20 @@
     "precioCents": 55000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/XED12V2_frontal.jpg",
+        "alt": "Subwoofer XED de 12\" XED12V2 — frontal"
+      },
+      {
+        "url": "/productos/XED12V2_lateral.jpg",
+        "alt": "Subwoofer XED de 12\" XED12V2 — lateral"
+      },
+      {
+        "url": "/productos/XED12V2_posterior.jpg",
+        "alt": "Subwoofer XED de 12\" XED12V2 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -10653,7 +10730,24 @@
     "precioCents": 109500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/HEDPS69_frontal.jpg",
+        "alt": "Bocinas coaxiales HED Pro Style de 6x9\" HEDPS69 — frontal"
+      },
+      {
+        "url": "/productos/HEDPS69_frontal2.jpg",
+        "alt": "Bocinas coaxiales HED Pro Style de 6x9\" HEDPS69 — frontal2"
+      },
+      {
+        "url": "/productos/HEDPS69_lateral.jpg",
+        "alt": "Bocinas coaxiales HED Pro Style de 6x9\" HEDPS69 — lateral"
+      },
+      {
+        "url": "/productos/HEDPS69_posterior.jpg",
+        "alt": "Bocinas coaxiales HED Pro Style de 6x9\" HEDPS69 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -10716,7 +10810,24 @@
     "precioCents": 105000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/HEDPS65_frontal.jpg",
+        "alt": "Bocinas coaxiales HED Pro Style de 6.5\" HEDPS65 — frontal"
+      },
+      {
+        "url": "/productos/HEDPS65_frontal2.jpg",
+        "alt": "Bocinas coaxiales HED Pro Style de 6.5\" HEDPS65 — frontal2"
+      },
+      {
+        "url": "/productos/HEDPS65_lateral.jpg",
+        "alt": "Bocinas coaxiales HED Pro Style de 6.5\" HEDPS65 — lateral"
+      },
+      {
+        "url": "/productos/HEDPS65_posterior.jpg",
+        "alt": "Bocinas coaxiales HED Pro Style de 6.5\" HEDPS65 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -10795,7 +10906,24 @@
     "precioCents": 115000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CVPX8_frontal.jpg",
+        "alt": "Bocinas CVPX de 8\" CVPX8 — frontal"
+      },
+      {
+        "url": "/productos/CVPX8_frontal2.jpg",
+        "alt": "Bocinas CVPX de 8\" CVPX8 — frontal2"
+      },
+      {
+        "url": "/productos/CVPX8_lateral.jpg",
+        "alt": "Bocinas CVPX de 8\" CVPX8 — lateral"
+      },
+      {
+        "url": "/productos/CVPX8_lateral2.jpg",
+        "alt": "Bocinas CVPX de 8\" CVPX8 — lateral2"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -10876,7 +11004,20 @@
     "precioCents": 109500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CVPX69_frontal.jpg",
+        "alt": "Bocinas CVPX de 6x9\" CVPX69 — frontal"
+      },
+      {
+        "url": "/productos/CVPX69_frontal2.jpg",
+        "alt": "Bocinas CVPX de 6x9\" CVPX69 — frontal2"
+      },
+      {
+        "url": "/productos/CVPX69_lateral.jpg",
+        "alt": "Bocinas CVPX de 6x9\" CVPX69 — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -10953,7 +11094,20 @@
     "precioCents": 39500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CVPX1_frontal.jpg",
+        "alt": "Tweeter de bocina CVPX de 1\" CVPX1 — frontal"
+      },
+      {
+        "url": "/productos/CVPX1_lateral.jpg",
+        "alt": "Tweeter de bocina CVPX de 1\" CVPX1 — lateral"
+      },
+      {
+        "url": "/productos/CVPX1_lateral2.jpg",
+        "alt": "Tweeter de bocina CVPX de 1\" CVPX1 — lateral2"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -11018,7 +11172,20 @@
     "precioCents": 75000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/HED69P_frontal.jpg",
+        "alt": "Bocinas de medio rango HED Pro de 6x9\" HED69P — frontal"
+      },
+      {
+        "url": "/productos/HED69P_lateral.jpg",
+        "alt": "Bocinas de medio rango HED Pro de 6x9\" HED69P — lateral"
+      },
+      {
+        "url": "/productos/HED69P_posterior.jpg",
+        "alt": "Bocinas de medio rango HED Pro de 6x9\" HED69P — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11081,7 +11248,16 @@
     "precioCents": 75000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/HED8P_frontal.jpg",
+        "alt": "Bocinas de medio rango HED Pro de 8\" HED8P — frontal"
+      },
+      {
+        "url": "/productos/HED8P_posterior.jpg",
+        "alt": "Bocinas de medio rango HED Pro de 8\" HED8P — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11152,7 +11328,16 @@
     "precioCents": 69500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/HED65P_frontal.jpg",
+        "alt": "Bocinas de medio rango HED Pro 6.5\" HED65P — frontal"
+      },
+      {
+        "url": "/productos/HED65P_posterior.jpg",
+        "alt": "Bocinas de medio rango HED Pro 6.5\" HED65P — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11232,7 +11417,20 @@
     "precioCents": 75000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CVP69_frontal.jpg",
+        "alt": "Bocina de rango completo CVP de 6x9\" CVP69 — frontal"
+      },
+      {
+        "url": "/productos/CVP69_lateral.jpg",
+        "alt": "Bocina de rango completo CVP de 6x9\" CVP69 — lateral"
+      },
+      {
+        "url": "/productos/CVP69_posterior.jpg",
+        "alt": "Bocina de rango completo CVP de 6x9\" CVP69 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11304,7 +11502,20 @@
     "precioCents": 75000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CVP8_frontal.jpg",
+        "alt": "Bocina de rango completo CVP de 8\" CVP8 — frontal"
+      },
+      {
+        "url": "/productos/CVP8_lateral.jpg",
+        "alt": "Bocina de rango completo CVP de 8\" CVP8 — lateral"
+      },
+      {
+        "url": "/productos/CVP8_posterior.jpg",
+        "alt": "Bocina de rango completo CVP de 8\" CVP8 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11376,7 +11587,20 @@
     "precioCents": 69500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CVP65_frontal.jpg",
+        "alt": "Bocinas de medio rango CVP de 6.5\" CVP65 — frontal"
+      },
+      {
+        "url": "/productos/CVP65_lateral.jpg",
+        "alt": "Bocinas de medio rango CVP de 6.5\" CVP65 — lateral"
+      },
+      {
+        "url": "/productos/CVP65_posterior.jpg",
+        "alt": "Bocinas de medio rango CVP de 6.5\" CVP65 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11456,7 +11680,20 @@
     "precioCents": 45000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/XED693_frontal.jpg",
+        "alt": "Bocinas coaxiales XED de 6x9\" XED693 — frontal"
+      },
+      {
+        "url": "/productos/XED693_lateral.jpg",
+        "alt": "Bocinas coaxiales XED de 6x9\" XED693 — lateral"
+      },
+      {
+        "url": "/productos/XED693_posterior.jpg",
+        "alt": "Bocinas coaxiales XED de 6x9\" XED693 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -11528,7 +11765,20 @@
     "precioCents": 29500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/XED57_2frontal.jpg",
+        "alt": "Bocinas coaxiales XED de 5x7\" XED57 — 2frontal"
+      },
+      {
+        "url": "/productos/XED57_frontal.jpg",
+        "alt": "Bocinas coaxiales XED de 5x7\" XED57 — frontal"
+      },
+      {
+        "url": "/productos/XED57_frontalposterior.jpg",
+        "alt": "Bocinas coaxiales XED de 5x7\" XED57 — frontalposterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11603,7 +11853,20 @@
     "precioCents": 35000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/XED62_frontal.jpg",
+        "alt": "Bocinas coaxiales XED de 6.5\" XED62 — frontal"
+      },
+      {
+        "url": "/productos/XED62_lateral.jpg",
+        "alt": "Bocinas coaxiales XED de 6.5\" XED62 — lateral"
+      },
+      {
+        "url": "/productos/XED62_posterior.jpg",
+        "alt": "Bocinas coaxiales XED de 6.5\" XED62 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -11679,7 +11942,16 @@
     "precioCents": 29500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/XED52_frontal.jpg",
+        "alt": "Bocinas coaxiales XED de 5.25\" XED52 — frontal"
+      },
+      {
+        "url": "/productos/XED52_lateral.jpg",
+        "alt": "Bocinas coaxiales XED de 5.25\" XED52 — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11751,7 +12023,24 @@
     "precioCents": 25000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/XED42_2frontal.jpg",
+        "alt": "Bocinas coaxiales XED de 4\" XED42 — 2frontal"
+      },
+      {
+        "url": "/productos/XED42_frontal.jpg",
+        "alt": "Bocinas coaxiales XED de 4\" XED42 — frontal"
+      },
+      {
+        "url": "/productos/XED42_lateral.jpg",
+        "alt": "Bocinas coaxiales XED de 4\" XED42 — lateral"
+      },
+      {
+        "url": "/productos/XED42_posterior.jpg",
+        "alt": "Bocinas coaxiales XED de 4\" XED42 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17729,7 +18018,12 @@
     "precioCents": 249500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DSP66LCD_frontal.jpg",
+        "alt": "Procesador DSP de 6 canales DSP66LCD — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17786,7 +18080,12 @@
     "precioCents": 249500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DSP88_frontal.jpg",
+        "alt": "Procesador de 8 canales DSP88 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17855,7 +18154,16 @@
     "precioCents": 135000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/EQP850_frontal.jpg",
+        "alt": "Ecualizador de 5 bandas EQP850 — frontal"
+      },
+      {
+        "url": "/productos/EQP850_lateral.jpg",
+        "alt": "Ecualizador de 5 bandas EQP850 — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17927,7 +18235,16 @@
     "precioCents": 125000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/EQ780_frontal.jpg",
+        "alt": "Ecualizador paramétrico de 7 bandas EQ780 — frontal"
+      },
+      {
+        "url": "/productos/EQ780_lateral.jpg",
+        "alt": "Ecualizador paramétrico de 7 bandas EQ780 — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -18990,7 +19307,12 @@
     "precioCents": 99500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CAK42_frontal.jpg",
+        "alt": "Kit de amplificador de 2 canales calibre 4 CAK42 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -19052,7 +19374,12 @@
     "precioCents": 55000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CAK82_frontal.jpg",
+        "alt": "Kit de amplificador de 2 canales calibre 8 CAK82 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -22019,7 +22346,16 @@
     "precioCents": 75000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CVM0_frontal.jpg",
+        "alt": "Realzador digital de graves CVM0 — frontal"
+      },
+      {
+        "url": "/productos/CVM0_lateral.jpg",
+        "alt": "Realzador digital de graves CVM0 — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -22067,7 +22403,16 @@
     "precioCents": 29500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/IOEM22_frontal.jpg",
+        "alt": "Convertidor de línea de 2 canales IOEM22 — frontal"
+      },
+      {
+        "url": "/productos/IOEM22_posterior.jpg",
+        "alt": "Convertidor de línea de 2 canales IOEM22 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -22115,7 +22460,16 @@
     "precioCents": 85000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/IOEM44_frontal.jpg",
+        "alt": "Convertidor de línea de 4 canales IOEM44 — frontal"
+      },
+      {
+        "url": "/productos/IOEM44_kit.jpg",
+        "alt": "Convertidor de línea de 4 canales IOEM44 — kit"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -23226,7 +23580,16 @@
     "precioCents": 339500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/SB3X_frontal.jpg",
+        "alt": "Barra de sonido impermeable de 10 bocinas SB3X — frontal"
+      },
+      {
+        "url": "/productos/SB3X_kit.jpg",
+        "alt": "Barra de sonido impermeable de 10 bocinas SB3X — kit"
+      }
+    ],
     "destacado": false,
     "activo": true
   },
