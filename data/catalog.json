@@ -11016,6 +11016,10 @@
       {
         "url": "/productos/CVPX69_lateral.jpg",
         "alt": "Bocinas CVPX de 6x9\" CVPX69 — lateral"
+      },
+      {
+        "url": "/productos/CVPX69_lateral2.jpg",
+        "alt": "Bocinas CVPX de 6x9\" CVPX69 — lateral2"
       }
     ],
     "destacado": false,
@@ -11429,6 +11433,10 @@
       {
         "url": "/productos/CVP69_posterior.jpg",
         "alt": "Bocina de rango completo CVP de 6x9\" CVP69 — posterior"
+      },
+      {
+        "url": "/productos/CVP69_puerta.jpg",
+        "alt": "Bocina de rango completo CVP de 6x9\" CVP69 — puerta"
       }
     ],
     "destacado": false,
@@ -13603,6 +13611,10 @@
         "valor": "LPF 50–500 Hz · HPF 10 Hz–30 kHz"
       },
       {
+        "etiqueta": "Relación señal/ruido",
+        "valor": ">85 dB"
+      },
+      {
         "etiqueta": "Filtros",
         "valor": "Pasa bajos 50 – 500 Hz · Pasa altos 10 Hz – 30 kHz"
       },
@@ -13613,10 +13625,6 @@
       {
         "etiqueta": "Distorsión armónica (THD)",
         "valor": "0.05 %"
-      },
-      {
-        "etiqueta": "Sensibilidad de entrada",
-        "valor": "0.2 – 6 V"
       }
     ],
     "precioCents": 94500,
@@ -15350,7 +15358,7 @@
       },
       {
         "etiqueta": "Relación señal/ruido",
-        "valor": ">80 dB (CTA-2006)"
+        "valor": ">80 dB"
       },
       {
         "etiqueta": "Potencia total",
@@ -22529,7 +22537,12 @@
     "precioCents": 17500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RV417_frontal.jpg",
+        "alt": "Cable RCA de 4 canales y 17 pies RV417 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -22590,7 +22603,12 @@
     "precioCents": 17500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RV410_frontal.jpg",
+        "alt": "Cable RCA de 4 canales y 10 pies RV410 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -22651,7 +22669,12 @@
     "precioCents": 15000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RV46_frontal.jpg",
+        "alt": "Cable RCA de 4 canales y 6 pies RV46 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -22712,7 +22735,12 @@
     "precioCents": 12500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RV17_frontal.jpg",
+        "alt": "Cable RCA de 2 canales y 17 pies RV17 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -22773,7 +22801,12 @@
     "precioCents": 9500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RV12_frontal.jpg",
+        "alt": "Cable RCA de 2 canales y 12 pies RV12 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -22834,7 +22867,12 @@
     "precioCents": 7500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RV6_frontal.jpg",
+        "alt": "Cable RCA de 2 canales y 6 pies RV6 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -22883,7 +22921,12 @@
     "precioCents": 7500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RVY2M_frontal.jpg",
+        "alt": "Adaptador Y RCA de 1 hembra a 2 machos RVY2M — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -22931,7 +22974,12 @@
     "precioCents": 7500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RVY2F_frontal.jpg",
+        "alt": "Adaptador Y RCA de 1 macho a 2 hembras RVY2F — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -22979,7 +23027,12 @@
     "precioCents": 9500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/ANL1_frontal.jpg",
+        "alt": "Portafusible ANL calibre 1/0 ANL1 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -23027,7 +23080,12 @@
     "precioCents": 4500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CFANL200_frontal.jpg",
+        "alt": "Fusible tipo ANL — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -23079,7 +23137,12 @@
     "precioCents": 15000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DB124_frontal.jpg",
+        "alt": "Bloque distribuidor DB124 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -23127,7 +23190,12 @@
     "precioCents": 7500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/DB148_frontal.jpg",
+        "alt": "Bloque distribuidor DB148 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -23183,7 +23251,12 @@
     "precioCents": 35000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/SLMLOC2_frontal.jpg",
+        "alt": "Convertidor SYNCLINK Mini LOC de 2 canales SLMLOC2 — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
