@@ -17,7 +17,9 @@ import {
 // fragmentaría el canonical de todos los listados.
 test("href: el orden por defecto no aparece en la URL", () => {
   assert.equal(buildCatalogHref("bocinas", { orden: "relevancia" }), "/catalogo/bocinas");
-  assert.equal(buildMarcaHref("kbt", { orden: "relevancia" }), "/marcas/kbt");
+  // En marcas el que no se escribe es el del catálogo; la relevancia, pedida, sí.
+  assert.equal(buildMarcaHref("kbt", { orden: "catalogo" }), "/marcas/kbt");
+  assert.equal(buildMarcaHref("kbt", { orden: "relevancia" }), "/marcas/kbt?orden=relevancia");
   assert.equal(buildProductosHref({ orden: "relevancia" }), "/productos");
 });
 
@@ -52,12 +54,13 @@ test("href: orden, filtro y página conviven; page 1 se omite", () => {
   );
 });
 
-test("hrefsDeOrden: resuelve los tres órdenes conservando los filtros", () => {
+test("hrefsDeOrden: resuelve los órdenes conservando los filtros", () => {
   const hrefs = hrefsDeOrden((orden) => buildMarcaHref("kbt", { categoria: "subwoofers", orden }));
 
   assert.deepEqual(hrefs, {
-    // El default sigue sin escribir parámetro, también acá.
-    relevancia: "/marcas/kbt?categoria=subwoofers",
+    // El default de marcas (el catálogo) sigue sin escribir parámetro.
+    catalogo: "/marcas/kbt?categoria=subwoofers",
+    relevancia: "/marcas/kbt?categoria=subwoofers&orden=relevancia",
     precio_asc: "/marcas/kbt?categoria=subwoofers&orden=precio_asc",
     precio_desc: "/marcas/kbt?categoria=subwoofers&orden=precio_desc",
   });

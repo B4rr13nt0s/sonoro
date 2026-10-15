@@ -1,4 +1,4 @@
-import { ORDEN_DEFECTO, OrdenSchema, type Orden } from "./types.ts";
+import { ORDEN_DEFECTO, ORDEN_DEFECTO_MARCA, OrdenSchema, type Orden } from "./types.ts";
 
 // Construye la URL de /catalogo/[categoria] a partir del ESTADO COMPLETO
 // deseado (no un merge parcial) — CLAUDE.md § Rutas: los filtros y el orden
@@ -42,7 +42,9 @@ export function buildMarcaHref(marcaSlug: string, estado: MarcaQueryState): stri
   const query = new URLSearchParams();
 
   if (estado.categoria) query.set("categoria", estado.categoria);
-  if (estado.orden && estado.orden !== ORDEN_DEFECTO) query.set("orden", estado.orden);
+  // Acá el orden que no se escribe es el del catálogo, no la relevancia: una
+  // relevancia pedida a propósito sí viaja en la URL.
+  if (estado.orden && estado.orden !== ORDEN_DEFECTO_MARCA) query.set("orden", estado.orden);
   if (estado.page && estado.page > 1) query.set("page", String(estado.page));
 
   const search = query.toString();

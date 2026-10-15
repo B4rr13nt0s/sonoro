@@ -13,6 +13,7 @@ import {
   listBrands,
   listCategories,
   listProducts,
+  ORDEN_DEFECTO_MARCA,
   parseOrden,
   parsePagina,
   primeroDeQuery,
@@ -125,7 +126,7 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
       categoriaSlugParam)
     : undefined;
 
-  const orden = parseOrden(searchParams.orden);
+  const orden = parseOrden(searchParams.orden, ORDEN_DEFECTO_MARCA);
   const paginaSolicitada = parsePagina(searchParams.page);
 
   const { items, total, page, pageSize } = await listProducts({
@@ -206,6 +207,7 @@ export default async function MarcaPage(props: PageProps<"/marcas/[marca]">) {
           ))}
           <OrdenSelector
             orden={orden}
+            defecto={ORDEN_DEFECTO_MARCA}
             hrefs={hrefsDeOrden((valor) =>
               buildMarcaHref(marcaSlug, { categoria: categoriaSlugParam, orden: valor }),
             )}

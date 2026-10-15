@@ -7,7 +7,7 @@
 // parseOrden/ORDEN_DEFECTO se re-exportan como VALORES (no tipos): las
 // páginas de listado los usan para resolver el query param `orden`, y deben
 // entrar por esta misma puerta, no importando types.ts a mano.
-export { ORDEN_DEFECTO, parseOrden } from "./types.ts";
+export { ORDEN_DEFECTO, ORDEN_DEFECTO_MARCA, parseOrden } from "./types.ts";
 
 import { staticAdapter } from "./adapters/static.ts";
 import type { CatalogAdapter, Producto, ProductFilters } from "./types.ts";

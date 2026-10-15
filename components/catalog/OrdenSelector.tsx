@@ -19,6 +19,7 @@ import { ORDEN_DEFECTO, type Orden } from "@/lib/catalog/types.ts";
 // recibe los tres href ya resueltos — los arma `hrefsDeOrden` en
 // lib/catalog/href.ts. Igual que `opciones` en FiltroMarca.
 const OPCIONES: { valor: Orden; etiqueta: string }[] = [
+  { valor: "catalogo", etiqueta: "Orden del catálogo" },
   { valor: "relevancia", etiqueta: "Relevancia" },
   { valor: "precio_asc", etiqueta: "Precio ↑" },
   { valor: "precio_desc", etiqueta: "Precio ↓" },
@@ -27,9 +28,11 @@ const OPCIONES: { valor: Orden; etiqueta: string }[] = [
 type OrdenSelectorProps = {
   orden: Orden;
   hrefs: Record<Orden, string>;
+  /** El orden con el que abre este listado (el que la URL no escribe). */
+  defecto?: Orden;
 };
 
-export function OrdenSelector({ orden, hrefs }: OrdenSelectorProps) {
+export function OrdenSelector({ orden, hrefs, defecto = ORDEN_DEFECTO }: OrdenSelectorProps) {
   const [abierto, setAbierto] = useState(false);
   const contenedorRef = useRef<HTMLDivElement>(null);
 
@@ -58,18 +61,20 @@ export function OrdenSelector({ orden, hrefs }: OrdenSelectorProps) {
   // FiltroMarca: con relevancia la píldora dice "Ordenar" y va con borde; solo
   // se pone en negro cuando el usuario pidió un orden distinto. Así la fila de
   // controles muestra de un vistazo qué se tocó y qué está como viene.
-  const seleccion = OPCIONES.find((opcion) => opcion.valor === orden);
+  // «Orden del catálogo» solo se ofrece donde es el de apertura (marcas).
+  const opciones = OPCIONES.filter((o) => o.valor !== "catalogo" || defecto === "catalogo");
+  const seleccion = opciones.find((opcion) => opcion.valor === orden);
   // Contra ORDEN_DEFECTO, igual que los builders de lib/catalog/href.ts que
   // lo omiten de la URL: si algún día cambia el default, cambia la constante
   // y nada más (CLAUDE.md § Rutas).
-  const esDefecto = orden === ORDEN_DEFECTO;
+  const esDefecto = orden === defecto;
 
   // Se renderiza dos veces (bottom sheet en móvil, dropdown anclado en
   // escritorio) — misma lista de opciones, dos contenedores visualmente
   // distintos gateados por CSS (hidden/lg:), igual que FiltroMarca.
   const listaOpciones = (
     <>
-      {OPCIONES.map((opcion) => (
+      {opciones.map((opcion) => (
         <Link
           key={opcion.valor}
           href={hrefs[opcion.valor]}

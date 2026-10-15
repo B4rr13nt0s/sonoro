@@ -91,6 +91,13 @@ test("parseOrden: acepta los tres órdenes válidos", () => {
   assert.equal(parseOrden("precio_desc"), "precio_desc");
 });
 
+test("parseOrden: «catalogo» es válido y el default puede ser otro", () => {
+  assert.equal(parseOrden("catalogo"), "catalogo");
+  assert.equal(parseOrden(undefined, "catalogo"), "catalogo");
+  assert.equal(parseOrden("basura", "catalogo"), "catalogo");
+  assert.equal(parseOrden("relevancia", "catalogo"), "relevancia");
+});
+
 test("parseOrden: lo que no es del enum cae en el default", () => {
   assert.equal(parseOrden(undefined), ORDEN_DEFECTO);
   assert.equal(parseOrden(""), ORDEN_DEFECTO);

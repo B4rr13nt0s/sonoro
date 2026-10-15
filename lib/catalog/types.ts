@@ -221,7 +221,11 @@ export const CategoriasSchema = z.array(CategoriaSchema);
 // Ojo con el homónimo: la "relevancia" de /buscar es otra cosa, un puntaje de
 // coincidencia de texto que depende de la consulta y vive en
 // components/catalog/SearchExperience.tsx.
-export const OrdenSchema = z.enum(["relevancia", "precio_asc", "precio_desc"]);
+//
+// "catalogo" tampoco es un campo: es NO ordenar, o sea el orden en que vienen
+// las filas del libro (hoja por hoja, fila por fila). Solo ofrecido en
+// /marcas/[marca], donde es el de apertura (ORDEN_DEFECTO_MARCA).
+export const OrdenSchema = z.enum(["relevancia", "precio_asc", "precio_desc", "catalogo"]);
 export type Orden = z.infer<typeof OrdenSchema>;
 
 // El orden con el que abre un listado si nadie pidió otro. Vive acá y no
@@ -230,13 +234,21 @@ export type Orden = z.infer<typeof OrdenSchema>;
 // se mantiene limpia y el canonical no se fragmenta.
 export const ORDEN_DEFECTO: Orden = "relevancia";
 
+// /marcas/[marca] abre en el orden del catálogo, no por relevancia: la marca
+// se ve como la armó el negocio en el libro. Sus builders de URL omiten ESTE
+// valor, no ORDEN_DEFECTO.
+export const ORDEN_DEFECTO_MARCA: Orden = "catalogo";
+
 // Lee el query param `orden` y lo resuelve a un valor válido. Cualquier cosa
 // que no sea del enum —ausente, basura, un valor viejo— cae en el default
 // en vez de romper: son URLs que puede escribir cualquiera.
-export function parseOrden(valor: string | string[] | undefined): Orden {
+export function parseOrden(
+  valor: string | string[] | undefined,
+  defecto: Orden = ORDEN_DEFECTO,
+): Orden {
   const crudo = Array.isArray(valor) ? valor[0] : valor;
   const parseo = OrdenSchema.safeParse(crudo);
-  return parseo.success ? parseo.data : ORDEN_DEFECTO;
+  return parseo.success ? parseo.data : defecto;
 }
 
 // Filtros de listProducts. CLAUDE.md § Rutas menciona query params como
