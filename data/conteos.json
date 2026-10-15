@@ -2,12 +2,12 @@
   "catalogo": {
     "total": 320,
     "porFiltro": {
-      "cerwin-vega": 43,
+      "cerwin-vega": 44,
       "focal": 7,
       "jbl": 4,
       "kbt": 74,
       "memphis": 110,
-      "pioneer": 15,
+      "pioneer": 14,
       "rockford-fosgate": 57,
       "soundskins": 10
     }
@@ -27,13 +27,13 @@
   },
   "categorias": {
     "bocinas": {
-      "total": 109,
+      "total": 110,
       "porFiltro": {
         "cerwin-vega": 17,
         "focal": 7,
         "jbl": 4,
         "kbt": 12,
-        "memphis": 38,
+        "memphis": 39,
         "pioneer": 2,
         "rockford-fosgate": 29,
         "soundskins": 0
@@ -66,14 +66,14 @@
       }
     },
     "receptores": {
-      "total": 16,
+      "total": 15,
       "porFiltro": {
         "cerwin-vega": 0,
         "focal": 0,
         "jbl": 0,
         "kbt": 0,
         "memphis": 2,
-        "pioneer": 12,
+        "pioneer": 11,
         "rockford-fosgate": 2,
         "soundskins": 0
       }
@@ -120,11 +120,11 @@
     "accesorios": {
       "total": 66,
       "porFiltro": {
-        "cerwin-vega": 15,
+        "cerwin-vega": 16,
         "focal": 0,
         "jbl": 0,
         "kbt": 20,
-        "memphis": 25,
+        "memphis": 24,
         "pioneer": 0,
         "rockford-fosgate": 3,
         "soundskins": 3
@@ -133,7 +133,7 @@
   },
   "marcas": {
     "cerwin-vega": {
-      "total": 43,
+      "total": 44,
       "porFiltro": {
         "bocinas": 17,
         "subwoofers": 5,
@@ -142,7 +142,7 @@
         "ecualizadores": 4,
         "kits": 2,
         "insonorizacion": 0,
-        "accesorios": 15
+        "accesorios": 16
       }
     },
     "focal": {
@@ -187,23 +187,23 @@
     "memphis": {
       "total": 110,
       "porFiltro": {
-        "bocinas": 38,
+        "bocinas": 39,
         "subwoofers": 25,
         "amplificadores": 16,
         "receptores": 2,
         "ecualizadores": 1,
         "kits": 3,
         "insonorizacion": 0,
-        "accesorios": 25
+        "accesorios": 24
       }
     },
     "pioneer": {
-      "total": 15,
+      "total": 14,
       "porFiltro": {
         "bocinas": 2,
         "subwoofers": 1,
         "amplificadores": 0,
-        "receptores": 12,
+        "receptores": 11,
         "ecualizadores": 0,
         "kits": 0,
         "insonorizacion": 0,
