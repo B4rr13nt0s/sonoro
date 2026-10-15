@@ -50,6 +50,22 @@ test("buildOrderMessage: formato exacto de CLAUDE.md § Modelo de conversión", 
   assert.equal(mensaje, esperado);
 });
 
+test("buildOrderMessage: con un total de Q 500.00 o menos, el envío es «Por cobrar»", () => {
+  const mensaje = buildOrderMessage({
+    items: [item({ qty: 1, unitPriceCents: 50000 })],
+    ref: "SNR-00000",
+  });
+  assert.ok(mensaje.includes("Envío: Por cobrar"));
+  assert.ok(!mensaje.includes("Envío: gratis"));
+  // El monto del envío no se suma: el total sigue siendo el subtotal.
+  assert.ok(mensaje.includes(`Total: ${formatQ(50000)}`));
+  const arriba = buildOrderMessage({
+    items: [item({ qty: 1, unitPriceCents: 50001 })],
+    ref: "SNR-00000",
+  });
+  assert.ok(arriba.includes("Envío: gratis"));
+});
+
 test("buildOrderMessage: qty === 1 no lleva sufijo 'c/u'", () => {
   const mensaje = buildOrderMessage({
     items: [item({ qty: 1 })],

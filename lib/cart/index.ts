@@ -5,6 +5,7 @@ export { acumularCambios, reconcile } from "./reconcile.ts";
 export type { CambioCarrito } from "./reconcile.ts";
 export { loadCart, saveCart, CART_STORAGE_KEY } from "./storage.ts";
 export { subtotalCents, itemCount } from "./totals.ts";
+export { ENVIO_POR_COBRAR, UMBRAL_ENVIO_GRATIS_CENTS, envioGratis } from "./envio.ts";
 export {
   crearCarritoVacio,
   MAX_CANTIDAD_POR_LINEA,

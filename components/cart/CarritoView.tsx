@@ -22,6 +22,9 @@ import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import {
   acumularCambios,
   MAX_CANTIDAD_POR_LINEA,
+  ENVIO_POR_COBRAR,
+  envioGratis,
+  UMBRAL_ENVIO_GRATIS_CENTS,
   useCart,
   type CambioCarrito,
   type CartItem,
@@ -355,7 +358,9 @@ function OrderSummary({
         </div>
         <div className="flex justify-between">
           <span>Envío</span>
-          <span className="text-negro">Gratis</span>
+          <span className="text-negro">
+            {envioGratis(subtotalCents) ? "Gratis" : ENVIO_POR_COBRAR}
+          </span>
         </div>
       </div>
 
@@ -384,7 +389,7 @@ function OrderSummary({
 
       <div className="border-borde-tarjeta text-texto-secundario flex flex-col gap-2.5 border-t pt-5 text-[14px]">
         <div className="flex justify-between">
-          <span>Entrega</span>
+          <span>Tiempo de entrega</span>
           <span className="text-negro">Según el departamento</span>
         </div>
         <div className="flex justify-between">
@@ -393,7 +398,8 @@ function OrderSummary({
         </div>
       </div>
       <div className="text-texto-terciario font-mono text-[11px]">
-        Envíos gratis a todo el país. Aplican restricciones según destino y volumen del pedido.
+        Envío gratis en pedidos de más de {formatQ(UMBRAL_ENVIO_GRATIS_CENTS)}. Aplican
+        restricciones según destino y volumen del pedido.
       </div>
     </div>
   );

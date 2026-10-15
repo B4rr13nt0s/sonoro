@@ -233,8 +233,10 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
         <div className="border-borde-nav mt-5 flex flex-col gap-2.5 border-t pt-5 lg:col-start-2 lg:row-start-2 lg:mt-0">
           <div className="text-texto-secundario flex flex-col gap-2.5 text-[14px]">
             <div className="flex justify-between gap-4">
-              <span>Envío gratis a todo el país</span>
-              <span className="text-negro text-right">Entrega según el departamento</span>
+              <span>Envíos a todo el país</span>
+              <span className="text-negro text-right">
+                El tiempo de entrega varía según el departamento
+              </span>
             </div>
             <div className="flex justify-between gap-4">
               <span>Pagos</span>

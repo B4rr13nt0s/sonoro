@@ -2,8 +2,9 @@
 // (por eso importa de lib/cart, nunca al revés): arma el texto exacto que
 // abre wa.me, a partir de los mismos CartItem y el mismo subtotalCents que
 // ya usa el resto de la app. No decide envío ni cuota — usa las reglas ya
-// fijadas en CLAUDE.md (envío gratis, 6 pagos) tal como las usa /carrito.
-import { subtotalCents, type CartItem } from "../cart/index.ts";
+// fijadas (envío gratis solo arriba de Q 500.00, 6 pagos) tal como las usa
+// /carrito.
+import { ENVIO_POR_COBRAR, envioGratis, subtotalCents, type CartItem } from "../cart/index.ts";
 import { marcaDisponibilidad } from "../catalog/disponibilidad.ts";
 import type { Disponibilidad } from "../catalog/types.ts";
 import { formatQ } from "../format/precio.ts";
@@ -31,9 +32,8 @@ export function buildOrderMessage(params: {
 }): string {
   const { items, ref, disponibilidad = {} } = params;
   const subtotal = subtotalCents(items);
-  // Sin costo de envío que restar o sumar todavía (CLAUDE.md § reglas:
-  // "Envíos gratis a todo el país") — total y subtotal coinciden mientras
-  // esa política siga vigente.
+  // El envío «Por cobrar» no tiene monto todavía: no se suma. Total y
+  // subtotal coinciden, y la línea de envío dice cuál de los dos casos es.
   const total = subtotal;
 
   return [
@@ -42,7 +42,7 @@ export function buildOrderMessage(params: {
     ...items.map((item) => formatearLinea(item, disponibilidad[item.sku])),
     "",
     `Subtotal: ${formatQ(subtotal)}`,
-    "Envío: gratis",
+    `Envío: ${envioGratis(subtotal) ? "gratis" : ENVIO_POR_COBRAR}`,
     `Total: ${formatQ(total)}`,
     `Ref: ${ref}`,
   ].join("\n");
