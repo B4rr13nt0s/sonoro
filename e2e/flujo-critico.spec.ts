@@ -11,20 +11,35 @@
 // función. El objetivo es probar la integración (¿la UI de verdad conecta
 // carrito → mensaje → URL de WhatsApp?), no repetir lo que ya cubren
 // lib/whatsapp/*.test.ts.
+import { readFileSync } from "node:fs";
+
 import { test, expect } from "@playwright/test";
 
 import { formatQ } from "../lib/format/precio.ts";
+import { buildOrderRef } from "../lib/whatsapp/ref.ts";
+
+// El precio de cada producto sale del catálogo, no de un número escrito acá:
+// los precios cambian en cada importación (el 15 de octubre de 2026 subieron
+// los dos y el Ref fijo dejó el CI en rojo, sin que nada del flujo estuviera
+// roto). Lo que este test prueba es que la UI conecta carrito → Ref →
+// mensaje, no cuánto cuesta cada producto.
+const CATALOGO = JSON.parse(readFileSync("data/catalog.json", "utf-8")) as {
+  sku: string;
+  precioCents: number;
+}[];
+function precioDe(sku: string): number {
+  const producto = CATALOGO.find((p) => p.sku === sku);
+  if (!producto) throw new Error(`${sku} ya no está en data/catalog.json: elegir otro producto`);
+  return producto.precioCents;
+}
 
 // El Ref depende de cart.createdAt (lib/cart/context.ts: new Date() al
 // crear/tocar el carrito) Y del contenido del carrito (sku, qty y precio de
 // cada línea) vía buildOrderRef (hash FNV-1a determinista,
-// lib/whatsapp/ref.ts) — con el reloj congelado en FECHA_CONGELADA y las dos
-// líneas de abajo (1x PRODUCTO_1, 1x PRODUCTO_2), el Ref es siempre el mismo.
-// Si cambia la fecha, un producto, su precio o la cantidad, hay que
-// recalcularlo con:
-//   node --experimental-strip-types -e "import('./lib/whatsapp/ref.ts').then(m => console.log(m.buildOrderRef('2026-01-01T00:00:00.000Z', [{ sku: 'TS-W312D4', qty: 1, unitPriceCents: 80000 }, { sku: 'MVH-X700BT', qty: 1, unitPriceCents: 135000 }])))"
+// lib/whatsapp/ref.ts). Con el reloj congelado en FECHA_CONGELADA y las dos
+// líneas de abajo (1x PRODUCTO_1, 1x PRODUCTO_2) es siempre el mismo para un
+// mismo catálogo, y se calcula con los precios vigentes.
 const FECHA_CONGELADA = new Date("2026-01-01T00:00:00.000Z");
-const REF_ESPERADO = "SNR-4RH3A";
 
 // Dos productos reales del catálogo (data/catalog.json), misma marca en
 // categorías distintas — así "buscar + filtrar" tiene sentido: una búsqueda
@@ -44,15 +59,20 @@ const PRODUCTO_1 = {
   nombre: 'Subwoofer Champion Series 12" TS-W312D4',
   sku: "TS-W312D4",
   categoria: "Subwoofers",
-  precioCents: 80000,
+  precioCents: precioDe("TS-W312D4"),
 };
 const PRODUCTO_2 = {
   slug: "pioneer-mvh-x700bt",
   nombre: "Receptor digital MVH-X700BT",
   sku: "MVH-X700BT",
   categoria: "Receptores",
-  precioCents: 135000,
+  precioCents: precioDe("MVH-X700BT"),
 };
+
+const REF_ESPERADO = buildOrderRef(FECHA_CONGELADA.toISOString(), [
+  { sku: PRODUCTO_1.sku, qty: 1, unitPriceCents: PRODUCTO_1.precioCents },
+  { sku: PRODUCTO_2.sku, qty: 1, unitPriceCents: PRODUCTO_2.precioCents },
+]);
 
 test("buscar, filtrar, agregar dos productos y verificar el mensaje de WhatsApp", async ({
   page,
