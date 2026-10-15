@@ -10,7 +10,7 @@ Este documento **reemplaza** al `CLAUDE.md` que venía dentro del handoff de dis
 
 Tienda en línea de equipo de audio para carro, marino y motorsports en Guatemala. **Vende producto, nada más.**
 
-Empezó con audio para carro y el catálogo ya trae equipo marino y de motorsports (lanchas, UTV, motos). En el copy va «carro, marino y motorsports», nunca «para vehículos»: «carro» es lo que más se busca. Títulos y descripciones de cada página salen de `lib/seo/textos.ts`, y ahí vive, a mano, qué categorías tienen equipo marino o de motorsports — el catálogo no trae un campo de uso.
+Empezó con audio para carro y el catálogo ya trae equipo marino y de motorsports (lanchas, UTV, motos). En el copy va «carro, marino y motorsports», nunca «para vehículos»: «carro» es lo que más se busca. Títulos y descripciones de cada página salen de `lib/seo/textos.ts`, y ahí vive, a mano, qué categorías tienen equipo marino o de motorsports — el catálogo trae un campo `uso` (columna `categoria` del libro, desde octubre de 2026), pero hoy ninguna pantalla lo lee.
 
 En esta etapa **no hay pago en línea.** El sitio es un catálogo con carrito; el pedido se cierra por WhatsApp. La estructura de datos está diseñada para que agregar pago en línea después sea sumar un módulo, no reescribir.
 
@@ -50,6 +50,8 @@ Envío: gratis
 Total: Q 4,810.00
 Ref: SNR-A7K2M
 ```
+
+**Envío:** es gratis solo si el total es **mayor a Q 500.00** (`UMBRAL_ENVIO_GRATIS_CENTS`, `lib/cart/envio.ts`; exactamente Q 500.00 paga envío). Debajo, el resumen del carrito y el mensaje dicen «Por cobrar» (`Envío: Por cobrar`) y el monto no se suma al total. Un solo lugar decide: `envioGratis()`, que usan `/carrito` y `buildOrderMessage`. En el resumen, «Tiempo de entrega» (antes «Entrega») y, en la ficha de producto, «Envíos a todo el país» y «El tiempo de entrega varía según el departamento». El pie, la portada y `/legal/terminos` todavía dicen «Envíos gratis a todo el país» (regla 7), que ya no es incondicional: pendiente de decidir su texto.
 
 Una línea bajo pedido lleva al final la misma marca que su etiqueta: `1x Tweeters Punch P1 de 1" P1T-S (P1T-S) — Q 1,450.00 · bajo pedido`. Lo disponible no lleva marca, y lo agotado no llega al mensaje: se quita del carrito (ver abajo).
 
@@ -106,6 +108,7 @@ nombre             string   // «Serie SQ 12" D2»
 marca              string
 categoria          string
 descripcionCorta   string   // una línea, va bajo el título
+uso                ('carro' | 'marino' | 'motorsports')[]?  // columna `categoria` del libro; NO es la categoría del sitio
 specsDestacadas    Spec[]   // ORDENADAS, 3–4, junto al precio
 specsFicha         Spec[]   // ORDENADAS, ficha técnica completa
 precioCents        number   // ENTERO, centavos, IVA INCLUIDO
@@ -138,6 +141,10 @@ Google Sheets → descargar .xlsx → data/source/catalogo.xlsx   (superficie de
 
 El libro tiene una hoja por categoría —**la hoja ES la categoría**, no hay columna que la diga— más `ESPECIALES`, para sistemas completos. El contrato de cada hoja (columnas, obligatorios, specs generadas, orden de destacadas) vive en **una sola tabla**: `scripts/catalogo/hojas.ts`.
 
+- **La columna `categoria` de cada hoja es el USO, no la categoría del sitio** (esa es la hoja). Es obligatoria, y acepta `carro`, `marino` y `motorsports`, solos o separados por coma. En `catalogo.csv` sale como `uso`. Es la 12.ª columna del bloque común.
+- **Specs libres:** hasta diez pares, pero una hoja puede traer menos (AMPLIFICADORES trae nueve). Etiqueta sin valor = dato no publicado: se omite y queda en Alertas; valor sin etiqueta rechaza la fila. `specsFicha` va de 3 a 10 (3 son las destacadas; un accesorio simple no publica más).
+- **Potencia de Amplificadores:** no es un número. En la forma estricta («900 W @ 4 Ω · 1,600 W @ 2 Ω») se guarda `[{w, ohm}]`; en la descriptiva («180 W × 4 @ 2 Ω · 360 W × 2 @ 4 Ω puente») se guarda y muestra el texto tal cual. `dimensiones` es «## × ## × ## mm».
+- **El slug se lleva a minúsculas al importar** (un sku con mayúscula copiado a mano como slug no rechaza la fila).
 - **Las specs derivables se GENERAN** desde los campos normalizados (`medida`, `impedancia_ohm`…) con `lib/catalog/labels.ts`; en la hoja solo se escriben las que no se deducen. Una spec libre con la etiqueta de una generada **gana**, y si su primer número contradice al campo, `import-errors.md` lo advierte.
 - **Destacadas:** las tres primeras según la prioridad de la hoja. **Ficha:** destacadas, luego el resto de generadas, luego libres; máximo 10, y **las generadas cuentan** para ese tope.
 - **`catalogo.csv` no se edita.** Es determinista —columnas en orden fijo en código, filas por categoría y sku en puntos de código— para que `git diff` muestre solo cambios reales. Incluye las filas rechazadas: es el registro de la fuente.
@@ -277,6 +284,7 @@ Las ocho categorías del nav son: Bocinas, Subwoofers, Amplificadores, Receptore
 - **La búsqueda se alcanza en UN toque desde cualquier página.** Con 200+ productos es la ruta principal de navegación, no un extra. Debajo de 1280px el header compacto lleva una lupa (44×44) que va directo a `/buscar`, además de «Buscar» dentro del menú: dentro del menú solo serían dos toques, y el menú es justamente lo que colapsa en ese rango.
 - **La búsqueda de `/buscar` vive entera en la URL** —consulta, categoría y cuántos «Ver más»: `/buscar?q=memphis&categoria=Amplificadores&ver=24`—, no en el estado de React (`SearchExperience.tsx`): volver atrás desde un resultado la deja igual y se puede compartir. Cada cambio REEMPLAZA la entrada de la historia (`replaceState`), así que atrás sale de `/buscar`. La página sigue prerenderizada: solo el bloque que lee la URL va en un `<Suspense>`, con la misma búsqueda vacía como fallback. No convertirla en dinámica: es la página más visitada después del inicio.
 - **La búsqueda entiende lo escrito, no decide por el cliente** (`components/catalog/busqueda.ts`, lógica pura con test). Cada palabra se busca en nombre, marca, código, categoría y specs, con tres niveles que solo bajan al siguiente si el anterior no trajo nada: *exacta* (singular o plural, y sinónimos de `sinonimos.ts` —«sub», «parlante», «radio», «lancha»—, vocabulario a mano como el de `textos.ts`); *aproximada* (perdona errores de escritura, 1 letra en palabras de 4–6 y 2 en las de 7 o más, nunca en números ni en palabras cortas) y *parcial* (alguna palabra, no todas). Lo que no es exacto se avisa en pantalla —«Quizá quisiste decir…», «estos coinciden con alguna palabra»—: nunca se cambian los resultados en silencio. Las medidas se llevan a una forma única (`canonizar`: `12 pulgadas`/`12in` → `12"`, `4 ohms` → `4ohm`, `1,000 watts` → `1000w`, `4 canales` → `4ch`) y los atributos del producto viajan como `claves` (`clavesDeAtributos`, calculadas en `app/buscar/page.tsx`), así que «2 ohm» o «clase d» buscan el DATO. Una medida se compara como palabra entera (`500w` no es `1500w`) y un número suelto solo cuenta en nombre o código, no en las specs. «para carro» y similares se descartan: todo el catálogo es para carro. Mientras se teclea, un combobox (`SugerenciasBusqueda.tsx`) ofrece marcas, categorías y 5 productos; la página sin resultados (`SinResultadosBusqueda.tsx`) trae categorías o marcas cercanas y la consulta de disponibilidad por WhatsApp. Marca, disponibilidad y orden (`orden=precio_asc|precio_desc`; el defecto no se escribe) también viven en la URL. Prohibido sumar «lo más buscado» o «te recomendamos» (regla 2).
+  - **Categoría y rangos son filtros, no texto** (`interpretar`, `busqueda.ts`). «Categoría» en `/buscar` es el USO del libro (carro, marino, motorsports), no las píldoras de categoría del sitio: palabras como «marino», «lancha», «utv» o «carro» (`USO_PALABRAS`, `sinonimos.ts`) filtran por el dato `uso` —un producto marino cuyo nombre no lo diga también aparece—, y un producto sin `uso` cuenta como carro. Un selector visible, «Categoría», hace lo mismo desde la URL (`?uso=marino`); si la consulta ya la nombra, el selector la muestra fija. Las comparaciones con número también filtran: «menos de Q 1,000», «hasta 3000», «más de 500 W», «de 8 a 10 pulgadas», «más de 4 canales». Sin unidad ni «Q», un número es un precio solo de Q 50 para arriba, salvo que la consulta hable de potencia; «menos/hasta» incluyen o no el número según la palabra. Un producto sin el dato que se compara no cumple. Todo filtro que salió de lo escrito se dice en pantalla («Filtros de tu búsqueda: …»). Los números viajan ya sacados (`numerosDeAtributos`: la mayor potencia RMS, la medida en pulgadas, los canales), no `atributos` entero. La potencia en puente se busca con «puente».
 - **Pie:** borde superior y tres grupos **apilados y centrados** en todos los anchos: logo pequeño, enlaces legales, y la línea de contacto en mono con el envío debajo. El handoff los repartía en una fila (logo a la izquierda, contacto a la derecha); se cambió a pedido del negocio el 29 de septiembre de 2026.
 - **Tarjeta de producto:** foto cuadrada con 12px de margen (el handoff dibujó 200px de alto; cambiado a pedido del negocio en octubre de 2026 para no recortar las fotos y caber seis por fila), etiqueta mono con categoría o marca, nombre 15px/600 y especificación 13px gris. **Sin precio ni cuota**: se ven en la ficha y en el carrito.
 - **Rejilla de tarjetas:** 1 columna en móvil, 2 desde `sm`, 4 desde `lg` y **6 desde `xl` (1280px)**, donde cada tarjeta mide ~181px. A 1024px seis bajarían de 140px y el nombre se partiría en cinco o seis líneas. La sección Destacados de la portada pide 6 productos para llenar la fila. `PAGE_SIZE_DEFECTO` sigue en 24, que es múltiplo de 6: cada página llena sus filas. (Con 4 columnas también.)
@@ -348,7 +356,7 @@ Nunca se duplica el archivo por categoría, marca o producto: se construye una
 ruta dinámica con generateStaticParams.
 
 El producto y la marca del handoff son UN CASO, no el caso general. La
-plantilla no puede asumir el conteo de specs (varía de 4 a 10), qué etiquetas
+plantilla no puede asumir el conteo de specs (varía de 3 a 10), qué etiquetas
 existen (varían por categoría), ni cuántos productos tiene una marca. Debe
 renderizar lo que traigan los datos.
 
