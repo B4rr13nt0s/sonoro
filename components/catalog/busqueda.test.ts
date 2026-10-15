@@ -8,7 +8,9 @@ import {
   clavesDeAtributos,
   coincide,
   distancia,
+  interpretar,
   normalizar,
+  numerosDeAtributos,
   puntuarRelevancia,
   raiz,
   sugerir,
@@ -37,6 +39,10 @@ function producto(
 }
 
 const COR = producto('Subwoofer Coronel de 12" COR2-124D', "KBT", "COR2-124D", {
+  uso: ["carro"],
+  precioCents: 80000,
+  potenciaW: 500,
+  pulgadas: 12,
   claves: clavesDeAtributos({
     medida: '12"',
     potencia_rms_w: 500,
@@ -45,21 +51,38 @@ const COR = producto('Subwoofer Coronel de 12" COR2-124D', "KBT", "COR2-124D", {
   }),
 });
 const SUB2 = producto('Subwoofer Marino de 10" MM1024', "Memphis", "MM1024", {
+  uso: ["marino", "motorsports"],
+  precioCents: 250000,
+  potenciaW: 300,
+  pulgadas: 10,
   claves: clavesDeAtributos({ medida: '10"', impedancia_ohm: 2, bobinas: "doble" }),
 });
 const PRX = producto("Amplificador Power Reference PRX1500.1V2", "Memphis", "PRX1500.1V2", {
+  uso: ["carro"],
+  precioCents: 300000,
+  potenciaW: 1500,
+  canales: 1,
   categoria: "Amplificadores",
   claves: clavesDeAtributos({ canales: 1, clase: "D", potencia_rms_w: 1500 }),
 });
 const AMP4 = producto("Amplificador de 4 canales XED4", "Rockford Fosgate", "XED4", {
+  uso: ["carro"],
+  precioCents: 120000,
+  canales: 4,
   categoria: "Amplificadores",
   claves: clavesDeAtributos({ canales: 4, clase: "AB" }),
 });
 const BOC = producto('Bocinas coaxiales de 6.5" MJP6', "Memphis", "MJP6", {
+  uso: ["carro", "marino"],
+  precioCents: 45000,
+  pulgadas: 6.5,
   categoria: "Bocinas",
   claves: clavesDeAtributos({ medida: '6.5"', configuracion: "coaxial-2v" }),
 });
 const RADIO = producto('Pantalla de 7" DMH-A375BT', "Pioneer", "DMH-A375BT", {
+  uso: ["carro"],
+  precioCents: 260000,
+  pulgadas: 7,
   categoria: "Receptores",
   claves: clavesDeAtributos({
     pantalla_pulg: 7,
@@ -153,7 +176,6 @@ test("sinónimos: cómo lo dice la gente", () => {
   assert.deepEqual(skus(buscar(CATALOGO, "parlantes")), ["MJP6"]);
   assert.deepEqual(skus(buscar(CATALOGO, "radio")), ["DMH-A375BT"]);
   assert.deepEqual(skus(buscar(CATALOGO, "planta")), ["PRX1500.1V2", "XED4"]);
-  assert.deepEqual(skus(buscar(CATALOGO, "lancha")), ["MM1024"]);
 });
 
 test("lo que dice el nombre pesa más que lo que solo coincide por sinónimo", () => {
@@ -167,7 +189,7 @@ test("lo que dice el nombre pesa más que lo que solo coincide por sinónimo", (
 
 test("palabras vacías: «bocinas para carro» pide solo bocinas", () => {
   assert.deepEqual(skus(buscar(CATALOGO, "bocinas para carro")), ["MJP6"]);
-  assert.deepEqual(skus(buscar(CATALOGO, "carro")).length, 0);
+  assert.deepEqual(skus(buscar(CATALOGO, "bocinas de")), ["MJP6"]);
 });
 
 test("distancia: transposición y letra de más o de menos", () => {
@@ -264,4 +286,134 @@ test("sugerir: marcas, categorías y productos mientras se teclea", () => {
 test("clavesDeAtributos: sin atributos no hay claves", () => {
   assert.equal(clavesDeAtributos(undefined), "");
   assert.equal(clavesDeAtributos({ canales: 4, clase: "AB" }), "4ch canales clase-ab clase");
+});
+
+test("amplificadores: la potencia por impedancia se busca por vatios y por ohms", () => {
+  const amp = producto("Amplificador monoblock CM-1500X1", "Memphis", "CM-1500X1", {
+    categoria: "Amplificadores",
+    claves: clavesDeAtributos({
+      canales: 1,
+      potencia_rms_w: [
+        { w: 1500, ohm: 1 },
+        { w: 500, ohm: 4 },
+      ],
+    }),
+  });
+  assert.equal(coincide(amp, normalizar("1500w")), true);
+  assert.equal(coincide(amp, normalizar("500 w")), true);
+  assert.equal(coincide(amp, normalizar("4 ohm")), true);
+  assert.equal(coincide(amp, normalizar("2 ohm")), false);
+});
+
+test("categoría: «marino», «lancha» y «utv» filtran por el dato, no por el nombre", () => {
+  // MM1024 es marino y motorsports; MJP6 es de carro y marino y su nombre no lo dice.
+  assert.deepEqual(skus(buscar(CATALOGO, "marino")), ["MJP6", "MM1024"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "lancha")), ["MJP6", "MM1024"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "utv")), ["MM1024"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "bocinas marinas")), ["MJP6"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "subwoofer motorsports")), ["MM1024"]);
+});
+
+test("categoría: carro excluye lo que no es de carro, y un producto sin `uso` es de carro", () => {
+  assert.deepEqual(skus(buscar(CATALOGO, "subwoofer carro")), ["COR2-124D"]);
+  const sinUso = producto("Cable RCA", "X", "RCA1", { categoria: "Accesorios" });
+  assert.deepEqual(skus(buscar([sinUso, SUB2], "cable carro")), ["RCA1"]);
+  assert.equal(buscar([sinUso], "marino").productos.length, 0);
+});
+
+test("categoría: se aplica también a los errores de escritura y se anuncia", () => {
+  const r = buscar(CATALOGO, "marino subwofer");
+  assert.equal(r.modo, "aproximada");
+  assert.deepEqual(skus(r), ["MM1024"]);
+  assert.deepEqual(r.usos, ["marino"]);
+  assert.deepEqual(r.aplicados, ["Categoría marino"]);
+});
+
+test("rangos de precio: «menos de Q 1,000», «hasta 3000», «más de 2,000»", () => {
+  assert.deepEqual(skus(buscar(CATALOGO, "menos de Q 1,000")), ["COR2-124D", "MJP6"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "amplificador hasta 1200")), ["XED4"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "mas de 2500")), ["DMH-A375BT", "PRX1500.1V2"]);
+  // «hasta» incluye el número; «menos de», no.
+  assert.deepEqual(skus(buscar(CATALOGO, "hasta 800")), ["COR2-124D", "MJP6"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "menos de 800")), ["MJP6"]);
+});
+
+test("rangos de precio: entre dos cifras", () => {
+  assert.deepEqual(skus(buscar(CATALOGO, "entre Q 1,000 y Q 2,600")), [
+    "DMH-A375BT",
+    "MM1024",
+    "XED4",
+  ]);
+  const r = buscar(CATALOGO, "de 800 a 1200");
+  assert.deepEqual(skus(r), ["COR2-124D", "XED4"]);
+  assert.deepEqual(r.aplicados, ["Precio entre Q 800.00 y Q 1,200.00"]);
+});
+
+test("rangos de potencia, tamaño y canales", () => {
+  assert.deepEqual(skus(buscar(CATALOGO, "mas de 400w")), ["COR2-124D", "PRX1500.1V2"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "subwoofer menos de 400 watts")), ["MM1024"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "de 8 a 10 pulgadas")), ["MM1024"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "mas de 10 pulgadas")), ["COR2-124D"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "mas de 2 canales")), ["XED4"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "potencia mayor a 1000")), ["PRX1500.1V2"]);
+});
+
+test("rangos: sin el dato no cumple, y un número chico sin unidad ni Q no es precio", () => {
+  // BOC no trae potencia: un filtro de potencia no la deja pasar.
+  assert.equal(skus(buscar(CATALOGO, "coaxiales mas de 100w")).length, 0);
+  assert.equal(interpretar("menos de 12").restricciones.length, 0);
+});
+
+test("rangos: combinados con texto y categoría", () => {
+  assert.deepEqual(skus(buscar(CATALOGO, "subwoofer marino menos de 3000")), ["MM1024"]);
+  assert.deepEqual(skus(buscar(CATALOGO, "subwoofer carro de 10 a 12 pulgadas")), ["COR2-124D"]);
+});
+
+test("interpretar: una medida con letras pegadas no se vuelve precio", () => {
+  assert.equal(interpretar("menos de 100mm").restricciones.length, 0);
+  assert.equal(interpretar("hasta 124d").restricciones.length, 0);
+});
+
+test("potencia en puente: se busca la palabra y las cargas del texto descriptivo", () => {
+  const amp = producto("Amplificador de 4 canales CM-1200X4", "Memphis", "CM-1200X4", {
+    categoria: "Amplificadores",
+    claves: clavesDeAtributos({
+      canales: 4,
+      potencia_rms_w: "180 W × 4 @ 2 Ω · 120 W × 4 @ 4 Ω · 360 W × 2 @ 4 Ω puente",
+    }),
+  });
+  assert.equal(coincide(amp, normalizar("puente")), true);
+  assert.equal(coincide(amp, normalizar("bridge")), true);
+  assert.equal(coincide(amp, normalizar("360w puente")), true);
+  assert.equal(coincide(amp, normalizar("2 ohm")), true);
+  assert.equal(coincide(amp, normalizar("360 w @ 4 ohm")), true);
+  assert.equal(coincide(amp, normalizar("360 w a 4 ohm estable")), true);
+  assert.equal(coincide(amp, normalizar("1 ohm")), false);
+});
+
+test("numerosDeAtributos: potencia máxima, pulgadas y canales", () => {
+  assert.deepEqual(numerosDeAtributos({ potencia_rms_w: 500, medida: '12"' }), {
+    potenciaW: 500,
+    pulgadas: 12,
+  });
+  assert.deepEqual(
+    numerosDeAtributos({
+      potencia_rms_w: [
+        { w: 3000, ohm: 1 },
+        { w: 900, ohm: 4 },
+      ],
+      canales: 1,
+    }),
+    { potenciaW: 3000, canales: 1 },
+  );
+  assert.equal(
+    numerosDeAtributos({ potencia_rms_w: "180 W × 4 + 600 W × 1 @ 2 Ω · 360 W × 2 @ 4 Ω puente" })
+      .potenciaW,
+    600,
+  );
+  assert.equal(numerosDeAtributos({ medida: '6x9"' }).pulgadas, 6);
+  assert.equal(numerosDeAtributos({ medida: '7/8"' }).pulgadas, 0.875);
+  assert.equal(numerosDeAtributos({ medida: "50 mm" }).pulgadas, 1.97);
+  assert.equal(numerosDeAtributos({ pantalla_pulg: 7 }).pulgadas, 7);
+  assert.deepEqual(numerosDeAtributos(undefined), {});
 });

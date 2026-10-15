@@ -64,6 +64,7 @@ export type {
   ProductoTarjeta,
   ProductFilters,
   Spec,
+  Uso,
 } from "./types.ts";
 export { parsePagina } from "./paginacion.ts";
 export { marcasDelFiltro, nombreDeMarca, primeroDeQuery } from "./filtros.ts";

@@ -13,8 +13,14 @@
 //               sinónimo) en nombre, marca, código, categoría o specs.
 //   aproximada  igual, pero perdonando errores de escritura («rockfor»).
 //   parcial     coincide al menos una palabra, no todas.
-import type { Atributos, ProductoTarjeta } from "../../lib/catalog/types.ts";
-import { PALABRAS_VACIAS, SINONIMOS } from "./sinonimos.ts";
+//
+// Antes de buscar texto, la consulta se «interpreta» (`interpretar`): las
+// palabras que nombran una categoría de uso («marino», «utv», «carro») y las
+// comparaciones con número («menos de Q 1,000», «más de 500 W», «de 8 a 10
+// pulgadas») dejan de ser texto y pasan a ser FILTROS sobre el dato.
+import { formatQ } from "../../lib/format/precio.ts";
+import type { Atributos, ProductoTarjeta, Uso } from "../../lib/catalog/types.ts";
+import { PALABRAS_VACIAS, SINONIMOS, USO_PALABRAS } from "./sinonimos.ts";
 
 /**
  * La tarjeta más `claves`: los atributos normalizados del producto ya
@@ -22,7 +28,13 @@ import { PALABRAS_VACIAS, SINONIMOS } from "./sinonimos.ts";
  * calcula app/buscar/page.tsx con `clavesDeAtributos`. Opcional: sin ellas,
  * se busca solo en lo que la tarjeta trae.
  */
-export type ProductoBuscable = ProductoTarjeta & { claves?: string };
+export type ProductoBuscable = ProductoTarjeta & {
+  claves?: string;
+  /** Los números de `atributos` contra los que se comparan los rangos. */
+  potenciaW?: number;
+  pulgadas?: number;
+  canales?: number;
+};
 
 // Marcas diacríticas combinantes (U+0300–U+036F) que quedan sueltas después
 // de normalize("NFD") — construido con RegExp + \\u en vez de un literal de
@@ -86,7 +98,19 @@ export function clavesDeAtributos(atributos: Atributos | undefined): string {
   const a = atributos;
   const claves: string[] = [];
   if (a.medida) claves.push(a.medida);
-  if (a.potencia_rms_w) claves.push(`${a.potencia_rms_w}w`, "rms");
+  if (Array.isArray(a.potencia_rms_w)) {
+    for (const p of a.potencia_rms_w) claves.push(`${p.w}w`, `${p.ohm}ohm`);
+    claves.push("rms");
+  } else if (typeof a.potencia_rms_w === "string") {
+    // «180 W × 4 @ 2 Ω · …»: cada potencia e impedancia nombrada es una clave.
+    for (const m of a.potencia_rms_w.matchAll(/(\d[\d,.]*)\s*(W|Ω)/g)) {
+      const n = m[1].replace(/,/g, "");
+      claves.push(m[2] === "W" ? `${n}w` : `${n}ohm`);
+    }
+    claves.push("rms");
+    // «@ 4 Ω puente»: quien busca «2 ohm puente» escribe esa palabra.
+    if (/puente/i.test(a.potencia_rms_w)) claves.push("puente");
+  } else if (a.potencia_rms_w) claves.push(`${a.potencia_rms_w}w`, "rms");
   if (a.impedancia_ohm) claves.push(`${a.impedancia_ohm}ohm`);
   if (a.bobinas) claves.push(`${a.bobinas} bobina`);
   if (a.configuracion) {
@@ -107,6 +131,46 @@ export function clavesDeAtributos(atributos: Atributos | undefined): string {
   if (a.longitud_m) claves.push(`${a.longitud_m}m`);
   if (a.espesor_mm) claves.push(`${a.espesor_mm}mm`);
   return claves.join(" ");
+}
+
+/**
+ * Los números de un producto contra los que se comparan «más de 500 W» o «de
+ * 8 a 10 pulgadas». Solo viajan los que existen:
+ *
+ *   potenciaW  la mayor potencia RMS publicada (en un amplificador de varias
+ *              cargas, la más alta de cualquier canal).
+ *   pulgadas   la medida nominal: `6x9"` → 6, `7/8"` → 0.875, `50 mm` → 1.97;
+ *              en un receptor, la pantalla.
+ *   canales    los de un amplificador o un ecualizador.
+ */
+export function numerosDeAtributos(
+  a: Atributos | undefined,
+): Pick<ProductoBuscable, "potenciaW" | "pulgadas" | "canales"> {
+  const numeros: Pick<ProductoBuscable, "potenciaW" | "pulgadas" | "canales"> = {};
+  if (!a) return numeros;
+
+  const p = a.potencia_rms_w;
+  let potencia: number | undefined;
+  if (typeof p === "number") potencia = p;
+  else if (Array.isArray(p)) potencia = Math.max(...p.map((c) => c.w));
+  else if (typeof p === "string") {
+    const vatios = [...p.matchAll(/(\d[\d,.]*)\s*W/g)].map((m) => Number(m[1].replace(/,/g, "")));
+    if (vatios.length > 0) potencia = Math.max(...vatios);
+  }
+  if (potencia !== undefined && potencia > 0) numeros.potenciaW = potencia;
+
+  if (a.medida) {
+    const fraccion = /^(\d+)\/(\d+)"$/.exec(a.medida);
+    const primero = /\d+(?:\.\d+)?/.exec(a.medida);
+    if (fraccion) numeros.pulgadas = Number(fraccion[1]) / Number(fraccion[2]);
+    else if (primero) {
+      const n = Number(primero[0]);
+      numeros.pulgadas = /mm$/.test(a.medida) ? Math.round((n / 25.4) * 100) / 100 : n;
+    }
+  } else if (a.pantalla_pulg) numeros.pulgadas = a.pantalla_pulg;
+
+  if (a.canales) numeros.canales = a.canales;
+  return numeros;
 }
 
 // ---------------------------------------------------------------------------
@@ -246,14 +310,17 @@ interface Termino {
   tolerable: boolean;
 }
 
-function terminosDe(consultaNormalizada: string): Termino[] {
-  const palabras = canonizar(consultaNormalizada)
-    .replace(/[?!¿¡;:()]/g, " ")
+// Recibe texto YA canonizado: `canonizar` no es idempotente («4ch canales»
+// volvería a convertirse), así que se aplica una sola vez, en `interpretar`.
+// Con `conFallback`, si solo se escribieron palabras vacías («para») se
+// buscan tal cual; sin él —cuando ya hay filtros— no queda nada que buscar.
+function terminosDe(textoCanonico: string, conFallback = true): Termino[] {
+  const palabras = textoCanonico
+    .replace(/[?!¿¡;:()@]/g, " ")
     .split(/\s+/)
     .filter(Boolean);
   const utiles = palabras.filter((p) => !PALABRAS_VACIAS.has(p));
-  // Si solo se escribieron palabras vacías («carro»), se buscan tal cual.
-  return (utiles.length > 0 ? utiles : palabras).map((texto) => {
+  return (utiles.length > 0 || !conFallback ? utiles : palabras).map((texto) => {
     const medida = ES_MEDIDA.test(texto);
     const numero = ES_NUMERO.test(texto);
     const r = medida || numero ? texto : raiz(texto);
@@ -336,17 +403,222 @@ const PUNTAJE_POR_NIVEL: Readonly<Record<number, number>> = {
 };
 
 /** Cuánto pesa la consulta ENTERA como frase en el sku, el nombre o la marca. */
-function puntajeDeFrase(e: Entrada, consultaNormalizada: string): number {
-  const frase = canonizar(consultaNormalizada);
-  if (e.sku === consultaNormalizada) return 100;
+function puntajeDeFrase(e: Entrada, frase: string): number {
+  // `frase` ya viene canonizada (`interpretar`) y sin lo que fue filtro.
+  if (e.sku === frase) return 100;
   if (e.nombre === frase) return 90;
-  if (e.sku.startsWith(consultaNormalizada)) return 80;
+  if (e.sku.startsWith(frase)) return 80;
   if (e.nombre.startsWith(frase)) return 70;
   if (e.marca.startsWith(frase)) return 60;
   if (e.nombre.includes(frase)) return 50;
   if (e.marca.includes(frase)) return 40;
-  if (e.sku.includes(consultaNormalizada)) return 30;
+  if (e.sku.includes(frase)) return 30;
   return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Filtros que se escriben en la consulta
+// ---------------------------------------------------------------------------
+
+export interface Restriccion {
+  campo: "precio" | "potencia" | "pulgadas" | "canales";
+  /** En la unidad del campo: quetzales, vatios, pulgadas, canales. */
+  min?: number;
+  max?: number;
+  minIncluye: boolean;
+  maxIncluye: boolean;
+}
+
+// Un número con su unidad, sin pegarse a letras que lo vuelvan otra cosa
+// («100mm», «124d»). La unidad ya viene canonizada: `"`, `w`, `ch canales`.
+const patronNumero = (i: number) =>
+  String.raw`(?<q${i}>q\.?\s*)?(?<n${i}>\d+(?:\.\d+)?)\s*(?<u${i}>w|"|ch(?:\s+canales)?|quetzales?)?(?![a-z0-9])`;
+
+const RANGO_CON_PALABRA = new RegExp(
+  String.raw`\b(?:entre|de|desde)\s+${patronNumero(1)}\s*(?:y|a|hasta|-)\s*${patronNumero(2)}`,
+  "g",
+);
+const RANGO_CON_GUION = new RegExp(
+  String.raw`(?<![\w-])${patronNumero(1)}\s*-\s*${patronNumero(2)}`,
+  "g",
+);
+
+// Menos y más, con y sin el número incluido: «hasta 1000» llega a 1000;
+// «menos de 1000» no.
+const MAXIMO_EXCLUYE =
+  "menos de|menos que|menor a|menor que|bajo|debajo de|por debajo de|inferior a";
+const MAXIMO_INCLUYE = "hasta|maximo|como maximo|no mas de|a lo mucho";
+const MINIMO_EXCLUYE = "mas de|mas que|mayor a|mayor que|arriba de|por encima de|superior a|sobre";
+const MINIMO_INCLUYE = "desde|minimo|como minimo|al menos|a partir de";
+
+const COMPARACION = new RegExp(
+  String.raw`\b(?<c>${[MAXIMO_EXCLUYE, MAXIMO_INCLUYE, MINIMO_EXCLUYE, MINIMO_INCLUYE].join("|")})\s+${patronNumero(1)}`,
+  "g",
+);
+
+// Sin unidad ni «Q», un número es un precio, pero solo de Q 50 para arriba:
+// debajo de eso es casi seguro otra cosa («menos de 12»).
+const PRECIO_MINIMO_SIN_UNIDAD = 50;
+
+type Grupos = Record<string, string | undefined>;
+
+function campoDe(g: Grupos, valores: number[], hayPotencia: boolean): Restriccion["campo"] | null {
+  const unidad = g.u1 ?? g.u2 ?? "";
+  if (unidad.startsWith("w")) return "potencia";
+  if (unidad === '"') return "pulgadas";
+  if (unidad.startsWith("ch")) return "canales";
+  if (unidad.startsWith("quetzal") || g.q1 || g.q2) return "precio";
+  if (hayPotencia) return "potencia";
+  return Math.min(...valores) >= PRECIO_MINIMO_SIN_UNIDAD ? "precio" : null;
+}
+
+function describir(r: Restriccion): string {
+  const etiqueta = {
+    precio: "Precio",
+    potencia: "Potencia",
+    pulgadas: "Tamaño",
+    canales: "Canales",
+  }[r.campo];
+  const valor = (n: number) =>
+    r.campo === "precio"
+      ? formatQ(Math.round(n * 100))
+      : r.campo === "potencia"
+        ? `${n} W`
+        : r.campo === "pulgadas"
+          ? `${n}"`
+          : `${n} canales`;
+  if (r.min !== undefined && r.max !== undefined) {
+    return `${etiqueta} entre ${valor(r.min)} y ${valor(r.max)}`;
+  }
+  if (r.max !== undefined)
+    return `${etiqueta} ${r.maxIncluye ? "hasta" : "menos de"} ${valor(r.max)}`;
+  return `${etiqueta} ${r.minIncluye ? "desde" : "más de"} ${valor(r.min ?? 0)}`;
+}
+
+export interface Interpretacion {
+  /** La consulta sin lo que se convirtió en filtro, canonizada. */
+  resto: string;
+  usos: Uso[];
+  restricciones: Restriccion[];
+  /** Lo que se aplicó, dicho en palabras, para mostrarlo. */
+  aplicados: string[];
+}
+
+/**
+ * Separa de la consulta lo que es un FILTRO de lo que es texto:
+ *
+ *   - las palabras de categoría («marino», «lancha», «utv», «carro») → `usos`;
+ *   - «menos de Q 1,000», «hasta 3000», «más de 500 W», «de 8 a 10
+ *     pulgadas», «entre 2 y 4 canales» → `restricciones`.
+ *
+ * Un número con comparación pero sin unidad es un precio (de Q 50 para
+ * arriba), salvo que la consulta hable de potencia. Lo que no se reconoce
+ * queda en `resto` y se busca como texto, como siempre.
+ */
+export function interpretar(consultaNormalizada: string): Interpretacion {
+  let texto = canonizar(consultaNormalizada);
+  const hayPotencia = /\b(?:potencia|rms|vatios?|watts?)\b/.test(texto);
+  const restricciones: Restriccion[] = [];
+
+  const consumir = (
+    regex: RegExp,
+    armar: (g: Grupos, coincidencia: string) => Restriccion | null,
+  ) => {
+    texto = texto.replace(regex, (...args) => {
+      const coincidencia = args[0] as string;
+      const grupos = args[args.length - 1] as Grupos;
+      const r = armar(grupos, coincidencia);
+      if (!r) return coincidencia;
+      restricciones.push(r);
+      return " ";
+    });
+  };
+
+  const rango = (g: Grupos, exigeUnidad: boolean): Restriccion | null => {
+    const a = Number(g.n1);
+    const b = Number(g.n2);
+    if (exigeUnidad && !g.u1 && !g.u2) return null;
+    const campo = campoDe(g, [a, b], hayPotencia);
+    if (!campo) return null;
+    return {
+      campo,
+      min: Math.min(a, b),
+      max: Math.max(a, b),
+      minIncluye: true,
+      maxIncluye: true,
+    };
+  };
+  consumir(RANGO_CON_PALABRA, (g) => rango(g, false));
+  consumir(RANGO_CON_GUION, (g) => rango(g, true));
+
+  consumir(COMPARACION, (g) => {
+    const n = Number(g.n1);
+    const campo = campoDe(g, [n], hayPotencia);
+    if (!campo) return null;
+    const c = g.c ?? "";
+    const dentro = (lista: string) => lista.split("|").includes(c);
+    if (dentro(MAXIMO_EXCLUYE) || dentro(MAXIMO_INCLUYE)) {
+      return { campo, max: n, minIncluye: false, maxIncluye: dentro(MAXIMO_INCLUYE) };
+    }
+    return { campo, min: n, minIncluye: dentro(MINIMO_INCLUYE), maxIncluye: false };
+  });
+
+  // «Para carro», «lancha», «utv»: categoría, no texto.
+  const usos: Uso[] = [];
+  const quedan: string[] = [];
+  for (const palabra of texto.split(/\s+/).filter(Boolean)) {
+    const uso = Object.hasOwn(USO_PALABRAS, palabra) ? USO_PALABRAS[palabra] : undefined;
+    if (uso) {
+      if (!usos.includes(uso)) usos.push(uso);
+    } else quedan.push(palabra);
+  }
+
+  return {
+    resto: quedan.join(" "),
+    usos,
+    restricciones,
+    aplicados: [
+      ...(usos.length > 0 ? [`Categoría ${usos.join(" o ")}`] : []),
+      ...restricciones.map(describir),
+    ],
+  };
+}
+
+interface Consulta extends Interpretacion {
+  terminos: Termino[];
+  hayFiltros: boolean;
+}
+
+function compilar(consultaNormalizada: string): Consulta {
+  const i = interpretar(consultaNormalizada);
+  const hayFiltros = i.usos.length > 0 || i.restricciones.length > 0;
+  return { ...i, hayFiltros, terminos: terminosDe(i.resto, !hayFiltros) };
+}
+
+function valorDe(p: ProductoBuscable, campo: Restriccion["campo"]): number | undefined {
+  switch (campo) {
+    case "precio":
+      return p.precioCents / 100;
+    case "potencia":
+      return p.potenciaW;
+    case "pulgadas":
+      return p.pulgadas;
+    case "canales":
+      return p.canales;
+  }
+}
+
+/** Un producto sin el dato que se compara no cumple: no se adivina. */
+function cumpleFiltros(p: ProductoBuscable, c: Consulta): boolean {
+  // Sin `uso` (un catalog.json anterior a la columna), el producto es de carro.
+  if (c.usos.length > 0 && !c.usos.some((u) => (p.uso ?? ["carro"]).includes(u))) return false;
+  return c.restricciones.every((r) => {
+    const v = valorDe(p, r.campo);
+    if (v === undefined) return false;
+    if (r.min !== undefined && (r.minIncluye ? v < r.min : v <= r.min)) return false;
+    if (r.max !== undefined && (r.maxIncluye ? v > r.max : v >= r.max)) return false;
+    return true;
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -362,9 +634,11 @@ function puntajeDeFrase(e: Entrada, consultaNormalizada: string): number {
  * catorce productos de cada uno.
  */
 export function coincide(producto: ProductoBuscable, consultaNormalizada: string): boolean {
-  const terminos = terminosDe(consultaNormalizada);
-  if (terminos.length === 0) return false;
-  return nivelDeProducto(entradaDe(producto), terminos, nivelExacto) > 0;
+  const c = compilar(consultaNormalizada);
+  if (c.terminos.length === 0 && !c.hayFiltros) return false;
+  if (!cumpleFiltros(producto, c)) return false;
+  if (c.terminos.length === 0) return true;
+  return nivelDeProducto(entradaDe(producto), c.terminos, nivelExacto) > 0;
 }
 
 /**
@@ -374,11 +648,13 @@ export function coincide(producto: ProductoBuscable, consultaNormalizada: string
  * marca, categoría o sinónimo, en ese orden). 0 si el producto no coincide.
  */
 export function puntuarRelevancia(producto: ProductoBuscable, consultaNormalizada: string): number {
-  const terminos = terminosDe(consultaNormalizada);
+  const c = compilar(consultaNormalizada);
+  if (!cumpleFiltros(producto, c)) return 0;
+  if (c.terminos.length === 0) return c.hayFiltros ? PUNTAJE_SOLO_FILTROS : 0;
   const e = entradaDe(producto);
-  const nivel = nivelDeProducto(e, terminos, nivelExacto);
+  const nivel = nivelDeProducto(e, c.terminos, nivelExacto);
   if (nivel === 0) return 0;
-  return Math.max(puntajeDeFrase(e, consultaNormalizada), PUNTAJE_POR_NIVEL[nivel] ?? 0);
+  return Math.max(puntajeDeFrase(e, c.resto), PUNTAJE_POR_NIVEL[nivel] ?? 0);
 }
 
 export type ModoBusqueda = "exacta" | "aproximada" | "parcial";
@@ -389,9 +665,23 @@ export interface ResultadoBusqueda {
   modo: ModoBusqueda;
   /** «Quizá quisiste decir…»: la consulta con las palabras mal escritas corregidas. */
   correccion: string | null;
+  /** Los filtros que salieron de la consulta («Categoría marino», «Precio hasta Q 1,000.00»). */
+  aplicados: string[];
+  /** Las categorías de uso que nombró la consulta (vacío si ninguna). */
+  usos: Uso[];
 }
 
-const SIN_RESULTADOS: ResultadoBusqueda = { productos: [], modo: "exacta", correccion: null };
+const SIN_RESULTADOS: ResultadoBusqueda = {
+  productos: [],
+  modo: "exacta",
+  correccion: null,
+  aplicados: [],
+  usos: [],
+};
+
+// Cuando la consulta es solo filtros («marino», «menos de 1000») no hay texto
+// que puntúe: todos valen lo mismo y manda el desempate.
+const PUNTAJE_SOLO_FILTROS = 20;
 
 /**
  * La corrección de una consulta: cada palabra que NINGÚN producto trae, ni
@@ -453,9 +743,24 @@ export function buscar(
   desempate: (a: ProductoBuscable, b: ProductoBuscable) => number = () => 0,
 ): ResultadoBusqueda {
   const normalizada = normalizar(consulta).replace(/\s+/g, " ");
-  const terminos = terminosDe(normalizada);
-  if (terminos.length === 0) return SIN_RESULTADOS;
-  const lista = productos.map(entradaDe);
+  const c = compilar(normalizada);
+  const { terminos, aplicados, usos } = c;
+  if (terminos.length === 0 && !c.hayFiltros) return SIN_RESULTADOS;
+  // Los filtros valen para los tres niveles: ni un error de escritura ni una
+  // coincidencia parcial devuelven un producto fuera de la categoría o del
+  // rango que se pidió.
+  const lista = productos.filter((p) => cumpleFiltros(p, c)).map(entradaDe);
+
+  if (terminos.length === 0) {
+    const todos = lista.map((e) => ({ producto: e.producto, puntaje: PUNTAJE_SOLO_FILTROS }));
+    return {
+      productos: ordenar(todos, desempate),
+      modo: "exacta",
+      correccion: null,
+      aplicados,
+      usos,
+    };
+  }
 
   const exactos: Puntuado[] = [];
   for (const e of lista) {
@@ -463,12 +768,18 @@ export function buscar(
     if (nivel > 0) {
       exactos.push({
         producto: e.producto,
-        puntaje: Math.max(puntajeDeFrase(e, normalizada), PUNTAJE_POR_NIVEL[nivel] ?? 0),
+        puntaje: Math.max(puntajeDeFrase(e, c.resto), PUNTAJE_POR_NIVEL[nivel] ?? 0),
       });
     }
   }
   if (exactos.length > 0) {
-    return { productos: ordenar(exactos, desempate), modo: "exacta", correccion: null };
+    return {
+      productos: ordenar(exactos, desempate),
+      modo: "exacta",
+      correccion: null,
+      aplicados,
+      usos,
+    };
   }
 
   const correccion = corregir(productos, terminos);
@@ -479,7 +790,13 @@ export function buscar(
     if (nivel > 0) aproximados.push({ producto: e.producto, puntaje: 10 + nivel });
   }
   if (aproximados.length > 0) {
-    return { productos: ordenar(aproximados, desempate), modo: "aproximada", correccion };
+    return {
+      productos: ordenar(aproximados, desempate),
+      modo: "aproximada",
+      correccion,
+      aplicados,
+      usos,
+    };
   }
 
   if (terminos.length > 1) {
@@ -489,11 +806,17 @@ export function buscar(
       if (aciertos > 0) parciales.push({ producto: e.producto, puntaje: aciertos });
     }
     if (parciales.length > 0) {
-      return { productos: ordenar(parciales, desempate), modo: "parcial", correccion };
+      return {
+        productos: ordenar(parciales, desempate),
+        modo: "parcial",
+        correccion,
+        aplicados,
+        usos,
+      };
     }
   }
 
-  return { productos: [], modo: "exacta", correccion };
+  return { productos: [], modo: "exacta", correccion, aplicados, usos };
 }
 
 // ---------------------------------------------------------------------------

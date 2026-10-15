@@ -6,7 +6,7 @@ import { useId, useMemo, useState } from "react";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { SinResultadosBusqueda } from "@/components/catalog/SinResultadosBusqueda";
 import { SugerenciasBusqueda, type ItemSugerencia } from "@/components/catalog/SugerenciasBusqueda";
-import type { Disponibilidad } from "@/lib/catalog/index.ts";
+import type { Disponibilidad, Uso } from "@/lib/catalog/index.ts";
 import {
   CATEGORIA_SISTEMAS,
   CATEGORIAS_SITIO,
@@ -39,6 +39,15 @@ const DISPONIBILIDADES: Record<Disponibilidad, string> = {
   agotado: "Agotado",
 };
 
+// La «categoría» de uso del libro (columna `categoria` de cada hoja): para qué
+// va el producto. No es la categoría del sitio —esas son las píldoras—.
+const USOS: Record<Uso, string> = {
+  carro: "Carro",
+  marino: "Marino",
+  motorsports: "Motorsports",
+};
+const ORDEN_USOS = Object.keys(USOS) as Uso[];
+
 const CLASE_PILDORA = "rounded-full border px-4.5 py-3 lg:py-2";
 const CLASE_SELECT =
   "border-borde-pildora text-texto-nav rounded-full border bg-white px-4.5 py-3 text-[13px] lg:py-2";
@@ -68,6 +77,10 @@ function leerOrden(valor: string | null): Orden {
   return valor !== null && Object.hasOwn(ORDENES, valor) ? (valor as Orden) : "relevancia";
 }
 
+function leerUso(valor: string | null): Uso | null {
+  return valor !== null && Object.hasOwn(USOS, valor) ? (valor as Uso) : null;
+}
+
 function leerDisponibilidad(valor: string | null): Disponibilidad | null {
   return valor !== null && Object.hasOwn(DISPONIBILIDADES, valor)
     ? (valor as Disponibilidad)
@@ -79,6 +92,7 @@ interface Estado {
   categoria?: string | null;
   marca?: string | null;
   disp?: Disponibilidad | null;
+  uso?: Uso | null;
   orden?: Orden;
   ver?: number;
 }
@@ -87,6 +101,7 @@ interface Filtros {
   categoria: string | null;
   marca: string | null;
   disp: Disponibilidad | null;
+  uso: Uso | null;
 }
 
 /** Pasa los filtros activos; `omitir` deja uno por fuera, para contar sus opciones. */
@@ -96,7 +111,9 @@ function pasa(producto: ProductoBuscable, filtros: Filtros, omitir?: keyof Filtr
       !filtros.categoria ||
       perteneceACategoria(producto, filtros.categoria)) &&
     (omitir === "marca" || !filtros.marca || producto.marca === filtros.marca) &&
-    (omitir === "disp" || !filtros.disp || producto.disponibilidad === filtros.disp)
+    (omitir === "disp" || !filtros.disp || producto.disponibilidad === filtros.disp) &&
+    // Sin `uso`, el producto es de carro (igual que en busqueda.ts).
+    (omitir === "uso" || !filtros.uso || (producto.uso ?? ["carro"]).includes(filtros.uso))
   );
 }
 
@@ -126,6 +143,7 @@ export function Busqueda({
   const categoriaPedida = params.get("categoria");
   const marcaPedida = params.get("marca");
   const dispPedida = leerDisponibilidad(params.get("disp"));
+  const usoPedido = leerUso(params.get("uso"));
   const ordenActivo = leerOrden(params.get("orden"));
   const visibles = leerVisibles(params.get("ver"));
   const [borrador, setBorrador] = useState(consulta);
@@ -148,12 +166,13 @@ export function Busqueda({
   // atrás sale de /buscar en vez de recorrer cada consulta o filtro. Next
   // sincroniza useSearchParams con la historia nativa, sin pedir la página de
   // nuevo al servidor. Sin consulta no hay filtros que guardar.
-  function irA({ q, categoria, marca, disp, orden, ver }: Estado) {
+  function irA({ q, categoria, marca, disp, uso, orden, ver }: Estado) {
     const query = new URLSearchParams();
     if (q) query.set("q", q);
     if (q && categoria) query.set("categoria", categoria);
     if (q && marca) query.set("marca", marca);
     if (q && disp) query.set("disp", disp);
+    if (q && uso) query.set("uso", uso);
     if (q && orden && orden !== "relevancia") query.set("orden", orden);
     if (q && ver && ver > INCREMENTO) query.set("ver", String(ver));
     const texto = query.toString();
@@ -191,8 +210,10 @@ export function Busqueda({
       categoria: categoriaPedida && categorias.has(categoriaPedida) ? categoriaPedida : null,
       marca: marcaPedida && marcasEnBase.has(marcaPedida) ? marcaPedida : null,
       disp: dispPedida && base.some((p) => p.disponibilidad === dispPedida) ? dispPedida : null,
+      uso:
+        usoPedido && base.some((p) => (p.uso ?? ["carro"]).includes(usoPedido)) ? usoPedido : null,
     };
-  }, [base, categoriaPedida, marcaPedida, dispPedida]);
+  }, [base, categoriaPedida, marcaPedida, dispPedida, usoPedido]);
 
   // Las píldoras cuentan con la misma regla que los listados
   // (perteneceACategoria): un Sistema cuenta en las categorías que trae como
@@ -232,6 +253,15 @@ export function Busqueda({
     return conteo;
   }, [base, filtros]);
 
+  const conteoPorUso = useMemo(() => {
+    const conteo = new Map<Uso, number>();
+    for (const producto of base) {
+      if (!pasa(producto, filtros, "uso")) continue;
+      for (const u of producto.uso ?? ["carro"]) conteo.set(u, (conteo.get(u) ?? 0) + 1);
+    }
+    return conteo;
+  }, [base, filtros]);
+
   const resultadosFiltrados = useMemo(() => {
     const lista = base.filter((producto) => pasa(producto, filtros));
     if (ordenActivo === "precio_asc") return [...lista].sort(compararPrecioAsc);
@@ -240,7 +270,7 @@ export function Busqueda({
   }, [base, filtros, ordenActivo]);
   const resultadosVisibles = resultadosFiltrados.slice(0, visibles);
   const restantes = resultadosFiltrados.length - resultadosVisibles.length;
-  const hayFiltros = Boolean(filtros.categoria || filtros.marca || filtros.disp);
+  const hayFiltros = Boolean(filtros.categoria || filtros.marca || filtros.disp || filtros.uso);
 
   // Los filtros de hoy, para cambiar solo uno. Al cambiar la lista, «Ver más»
   // vuelve a empezar.
@@ -249,6 +279,7 @@ export function Busqueda({
     categoria: filtros.categoria,
     marca: filtros.marca,
     disp: filtros.disp,
+    uso: filtros.uso,
     orden: ordenActivo,
   };
   const cambiar = (parcial: Partial<Estado>) => irA({ ...actual, ...parcial });
@@ -333,6 +364,10 @@ export function Busqueda({
   }, [consulta, base, productos, marcas]);
 
   const opcionesMarca = conteoPorMarca.filter(([, n]) => n > 0);
+  const opcionesUso = ORDEN_USOS.flatMap((u): [Uso, number][] =>
+    (conteoPorUso.get(u) ?? 0) > 0 ? [[u, conteoPorUso.get(u) ?? 0]] : [],
+  );
+  const usosEscritos = resultado?.usos ?? [];
 
   return (
     <div className="flex flex-col">
@@ -397,10 +432,20 @@ export function Busqueda({
                   de arriba, y un lector de pantalla anunciaba dos títulos de
                   primer nivel. Se ve igual. */}
               <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.03em]">
-                {base.length} {base.length === 1 ? "resultado" : "resultados"}
+                {resultadosFiltrados.length}{" "}
+                {resultadosFiltrados.length === 1 ? "resultado" : "resultados"}
               </h2>
               <div className="text-texto-secundario text-[15px]">para «{consulta}»</div>
             </div>
+
+            {/* Lo que salió de la consulta como FILTRO («marino», «menos de
+                Q 1,000», «más de 500 W»): se dice, para que se vea por qué
+                faltan productos. */}
+            {resultado && resultado.aplicados.length > 0 ? (
+              <p className="text-texto-secundario text-[15px]">
+                Filtros de tu búsqueda: {resultado.aplicados.join(" · ")}
+              </p>
+            ) : null}
 
             {/* Lo que la búsqueda hizo por su cuenta, dicho: nunca se
                 cambian los resultados sin avisar. */}
@@ -466,6 +511,35 @@ export function Busqueda({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2.5">
+                  {/* Categoría (carro, marino, motorsports). Si la consulta ya
+                      la nombra («bocinas marino»), el filtro viene de lo
+                      escrito y el campo lo muestra, fijo. */}
+                  {usosEscritos.length > 0 ? (
+                    <select
+                      aria-label="Categoría (viene de lo que escribiste)"
+                      value="escrita"
+                      disabled
+                      className={CLASE_SELECT}
+                    >
+                      <option value="escrita">
+                        Categoría: {usosEscritos.map((u) => USOS[u]).join(" o ")}
+                      </option>
+                    </select>
+                  ) : opcionesUso.length > 1 || filtros.uso ? (
+                    <select
+                      aria-label="Filtrar por categoría"
+                      value={filtros.uso ?? ""}
+                      onChange={(e) => cambiar({ uso: leerUso(e.target.value) })}
+                      className={CLASE_SELECT}
+                    >
+                      <option value="">Categoría: todas</option>
+                      {opcionesUso.map(([u, cantidad]) => (
+                        <option key={u} value={u}>
+                          Categoría: {USOS[u]} ({cantidad})
+                        </option>
+                      ))}
+                    </select>
+                  ) : null}
                   {opcionesMarca.length > 1 || filtros.marca ? (
                     <select
                       aria-label="Filtrar por marca"
@@ -533,7 +607,9 @@ export function Busqueda({
                   <div className="flex justify-center pt-6">
                     <button
                       type="button"
-                      onClick={() => cambiar({ categoria: null, marca: null, disp: null })}
+                      onClick={() =>
+                        cambiar({ categoria: null, marca: null, disp: null, uso: null })
+                      }
                       className="border-borde-boton rounded-full border px-7 py-3.5 text-[15px]"
                     >
                       Quitar filtros

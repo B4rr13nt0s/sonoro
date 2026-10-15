@@ -49,16 +49,11 @@ export const SINONIMOS: Readonly<Record<string, readonly string[]>> = {
   silenciador: ["insonorizacion"],
   // Kits y cables
   cableado: ["cable", "kit"],
-  // Marino y motorsports (los nombres dicen «marino», «marine», «powersports»)
-  lancha: ["marino", "marina", "marine"],
-  bote: ["marino", "marina", "marine"],
-  barco: ["marino", "marina", "marine"],
-  yate: ["marino", "marina", "marine"],
-  nautico: ["marino", "marina", "marine"],
-  utv: ["powersports", "side-by-side"],
-  atv: ["powersports"],
-  moto: ["powersports"],
-  motocicleta: ["powersports"],
+  // Potencia en puente (la hoja escribe «… @ 4 Ω puente»)
+  bridge: ["puente"],
+  bridged: ["puente"],
+  puenteado: ["puente"],
+  puenteada: ["puente"],
   // Bobinas
   dvc: ["doble bobina"],
   svc: ["simple bobina"],
@@ -69,6 +64,8 @@ export const SINONIMOS: Readonly<Record<string, readonly string[]>> = {
 // carro» solo pide «bocinas»). Se descartan de la consulta, salvo que sean
 // lo único que se escribió.
 export const PALABRAS_VACIAS: ReadonlySet<string> = new Set([
+  "a",
+  "que",
   "de",
   "del",
   "la",
@@ -84,10 +81,71 @@ export const PALABRAS_VACIAS: ReadonlySet<string> = new Set([
   "y",
   "o",
   "mi",
-  "carro",
-  "carros",
-  "auto",
-  "autos",
   "vehiculo",
   "vehiculos",
+  // «potencia mayor a 1000»: la palabra describe el filtro, no el producto.
+  "potencia",
+  // Lo que queda de una comparación («menos de», «hasta») cuando su número
+  // no era un filtro.
+  "menos",
+  "mas",
+  "menor",
+  "mayor",
+  "maximo",
+  "minimo",
+  "hasta",
+  "desde",
+  "entre",
+  "estable",
+  "estables",
 ]);
+
+/**
+ * Las palabras que nombran una CATEGORÍA de uso (la columna `categoria` del
+ * libro: carro, marino, motorsports) y no un producto. No se buscan como
+ * texto: filtran por el dato `uso`, así que un producto marino cuyo nombre no
+ * diga «marino» también aparece. Un producto sin `uso` cuenta como «carro»,
+ * que es de donde viene el catálogo.
+ */
+export const USO_PALABRAS: Readonly<Record<string, "carro" | "marino" | "motorsports">> = {
+  carro: "carro",
+  carros: "carro",
+  auto: "carro",
+  autos: "carro",
+  automovil: "carro",
+  marino: "marino",
+  marinos: "marino",
+  marina: "marino",
+  marinas: "marino",
+  marine: "marino",
+  nautico: "marino",
+  nautica: "marino",
+  lancha: "marino",
+  lanchas: "marino",
+  bote: "marino",
+  botes: "marino",
+  barco: "marino",
+  barcos: "marino",
+  yate: "marino",
+  yates: "marino",
+  embarcacion: "marino",
+  embarcaciones: "marino",
+  motorsports: "motorsports",
+  motorsport: "motorsports",
+  powersports: "motorsports",
+  powersport: "motorsports",
+  utv: "motorsports",
+  utvs: "motorsports",
+  atv: "motorsports",
+  atvs: "motorsports",
+  rzr: "motorsports",
+  sxs: "motorsports",
+  "side-by-side": "motorsports",
+  moto: "motorsports",
+  motos: "motorsports",
+  motocicleta: "motorsports",
+  motocicletas: "motorsports",
+  cuatrimoto: "motorsports",
+  cuatrimotos: "motorsports",
+  todoterreno: "motorsports",
+};
