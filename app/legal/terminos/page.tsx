@@ -47,7 +47,7 @@ export default function TerminosPage() {
         {
           titulo: "Envíos",
           parrafos: [
-            "Envíos gratis a todo el país. Aplican restricciones según destino y volumen del pedido.",
+            "Envíos gratis a todo el país en pedidos con un total mayor a Q 500.00; en pedidos de Q 500.00 o menos, el envío es por cobrar. Aplican restricciones según destino y volumen del pedido.",
             "El tiempo de entrega depende del departamento de destino.",
           ],
         },
