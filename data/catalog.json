@@ -11775,12 +11775,12 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
-        "url": "/productos/XED57_2frontal.jpg",
-        "alt": "Bocinas coaxiales XED de 5x7\" XED57 — 2frontal"
-      },
-      {
         "url": "/productos/XED57_frontal.jpg",
         "alt": "Bocinas coaxiales XED de 5x7\" XED57 — frontal"
+      },
+      {
+        "url": "/productos/XED57_frontal2.jpg",
+        "alt": "Bocinas coaxiales XED de 5x7\" XED57 — frontal2"
       },
       {
         "url": "/productos/XED57_frontalposterior.jpg",
@@ -12033,12 +12033,12 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
-        "url": "/productos/XED42_2frontal.jpg",
-        "alt": "Bocinas coaxiales XED de 4\" XED42 — 2frontal"
-      },
-      {
         "url": "/productos/XED42_frontal.jpg",
         "alt": "Bocinas coaxiales XED de 4\" XED42 — frontal"
+      },
+      {
+        "url": "/productos/XED42_frontal2.jpg",
+        "alt": "Bocinas coaxiales XED de 4\" XED42 — frontal2"
       },
       {
         "url": "/productos/XED42_lateral.jpg",
