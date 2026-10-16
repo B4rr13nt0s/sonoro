@@ -63,6 +63,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   // CatalogoComparable, o el provider no compila.
   const catalogo = productos.map((p) => ({
     sku: p.sku,
+    slug: p.slug,
     activo: p.activo,
     disponibilidad: p.disponibilidad,
     precioCents: p.precioCents,

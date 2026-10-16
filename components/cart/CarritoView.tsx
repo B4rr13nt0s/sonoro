@@ -48,6 +48,7 @@ export function CarritoView() {
     cambios,
     descartarCambios,
     disponibilidadPorSku,
+    slugPorSku,
     setQty,
     removeItem,
     clear,
@@ -141,6 +142,7 @@ export function CarritoView() {
                 key={item.sku}
                 item={item}
                 disponibilidad={disponibilidadPorSku[item.sku]}
+                slug={slugPorSku[item.sku]}
                 onSetQty={(qty) => setQty(item.sku, qty)}
                 onRemove={() => removeItem(item.sku)}
               />
@@ -189,35 +191,49 @@ function CarritoVacio() {
 function CartLineItem({
   item,
   disponibilidad,
+  slug,
   onSetQty,
   onRemove,
 }: {
   item: CartItem;
   disponibilidad: Disponibilidad | undefined;
+  /** Si el catálogo lo conoce, la foto y el nombre llevan a la ficha. */
+  slug: string | undefined;
   onSetQty: (qty: number) => void;
   onRemove: () => void;
 }) {
   const totalLinea = item.unitPriceCents * item.qty;
+  const href = slug ? `/producto/${slug}` : null;
+
+  const foto = item.imagenSnapshot ? (
+    <div className="relative h-[110px] w-[100px] flex-none overflow-hidden rounded-[10px] sm:w-[140px]">
+      <Image
+        src={item.imagenSnapshot}
+        alt={item.nombreSnapshot}
+        fill
+        // La miniatura mide 100 px (140 en sm): sin `sizes`, `fill`
+        // bajaba una imagen del ancho de la ventana.
+        sizes="140px"
+        className="object-cover"
+      />
+    </div>
+  ) : (
+    <PlaceholderImage
+      label={`FOTO — ${item.nombreSnapshot}`}
+      className="h-[110px] w-[100px] flex-none rounded-[10px] sm:w-[140px]"
+    />
+  );
 
   return (
     <div className="border-borde-tarjeta flex gap-4 border-t py-6 sm:gap-6 sm:py-7">
-      {item.imagenSnapshot ? (
-        <div className="relative h-[110px] w-[100px] flex-none overflow-hidden rounded-[10px] sm:w-[140px]">
-          <Image
-            src={item.imagenSnapshot}
-            alt={item.nombreSnapshot}
-            fill
-            // La miniatura mide 100 px (140 en sm): sin `sizes`, `fill`
-            // bajaba una imagen del ancho de la ventana.
-            sizes="140px"
-            className="object-cover"
-          />
-        </div>
+      {href ? (
+        // La foto y el nombre son el mismo destino: el nombre lleva el nombre
+        // accesible, así que el enlace de la foto no se anuncia dos veces.
+        <Link href={href} tabIndex={-1} aria-hidden="true" className="flex-none">
+          {foto}
+        </Link>
       ) : (
-        <PlaceholderImage
-          label={`FOTO — ${item.nombreSnapshot}`}
-          className="h-[110px] w-[100px] flex-none rounded-[10px] sm:w-[140px]"
-        />
+        foto
       )}
 
       <div className="flex flex-1 flex-col gap-1.5">
@@ -233,7 +249,13 @@ function CartLineItem({
         </div>
         <div className="flex items-start justify-between gap-3">
           <div className="text-[17px] font-semibold tracking-[-0.015em] sm:text-[19px]">
-            {item.nombreSnapshot}
+            {href ? (
+              <Link href={href} className="hover:underline">
+                {item.nombreSnapshot}
+              </Link>
+            ) : (
+              item.nombreSnapshot
+            )}
           </div>
           <div className="flex-none text-[17px] font-semibold sm:text-[19px]">
             {formatQ(totalLinea)}

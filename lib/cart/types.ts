@@ -53,6 +53,9 @@ export function crearCarritoVacio(now: string): Cart {
 // navegador (mismo patrón que /buscar con SearchExperience).
 export type CatalogoSku = {
   sku: string;
+  // Para que /carrito enlace cada línea a su ficha. Opcional: reconcile() no
+  // lo usa, y sin él la línea se muestra sin enlace.
+  slug?: string;
   activo: boolean;
   disponibilidad: Disponibilidad;
   precioCents: number;

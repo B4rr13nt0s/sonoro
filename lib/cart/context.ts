@@ -71,6 +71,9 @@ type CartContextValue = {
   // etiquetar lo bajo pedido, y para marcarlo en el mensaje. (Lo agotado no
   // llega a /carrito: reconcile() lo quita.)
   disponibilidadPorSku: Readonly<Record<string, Disponibilidad>>;
+  // Slug ACTUAL de cada sku, para enlazar la línea a su ficha (el CartItem no
+  // lo guarda: el slug es permanente, pero el carrito no es el dueño del dato).
+  slugPorSku: Readonly<Record<string, string>>;
   // false hasta que el efecto de abajo lea localStorage — /carrito lo usa
   // para no mostrar "carrito vacío" un instante antes de que aparezca el
   // carrito real (CLAUDE.md § Modelo de conversión: localStorage no existe
@@ -242,6 +245,14 @@ export function CartProvider({
     [catalogo],
   );
 
+  const slugPorSku = useMemo(
+    () =>
+      Object.fromEntries(
+        catalogo.flatMap((p): [string, string][] => (p.slug ? [[p.sku, p.slug]] : [])),
+      ),
+    [catalogo],
+  );
+
   const catalogoPorSku = useMemo(() => new Map(catalogo.map((p) => [p.sku, p])), [catalogo]);
 
   // Corrige lo guardado AHORA, no el carrito del último render: entre ese
@@ -287,6 +298,7 @@ export function CartProvider({
     cambios,
     descartarCambios,
     disponibilidadPorSku,
+    slugPorSku,
     hydrated,
     addItem,
     ...acciones,
