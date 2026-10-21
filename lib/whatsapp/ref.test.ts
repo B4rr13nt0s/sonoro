@@ -60,3 +60,16 @@ test("buildOrderRef: sigue midiendo lo mismo con muchas líneas", () => {
   }));
   assert.match(buildOrderRef(CREADO, muchas), /^SNR-[0-9A-Z]{5}$/);
 });
+
+// Valores fijos, calculados aparte (FNV-1a de «createdAt~firma» en base 36).
+// El e2e calcula su Ref con buildOrderRef y la app también: si el alfabeto, las
+// constantes, el separador o el orden de las líneas cambian, los dos cambian
+// juntos y ninguna otra prueba lo nota. El Ref es lo que el vendedor y el
+// cliente usan para hablar del mismo pedido, y la clave con la que el Apps
+// Script descarta reenvíos: cambiarlo es una decisión, no un accidente.
+test("buildOrderRef: valores conocidos", () => {
+  assert.equal(buildOrderRef(CREADO), "SNR-AENE3");
+  assert.equal(buildOrderRef(CREADO, [SUB]), "SNR-47HZD");
+  assert.equal(buildOrderRef(CREADO, [SUB, BOCINA]), "SNR-GZ23S");
+  assert.equal(buildOrderRef(CREADO, [BOCINA, SUB]), "SNR-GZ23S");
+});
