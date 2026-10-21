@@ -82,12 +82,14 @@ test("data/skus-publicados.json: ordenado, sin repetidos y cubre todo el catálo
     JSON.parse(readFileSync(new URL(`../../data/${archivo}`, import.meta.url), "utf-8"));
   const registro: string[] = leer("skus-publicados.json");
   const catalogo: { sku: string }[] = leer("catalog.json");
+  const retirados: Retirado[] = leer("retirados.json");
 
   assert.deepEqual(registro, ampliarRegistro([], registro));
+  // Los retirados siguen en el registro (se publicaron) pero ya no en el catálogo.
   assert.deepEqual(
-    skusPublicadosAusentes(registro, new Set(catalogo.map((p) => p.sku))),
+    skusPublicadosAusentes(registro, new Set(catalogo.map((p) => p.sku)), retirados),
     [],
-    "un sku del registro no está en el catálogo",
+    "un sku del registro no está en el catálogo ni en retirados.json",
   );
   assert.deepEqual(
     catalogo.map((p) => p.sku).filter((sku) => !registro.includes(sku)),

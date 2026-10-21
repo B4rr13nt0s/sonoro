@@ -17,5 +17,19 @@
     "slug": "cerwin-vega-slmloct2",
     "nombre": "Convertidor SYNCLINK Mini LOC de 2 canales con disparo",
     "motivo": "Ya estaba inactivo; su fila salió del libro en f1d2452."
+  },
+  {
+    "sku": "NANO 10SPX",
+    "slug": "memphis-nano-10spx",
+    "nombre": "Subwoofer amplificado de 10\" NANO 10SPX",
+    "motivo": "Código corregido a NANO10SPX en el libro (octubre de 2026): cambió el sku y con él el slug.",
+    "reemplazo": "memphis-nano10spx"
+  },
+  {
+    "sku": "STAGE 245F",
+    "slug": "jbl-stage-245f",
+    "nombre": "Bocinas coaxiales de 4\" STAGE2 45F",
+    "motivo": "Código corregido a STAGE2 45F en el libro (octubre de 2026): cambió el sku y con él el slug.",
+    "reemplazo": "jbl-stage2-45f"
   }
 ]
