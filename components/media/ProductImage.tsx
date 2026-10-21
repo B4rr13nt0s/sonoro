@@ -28,14 +28,15 @@ export function ProductImage({ imagenes, nombre, dark = false, className }: Prod
   // fotos se funde con el del contenedor.
   return (
     <div className={`relative overflow-hidden bg-white ${className ?? ""}`}>
-      {/* `sizes` con el ancho real de la tarjeta en la rejilla (1, 2 o 4
+      {/* `sizes` con el ancho real de la tarjeta en la rejilla (1, 2, 4 o 6
           columnas, ProductGrid): sin él, `fill` hace que el navegador asuma
-          el ancho de la ventana y baje una imagen varias veces más grande. */}
+          el ancho de la ventana y baje una imagen varias veces más grande.
+          Si cambian las columnas de la rejilla, cambia también esta cuenta. */}
       <Image
         src={imagen.url}
         alt={imagen.alt || nombre}
         fill
-        sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+        sizes="(min-width: 1280px) 15vw, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
         className="object-contain"
       />
     </div>

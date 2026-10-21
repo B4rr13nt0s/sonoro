@@ -46,9 +46,9 @@ const FECHA_CONGELADA = new Date("2026-01-01T00:00:00.000Z");
 // por marca trae resultados de Subwoofers y de Receptores.
 //
 // La marca es PIONEER y no Memphis a propósito. /buscar muestra los
-// resultados de a ocho (INCREMENTO en SearchExperience.tsx) y los ordena por
+// resultados de a doce (INCREMENTO en SearchExperience.tsx) y los ordena por
 // puntaje de texto y luego por relevancia, así que los dos productos tienen
-// que caer en los primeros ocho o el test tendría que ir pulsando "Ver más".
+// que caer en los primeros doce o el test tendría que ir pulsando "Ver más".
 // Con "memphis" son 110 resultados y el kit caía en el puesto 65; con
 // "pioneer" son 15 y estos dos están en los puestos 3 y 4.
 //
