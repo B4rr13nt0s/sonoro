@@ -32,7 +32,8 @@ type SlugCategoria = (typeof CATEGORIAS_SITIO)[number]["slug"];
 // insonorización no traen nada marino ni de motorsports: decir «para lancha»
 // ahí sería falso. Receptores dice «moto» y no «UTV» porque lo suyo es un
 // receptor para Harley-Davidson. Si entra a una categoría el primer producto
-// de otra línea, se actualiza esta tabla.
+// de otra línea, se actualiza esta tabla; textos.test.ts la compara con la
+// columna `uso` del libro y falla si nombra un uso que ningún producto tiene.
 // Record sobre los slugs: una categoría nueva sin su entrada no compila.
 const USOS: Record<SlugCategoria, string> = {
   bocinas: "carro, lancha y UTV",
@@ -42,7 +43,7 @@ const USOS: Record<SlugCategoria, string> = {
   ecualizadores: "carro",
   kits: "carro, lancha y UTV",
   insonorizacion: "carro",
-  accesorios: "carro, lancha y UTV",
+  accesorios: "carro",
 };
 
 // El nombre del nav es corto a propósito (tiene que caber en la barra). En el

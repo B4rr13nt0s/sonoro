@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
+import { CATEGORIAS_SITIO } from "../catalog/categorias.ts";
 import {
   masFrecuentes,
   textosCategoria,
@@ -95,4 +97,34 @@ test("masFrecuentes: de más a menos, desempate estable por código", () => {
 test("tituloMarcas: singular y plural", () => {
   assert.equal(tituloMarcas(1), "Vendemos una marca.");
   assert.equal(tituloMarcas(8), "Vendemos 8 marcas distintas.");
+});
+
+test("textosCategoria: los usos que nombra existen en la columna `uso` del catálogo", () => {
+  const catalogo: {
+    categoria: string;
+    categoriasSecundarias?: string[];
+    uso?: string[];
+    activo: boolean;
+  }[] = JSON.parse(readFileSync(new URL("../../data/catalog.json", import.meta.url), "utf-8"));
+
+  for (const { slug, nombre } of CATEGORIAS_SITIO) {
+    const usosReales = new Set(
+      catalogo
+        .filter(
+          (p) => p.activo && [p.categoria, ...(p.categoriasSecundarias ?? [])].includes(nombre),
+        )
+        .flatMap((p) => p.uso ?? ["carro"]),
+    );
+    const { titulo } = textosCategoria({ slug, nombre, total: 1, marcas: [], page: 1 });
+    assert.equal(
+      /lancha/.test(titulo),
+      usosReales.has("marino"),
+      `${nombre}: «${titulo}» vs uso marino`,
+    );
+    assert.equal(
+      /UTV|moto/.test(titulo),
+      usosReales.has("motorsports"),
+      `${nombre}: «${titulo}» vs uso motorsports`,
+    );
+  }
 });
