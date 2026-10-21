@@ -3149,6 +3149,10 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
+        "url": "/productos/VPAS12_frontal.jpg",
+        "alt": "Subwoofer amplificado de 12\" VPAS12 — frontal"
+      },
+      {
         "url": "/productos/VPAS12_cenital.jpg",
         "alt": "Subwoofer amplificado de 12\" VPAS12 — cenital"
       },
@@ -3159,10 +3163,6 @@
       {
         "url": "/productos/VPAS12_diagonalizquierda.jpg",
         "alt": "Subwoofer amplificado de 12\" VPAS12 — diagonalizquierda"
-      },
-      {
-        "url": "/productos/VPAS12_frontal.jpg",
-        "alt": "Subwoofer amplificado de 12\" VPAS12 — frontal"
       }
     ],
     "destacado": false,
@@ -3237,16 +3237,16 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
+        "url": "/productos/VR10_frontal.jpg",
+        "alt": "Subwoofer amplificado de 10\" VR10 — frontal"
+      },
+      {
         "url": "/productos/VR10_diagonalderecha.jpg",
         "alt": "Subwoofer amplificado de 10\" VR10 — diagonalderecha"
       },
       {
         "url": "/productos/VR10_diagonalizquierda.jpg",
         "alt": "Subwoofer amplificado de 10\" VR10 — diagonalizquierda"
-      },
-      {
-        "url": "/productos/VR10_frontal.jpg",
-        "alt": "Subwoofer amplificado de 10\" VR10 — frontal"
       }
     ],
     "destacado": true,
@@ -3645,6 +3645,10 @@
       {
         "etiqueta": "Diámetro de corte",
         "valor": "ø128 mm"
+      },
+      {
+        "etiqueta": "Contenido",
+        "valor": "Par de bocinas"
       }
     ],
     "precioCents": 47500,
@@ -5859,6 +5863,10 @@
       {
         "etiqueta": "Canasta",
         "valor": "Aluminio fundido a presión"
+      },
+      {
+        "etiqueta": "Resistencia",
+        "valor": "Construcción resistente al agua para carenados de moto, side-by-side y uso marino"
       }
     ],
     "precioCents": 379500,
@@ -7138,6 +7146,10 @@
       {
         "etiqueta": "Iluminación",
         "valor": "Iluminación de acento LED RGB"
+      },
+      {
+        "etiqueta": "Serie",
+        "valor": "Street Reference Pro V2"
       }
     ],
     "precioCents": 339500,
@@ -9003,6 +9015,14 @@
       {
         "etiqueta": "Instalación",
         "valor": "Adaptadores específicos por vehículo y geometría de marco rediseñada"
+      },
+      {
+        "etiqueta": "Materiales",
+        "valor": "Plásticos Centrex y ASA resistentes a la radiación UV"
+      },
+      {
+        "etiqueta": "Serie",
+        "valor": "Punch P1 V2, generación 2025"
       }
     ],
     "precioCents": 245000,
@@ -10425,6 +10445,10 @@
       {
         "etiqueta": "Montaje",
         "valor": "Torre de wakeboard o barra antivuelco"
+      },
+      {
+        "etiqueta": "Protección ambiental",
+        "valor": "Element Ready, resistente a agua, sal y rayos UV"
       }
     ],
     "precioCents": 2019500,
@@ -12388,6 +12412,10 @@
       {
         "etiqueta": "Protecciones",
         "valor": "Térmica, bajo voltaje y cortocircuito, con indicador LED"
+      },
+      {
+        "etiqueta": "Construcción",
+        "valor": "Chasis de aluminio con control remoto de ganancia"
       }
     ],
     "precioCents": 399500,
@@ -12746,6 +12774,10 @@
       {
         "etiqueta": "Distorsión armónica (THD)",
         "valor": "0.01 % @ 4 Ω"
+      },
+      {
+        "etiqueta": "Construcción",
+        "valor": "Chasis de aluminio con nanotecnología"
       }
     ],
     "precioCents": 219500,
@@ -12842,6 +12874,10 @@
       {
         "etiqueta": "Distorsión armónica (THD)",
         "valor": "0.01 % @ 4 Ω"
+      },
+      {
+        "etiqueta": "Construcción",
+        "valor": "Chasis de aluminio con control remoto de ganancia"
       }
     ],
     "precioCents": 194500,
@@ -13625,6 +13661,10 @@
       {
         "etiqueta": "Distorsión armónica (THD)",
         "valor": "0.05 %"
+      },
+      {
+        "etiqueta": "Sensibilidad de entrada",
+        "valor": "0.2 – 6 V"
       }
     ],
     "precioCents": 94500,
@@ -13791,6 +13831,14 @@
       {
         "etiqueta": "Refuerzo de graves",
         "valor": "Hasta 18 dB"
+      },
+      {
+        "etiqueta": "Acabado",
+        "valor": "Aluminio anodizado cepillado gunmetal con LED de 7 colores seleccionables"
+      },
+      {
+        "etiqueta": "Serie",
+        "valor": "SixFive V2"
       }
     ],
     "precioCents": 849500,
@@ -13874,6 +13922,14 @@
       {
         "etiqueta": "Control remoto",
         "valor": "Opcional inalámbrico VIVREMV2"
+      },
+      {
+        "etiqueta": "Acabado",
+        "valor": "Aluminio anodizado cepillado gunmetal con LED de 7 colores seleccionables"
+      },
+      {
+        "etiqueta": "Serie",
+        "valor": "SixFive V2"
       }
     ],
     "precioCents": 699500,
@@ -13970,6 +14026,10 @@
       {
         "etiqueta": "Acabado",
         "valor": "Aluminio anodizado cepillado gunmetal con LED de 7 colores seleccionables"
+      },
+      {
+        "etiqueta": "Serie",
+        "valor": "SixFive V2"
       }
     ],
     "precioCents": 709500,
@@ -14053,6 +14113,14 @@
       {
         "etiqueta": "Refuerzo de graves",
         "valor": "Hasta 18 dB"
+      },
+      {
+        "etiqueta": "Acabado",
+        "valor": "Aluminio anodizado cepillado gunmetal con LED de 7 colores seleccionables"
+      },
+      {
+        "etiqueta": "Serie",
+        "valor": "SixFive V2"
       }
     ],
     "precioCents": 549500,
@@ -14757,6 +14825,14 @@
       {
         "etiqueta": "Refuerzo de graves",
         "valor": "Seleccionable 0, +3 o +6 dB a 45 Hz"
+      },
+      {
+        "etiqueta": "Incluye",
+        "valor": "Control remoto de nivel de graves"
+      },
+      {
+        "etiqueta": "Acabado",
+        "valor": "Disipador de aluminio texturizado con franja LED naranja"
       }
     ],
     "precioCents": 259500,
@@ -14945,6 +15021,14 @@
       {
         "etiqueta": "Entradas",
         "valor": "Alto y bajo nivel, compatible con radio original"
+      },
+      {
+        "etiqueta": "Protección",
+        "valor": "Cortocircuito y térmica"
+      },
+      {
+        "etiqueta": "Acabado",
+        "valor": "Tira de iluminación LED de acento"
       }
     ],
     "precioCents": 259500,
@@ -15113,6 +15197,10 @@
       {
         "etiqueta": "Controles",
         "valor": "Montados en la parte superior"
+      },
+      {
+        "etiqueta": "Diseño",
+        "valor": "Compacto, pensado para instalaciones side-by-side de espacio limitado"
       }
     ],
     "precioCents": 399500,
@@ -15273,6 +15361,14 @@
       {
         "etiqueta": "Entradas",
         "valor": "Entradas RCA y de nivel alto (selector High/Low) con encendido automático por offset DC variable 4–6 V"
+      },
+      {
+        "etiqueta": "Ajuste de ganancia",
+        "valor": "Ganancia con ajuste de sensibilidad; indicadores LED de Power/Protect y BRT (Boost)"
+      },
+      {
+        "etiqueta": "Construcción",
+        "valor": "Chasis ultracompacto"
       }
     ],
     "precioCents": 394500,
@@ -15454,6 +15550,10 @@
       {
         "etiqueta": "Voltaje de operación",
         "valor": "9 – 16 V CC"
+      },
+      {
+        "etiqueta": "Fusible recomendado",
+        "valor": "120 A"
       }
     ],
     "precioCents": 599500,
@@ -15537,6 +15637,10 @@
       {
         "etiqueta": "Voltaje de operación",
         "valor": "9 – 16 V CC"
+      },
+      {
+        "etiqueta": "Fusible recomendado",
+        "valor": "200 A"
       }
     ],
     "precioCents": 599500,
@@ -15633,6 +15737,10 @@
       {
         "etiqueta": "Voltaje de operación",
         "valor": "9 – 16 V CC"
+      },
+      {
+        "etiqueta": "Fusible recomendado",
+        "valor": "120 A"
       }
     ],
     "precioCents": 539500,
@@ -15729,6 +15837,10 @@
       {
         "etiqueta": "Voltaje de operación",
         "valor": "9 – 16 V CC"
+      },
+      {
+        "etiqueta": "Fusible recomendado",
+        "valor": "80 A"
       }
     ],
     "precioCents": 339500,
@@ -15821,6 +15933,10 @@
       {
         "etiqueta": "Voltaje de operación",
         "valor": "9 – 16 V CC"
+      },
+      {
+        "etiqueta": "Fusible recomendado",
+        "valor": "50 A"
       }
     ],
     "precioCents": 249500,
@@ -15913,6 +16029,10 @@
       {
         "etiqueta": "Voltaje de operación",
         "valor": "9 – 16 V CC"
+      },
+      {
+        "etiqueta": "Fusible recomendado",
+        "valor": "80 A"
       }
     ],
     "precioCents": 419500,
@@ -15996,6 +16116,10 @@
       {
         "etiqueta": "Voltaje de operación",
         "valor": "9 – 16 V CC"
+      },
+      {
+        "etiqueta": "Fusible recomendado",
+        "valor": "60 A"
       }
     ],
     "precioCents": 299500,
@@ -16080,6 +16204,14 @@
       {
         "etiqueta": "Filtros",
         "valor": "Pasa altos, pasa bajos e infrasónico, con Punch EQ"
+      },
+      {
+        "etiqueta": "Ajuste de ganancia",
+        "valor": "C.L.E.A.N. con LED indicadores de recorte"
+      },
+      {
+        "etiqueta": "Entradas",
+        "valor": "Nivel alto y nivel bajo, compatible con radio original"
       }
     ],
     "precioCents": 1449500,
@@ -16164,6 +16296,10 @@
       {
         "etiqueta": "Ajuste de ganancia",
         "valor": "C.L.E.A.N. con LED indicadores de recorte"
+      },
+      {
+        "etiqueta": "Entradas",
+        "valor": "Nivel alto y nivel bajo, compatible con radio original"
       }
     ],
     "precioCents": 849500,
@@ -16580,6 +16716,10 @@
       {
         "etiqueta": "USB",
         "valor": "USB 2.0 con carga rápida de 1.5 A"
+      },
+      {
+        "etiqueta": "Espejeo",
+        "valor": "WebLink Cast, navegador web y YouTube"
       }
     ],
     "precioCents": 469500,
@@ -16838,6 +16978,14 @@
       {
         "etiqueta": "Asistente de voz",
         "valor": "Amazon Alexa integrada"
+      },
+      {
+        "etiqueta": "Componentes",
+        "valor": "De grado audiófilo, seleccionados para máxima calidad de audio"
+      },
+      {
+        "etiqueta": "Audio",
+        "valor": "Reproducción de alta resolución"
       }
     ],
     "precioCents": 975000,
@@ -16924,6 +17072,10 @@
       {
         "etiqueta": "Accesos rápidos",
         "valor": "Tecla de acceso directo y tecla de acceso rápido en el panel"
+      },
+      {
+        "etiqueta": "Entradas de cámara",
+        "valor": "Cámara de reversa con línea de asistencia de estacionamiento"
       }
     ],
     "precioCents": 449500,
@@ -17514,6 +17666,14 @@
       {
         "etiqueta": "Controles",
         "valor": "Conserva los controles de manubrio de fábrica"
+      },
+      {
+        "etiqueta": "Extras",
+        "valor": "Voltímetro con alerta de bajo voltaje y control independiente de nivel de subwoofer"
+      },
+      {
+        "etiqueta": "Compatibilidad",
+        "valor": "Motocicletas Harley-Davidson selectas de 1998 a 2013, instalación plug and play"
       }
     ],
     "precioCents": 999500,
@@ -17596,6 +17756,18 @@
       {
         "etiqueta": "Protección",
         "valor": "IP66"
+      },
+      {
+        "etiqueta": "Zonas",
+        "valor": "Multizona: salidas delantera, trasera, subwoofer y zona 2, con control de subwoofer independiente"
+      },
+      {
+        "etiqueta": "Entrada de cámara",
+        "valor": "Sí, para cámara de reversa o de sendero"
+      },
+      {
+        "etiqueta": "Montaje",
+        "valor": "Orificio de 3\"; profundidad de 4\" (10.2 cm); frente de 5.5 × 3.5\""
       }
     ],
     "precioCents": 479500,
@@ -17677,6 +17849,10 @@
       {
         "etiqueta": "Control remoto",
         "valor": "Acepta hasta dos controles alámbricos MXA1MCR (se venden aparte)"
+      },
+      {
+        "etiqueta": "Serie",
+        "valor": "MXA"
       }
     ],
     "precioCents": 279500,
