@@ -77,9 +77,18 @@ export function emparejarFotosConSkus(
   // (mismo criterio que lib/catalog/orden.ts). Para vistas en minúsculas y sin
   // acentos es el mismo orden alfabético. El nombre de archivo desempata una
   // misma vista en dos formatos, que si no quedaba en el orden del disco.
+  // Las vistas «frontal…» (frontal, frontal2) van primero: solas por orden
+  // alfabético, una «cenital» o una «diagonal» le quitaban el lugar a la
+  // frontal (VPAS12, VR10) y salía de foto principal.
   const comparar = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
+  const rango = (vista: string) => (vista.startsWith("frontal") ? 0 : 1);
   for (const lista of porSku.values()) {
-    lista.sort((a, b) => comparar(a.vista, b.vista) || comparar(a.archivo, b.archivo));
+    lista.sort(
+      (a, b) =>
+        rango(a.vista) - rango(b.vista) ||
+        comparar(a.vista, b.vista) ||
+        comparar(a.archivo, b.archivo),
+    );
   }
 
   return { porSku, ignorados };

@@ -102,3 +102,25 @@ test("construirImagenes: preserva el orden que le pasen (ya viene ordenado de em
   assert.equal(imagenes[0].url, "/productos/SRX62_frontal.jpg");
   assert.equal(imagenes[1].url, "/productos/SRX62_lateral.jpg");
 });
+
+test("emparejarFotosConSkus: la vista frontal va primero aunque otra ordene antes", () => {
+  const { porSku } = emparejarFotosConSkus(
+    [
+      "VPAS12_cenital.jpg",
+      "VPAS12_frontal.jpg",
+      "VR10_diagonalderecha.jpg",
+      "VR10_frontal2.jpg",
+      "VR10_frontal.jpg",
+      "VR10_trasera.jpg",
+    ],
+    new Set(["VPAS12", "VR10"]),
+  );
+  assert.deepEqual(
+    porSku.get("VPAS12")?.map((f) => f.vista),
+    ["frontal", "cenital"],
+  );
+  assert.deepEqual(
+    porSku.get("VR10")?.map((f) => f.vista),
+    ["frontal", "frontal2", "diagonalderecha", "trasera"],
+  );
+});
