@@ -5,6 +5,8 @@
 // Lógica pura, fuera de scripts/import-catalog.ts para poder probarla: ese
 // archivo corre main() al importarse.
 
+import type { Retirado } from "../../lib/catalog/retirados.ts";
+
 /** Lo que las alertas miran de cada producto. `Producto` lo cumple. */
 export type ProductoAlertable = { sku: string; slug: string; nombre: string };
 
@@ -80,4 +82,56 @@ export function detectarAlertas(
   }
 
   return alertas;
+}
+
+// Registro de skus publicados (data/skus-publicados.json): una lista que solo
+// crece. `detectarAlertas` compara contra data/catalog.json, y ese archivo se
+// regenera en cada importación: quien borra una fila e importa deja la alerta
+// una sola vez, en su consola, y la corrida siguiente ya no recuerda el sku.
+// El registro sí lo recuerda, está en Git, y borrar una fila publicada ABORTA
+// la importación en vez de avisar.
+
+/**
+ * Skus del registro que ya no están en el libro (ni siquiera como fila
+ * rechazada). Los retirados a propósito (data/retirados.json) no cuentan.
+ */
+export function skusPublicadosAusentes(
+  registro: readonly string[],
+  skusDelLibro: ReadonlySet<string>,
+  retirados: readonly Retirado[] = [],
+): string[] {
+  const retiradosSku = new Set(retirados.map((r) => r.sku));
+  return registro.filter((sku) => !skusDelLibro.has(sku) && !retiradosSku.has(sku));
+}
+
+// Un producto que Sonoro dejó de manejar y cuya fila ya no está en el libro.
+// Su URL responde 410 (proxy.ts), igual que la de una fila con activo = FALSO,
+// pero sin necesitar la fila. Es el camino para lo que ya se borró; lo normal
+// sigue siendo activo = FALSO (CLAUDE.md § Mantenimiento del catálogo).
+export type { Retirado };
+
+/**
+ * Un retirado que reaparece en el libro: su URL daría 410 con el producto a
+ * la venta. Si volvió, se quita de data/retirados.json.
+ */
+export function retiradosEnElLibro(
+  retirados: readonly Retirado[],
+  skusDelLibro: ReadonlySet<string>,
+  slugsDelLibro: ReadonlySet<string>,
+): string[] {
+  const conflictos: string[] = [];
+  for (const r of retirados) {
+    if (skusDelLibro.has(r.sku) || slugsDelLibro.has(r.slug)) {
+      conflictos.push(
+        `sku "${r.sku}" (slug "${r.slug}") está en data/retirados.json pero volvió al libro: ` +
+          "su ficha respondería 410 con el producto a la venta. Quítalo de retirados.json",
+      );
+    }
+  }
+  return conflictos;
+}
+
+/** Registro ordenado por puntos de código y sin repetidos: el diff de Git solo muestra altas. */
+export function ampliarRegistro(registro: readonly string[], nuevos: readonly string[]): string[] {
+  return [...new Set([...registro, ...nuevos])].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 }

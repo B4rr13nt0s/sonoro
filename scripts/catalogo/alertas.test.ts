@@ -1,7 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
-import { detectarAlertas } from "./alertas.ts";
+import {
+  ampliarRegistro,
+  detectarAlertas,
+  retiradosEnElLibro,
+  skusPublicadosAusentes,
+  type Retirado,
+} from "./alertas.ts";
 
 const p = (sku: string, slug: string, nombre = sku) => ({ sku, slug, nombre });
 
@@ -50,4 +57,86 @@ test("slug cambiado: la alerta de siempre", () => {
 
 test("producto nuevo: no alerta", () => {
   assert.deepEqual(detectarAlertas([], [p("SQ12-D2", "memphis-sq12-d2")]), []);
+});
+
+test("registro: un sku publicado que ya no está en el libro se reporta", () => {
+  assert.deepEqual(skusPublicadosAusentes(["PRX60C", "SQ12-D2"], new Set(["PRX60C", "OTRO"])), [
+    "SQ12-D2",
+  ]);
+  assert.deepEqual(skusPublicadosAusentes(["PRX60C"], new Set(["PRX60C"])), []);
+});
+
+test("registro: solo crece, sin repetidos y en puntos de código", () => {
+  assert.deepEqual(ampliarRegistro(["SQ12-D2", "ACX 165"], ["PRX60C", "SQ12-D2", "R2-250X1"]), [
+    "ACX 165",
+    "PRX60C",
+    "R2-250X1",
+    "SQ12-D2",
+  ]);
+  // Mayúsculas antes que minúsculas, como localeCompare NO garantiza.
+  assert.deepEqual(ampliarRegistro([], ["b1", "B1"]), ["B1", "b1"]);
+});
+
+test("data/skus-publicados.json: ordenado, sin repetidos y cubre todo el catálogo publicado", () => {
+  const leer = (archivo: string) =>
+    JSON.parse(readFileSync(new URL(`../../data/${archivo}`, import.meta.url), "utf-8"));
+  const registro: string[] = leer("skus-publicados.json");
+  const catalogo: { sku: string }[] = leer("catalog.json");
+
+  assert.deepEqual(registro, ampliarRegistro([], registro));
+  assert.deepEqual(
+    skusPublicadosAusentes(registro, new Set(catalogo.map((p) => p.sku))),
+    [],
+    "un sku del registro no está en el catálogo",
+  );
+  assert.deepEqual(
+    catalogo.map((p) => p.sku).filter((sku) => !registro.includes(sku)),
+    [],
+    "un sku del catálogo falta en el registro: corre npm run import:catalog",
+  );
+});
+
+const RETIRADO: Retirado = {
+  sku: "SRX1244",
+  slug: "memphis-srx1244",
+  nombre: "Subwoofer de prueba",
+  motivo: "prueba",
+};
+
+test("retirados: su sku ausente del libro ya no se reporta como fila borrada", () => {
+  assert.deepEqual(
+    skusPublicadosAusentes(["PRX60C", "SRX1244"], new Set(["PRX60C"]), [RETIRADO]),
+    [],
+  );
+});
+
+test("retirados: si el sku o el slug vuelven al libro, es un conflicto", () => {
+  assert.deepEqual(retiradosEnElLibro([RETIRADO], new Set(["PRX60C"]), new Set(["x"])), []);
+  assert.equal(retiradosEnElLibro([RETIRADO], new Set(["SRX1244"]), new Set()).length, 1);
+  assert.equal(retiradosEnElLibro([RETIRADO], new Set(), new Set(["memphis-srx1244"])).length, 1);
+});
+
+test("data/retirados.json: ningún retirado sigue en el catálogo publicado", () => {
+  const leer = (archivo: string) =>
+    JSON.parse(readFileSync(new URL(`../../data/${archivo}`, import.meta.url), "utf-8"));
+  const retirados: Retirado[] = leer("retirados.json");
+  const catalogo: { sku: string; slug: string }[] = leer("catalog.json");
+
+  assert.deepEqual(
+    retiradosEnElLibro(
+      retirados,
+      new Set(catalogo.map((p) => p.sku)),
+      new Set(catalogo.map((p) => p.slug)),
+    ),
+    [],
+  );
+  for (const r of retirados) {
+    assert.ok(r.motivo.length > 0, `${r.sku}: falta el motivo`);
+    if (r.reemplazo) {
+      assert.ok(
+        catalogo.some((p) => p.slug === r.reemplazo),
+        `${r.sku}: el reemplazo «${r.reemplazo}» no está en el catálogo`,
+      );
+    }
+  }
 });

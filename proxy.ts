@@ -25,8 +25,12 @@ import type { NextRequest } from "next/server";
 import conteosRaw from "./data/conteos.json";
 import inactiveSlugsRaw from "./data/inactive-slugs.json";
 import { listadoInexistente, type Conteos } from "./lib/catalog/conteos.ts";
+import { RETIRADOS_A_410 } from "./lib/catalog/retirados.ts";
 
 const INACTIVE_SLUGS = new Set<string>(inactiveSlugsRaw);
+// Productos que Sonoro dejó de manejar y cuya fila ya no está en el libro
+// (data/retirados.json): la ficha los sigue prerenderizando, sin producto.
+const RETIRADOS_SIN_FILA = new Set<string>(RETIRADOS_A_410.map((r) => r.slug));
 const CONTEOS: Conteos = conteosRaw;
 
 // El 404 de los LISTADOS también tiene que salir de acá: /catalogo,
@@ -80,7 +84,9 @@ export function proxy(request: NextRequest) {
   const pathname = decodificar(request.nextUrl.pathname);
   const [, seccion, slug] = pathname.match(/^\/([a-z]+)\/([^/]+)$/) ?? [];
 
-  if (seccion === "producto" && INACTIVE_SLUGS.has(slug)) return retirado(request);
+  if (seccion === "producto" && (INACTIVE_SLUGS.has(slug) || RETIRADOS_SIN_FILA.has(slug))) {
+    return retirado(request);
+  }
   if (listadoInexistente(CONTEOS, pathname, searchParams)) return inexistente(request);
   return NextResponse.next();
 }

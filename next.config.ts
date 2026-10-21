@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import type { NextConfig } from "next";
 
 // docs/PLAN.md § Fase 0 nombra exactamente estos dominios: sonoro.gt
@@ -129,12 +132,33 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return DOMINIOS_NO_CANONICOS.map((host) => ({
-      source: "/:path*",
-      has: [{ type: "host" as const, value: host }],
-      destination: "https://sonoro.gt/:path*",
-      permanent: true,
-    }));
+    // Un producto retirado que otro sustituye (data/retirados.json) conserva su
+    // URL con una redirección permanente que nunca se borra (CLAUDE.md §
+    // Mantenimiento del catálogo). Se lee el archivo a mano: este módulo corre
+    // antes que el resto del código y no pasa por el empaquetador.
+    const retirados: { slug: string; reemplazo?: string }[] = JSON.parse(
+      readFileSync(path.join(process.cwd(), "data", "retirados.json"), "utf-8"),
+    );
+    const productosSustituidos = retirados.flatMap((r) =>
+      r.reemplazo
+        ? [
+            {
+              source: `/producto/${r.slug}`,
+              destination: `/producto/${r.reemplazo}`,
+              permanent: true,
+            },
+          ]
+        : [],
+    );
+    return [
+      ...productosSustituidos,
+      ...DOMINIOS_NO_CANONICOS.map((host) => ({
+        source: "/:path*",
+        has: [{ type: "host" as const, value: host }],
+        destination: "https://sonoro.gt/:path*",
+        permanent: true,
+      })),
+    ];
   },
 };
 

@@ -169,8 +169,20 @@ El importador **aborta sin escribir nada**, y juntando todos los ofensores, si: 
 
 - Quitar un producto es activo = FALSO. NUNCA borrar la fila: rompe carritos
   guardados y la trazabilidad de pedidos enviados. Si una fila publicada
-  desaparece del libro, el importador lo marca como alerta
-  (`scripts/catalogo/alertas.ts`), igual que un slug o un sku que cambió.
+  desaparece del libro, **el importador aborta sin escribir nada**: compara
+  contra `data/skus-publicados.json`, un registro versionado de todos los skus
+  que alguna vez se publicaron y que solo crece (lo actualiza el propio
+  importador; no se edita a mano). Antes solo avisaba contra el `catalog.json`
+  ya commiteado, y quien regeneraba el catálogo en el mismo commit dejaba la
+  alerta en cero — así salieron `SRX1244`, `DMH-Z6350BT` y `SLMLOCT2` en
+  octubre de 2026. Slug o sku que cambió sigue siendo alerta.
+- **Retirar algo que ya se borró** (o que se decide dejar ir sin devolver la
+  fila): se agrega a `data/retirados.json` con sku, slug, nombre y motivo. Su
+  `/producto/[slug]` responde 410 con el aviso «ya no está a la venta»
+  (`proxy.ts`, `lib/catalog/retirados.ts`), el importador deja de exigir su
+  fila, y si ese sku o slug reaparece en el libro aborta pidiendo quitarlo de
+  ahí. Si lo sustituye otro producto, la entrada lleva `reemplazo` (el slug nuevo) y su URL redirige de forma permanente en `next.config.ts` en vez de dar 410: `SRX1244` → `SRX1244V`. Los otros dos de octubre de 2026 (`DMH-Z6350BT`, `SLMLOCT2`) dan 410. Es el camino de excepción: lo
+  normal sigue siendo activo = FALSO.
 - disponibilidad = 'agotado' es para faltantes temporales; activo = FALSO es
   para descontinuados.
 - sku y slug son permanentes. Un cambio de slug exige redirección 301

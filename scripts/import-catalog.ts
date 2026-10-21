@@ -4,7 +4,7 @@
 // los productos multi-categoría—, valida, GENERA las specs legibles a partir
 // de los campos normalizados y emite:
 //   data/catalog.json · data/brands.json · data/taxonomy.json
-//   data/inactive-slugs.json · data/conteos.json
+//   data/inactive-slugs.json · data/conteos.json · data/skus-publicados.json
 //   data/source/catalogo.csv       el libro aplanado, solo para el diff de Git
 //   reports/import-errors.md · reports/price-diff.md
 //
@@ -12,7 +12,7 @@
 //   - ABORT (catalogo/contrato.ts): hojas que faltan o sobran, bloque común
 //     distinto entre hojas, columnas específicas que no calzan, sku mangeado,
 //     precio escrito como texto, sku o slug duplicado, categoría de
-//     ESPECIALES inexistente. Se juntan TODOS los ofensores y no se escribe
+//     ESPECIALES inexistente, fila publicada que desapareció del libro. Se juntan TODOS los ofensores y no se escribe
 //     ningún archivo: el catálogo anterior queda intacto.
 //   - RECHAZO por fila (catalogo/filas.ts + ProductoSchema): obligatorio
 //     vacío, valor fuera de lista, booleano ilegible, par etiqueta/valor
@@ -38,7 +38,13 @@ import { construirImagenes, emparejarFotosConSkus } from "../lib/catalog/photos.
 import { ProductoSchema, type Producto } from "../lib/catalog/types.ts";
 import { formatQ } from "../lib/format/precio.ts";
 import { leerLibro, validarLibro, type LibroCrudo } from "./catalogo/contrato.ts";
-import { detectarAlertas } from "./catalogo/alertas.ts";
+import {
+  ampliarRegistro,
+  detectarAlertas,
+  retiradosEnElLibro,
+  skusPublicadosAusentes,
+  type Retirado,
+} from "./catalogo/alertas.ts";
 import { colisionesDeSlug } from "./catalogo/marcas.ts";
 import { serializarCsv } from "./catalogo/csv.ts";
 import { normalizarFila } from "./catalogo/filas.ts";
@@ -51,6 +57,11 @@ const RUTA_CSV_REGISTRO = path.join(RAIZ, "data", "source", "catalogo.csv");
 const RUTA_CATALOG = path.join(RAIZ, "data", "catalog.json");
 const RUTA_BRANDS = path.join(RAIZ, "data", "brands.json");
 const RUTA_TAXONOMY = path.join(RAIZ, "data", "taxonomy.json");
+// Skus que alguna vez se publicaron: solo crece (catalogo/alertas.ts).
+// Los retirados a propósito sin pasar por activo = FALSO viven en
+// data/retirados.json, que además lee proxy.ts para el 410.
+const RUTA_RETIRADOS = path.join(RAIZ, "data", "retirados.json");
+const RUTA_SKUS_PUBLICADOS = path.join(RAIZ, "data", "skus-publicados.json");
 const RUTA_FOTOS = path.join(RAIZ, "public", "productos");
 // Lee esto proxy.ts para el 410 de /producto/[slug] — un arreglo plano de
 // slugs en vez del catálogo completo, porque esa ruta corre en cada
@@ -84,6 +95,41 @@ function main(): void {
   const { ofensores, filas } = validarLibro(libro);
   if (ofensores.length > 0) {
     abortar(ofensores);
+    return;
+  }
+
+  // Una fila publicada no se borra (CLAUDE.md § Mantenimiento del catálogo):
+  // si falta alguna del registro, no se escribe nada. Se compara contra TODAS
+  // las filas del libro, rechazadas incluidas: esas ya bloquean el build.
+  const registroSkus: string[] = existsSync(RUTA_SKUS_PUBLICADOS)
+    ? (JSON.parse(readFileSync(RUTA_SKUS_PUBLICADOS, "utf-8")) as string[])
+    : [];
+  const retirados: Retirado[] = existsSync(RUTA_RETIRADOS)
+    ? (JSON.parse(readFileSync(RUTA_RETIRADOS, "utf-8")) as Retirado[])
+    : [];
+  const skusDelLibro = new Set(filas.map((fila) => String(fila.celdas.sku ?? "").trim()));
+  const slugsDelLibro = new Set(
+    filas.map((fila) =>
+      String(fila.celdas.slug ?? "")
+        .trim()
+        .toLowerCase(),
+    ),
+  );
+  const reaparecidos = retiradosEnElLibro(retirados, skusDelLibro, slugsDelLibro);
+  if (reaparecidos.length > 0) {
+    abortar(reaparecidos);
+    return;
+  }
+  const ausentes = skusPublicadosAusentes(registroSkus, skusDelLibro, retirados);
+  if (ausentes.length > 0) {
+    abortar(
+      ausentes.map(
+        (sku) =>
+          `sku "${sku}" se publicó alguna vez y ya no está en el libro. Una fila publicada no se ` +
+          "borra: se devuelve con activo = FALSO (si el sku nunca debió publicarse, se quita a " +
+          "mano de data/skus-publicados.json)",
+      ),
+    );
     return;
   }
 
@@ -213,6 +259,17 @@ function main(): void {
     writeFileSync(RUTA_BRANDS, JSON.stringify(brands, null, 2) + "\n");
     writeFileSync(RUTA_TAXONOMY, JSON.stringify(taxonomy, null, 2) + "\n");
     writeFileSync(RUTA_INACTIVE_SLUGS, JSON.stringify(inactiveSlugs, null, 2) + "\n");
+    writeFileSync(
+      RUTA_SKUS_PUBLICADOS,
+      JSON.stringify(
+        ampliarRegistro(
+          registroSkus,
+          productosValidos.map((p) => p.sku),
+        ),
+        null,
+        2,
+      ) + "\n",
+    );
     // Lo que proxy.ts necesita para responder 404 a una página de listado que
     // no existe, sin cargar el catálogo (lib/catalog/conteos.ts).
     writeFileSync(

@@ -1,0 +1,21 @@
+[
+  {
+    "sku": "SRX1244",
+    "slug": "memphis-srx1244",
+    "nombre": "Subwoofer Street Reference de 12\" SRX1244",
+    "motivo": "Reemplazado por el SRX1244V (octubre de 2026). Su fila salió del libro en f1d2452 sin pasar por activo = FALSO.",
+    "reemplazo": "memphis-srx1244v"
+  },
+  {
+    "sku": "DMH-Z6350BT",
+    "slug": "pioneer-dmh-z6350bt",
+    "nombre": "Pantalla de 6.8\" DMH-Z6350BT con Alexa",
+    "motivo": "Sonoro dejó de manejarlo (octubre de 2026). Su fila salió del libro en f1d2452 sin pasar por activo = FALSO."
+  },
+  {
+    "sku": "SLMLOCT2",
+    "slug": "cerwin-vega-slmloct2",
+    "nombre": "Convertidor SYNCLINK Mini LOC de 2 canales con disparo",
+    "motivo": "Ya estaba inactivo; su fila salió del libro en f1d2452."
+  }
+]

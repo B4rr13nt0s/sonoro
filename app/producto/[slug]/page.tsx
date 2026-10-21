@@ -12,6 +12,7 @@ import { claseBoton } from "@/components/ui/boton.ts";
 import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
 import { getProduct, listAllProducts, listBrands, listCategories } from "@/lib/catalog/index.ts";
 import { buildCatalogHref, buildMarcaHref } from "@/lib/catalog/href.ts";
+import { RETIRADOS_A_410, retiradoPorSlug } from "@/lib/catalog/retirados.ts";
 import { buildProductJsonLd } from "@/lib/seo/product.ts";
 import { jsonLdScriptProps } from "@/lib/seo/jsonLd.ts";
 import { absoluteUrl } from "@/lib/seo/site.ts";
@@ -26,22 +27,68 @@ export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const productos = await listAllProducts();
-  return productos.map((producto) => ({ slug: producto.slug }));
+  // Los retirados sin fila también: sin su slug aquí, dynamicParams = false
+  // los dejaría en 404 en vez de 410.
+  return [...productos.map((p) => p.slug), ...RETIRADOS_A_410.map((r) => r.slug)].map((slug) => ({
+    slug,
+  }));
+}
+
+function ProductoRetirado({
+  nombre,
+  categoria,
+  categoriaSlug,
+}: {
+  nombre: string;
+  categoria?: string;
+  categoriaSlug?: string;
+}) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-24 text-center">
+      <div className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">
+        Producto ya no disponible
+      </div>
+      <h1 className="text-40 max-w-[520px] font-semibold tracking-[-0.03em]">
+        {nombre} ya no está a la venta
+      </h1>
+      <p className="text-texto-secundario max-w-[440px] text-[17px]">
+        Este producto dejó de venderse en Sonoro. Puede seguir viendo el resto del catálogo.
+      </p>
+      {/* claseBoton, igual que la 404: escritas a mano, estas clases ya se
+          habían apartado del par de botones del sitio (otro borde, sin la
+          escala del hover). */}
+      <div className="flex w-full max-w-[480px] flex-col gap-3 pt-2 sm:flex-row">
+        {categoriaSlug ? (
+          <Link href={`/catalogo/${categoriaSlug}`} className={claseBoton("principal")}>
+            Ver {categoria}
+          </Link>
+        ) : (
+          <Link href="/catalogo" className={claseBoton("principal")}>
+            Ver el catálogo
+          </Link>
+        )}
+        <Link href="/" className={claseBoton("secundario")}>
+          Ir a Inicio
+        </Link>
+      </div>
+    </div>
+  );
 }
 
 export async function generateMetadata(props: PageProps<"/producto/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
   const producto = await getProduct(slug);
-  if (!producto) return {};
+  const retirado = retiradoPorSlug(slug);
+  if (!producto && !retirado) return {};
 
-  // activo === false: proxy.ts ya fuerza el status 410 para esta URL — acá
-  // solo evitamos que Google indexe el título/descripción del producto
-  // como si siguiera a la venta.
-  if (!producto.activo) {
+  // activo === false (o retirado sin fila): proxy.ts ya fuerza el status 410
+  // para esta URL — acá solo evitamos que Google indexe el título/descripción
+  // del producto como si siguiera a la venta.
+  if (!producto || !producto.activo) {
     // La vista previa de un enlace viejo tiene que decir lo mismo que la
     // página: sin su propio openGraph heredaba el título y la descripción
     // genéricos del sitio, junto a la tarjeta del producto.
-    const descripcion = `${producto.nombre} ya no está a la venta en Sonoro.`;
+    const descripcion = `${producto?.nombre ?? retirado?.nombre} ya no está a la venta en Sonoro.`;
     return {
       title: "Producto ya no disponible",
       description: descripcion,
@@ -62,7 +109,11 @@ export async function generateMetadata(props: PageProps<"/producto/[slug]">): Pr
 export default async function ProductoPage(props: PageProps<"/producto/[slug]">) {
   const { slug } = await props.params;
   const producto = await getProduct(slug);
-  if (!producto) notFound();
+  if (!producto) {
+    const retirado = retiradoPorSlug(slug);
+    if (retirado) return <ProductoRetirado nombre={retirado.nombre} />;
+    notFound();
+  }
 
   // Agotado invierte la jerarquía de los dos botones de acción: agregar al
   // carrito algo que no hay no lleva a ninguna parte, y preguntar sí.
@@ -82,30 +133,11 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
   // esta rama solo decide qué HTML se manda con ese status.
   if (!producto.activo) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-24 text-center">
-        <div className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">
-          Producto ya no disponible
-        </div>
-        <h1 className="text-40 max-w-[520px] font-semibold tracking-[-0.03em]">
-          {producto.nombre} ya no está a la venta
-        </h1>
-        <p className="text-texto-secundario max-w-[440px] text-[17px]">
-          Este producto dejó de venderse en Sonoro. Puede seguir viendo el resto del catálogo.
-        </p>
-        {/* claseBoton, igual que la 404: escritas a mano, estas clases ya se
-            habían apartado del par de botones del sitio (otro borde, sin la
-            escala del hover). */}
-        <div className="flex w-full max-w-[480px] flex-col gap-3 pt-2 sm:flex-row">
-          {categoriaSlug ? (
-            <Link href={`/catalogo/${categoriaSlug}`} className={claseBoton("principal")}>
-              Ver {producto.categoria}
-            </Link>
-          ) : null}
-          <Link href="/" className={claseBoton("secundario")}>
-            Ir a Inicio
-          </Link>
-        </div>
-      </div>
+      <ProductoRetirado
+        nombre={producto.nombre}
+        categoria={producto.categoria}
+        categoriaSlug={categoriaSlug}
+      />
     );
   }
 
