@@ -185,3 +185,16 @@ test("leerLibro: cada celda conserva su tipo real, y las filas vacías cuentan",
     ["MJP800.4", "800"],
   ]);
 });
+
+test("validarLibro: dos slugs que solo difieren en mayúsculas son el mismo slug", () => {
+  const libro = libroValido();
+  libro.hojas.get("AMPLIFICADORES")![1] = fila("AMPLIFICADORES", "AMP-1", {
+    slug: "memphis-aaa-1",
+  });
+  libro.hojas.get("RECEPTORES")![1] = fila("RECEPTORES", "REC-1", { slug: "MEMPHIS-AAA-1" });
+
+  const { ofensores } = validarLibro(libro);
+  assert.deepEqual(ofensores, [
+    'slug "memphis-aaa-1" duplicado: AMPLIFICADORES fila 2, RECEPTORES fila 2',
+  ]);
+});

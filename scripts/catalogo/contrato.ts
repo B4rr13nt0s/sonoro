@@ -181,7 +181,9 @@ export function validarFilas(filas: readonly FilaCruda[]): string[] {
       }
     }
 
-    if (!esVacia(slug)) anotar(porSlug, String(slug).trim(), donde);
+    // En minúsculas, como los publica filas.ts: «Memphis-X» y «memphis-x» son
+    // el mismo slug, y la ficha de la segunda quedaría inalcanzable.
+    if (!esVacia(slug)) anotar(porSlug, String(slug).trim().toLowerCase(), donde);
 
     if (defHoja(fila.hoja).multicategoria) {
       for (const categoria of separarCategorias(fila.celdas.categorias)) {
