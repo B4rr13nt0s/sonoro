@@ -241,14 +241,17 @@ export const ORDEN_DEFECTO_MARCA: Orden = "catalogo";
 
 // Lee el query param `orden` y lo resuelve a un valor válido. Cualquier cosa
 // que no sea del enum —ausente, basura, un valor viejo— cae en el default
-// en vez de romper: son URLs que puede escribir cualquiera.
+// en vez de romper: son URLs que puede escribir cualquiera. «catalogo» solo
+// vale donde es el default (/marcas/[marca]): los demás listados no lo
+// ofrecen, y aceptarlo ahí dibujaba el selector de orden sin opción elegida.
 export function parseOrden(
   valor: string | string[] | undefined,
   defecto: Orden = ORDEN_DEFECTO,
 ): Orden {
   const crudo = Array.isArray(valor) ? valor[0] : valor;
   const parseo = OrdenSchema.safeParse(crudo);
-  return parseo.success ? parseo.data : defecto;
+  if (!parseo.success) return defecto;
+  return parseo.data === "catalogo" && defecto !== "catalogo" ? defecto : parseo.data;
 }
 
 // Filtros de listProducts. CLAUDE.md § Rutas menciona query params como

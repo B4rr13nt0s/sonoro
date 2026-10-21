@@ -91,8 +91,9 @@ test("parseOrden: acepta los tres órdenes válidos", () => {
   assert.equal(parseOrden("precio_desc"), "precio_desc");
 });
 
-test("parseOrden: «catalogo» es válido y el default puede ser otro", () => {
-  assert.equal(parseOrden("catalogo"), "catalogo");
+test("parseOrden: «catalogo» solo vale donde es el default (marcas)", () => {
+  assert.equal(parseOrden("catalogo"), ORDEN_DEFECTO);
+  assert.equal(parseOrden("catalogo", "catalogo"), "catalogo");
   assert.equal(parseOrden(undefined, "catalogo"), "catalogo");
   assert.equal(parseOrden("basura", "catalogo"), "catalogo");
   assert.equal(parseOrden("relevancia", "catalogo"), "relevancia");
