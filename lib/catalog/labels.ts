@@ -34,11 +34,13 @@ export const VALUE_LABELS = {
     simple: "Bobina simple",
     doble: "Doble bobina",
     triple: "Triple bobina",
+    seleccionable: "Bobina seleccionable",
   },
   clase: {
     D: "Clase D",
     AB: "Clase AB",
     BR: "Clase BR",
+    "AB/D": "Clase AB/D",
   },
   formato: {
     "1-din": "1 DIN",

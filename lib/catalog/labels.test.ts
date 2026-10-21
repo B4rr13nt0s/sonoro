@@ -173,6 +173,10 @@ test("formatValue: impedancia con bobinas en Subwoofers", () => {
   assert.equal(formatValue("impedancia_ohm", { impedancia_ohm: 4 }, "Bocinas"), "4 Ω");
   // Valor suelto, para una faceta: cada uno se muestra solo.
   assert.equal(formatValue("bobinas", "simple", "Subwoofers"), "Bobina simple");
+  assert.equal(
+    formatValue("bobinas", { impedancia_ohm: 2, bobinas: "seleccionable" }, "Subwoofers"),
+    "Bobina seleccionable de 2 Ω",
+  );
 });
 
 test("formatValue: canales, bandas y pares en singular y plural", () => {
@@ -233,6 +237,7 @@ test("formatValue: campos de lista usan VALUE_LABELS", () => {
   assert.equal(formatValue("tipo_ecualizador", "grafico", "Ecualizadores"), "Ecualizador gráfico");
   // La fila ya se llama «Clase»: el valor va sin repetirlo.
   assert.equal(formatValue("clase", "D", "Amplificadores"), "D");
+  assert.equal(formatValue("clase", "AB/D", "Amplificadores"), "AB/D");
 });
 
 test("formatValue: un campo vacío se omite", () => {

@@ -302,6 +302,10 @@ test("sugerir: marcas, categorías y productos mientras se teclea", () => {
 test("clavesDeAtributos: sin atributos no hay claves", () => {
   assert.equal(clavesDeAtributos(undefined), "");
   assert.equal(clavesDeAtributos({ canales: 4, clase: "AB" }), "4ch canales clase-ab clase");
+  assert.equal(
+    clavesDeAtributos({ canales: 4, clase: "AB/D" }),
+    "4ch canales clase-ab clase-d clase",
+  );
 });
 
 test("amplificadores: la potencia por impedancia se busca por vatios y por ohms", () => {

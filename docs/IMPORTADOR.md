@@ -175,6 +175,8 @@ que usan los filtros y el comparador, no escribas una segunda.
   impedancia_ohm
     + bobinas    → «Impedancia»: Doble bobina de 4 Ω   (Subwoofers)
                    «Impedancia»: 4 Ω                   (resto)
+                   bobinas: simple · doble · triple · seleccionable
+                   («Bobina seleccionable de 2 Ω»)
   potencia_rms_w → en AMPLIFICADORES no es un número. Dos formas:
                    · estricta, una potencia por impedancia:
                      «3,000 W @ 1 Ω · 900 W @ 4 Ω» → [{ w, ohm }, …]
@@ -188,7 +190,8 @@ que usan los filtros y el comparador, no escribas una segunda.
                    hoja «## × ## × ## mm», con la unidad; se guarda [n, n, n])
   configuracion  → «Configuración»: Coaxial de 2 vías
   canales        → «Canales»: 4 canales · Monoblock (1 canal)
-  clase          → «Clase»: D
+  clase          → «Clase»: D  (valores: D · AB · BR · AB/D; «AB/D» = seleccionable entre
+                   las dos, y se encuentra buscando «clase ab» o «clase d»)
   formato        → «Formato»: Doble DIN
   pantalla_pulg  → «Pantalla»: 9"  (se omite si es 0)
   carplay/android_auto → «Integración con el teléfono»: Apple CarPlay y

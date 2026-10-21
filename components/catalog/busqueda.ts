@@ -122,7 +122,11 @@ export function clavesDeAtributos(atributos: Atributos | undefined): string {
     claves.push(a.configuracion.replace(/-(\d)v$/, " $1 vias").replace(/-/g, " "));
   }
   if (a.canales) claves.push(`${a.canales}ch`, "canales");
-  if (a.clase) claves.push(`clase-${a.clase.toLowerCase()}`, "clase");
+  // «AB/D» (seleccionable entre dos clases) se busca por cualquiera de las dos.
+  if (a.clase) {
+    for (const c of a.clase.split("/")) claves.push(`clase-${c.toLowerCase()}`);
+    claves.push("clase");
+  }
   if (a.formato) claves.push(a.formato.replace(/^(\d)-din$/, "$1din").replace(/-/g, " "));
   if (a.pantalla_pulg) claves.push("pantalla", `${a.pantalla_pulg}"`);
   if (a.carplay) claves.push("carplay");
