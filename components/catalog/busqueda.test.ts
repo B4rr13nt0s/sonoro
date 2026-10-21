@@ -6,12 +6,10 @@ import {
   buscar,
   canonizar,
   clavesDeAtributos,
-  coincide,
   distancia,
   interpretar,
   normalizar,
   numerosDeAtributos,
-  puntuarRelevancia,
   raiz,
   sugerir,
   type ProductoBuscable,
@@ -93,6 +91,13 @@ const RADIO = producto('Pantalla de 7" DMH-A375BT', "Pioneer", "DMH-A375BT", {
 });
 const CATALOGO = [COR, SUB2, PRX, AMP4, BOC, RADIO];
 
+// Un producto contra una consulta, por la vía real (`buscar`): solo cuenta la
+// coincidencia exacta, no el «quizá quisiste decir» ni la parcial.
+function coincide(p: ProductoBuscable, consulta: string): boolean {
+  const r = buscar([p], consulta);
+  return r.modo === "exacta" && r.productos.length > 0;
+}
+
 const skus = (r: { productos: ProductoBuscable[] }) => r.productos.map((p) => p.sku).sort();
 
 test("coincide: cada palabra en cualquier campo y en cualquier orden", () => {
@@ -112,12 +117,23 @@ test("coincide: sin acentos ni mayúsculas", () => {
   assert.equal(coincide(insono, normalizar("INSONORIZACION lamina")), true);
 });
 
-test("puntuarRelevancia: la frase entera pesa más que las palabras repartidas", () => {
-  assert.equal(puntuarRelevancia(COR, normalizar("coronel de 12")), 50);
-  // «kbt» sale de la marca y «12» del nombre: pesa menos que si todo fuera del nombre.
-  assert.equal(puntuarRelevancia(COR, normalizar("kbt 12")), 22);
-  assert.equal(puntuarRelevancia(COR, normalizar("cor2-124d")), 100);
-  assert.equal(puntuarRelevancia(COR, normalizar("amplificador")), 0);
+test("relevancia: la frase entera pesa más que las palabras repartidas", () => {
+  const frase = producto("Subwoofer Coronel 12 A", "KBT", "A-1");
+  const repartidas = producto("Subwoofer 12 Coronel B", "KBT", "B-1");
+  const codigo = producto("Subwoofer COR2-124D importado", "KBT", "C-1");
+  const otro = producto("Subwoofer otro", "KBT", "COR2-124D");
+
+  assert.deepEqual(
+    buscar([repartidas, frase], "coronel 12").productos.map((p) => p.sku),
+    ["A-1", "B-1"],
+  );
+  // El sku exacto pesa más que el código dentro de un nombre.
+  assert.deepEqual(
+    buscar([codigo, otro], "cor2-124d").productos.map((p) => p.sku),
+    ["COR2-124D", "C-1"],
+  );
+  // Una palabra que ningún producto trae no puntúa.
+  assert.equal(buscar([COR], "amplificador").productos.length, 0);
 });
 
 test("plural y singular dan lo mismo", () => {
@@ -416,4 +432,63 @@ test("numerosDeAtributos: potencia máxima, pulgadas y canales", () => {
   assert.equal(numerosDeAtributos({ medida: "50 mm" }).pulgadas, 1.97);
   assert.equal(numerosDeAtributos({ pantalla_pulg: 7 }).pulgadas, 7);
   assert.deepEqual(numerosDeAtributos(undefined), {});
+});
+
+test("canonizar: una medida dentro de un código no se toca", () => {
+  assert.equal(canonizar("kse-2x12linex"), "kse-2x12linex");
+  assert.equal(canonizar("r2-250x1"), "r2-250x1");
+  assert.equal(canonizar("cm-3000x5"), "cm-3000x5");
+  // Con espacios alrededor sigue siendo una medida.
+  assert.equal(canonizar("bocinas 6x9 memphis"), 'bocinas 6x9" memphis');
+  assert.equal(canonizar("bocinas de 6 x 9 pulgadas"), 'bocinas de 6x9"');
+});
+
+test("buscar: el código del producto lo encuentra, con o sin separadores", () => {
+  const cajon = producto(
+    'Cajón porteado doble 12" con recubrimiento Linex',
+    "KBT",
+    "KSE-2X12LINEX",
+    {
+      categoria: "Accesorios",
+    },
+  );
+  const sub = producto('Subwoofer Champion Series 12" TS-W312D4', "Pioneer", "TS-W312D4");
+  const todos = [cajon, sub, COR];
+  for (const consulta of ["KSE-2X12LINEX", "kse-2x12linex", "kse2x12linex"]) {
+    assert.deepEqual(
+      buscar(todos, consulta).productos.map((p) => p.sku),
+      ["KSE-2X12LINEX"],
+      consulta,
+    );
+  }
+  assert.deepEqual(
+    buscar(todos, "tsw312d4").productos.map((p) => p.sku),
+    ["TS-W312D4"],
+  );
+});
+
+test("interpretar: «de N canales y M pies» no es un rango de canales", () => {
+  assert.deepEqual(interpretar(normalizar("cable rca de 2 canales y 6 pies")).restricciones, []);
+  assert.deepEqual(interpretar(normalizar("cable rca de 4 canales y 17 pies")).restricciones, []);
+  // La unidad al final vale para los dos números.
+  assert.equal(interpretar(normalizar("amplificador de 2 a 4 canales")).restricciones.length, 1);
+  assert.equal(interpretar(normalizar("subwoofer de 12 y 15 pulgadas")).restricciones.length, 1);
+  // Dos unidades distintas no forman un rango.
+  assert.deepEqual(interpretar(normalizar("de 2 canales a 500 w")).restricciones, []);
+});
+
+test("buscar: el nombre completo de un cable RCA encuentra ese cable", () => {
+  const cable = producto("Cable RCA de 2 canales y 16 pies RFI-16", "Rockford Fosgate", "RFI-16", {
+    categoria: "Accesorios",
+  });
+  const otro = producto("Cable RCA de 4 canales y 17 pies RV417", "Cerwin Vega", "RV417", {
+    categoria: "Accesorios",
+  });
+  const r = buscar([cable, otro], "Cable RCA de 2 canales y 16 pies RFI-16");
+  assert.equal(r.modo, "exacta");
+  assert.deepEqual(r.aplicados, []);
+  assert.deepEqual(
+    r.productos.map((p) => p.sku),
+    ["RFI-16"],
+  );
 });

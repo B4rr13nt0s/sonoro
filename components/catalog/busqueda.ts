@@ -63,8 +63,13 @@ export function canonizar(texto: string): string {
       // 1,600 → 1600 (miles) y 6,5 → 6.5 (decimal)
       .replace(/(\d),(\d{3})(?!\d)/g, "$1$2")
       .replace(/(\d),(\d)/g, "$1.$2")
-      // 6x9, 6 x 9, 6x9", 6x9 pulgadas
-      .replace(/(?<![\w.])(\d+)\s*x\s*(\d+)\s*(?:"|''|pulgadas?|pulg\.?|in(?![a-z]))?/g, '$1x$2"')
+      // 6x9, 6 x 9, 6x9", 6x9 pulgadas. No dentro de un código: «KSE-2X12LINEX»
+      // o «R2-250X1» no son medidas, y alterarlos hacía que el código tecleado
+      // nunca coincidiera con el del producto.
+      .replace(
+        /(?<![\w.-])(\d+)\s*x\s*(\d+)\s*(?:"|''|pulgadas?|pulg\.?|in(?![a-z]))?(?![\w-])/g,
+        '$1x$2"',
+      )
       // 12", 12 pulgadas, 12in, 6.5 pulg
       .replace(
         /(?<![\d.x])(\d+(?:\.\d+)?)\s*(?:"|''|pulgadas?|pulg\.?|plg|inch(?:es)?|in(?![a-z]))/g,
@@ -255,7 +260,10 @@ function entradaDe(producto: ProductoBuscable): Entrada {
   const nombre = canonizar(normalizar(producto.nombre));
   const marca = normalizar(producto.marca);
   const sku = normalizar(producto.sku);
-  const principal = `${nombre} ${marca} ${sku}`;
+  // El código también sin separadores: en la factura dice «TS-W312D4» y quien
+  // lo teclea de memoria escribe «tsw312d4».
+  const skuCompacto = sku.replace(/[\s.-]+/g, "");
+  const principal = `${nombre} ${marca} ${sku}${skuCompacto === sku ? "" : ` ${skuCompacto}`}`;
   const specs = producto.specsDestacadas.map((s) => `${s.etiqueta} ${s.valor}`).join(" ");
   const categorias = [producto.categoria, ...(producto.categoriasSecundarias ?? [])].join(" ");
   const extra = canonizar(normalizar(`${categorias} ${specs} ${producto.claves ?? ""}`));
@@ -462,6 +470,11 @@ const PRECIO_MINIMO_SIN_UNIDAD = 50;
 
 type Grupos = Record<string, string | undefined>;
 
+// La unidad de un número de la consulta, ya canonizada: `w`, `"`, `ch` o `q`.
+function unidadDe(unidad: string): string {
+  return unidad.startsWith("quetzal") ? "q" : unidad.startsWith("ch") ? "ch" : unidad;
+}
+
 function campoDe(g: Grupos, valores: number[], hayPotencia: boolean): Restriccion["campo"] | null {
   const unidad = g.u1 ?? g.u2 ?? "";
   if (unidad.startsWith("w")) return "potencia";
@@ -522,22 +535,30 @@ export function interpretar(consultaNormalizada: string): Interpretacion {
 
   const consumir = (
     regex: RegExp,
-    armar: (g: Grupos, coincidencia: string) => Restriccion | null,
+    armar: (g: Grupos, coincidencia: string, despues: string) => Restriccion | null,
   ) => {
     texto = texto.replace(regex, (...args) => {
       const coincidencia = args[0] as string;
       const grupos = args[args.length - 1] as Grupos;
-      const r = armar(grupos, coincidencia);
+      const entero = args[args.length - 2] as string;
+      const posicion = args[args.length - 3] as number;
+      const r = armar(grupos, coincidencia, entero.slice(posicion + coincidencia.length));
       if (!r) return coincidencia;
       restricciones.push(r);
       return " ";
     });
   };
 
-  const rango = (g: Grupos, exigeUnidad: boolean): Restriccion | null => {
+  const rango = (g: Grupos, exigeUnidad: boolean, despues = ""): Restriccion | null => {
     const a = Number(g.n1);
     const b = Number(g.n2);
     if (exigeUnidad && !g.u1 && !g.u2) return null;
+    // Dos unidades distintas no son un rango: «de 2 canales a 500 w».
+    if (g.u1 && g.u2 && unidadDe(g.u1) !== unidadDe(g.u2)) return null;
+    // La unidad solo en el primer número y otra palabra después del segundo
+    // («de 2 canales y 6 pies») es una descripción, no un rango de canales.
+    // «de 8 a 10 pulgadas» (unidad al final) sí lo es.
+    if (g.u1 && !g.u2 && /^\s*[a-zñ]/.test(despues)) return null;
     const campo = campoDe(g, [a, b], hayPotencia);
     if (!campo) return null;
     return {
@@ -548,7 +569,7 @@ export function interpretar(consultaNormalizada: string): Interpretacion {
       maxIncluye: true,
     };
   };
-  consumir(RANGO_CON_PALABRA, (g) => rango(g, false));
+  consumir(RANGO_CON_PALABRA, (g, _, despues) => rango(g, false, despues));
   consumir(RANGO_CON_GUION, (g) => rango(g, true));
 
   consumir(COMPARACION, (g) => {
@@ -624,38 +645,6 @@ function cumpleFiltros(p: ProductoBuscable, c: Consulta): boolean {
 // ---------------------------------------------------------------------------
 // API
 // ---------------------------------------------------------------------------
-
-/**
- * Coincide si CADA palabra de la consulta aparece —tal cual, en plural o por
- * un sinónimo— en el nombre, la marca, el código, la categoría o las specs,
- * en cualquier orden. Hasta septiembre de 2026 se buscaba la consulta entera
- * dentro de un solo campo, y como la marca casi nunca va en el nombre,
- * «memphis 12» o «rockford amplificador» daban cero resultados aunque hubiera
- * catorce productos de cada uno.
- */
-export function coincide(producto: ProductoBuscable, consultaNormalizada: string): boolean {
-  const c = compilar(consultaNormalizada);
-  if (c.terminos.length === 0 && !c.hayFiltros) return false;
-  if (!cumpleFiltros(producto, c)) return false;
-  if (c.terminos.length === 0) return true;
-  return nivelDeProducto(entradaDe(producto), c.terminos, nivelExacto) > 0;
-}
-
-/**
- * Relevancia simple: la consulta entera como sku o nombre exactos pesa más
- * que «empieza con», que pesa más que «contiene en cualquier parte»; y todo
- * eso, más que las palabras sueltas repartidas entre campos (por nombre,
- * marca, categoría o sinónimo, en ese orden). 0 si el producto no coincide.
- */
-export function puntuarRelevancia(producto: ProductoBuscable, consultaNormalizada: string): number {
-  const c = compilar(consultaNormalizada);
-  if (!cumpleFiltros(producto, c)) return 0;
-  if (c.terminos.length === 0) return c.hayFiltros ? PUNTAJE_SOLO_FILTROS : 0;
-  const e = entradaDe(producto);
-  const nivel = nivelDeProducto(e, c.terminos, nivelExacto);
-  if (nivel === 0) return 0;
-  return Math.max(puntajeDeFrase(e, c.resto), PUNTAJE_POR_NIVEL[nivel] ?? 0);
-}
 
 export type ModoBusqueda = "exacta" | "aproximada" | "parcial";
 
