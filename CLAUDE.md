@@ -142,11 +142,11 @@ Google Sheets → descargar .xlsx → data/source/catalogo.xlsx   (superficie de
 El libro tiene una hoja por categoría —**la hoja ES la categoría**, no hay columna que la diga— más `ESPECIALES`, para sistemas completos. El contrato de cada hoja (columnas, obligatorios, specs generadas, orden de destacadas) vive en **una sola tabla**: `scripts/catalogo/hojas.ts`.
 
 - **La columna `categoria` de cada hoja es el USO, no la categoría del sitio** (esa es la hoja). Es obligatoria, y acepta `carro`, `marino` y `motorsports`, solos o separados por coma. En `catalogo.csv` sale como `uso`. Es la 12.ª columna del bloque común.
-- **Specs libres:** hasta diez pares, pero una hoja puede traer menos (AMPLIFICADORES trae nueve). Etiqueta sin valor = dato no publicado: se omite y queda en Alertas; valor sin etiqueta rechaza la fila. `specsFicha` va de 3 a 10 (3 son las destacadas; un accesorio simple no publica más).
+- **Specs libres:** hasta diez pares, pero una hoja puede traer menos (AMPLIFICADORES trae nueve). Etiqueta sin valor = dato no publicado: se omite y queda en Alertas; valor sin etiqueta rechaza la fila. `specsFicha` va de 3 filas (las destacadas; un accesorio simple no publica más) a `MAX_SPECS_FICHA` = 16.
 - **Potencia de Amplificadores:** no es un número. En la forma estricta («900 W @ 4 Ω · 1,600 W @ 2 Ω») se guarda `[{w, ohm}]`; en la descriptiva («180 W × 4 @ 2 Ω · 360 W × 2 @ 4 Ω puente») se guarda y muestra el texto tal cual. `dimensiones` es «## × ## × ## mm».
 - **El slug se lleva a minúsculas al importar** (un sku con mayúscula copiado a mano como slug no rechaza la fila).
 - **Las specs derivables se GENERAN** desde los campos normalizados (`medida`, `impedancia_ohm`…) con `lib/catalog/labels.ts`; en la hoja solo se escriben las que no se deducen. Una spec libre con la etiqueta de una generada **gana**, y si su primer número contradice al campo, `import-errors.md` lo advierte.
-- **Destacadas:** las tres primeras según la prioridad de la hoja. **Ficha:** destacadas, luego el resto de generadas, luego libres; máximo 10, y **las generadas cuentan** para ese tope.
+- **Destacadas:** las tres primeras según la prioridad de la hoja. **Ficha:** destacadas, luego el resto de generadas, luego libres. **Entran todas, sin recorte**: el 16 de `MAX_SPECS_FICHA` (`lib/catalog/types.ts`) es el techo de la hoja con más specs posibles —Bocinas, 6 generadas más 10 libres—, y `specs.test.ts` falla si una hoja nueva lo supera. Hasta octubre de 2026 el tope era 10 y recortaba 32 fichas, entre ellas «Fusible recomendado» de siete amplificadores R2.
 - **`catalogo.csv` no se edita.** Es determinista —columnas en orden fijo en código, filas por categoría y sku en puntos de código— para que `git diff` muestre solo cambios reales. Incluye las filas rechazadas: es el registro de la fuente.
 - **Sistemas:** los productos de `ESPECIALES` llevan `categoria: "Sistemas"` (`CATEGORIA_SISTEMAS`) y aparecen en los listados de sus `categoriasSecundarias`. Sistemas **no** es una categoría del nav ni tiene página: su breadcrumb no lleva link.
 - Cada producto guarda sus campos normalizados en `atributos`: la materia prima de filtros y comparador.
@@ -261,7 +261,7 @@ Antes de imprenta o bordado, convertir el texto de los SVG a curvas.
   - Solo compara dentro de **una misma categoría**: un subwoofer contra un cable RCA no significa nada.
   - Su estado vive en la URL (`?skus=SQ12-D2,COR-S124D`), no en `localStorage`, porque lo que le da valor es que se pueda **compartir por WhatsApp**. Quien abre un enlace ajeno ve lo del enlace y no pierde su propia selección.
   - `noindex` en la metadata, pero **NO** en el `Disallow` de `robots.ts`: un Disallow impediría que Google llegara a leer el noindex, y la URL está hecha para compartirse.
-  - **El resaltado de diferencias solo cuenta filas donde TODAS las columnas traen dato.** Un hueco no es una diferencia entre productos, es un dato que el fabricante no publica. Contarlo marcaba 17 de 17.1 filas con cuatro subwoofers —el resaltado dejaba de distinguir nada— porque `specsFicha` no tiene vocabulario fijo: Bocinas usa 49 etiquetas distintas entre 106 productos y cada uno lleva 4-10.
+  - **El resaltado de diferencias solo cuenta filas donde TODAS las columnas traen dato.** Un hueco no es una diferencia entre productos, es un dato que el fabricante no publica. Contarlo marcaba 17 de 17.1 filas con cuatro subwoofers —el resaltado dejaba de distinguir nada— porque `specsFicha` no tiene vocabulario fijo: Bocinas usa 49 etiquetas distintas entre 106 productos y cada uno lleva de 3 a 13.
 - **No existe `/checkout`.** No crearla.
 - **No existe `/instalacion`.** Sonoro instala (regla 1), pero no hay página de ese servicio y no se arma una sin que el negocio defina qué dice: alcance, precios y qué separa una instalación básica de una compleja (ver Decisiones abiertas).
 - Filtros y orden en **query params** (`?marca=memphis&precio_max=200000`): URL compartible por WhatsApp y rastreable por Google.
@@ -357,7 +357,7 @@ Nunca se duplica el archivo por categoría, marca o producto: se construye una
 ruta dinámica con generateStaticParams.
 
 El producto y la marca del handoff son UN CASO, no el caso general. La
-plantilla no puede asumir el conteo de specs (varía de 3 a 10), qué etiquetas
+plantilla no puede asumir el conteo de specs (varía de 3 a 16), qué etiquetas
 existen (varían por categoría), ni cuántos productos tiene una marca. Debe
 renderizar lo que traigan los datos.
 

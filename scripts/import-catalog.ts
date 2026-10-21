@@ -43,7 +43,7 @@ import { colisionesDeSlug } from "./catalogo/marcas.ts";
 import { serializarCsv } from "./catalogo/csv.ts";
 import { normalizarFila } from "./catalogo/filas.ts";
 import { defHoja } from "./catalogo/hojas.ts";
-import { MAX_FICHA, construirSpecs, type Advertencia } from "./catalogo/specs.ts";
+import { construirSpecs, type Advertencia } from "./catalogo/specs.ts";
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const RUTA_LIBRO = path.join(RAIZ, "data", "source", "catalogo.xlsx");
@@ -89,7 +89,7 @@ function main(): void {
 
   const productosValidos: Producto[] = [];
   const rechazos: AvisoFila[] = [];
-  const avisos: Avisos = { contradiccion: [], recorte: [], marketing: [] };
+  const avisos: Avisos = { contradiccion: [], marketing: [] };
   const alertasDeFila: string[] = [];
 
   for (const fila of filas) {
@@ -228,7 +228,7 @@ function main(): void {
 
   console.log(
     `Importación completa: ${productosValidos.length} válido(s), ${rechazos.length} rechazado(s), ` +
-      `${avisos.contradiccion.length} contradicción(es), ${avisos.recorte.length} ficha(s) recortada(s), ` +
+      `${avisos.contradiccion.length} contradicción(es), ` +
       `${alertas.length} alerta(s).`,
   );
   console.log(
@@ -331,12 +331,6 @@ function generarImportErrorsMd(rechazos: AvisoFila[], avisos: Avisos, alertas: s
       avisos.contradiccion,
       "Una spec libre usa la etiqueta de una spec generada y su primer número no coincide con el campo normalizado. Se publica la libre; revisa cuál de los dos está mal.",
       "Sin contradicciones en esta corrida.",
-    ),
-    ...seccion(
-      "Fichas recortadas",
-      avisos.recorte,
-      `La ficha junta specs generadas y libres, y admite ${MAX_FICHA}. Lo que no entra no se publica.`,
-      "Ninguna ficha pasó del máximo.",
     ),
     ...seccion(
       "Destacadas con etiquetas de marketing",

@@ -11,7 +11,8 @@
 //   DESTACADAS   las tres primeras, en la prioridad de la hoja; las que falten
 //                se completan con la ficha, saltando etiquetas de marketing.
 //   FICHA        destacadas, luego el resto de generadas, luego las libres.
-//                Máximo 10; lo que no entra se advierte.
+//                Entran todas: MAX_SPECS_FICHA (lib/catalog/types.ts) es el
+//                techo de la hoja con más specs, no un recorte.
 
 import {
   fieldLabel,
@@ -22,12 +23,11 @@ import {
 import type { Spec } from "../../lib/catalog/types.ts";
 import type { DefHoja } from "./hojas.ts";
 
-export const MAX_FICHA = 10;
 export const CANTIDAD_DESTACADAS = 3;
 const ETIQUETAS_MARKETING = ["Ventaja", "Línea", "Serie", "Diseño"];
 
 export type Advertencia = {
-  tipo: "contradiccion" | "recorte" | "marketing";
+  tipo: "contradiccion" | "marketing";
   detalle: string;
 };
 
@@ -143,17 +143,9 @@ export function construirSpecs(
   }
 
   const ficha = [...destacadas, ...candidatas.filter((item) => !destacadas.includes(item))];
-  if (ficha.length > MAX_FICHA) {
-    const fuera = ficha.slice(MAX_FICHA).map((item) => `«${item.spec.etiqueta}»`);
-    advertencias.push({
-      tipo: "recorte",
-      detalle: `${ficha.length} specs y el máximo es ${MAX_FICHA}: queda fuera ${fuera.join(", ")}`,
-    });
-  }
-
   return {
     specsDestacadas: destacadas.map((item) => item.spec),
-    specsFicha: ficha.slice(0, MAX_FICHA).map((item) => item.spec),
+    specsFicha: ficha.map((item) => item.spec),
     advertencias,
   };
 }

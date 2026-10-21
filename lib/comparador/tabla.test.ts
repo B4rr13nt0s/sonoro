@@ -80,7 +80,7 @@ test("tabla: solo se marca cuando TODAS las columnas traen dato y difieren", () 
 
 test("tabla: etiqueta repetida dentro de un mismo producto no pierde el segundo valor", () => {
   // Forma real de X317-STG6 y X317-STG4 (repiten «Instalación») y de M71512
-  // (repite «Serie» y «Aplicación»). specsFicha solo valida .min(4).max(10),
+  // (repite «Serie» y «Aplicación»). specsFicha solo valida la cantidad (3 a MAX_SPECS_FICHA),
   // no unicidad de etiqueta, así que un find() se quedaría con el primero.
   const a = producto("X317-STG6", [
     spec("Instalación", "Puertas delanteras"),

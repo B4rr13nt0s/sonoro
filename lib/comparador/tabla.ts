@@ -18,7 +18,7 @@ export type FilaComparacion = {
 };
 
 // Une las specs de UN producto por etiqueta, conservando el orden en que
-// aparecen. `specsFicha` solo valida .min(4).max(10) (lib/catalog/types.ts),
+// aparecen. `specsFicha` solo valida la cantidad, de 3 a MAX_SPECS_FICHA (lib/catalog/types.ts),
 // NO que las etiquetas sean únicas — y hoy hay productos que repiten:
 // M71512 repite «Serie» y «Aplicación», X317-STG6 y X317-STG4 repiten
 // «Instalación». Un find() por etiqueta se quedaría con el primer valor y

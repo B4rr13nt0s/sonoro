@@ -237,7 +237,8 @@ Si falta alguna, se completa con las siguientes de la ficha, saltando
 etiquetas de marketing: Ventaja, Línea, Serie, Diseño.
 
 ORDEN DE LA FICHA
-Destacadas primero, luego el resto de generadas, luego las libres. Máximo 10.
+Destacadas primero, luego el resto de generadas, luego las libres. Entran todas (techo del esquema:
+MAX_SPECS_FICHA = 16, la hoja con más generadas más los diez pares libres).
 Mínimo 3: son las destacadas, y un accesorio simple (fusible, terminal) no
 publica más. Con menos de 3 specs la fila se rechaza. (Hasta octubre de 2026
 el mínimo era 4 y dejaba fuera 15 accesorios y kits válidos.) La ficha de

@@ -42,6 +42,12 @@ export const SpecSchema = z.object({
 });
 export type Spec = z.infer<typeof SpecSchema>;
 
+// Filas máximas de la ficha técnica. No es un recorte editorial: es el techo
+// que NUNCA se alcanza, la hoja con más specs generadas (Bocinas, 6) más los
+// diez pares libres. specs.test.ts falla si una hoja nueva lo supera; el
+// importador no corta la ficha, la rechaza si lo pasara.
+export const MAX_SPECS_FICHA = 16;
+
 // Para qué se usa el producto. Vive en la columna `categoria` de cada hoja del
 // libro (la lista es `categoria_uso` en LISTAS); no es la categoría del sitio.
 export const USOS = ["carro", "marino", "motorsports"] as const;
@@ -136,9 +142,9 @@ export const ProductoSchema = z
     // Ordenado. Exactamente 3 (Tamaño/Impedancia/Potencia RMS en SQ12-D2) — el
     // "Código" que se ve junto a ellos en la ficha se deriva de sku, no vive aquí.
     specsDestacadas: z.array(SpecSchema).length(3),
-    // Ordenado. Ficha técnica completa: 3 a 10 filas (3 son las destacadas; un accesorio simple no publica más) — contrato de la hoja del
-    // catálogo.
-    specsFicha: z.array(SpecSchema).min(3).max(10),
+    // Ordenado. Ficha técnica completa: de 3 filas (las destacadas; un accesorio
+    // simple no publica más) a MAX_SPECS_FICHA — contrato de la hoja del catálogo.
+    specsFicha: z.array(SpecSchema).min(3).max(MAX_SPECS_FICHA),
     precioCents: z.number().int().nonnegative(), // entero, centavos, IVA incluido
     // Referencia del historial de precio para el negocio: NO se muestra en el
     // sitio, a propósito (decisión de septiembre de 2026). Que ningún

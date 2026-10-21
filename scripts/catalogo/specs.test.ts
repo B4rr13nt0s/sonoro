@@ -2,8 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import type { CamposNormalizados } from "../../lib/catalog/labels.ts";
-import type { Spec } from "../../lib/catalog/types.ts";
-import { defHoja, type NombreHoja } from "./hojas.ts";
+import { MAX_SPECS_FICHA, type Spec } from "../../lib/catalog/types.ts";
+import { MAX_SPECS_LIBRES, NOMBRES_HOJAS, defHoja, type NombreHoja } from "./hojas.ts";
 import { construirSpecs, primerNumero } from "./specs.ts";
 
 function specs(hoja: NombreHoja, atributos: CamposNormalizados, libres: Spec[] = []) {
@@ -172,14 +172,22 @@ test("ESPECIALES: las tres primeras libres que no son marketing", () => {
   ]);
 });
 
-test("ficha: máximo 10 — las generadas cuentan, y el recorte se advierte", () => {
+test("ficha: entran todas las specs, generadas y libres, sin recorte", () => {
   const libres = Array.from({ length: 7 }, (_, i) => libre(`Libre ${i + 1}`));
   const r = specs("SUBWOOFERS", { ...SUB, sensibilidad_db: 88 }, libres);
-  assert.equal(r.specsFicha.length, 10);
-  assert.equal(r.specsFicha.at(-1)?.etiqueta, "Libre 5");
-  assert.equal(r.advertencias.length, 1);
-  assert.equal(r.advertencias[0].tipo, "recorte");
-  assert.match(r.advertencias[0].detalle, /12 specs .*«Libre 6», «Libre 7»/);
+  assert.equal(r.specsFicha.length, 12);
+  assert.equal(r.specsFicha.at(-1)?.etiqueta, "Libre 7");
+  assert.deepEqual(r.advertencias, []);
+});
+
+test("ficha: el techo del esquema alcanza para la hoja con más specs posibles", () => {
+  for (const nombre of NOMBRES_HOJAS) {
+    const posibles = defHoja(nombre).generadas.length + MAX_SPECS_LIBRES;
+    assert.ok(
+      posibles <= MAX_SPECS_FICHA,
+      `${nombre}: ${posibles} specs posibles y MAX_SPECS_FICHA es ${MAX_SPECS_FICHA}`,
+    );
+  }
 });
 
 test("primerNumero: separador de miles, decimales y texto alrededor", () => {
