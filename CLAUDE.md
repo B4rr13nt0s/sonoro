@@ -181,7 +181,7 @@ El importador **aborta sin escribir nada**, y juntando todos los ofensores, si: 
   `/producto/[slug]` responde 410 con el aviso «ya no está a la venta»
   (`proxy.ts`, `lib/catalog/retirados.ts`), el importador deja de exigir su
   fila, y si ese sku o slug reaparece en el libro aborta pidiendo quitarlo de
-  ahí. Si lo sustituye otro producto, la entrada lleva `reemplazo` (el slug nuevo) y su URL redirige de forma permanente en `next.config.ts` en vez de dar 410: `SRX1244` → `SRX1244V`. Los otros dos de octubre de 2026 (`DMH-Z6350BT`, `SLMLOCT2`) dan 410. Es el camino de excepción: lo
+  ahí. Si lo sustituye otro producto, la entrada lleva `reemplazo` (el slug nuevo) y su URL redirige de forma permanente en `next.config.ts` en vez de dar 410: `SRX1244` → `SRX1244V`. Los otros dos de octubre de 2026 (`DMH-Z6350BT`, `SLMLOCT2`) dan 410. Si cambió solo el sku y el slug se queda, `reemplazo` es el mismo slug: ni redirección ni 410, y el slug puede seguir en el libro (`SPK RINGS V3` → `SPEAKER RINGS`, octubre de 2026). Es el camino de excepción: lo
   normal sigue siendo activo = FALSO.
 - disponibilidad = 'agotado' es para faltantes temporales; activo = FALSO es
   para descontinuados.

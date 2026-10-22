@@ -31,5 +31,54 @@
     "nombre": "Bocinas coaxiales de 4\" STAGE2 45F",
     "motivo": "Código corregido a STAGE2 45F en el libro (octubre de 2026): cambió el sku y con él el slug.",
     "reemplazo": "jbl-stage2-45f"
+  },
+  {
+    "sku": "CLASSIC BULK KIT",
+    "slug": "soundskins-classic-bulk-kit",
+    "nombre": "Classic - Rollo a granel",
+    "motivo": "Código corregido a CLASSIC BLACK en el libro (octubre de 2026): cambió el sku y con él el slug.",
+    "reemplazo": "soundskins-classic-black-kit"
+  },
+  {
+    "sku": "CLASSIC LITE BK",
+    "slug": "soundskins-classic-lite-bk",
+    "nombre": "Classic Lite - Negro",
+    "motivo": "Código corregido a CLASSIC LITE BLACK en el libro (octubre de 2026): cambió el sku y con él el slug.",
+    "reemplazo": "soundskins-classic-lite-black"
+  },
+  {
+    "sku": "SSK HTSHLD",
+    "slug": "soundskins-ssk-htshld",
+    "nombre": "Heat Shield - Barrera térmica",
+    "motivo": "Código corregido a HEAT SHIELD en el libro (octubre de 2026): cambió el sku y con él el slug.",
+    "reemplazo": "soundskins-ssk-heat-shield"
+  },
+  {
+    "sku": "SS PRO1",
+    "slug": "soundskins-ss-pro1",
+    "nombre": "SoundSkins Pro - Lámina de tres capas",
+    "motivo": "Código corregido a PRO DOOR KIT en el libro (octubre de 2026): cambió el sku y con él el slug.",
+    "reemplazo": "soundskins-pro-door-kit"
+  },
+  {
+    "sku": "WAVY",
+    "slug": "soundskins-wavy",
+    "nombre": "Wavy - Espuma acústica de 8 mm",
+    "motivo": "Código corregido a WAVY FOAM en el libro (octubre de 2026): cambió el sku y con él el slug.",
+    "reemplazo": "soundskins-wavy-foam"
+  },
+  {
+    "sku": "TAPE",
+    "slug": "soundskins-tape",
+    "nombre": "Foam Tape - Cinta de espuma acústica",
+    "motivo": "Código corregido a SILENT TAPE en el libro (octubre de 2026): cambió el sku y con él el slug.",
+    "reemplazo": "soundskins-silent-tape"
+  },
+  {
+    "sku": "SPK RINGS V3",
+    "slug": "soundskins-spk-rings-v3",
+    "nombre": "Rings V3 - Kit de sellado para bocinas",
+    "motivo": "Código corregido a SPEAKER RINGS en el libro (octubre de 2026); el slug no cambió.",
+    "reemplazo": "soundskins-spk-rings-v3"
   }
 ]

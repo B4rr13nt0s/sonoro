@@ -4175,6 +4175,10 @@
         "alt": "Componente Access de 6.5\" 165 AS3 — frontal2"
       },
       {
+        "url": "/productos/165 AS3_completo.jpg",
+        "alt": "Componente Access de 6.5\" 165 AS3 — completo"
+      },
+      {
         "url": "/productos/165 AS3_lateral.jpg",
         "alt": "Componente Access de 6.5\" 165 AS3 — lateral"
       },
@@ -4281,6 +4285,10 @@
         "alt": "Componente Access de 6.5\" 165 AS — frontal"
       },
       {
+        "url": "/productos/165 AS_completo.jpg",
+        "alt": "Componente Access de 6.5\" 165 AS — completo"
+      },
+      {
         "url": "/productos/165 AS_lateral.jpg",
         "alt": "Componente Access de 6.5\" 165 AS — lateral"
       },
@@ -4307,7 +4315,7 @@
   {
     "sku": "165 AC",
     "slug": "focal-165-ac",
-    "nombre": "Bocinas coaxiales de 6.5\" Access 165 AC",
+    "nombre": "Bocinas coaxiales Access de 6.5\" 165 AC",
     "marca": "Focal",
     "categoria": "Bocinas",
     "descripcionCorta": "Par de bocinas coaxiales de 6.5 pulgadas de 2 vías",
@@ -4384,19 +4392,19 @@
     "imagenes": [
       {
         "url": "/productos/165 AC_frontal.jpg",
-        "alt": "Bocinas coaxiales de 6.5\" Access 165 AC — frontal"
+        "alt": "Bocinas coaxiales Access de 6.5\" 165 AC — frontal"
       },
       {
         "url": "/productos/165 AC_lateral.jpg",
-        "alt": "Bocinas coaxiales de 6.5\" Access 165 AC — lateral"
+        "alt": "Bocinas coaxiales Access de 6.5\" 165 AC — lateral"
       },
       {
         "url": "/productos/165 AC_lateral2.jpg",
-        "alt": "Bocinas coaxiales de 6.5\" Access 165 AC — lateral2"
+        "alt": "Bocinas coaxiales Access de 6.5\" 165 AC — lateral2"
       },
       {
         "url": "/productos/165 AC_posterior.jpg",
-        "alt": "Bocinas coaxiales de 6.5\" Access 165 AC — posterior"
+        "alt": "Bocinas coaxiales Access de 6.5\" 165 AC — posterior"
       }
     ],
     "destacado": true,
@@ -20434,7 +20442,7 @@
     "nombre": "Pro Plus - Rollo de taller",
     "marca": "SoundSkins",
     "categoria": "Insonorización",
-    "descripcionCorta": "Rollo de taller de tres capas con 6 metros cuadrados de cobertura",
+    "descripcionCorta": "Rollo insonorizante de espuma, revestimiento de lámina y caucho butílico con 6 metros cuadrados de cobertura",
     "uso": [
       "carro"
     ],
@@ -20464,6 +20472,10 @@
       {
         "etiqueta": "Cobertura",
         "valor": "6 m²"
+      },
+      {
+        "etiqueta": "Función",
+        "valor": "Detiene la vibración de los paneles y bloquea el ruido de rodaje en una sola pasada (butilo, foil y espuma de celda cerrada)"
       },
       {
         "etiqueta": "Aplicación",
@@ -20484,6 +20496,14 @@
       {
         "etiqueta": "Resistencia",
         "valor": "Espuma y butilo impermeables y resistentes al calor"
+      },
+      {
+        "etiqueta": "Temperatura de servicio",
+        "valor": "-40 °C a 180 °C (-40 °F a 356 °F)"
+      },
+      {
+        "etiqueta": "Peso",
+        "valor": "18.1 kg (40 lb)"
       }
     ],
     "precioCents": 420000,
@@ -20499,12 +20519,12 @@
     }
   },
   {
-    "sku": "CLASSIC BULK KIT",
-    "slug": "soundskins-classic-bulk-kit",
+    "sku": "CLASSIC BLACK",
+    "slug": "soundskins-classic-black-kit",
     "nombre": "Classic - Rollo a granel",
     "marca": "SoundSkins",
     "categoria": "Insonorización",
-    "descripcionCorta": "Rollo a granel de butilo y foil de una sola capa con 3.6 metros cuadrados de cobertura",
+    "descripcionCorta": "Rollo insonorizante a granel de caucho butílico y una capa de lámina con 3.6 metros cuadrados de cobertura",
     "uso": [
       "carro"
     ],
@@ -20536,8 +20556,12 @@
         "valor": "3.6 m²"
       },
       {
+        "etiqueta": "Función",
+        "valor": "Amortiguamiento en una sola capa, sin agregar peso excesivo; detiene la vibración de la lámina metálica y reduce rechinidos y resonancia"
+      },
+      {
         "etiqueta": "Aplicación",
-        "valor": "Amortiguamiento en una sola capa, sin agregar peso excesivo"
+        "valor": "Puertas, piso y cajuela de la mayoría de los autos, o buena parte de una camioneta tipo van"
       },
       {
         "etiqueta": "Presentación",
@@ -20548,8 +20572,16 @@
         "valor": "23.6\" × 236\" (60 × 600 cm)"
       },
       {
+        "etiqueta": "Composición",
+        "valor": "Butilo de caucho puro y foil de aluminio en relieve; sin rellenos reciclados"
+      },
+      {
         "etiqueta": "Acabado",
         "valor": "Foil negro (Stealth Black)"
+      },
+      {
+        "etiqueta": "Peso",
+        "valor": "13.6 kg (30 lb)"
       }
     ],
     "precioCents": 240000,
@@ -20565,12 +20597,12 @@
     }
   },
   {
-    "sku": "CLASSIC LITE BK",
-    "slug": "soundskins-classic-lite-bk",
+    "sku": "CLASSIC LITE BLACK",
+    "slug": "soundskins-classic-lite-black",
     "nombre": "Classic Lite - Negro",
     "marca": "SoundSkins",
     "categoria": "Insonorización",
-    "descripcionCorta": "Lámina insonorizante de perfil ultradelgado con 4.7 metros cuadrados de cobertura",
+    "descripcionCorta": "Láminas insonorizantes de perfil ultradelgado con 4.7 metros cuadrados de cobertura",
     "uso": [
       "carro"
     ],
@@ -20602,12 +20634,24 @@
         "valor": "4.7 m²"
       },
       {
+        "etiqueta": "Función",
+        "valor": "Amortigua el sonido y la vibración sin agregar mucho peso ni afectar el consumo de combustible"
+      },
+      {
         "etiqueta": "Aplicación",
         "valor": "Paneles donde el espacio o el peso son críticos"
       },
       {
         "etiqueta": "Presentación",
-        "valor": "Kit de láminas"
+        "valor": "47 láminas de 25 × 40 cm (9.84\" × 15.75\") por caja"
+      },
+      {
+        "etiqueta": "Acabado",
+        "valor": "Foil negro en relieve"
+      },
+      {
+        "etiqueta": "Peso",
+        "valor": "10.4 kg (23 lb)"
       }
     ],
     "precioCents": 140000,
@@ -20623,8 +20667,8 @@
     }
   },
   {
-    "sku": "SSK HTSHLD",
-    "slug": "soundskins-ssk-htshld",
+    "sku": "HEAT SHIELD",
+    "slug": "soundskins-ssk-heat-shield",
     "nombre": "Heat Shield - Barrera térmica",
     "marca": "SoundSkins",
     "categoria": "Insonorización",
@@ -20660,20 +20704,32 @@
         "valor": "5 m²"
       },
       {
+        "etiqueta": "Función",
+        "valor": "Térmica: el foil refleja el calor radiante del motor, escape y sol. Acústica: la espuma de celda cerrada absorbe ruido de motor, llantas y escape"
+      },
+      {
         "etiqueta": "Aplicación",
-        "valor": "Uso fuera de la cabina: cofre, compartimiento del motor y salpicadera"
+        "valor": "Uso fuera de la cabina: cofre, compartimiento del motor, pared de fuego (firewall) y salpicadera"
       },
       {
         "etiqueta": "Presentación",
         "valor": "Manta en rollo"
       },
       {
-        "etiqueta": "Función térmica",
-        "valor": "El foil refleja el calor radiante del motor, escape y sol"
+        "etiqueta": "Dimensiones del rollo",
+        "valor": "39.4\" × 196.9\" (100 × 500 cm)"
       },
       {
-        "etiqueta": "Función acústica",
-        "valor": "La espuma de celda cerrada absorbe ruido de motor, llantas y escape"
+        "etiqueta": "Temperatura máxima",
+        "valor": "249 °C (480 °F)"
+      },
+      {
+        "etiqueta": "Valor R",
+        "valor": "4.10"
+      },
+      {
+        "etiqueta": "Peso",
+        "valor": "4.5 kg (9.9 lb)"
       }
     ],
     "precioCents": 200000,
@@ -20689,12 +20745,12 @@
     }
   },
   {
-    "sku": "SS PRO1",
-    "slug": "soundskins-ss-pro1",
-    "nombre": "SoundSkins Pro - Lámina de tres capas",
+    "sku": "PRO DOOR KIT",
+    "slug": "soundskins-pro-door-kit",
+    "nombre": "Pro Door Kit - Lámina de tres capas para dos puertas",
     "marca": "SoundSkins",
     "categoria": "Insonorización",
-    "descripcionCorta": "Lámina insonorizante de tres capas con 1 metro cuadrado de cobertura",
+    "descripcionCorta": "Rollo insonorizante de caucho butílico, lámina metálica y espuma acústica con 1 metro cuadrado de cobertura",
     "uso": [
       "carro"
     ],
@@ -20726,16 +20782,28 @@
         "valor": "1 m²"
       },
       {
-        "etiqueta": "Aplicación",
-        "valor": "Puertas y paneles individuales"
-      },
-      {
         "etiqueta": "Función",
         "valor": "Reduce vibraciones, aísla calor y minimiza resonancia en un solo material"
       },
       {
+        "etiqueta": "Aplicación",
+        "valor": "Dos puertas de un sedán estándar (piel exterior y orificios de acceso) o paneles individuales"
+      },
+      {
+        "etiqueta": "Presentación",
+        "valor": "1 rollo de 11 pie² (≈1 m²), corte a medida"
+      },
+      {
         "etiqueta": "Adhesivo",
         "valor": "Butilo de alto poder adhesivo"
+      },
+      {
+        "etiqueta": "Resistencia",
+        "valor": "Espuma y butilo impermeables; resistente al calor"
+      },
+      {
+        "etiqueta": "Peso",
+        "valor": "5.0 kg (11 lb)"
       }
     ],
     "precioCents": 105000,
@@ -20751,8 +20819,8 @@
     }
   },
   {
-    "sku": "WAVY",
-    "slug": "soundskins-wavy",
+    "sku": "WAVY FOAM",
+    "slug": "soundskins-wavy-foam",
     "nombre": "Wavy - Espuma acústica de 8 mm",
     "marca": "SoundSkins",
     "categoria": "Insonorización",
@@ -20788,12 +20856,32 @@
         "valor": "3 m²"
       },
       {
-        "etiqueta": "Aplicación",
-        "valor": "Se coloca sobre la lámina de butilo como segunda capa"
-      },
-      {
         "etiqueta": "Función",
         "valor": "Absorbe la onda trasera de las bocinas y el ruido dentro de cavidades"
+      },
+      {
+        "etiqueta": "Aplicación",
+        "valor": "Puertas, paneles de puerta, repisa trasera y tapa de cajuela; también sobre la lámina de butilo como segunda capa"
+      },
+      {
+        "etiqueta": "Presentación",
+        "valor": "1 rollo de espuma con respaldo adhesivo, corte a medida"
+      },
+      {
+        "etiqueta": "Dimensiones del rollo",
+        "valor": "23.6\" × 196.9\" (60 × 500 cm)"
+      },
+      {
+        "etiqueta": "Adhesivo",
+        "valor": "Respaldo adhesivo sensible a la presión"
+      },
+      {
+        "etiqueta": "Resistencia",
+        "valor": "Impermeable; resiste moho, aceite, gasolina y clima extremo"
+      },
+      {
+        "etiqueta": "Peso",
+        "valor": "1.8 kg (4 lb)"
       }
     ],
     "precioCents": 70000,
@@ -20809,12 +20897,12 @@
     }
   },
   {
-    "sku": "TAPE",
-    "slug": "soundskins-tape",
+    "sku": "SILENT TAPE",
+    "slug": "soundskins-silent-tape",
     "nombre": "Foam Tape - Cinta de espuma acústica",
     "marca": "SoundSkins",
     "categoria": "Insonorización",
-    "descripcionCorta": "Juego de cuatro rollos de cinta de espuma de celda cerrada para eliminar rechinidos",
+    "descripcionCorta": "Cinta de espuma de celda cerrada para eliminar rechinidos, vibraciones y brechas",
     "uso": [
       "carro"
     ],
@@ -20846,16 +20934,24 @@
         "valor": "0.05 m²"
       },
       {
-        "etiqueta": "Aplicación",
-        "valor": "Uniones de plásticos, clips de panel y contactos entre piezas"
-      },
-      {
         "etiqueta": "Función",
         "valor": "Elimina rechinidos y vibraciones entre paneles"
       },
       {
-        "etiqueta": "Contenido",
+        "etiqueta": "Aplicación",
+        "valor": "Uniones de plásticos, clips de panel y contactos entre piezas"
+      },
+      {
+        "etiqueta": "Presentación",
         "valor": "Cuatro rollos de 2\", 1\" y 0.5\" de ancho"
+      },
+      {
+        "etiqueta": "Adhesivo",
+        "valor": "Respaldo adhesivo sensible a la presión"
+      },
+      {
+        "etiqueta": "Resistencia",
+        "valor": "Impermeable, resistente al calor y retardante de llama"
       }
     ],
     "precioCents": 60000,
@@ -24058,7 +24154,7 @@
     }
   },
   {
-    "sku": "SPK RINGS V3",
+    "sku": "SPEAKER RINGS",
     "slug": "soundskins-spk-rings-v3",
     "nombre": "Rings V3 - Kit de sellado para bocinas",
     "marca": "SoundSkins",
@@ -24113,6 +24209,10 @@
       {
         "etiqueta": "Rendimiento",
         "valor": "Alcanza para 4 bocinas o más"
+      },
+      {
+        "etiqueta": "Ancho de la tira",
+        "valor": "20 mm (0.78\")"
       }
     ],
     "precioCents": 59500,
@@ -24141,18 +24241,22 @@
         "valor": "Accesorio"
       },
       {
-        "etiqueta": "Material",
-        "valor": "Espuma de hule de celda cerrada"
+        "etiqueta": "Longitud",
+        "valor": "5.18 m"
       },
       {
-        "etiqueta": "Función",
-        "valor": "Crea un sello hermético que bloquea ruido de viento, humedad, frío y calor"
+        "etiqueta": "Material",
+        "valor": "Espuma de hule de celda cerrada"
       }
     ],
     "specsFicha": [
       {
         "etiqueta": "Tipo",
         "valor": "Accesorio"
+      },
+      {
+        "etiqueta": "Longitud",
+        "valor": "5.18 m"
       },
       {
         "etiqueta": "Material",
@@ -24164,11 +24268,19 @@
       },
       {
         "etiqueta": "Ancho",
-        "valor": "3/8\" de ancho (también disponible en 1/2\", 3/4\" y 1\")"
+        "valor": "3/8\" de ancho (también disponible en 1/2\", 3/4\", 1\" y 2\")"
       },
       {
         "etiqueta": "Resistencia",
         "valor": "Resistente a la intemperie, temperatura y químicos"
+      },
+      {
+        "etiqueta": "Espesor",
+        "valor": "3 mm (0.12\")"
+      },
+      {
+        "etiqueta": "Adhesivo",
+        "valor": "Respaldo adhesivo sensible a la presión"
       }
     ],
     "precioCents": 11000,
@@ -24178,7 +24290,8 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "tipo_accesorio": "otro"
+      "tipo_accesorio": "otro",
+      "longitud_m": 5.18
     }
   },
   {
@@ -24198,10 +24311,10 @@
       },
       {
         "etiqueta": "Material",
-        "valor": "Rodillo con mango"
+        "valor": "Rodillo de hule de poliuretano, madera y acero"
       },
       {
-        "etiqueta": "Uso",
+        "etiqueta": "Función",
         "valor": "Presiona la lámina contra el metal para eliminar burbujas de aire"
       }
     ],
@@ -24212,15 +24325,27 @@
       },
       {
         "etiqueta": "Material",
-        "valor": "Rodillo con mango"
+        "valor": "Rodillo de hule de poliuretano, madera y acero"
       },
       {
-        "etiqueta": "Uso",
+        "etiqueta": "Función",
         "valor": "Presiona la lámina contra el metal para eliminar burbujas de aire"
       },
       {
         "etiqueta": "Importancia",
         "valor": "Sin rodillo el butilo no adhiere completo y la lámina puede despegarse"
+      },
+      {
+        "etiqueta": "Dimensiones",
+        "valor": "17.5 × 3.6 × 3.6 cm (6.9\" × 1.4\" × 1.4\")"
+      },
+      {
+        "etiqueta": "Peso",
+        "valor": "139 g (4.9 oz)"
+      },
+      {
+        "etiqueta": "Compatibilidad",
+        "valor": "Todo tipo de material insonorizante"
       }
     ],
     "precioCents": 12500,

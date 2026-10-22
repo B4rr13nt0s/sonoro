@@ -121,7 +121,9 @@ export function retiradosEnElLibro(
 ): string[] {
   const conflictos: string[] = [];
   for (const r of retirados) {
-    if (skusDelLibro.has(r.sku) || slugsDelLibro.has(r.slug)) {
+    // reemplazo === slug: cambió solo el código y el producto sigue en su URL.
+    const slugSigue = r.reemplazo === r.slug;
+    if (skusDelLibro.has(r.sku) || (!slugSigue && slugsDelLibro.has(r.slug))) {
       conflictos.push(
         `sku "${r.sku}" (slug "${r.slug}") está en data/retirados.json pero volvió al libro: ` +
           "su ficha respondería 410 con el producto a la venta. Quítalo de retirados.json",

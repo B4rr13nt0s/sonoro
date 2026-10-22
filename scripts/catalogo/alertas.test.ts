@@ -118,6 +118,12 @@ test("retirados: si el sku o el slug vuelven al libro, es un conflicto", () => {
   assert.equal(retiradosEnElLibro([RETIRADO], new Set(), new Set(["memphis-srx1244"])).length, 1);
 });
 
+test("retirados: con reemplazo igual a su slug, el slug puede seguir en el libro", () => {
+  const recodificado = { ...RETIRADO, reemplazo: RETIRADO.slug };
+  assert.deepEqual(retiradosEnElLibro([recodificado], new Set(), new Set(["memphis-srx1244"])), []);
+  assert.equal(retiradosEnElLibro([recodificado], new Set(["SRX1244"]), new Set()).length, 1);
+});
+
 test("data/retirados.json: ningún retirado sigue en el catálogo publicado", () => {
   const leer = (archivo: string) =>
     JSON.parse(readFileSync(new URL(`../../data/${archivo}`, import.meta.url), "utf-8"));

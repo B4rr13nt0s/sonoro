@@ -9,7 +9,10 @@ export type Retirado = {
   slug: string;
   nombre: string;
   motivo: string;
-  /** Slug del producto que lo sustituye: su URL redirige (permanente) en vez de dar 410. */
+  /**
+   * Slug del producto que lo sustituye: su URL redirige (permanente) en vez de dar 410.
+   * Igual a `slug` cuando cambió solo el código: ni redirección ni 410.
+   */
   reemplazo?: string;
 };
 

@@ -140,7 +140,8 @@ const nextConfig: NextConfig = {
       readFileSync(path.join(process.cwd(), "data", "retirados.json"), "utf-8"),
     );
     const productosSustituidos = retirados.flatMap((r) =>
-      r.reemplazo
+      // reemplazo === slug: cambió solo el código; la URL no se mueve.
+      r.reemplazo && r.reemplazo !== r.slug
         ? [
             {
               source: `/producto/${r.slug}`,
