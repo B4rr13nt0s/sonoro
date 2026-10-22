@@ -20509,7 +20509,12 @@
     "precioCents": 420000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/PRO PLUS WORKSHOP KIT_frontal.jpg",
+        "alt": "Pro Plus - Rollo de taller — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -20587,7 +20592,12 @@
     "precioCents": 240000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CLASSIC BLACK_frontal.jpg",
+        "alt": "Classic - Rollo a granel — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -20657,7 +20667,12 @@
     "precioCents": 140000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CLASSIC LITE BLACK_frontal.jpg",
+        "alt": "Classic Lite - Negro — frontal"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -20735,7 +20750,12 @@
     "precioCents": 200000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/HEAT SHIELD_frontal.jpg",
+        "alt": "Heat Shield - Barrera térmica — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -20809,7 +20829,12 @@
     "precioCents": 105000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/PRO DOOR KIT_frontal.jpg",
+        "alt": "Pro Door Kit - Lámina de tres capas para dos puertas — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -20887,7 +20912,12 @@
     "precioCents": 70000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/WAVY FOAM_frontal.jpg",
+        "alt": "Wavy - Espuma acústica de 8 mm — frontal"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -20957,7 +20987,12 @@
     "precioCents": 60000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/SILENT TAPE_frontal.jpg",
+        "alt": "Foam Tape - Cinta de espuma acústica — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -24218,7 +24253,12 @@
     "precioCents": 59500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/SPEAKER RINGS_frontal.jpg",
+        "alt": "Rings V3 - Kit de sellado para bocinas — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -24286,7 +24326,12 @@
     "precioCents": 11000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/SILENT STRIP_frontal.jpg",
+        "alt": "Silent Strip - Tira selladora — frontal"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
