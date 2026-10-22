@@ -124,3 +124,14 @@ test("emparejarFotosConSkus: la vista frontal va primero aunque otra ordene ante
     ["frontal", "frontal2", "diagonalderecha", "trasera"],
   );
 });
+
+test("emparejarFotosConSkus: la vista completo va antes que la frontal", () => {
+  const { porSku } = emparejarFotosConSkus(
+    ["165 AS_lateral.jpg", "165 AS_frontal.jpg", "165 AS_completo.jpg"],
+    new Set(["165 AS"]),
+  );
+  assert.deepEqual(
+    porSku.get("165 AS")?.map((f) => f.vista),
+    ["completo", "frontal", "lateral"],
+  );
+});

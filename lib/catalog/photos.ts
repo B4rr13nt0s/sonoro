@@ -79,9 +79,12 @@ export function emparejarFotosConSkus(
   // misma vista en dos formatos, que si no quedaba en el orden del disco.
   // Las vistas «frontal…» (frontal, frontal2) van primero: solas por orden
   // alfabético, una «cenital» o una «diagonal» le quitaban el lugar a la
-  // frontal (VPAS12, VR10) y salía de foto principal.
+  // frontal (VPAS12, VR10) y salía de foto principal. Delante de todas, las
+  // «completo…»: el juego entero (165 AS, 165 AS3) es la foto principal y la
+  // de la tarjeta.
   const comparar = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
-  const rango = (vista: string) => (vista.startsWith("frontal") ? 0 : 1);
+  const rango = (vista: string) =>
+    vista.startsWith("completo") ? 0 : vista.startsWith("frontal") ? 1 : 2;
   for (const lista of porSku.values()) {
     lista.sort(
       (a, b) =>

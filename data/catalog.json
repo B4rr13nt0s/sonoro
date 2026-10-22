@@ -4167,16 +4167,16 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
+        "url": "/productos/165 AS3_completo.jpg",
+        "alt": "Componente Access de 6.5\" 165 AS3 — completo"
+      },
+      {
         "url": "/productos/165 AS3_frontal.jpg",
         "alt": "Componente Access de 6.5\" 165 AS3 — frontal"
       },
       {
         "url": "/productos/165 AS3_frontal2.jpg",
         "alt": "Componente Access de 6.5\" 165 AS3 — frontal2"
-      },
-      {
-        "url": "/productos/165 AS3_completo.jpg",
-        "alt": "Componente Access de 6.5\" 165 AS3 — completo"
       },
       {
         "url": "/productos/165 AS3_lateral.jpg",
@@ -4281,12 +4281,12 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
-        "url": "/productos/165 AS_frontal.jpg",
-        "alt": "Componente Access de 6.5\" 165 AS — frontal"
-      },
-      {
         "url": "/productos/165 AS_completo.jpg",
         "alt": "Componente Access de 6.5\" 165 AS — completo"
+      },
+      {
+        "url": "/productos/165 AS_frontal.jpg",
+        "alt": "Componente Access de 6.5\" 165 AS — frontal"
       },
       {
         "url": "/productos/165 AS_lateral.jpg",
