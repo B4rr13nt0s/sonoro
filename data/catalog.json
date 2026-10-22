@@ -24396,7 +24396,12 @@
     "precioCents": 12500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/ROLLER_frontal.jpg",
+        "alt": "Rodillo aplicador — frontal"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
