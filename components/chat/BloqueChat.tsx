@@ -9,7 +9,7 @@ import { ProductoChat } from "@/components/chat/ProductoChat";
 import { claseBoton } from "@/components/ui/boton.ts";
 import type { ProductoBuscable } from "@/lib/busqueda/busqueda.ts";
 import { productosDeSkus } from "@/lib/chat/catalogo.ts";
-import { etiquetaVerTodos } from "@/lib/chat/panel.ts";
+import { etiquetaVerTodos, textoFiltros, textoModo } from "@/lib/chat/panel.ts";
 import type { Bloque, OpcionId } from "@/lib/chat/tipos.ts";
 import { WHATSAPP_NUMBER, buildWhatsAppUrl } from "@/lib/whatsapp/index.ts";
 
@@ -50,17 +50,15 @@ export function BloqueChat({
         </p>
       );
 
-    case "filtros":
+    case "filtros": {
+      const filtros = textoFiltros(bloque.aplicados);
+      const modo = textoModo(bloque.modo);
       return (
         <div className="text-texto-secundario flex flex-col gap-1 text-[14px] leading-relaxed">
-          {bloque.aplicados.length > 0 ? (
-            <p>Filtros de tu búsqueda: {bloque.aplicados.join(" · ")}</p>
-          ) : null}
-          {bloque.modo !== "exacta" ? (
+          {filtros ? <p>{filtros}</p> : null}
+          {modo ? (
             <p>
-              {bloque.modo === "parcial"
-                ? "Ningún producto coincide con todo lo que escribiste; estos coinciden con alguna palabra."
-                : "No hay coincidencias exactas; estos se le parecen."}
+              {modo}
               {bloque.correccion ? (
                 <>
                   {" "}
@@ -79,6 +77,7 @@ export function BloqueChat({
           ) : null}
         </div>
       );
+    }
 
     case "productos": {
       const productos = productosDeSkus(bloque.skus, porSku);

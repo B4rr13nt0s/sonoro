@@ -32,8 +32,10 @@ import {
   conversacionInicial,
   crearContexto,
   mensajeAgregado,
+  adoptar,
   prepararTexto,
   responderEnConversacion,
+  resumenDeMensaje,
 } from "@/lib/chat/panel.ts";
 import {
   MAX_CONSULTA,
@@ -63,6 +65,16 @@ const ENFOCABLES =
 
 const SIN_PRODUCTOS: ReadonlyMap<string, ProductoBuscable> = new Map();
 
+// La última conversación que escribió un panel, de este montaje o de uno
+// anterior. Hace falta afuera del componente porque un envío puede
+// responder DESPUÉS de que su panel se desmontó (se cerró o se fue a
+// /carrito mientras bajaba el catálogo): esa respuesta tiene que sumarse a lo
+// último y no pisar lo que el panel nuevo agregó entretanto, y el panel nuevo
+// tiene que partir de ella aunque su render todavía no la traiga. Ver
+// `adoptar` (lib/chat/panel.ts). Hay un solo lanzador por página, así que
+// hay a lo sumo un panel vivo.
+let ultimaGuardada: Conversacion | null = null;
+
 export default function PanelChat({
   conversacion,
   setConversacion,
@@ -75,15 +87,18 @@ export default function PanelChat({
   const [inicial] = useState(() => conversacion ?? conversacionInicial(nuevaConversacion()));
   const vista = conversacion ?? inicial;
 
-  // La conversación más reciente, para los cambios que llegan después de un
-  // `await` (la respuesta espera al catálogo): leerla del render que
-  // disparó el envío perdería lo que se sumó mientras tanto (otro envío, un
-  // «Has añadido…»). Mientras el panel está montado es el único que la
-  // escribe, así que no hace falta sincronizarla con la prop.
-  const actual = useRef(vista);
+  // Cada cambio parte de la conversación más reciente, no de la del render
+  // que lo disparó: una respuesta llega después de un `await` (espera al
+  // catálogo) y, leída del render viejo, perdería lo que se sumó mientras
+  // tanto (otro envío, un «Has añadido…»).
+  const propRef = useRef(vista);
+  useEffect(() => {
+    propRef.current = vista;
+  }, [vista]);
+  const leer = useCallback(() => adoptar(propRef.current, ultimaGuardada), []);
   const guardar = useCallback(
     (nueva: Conversacion) => {
-      actual.current = nueva;
+      ultimaGuardada = nueva;
       setConversacion(nueva);
     },
     [setConversacion],
@@ -93,8 +108,15 @@ export default function PanelChat({
   useEffect(() => {
     if (!esNueva.current) return;
     esNueva.current = false;
-    setConversacion(actual.current);
-  }, [setConversacion]);
+    guardar(propRef.current);
+  }, [guardar]);
+
+  // La región en vivo anuncia solo la respuesta nueva del bot, resumida
+  // (resumenDeMensaje): ni lo que escribió el cliente, ni las filas de
+  // producto una por una, ni lo que ya estaba al abrir el panel.
+  const [ultimoAlMontar] = useState(() => vista.mensajes.at(-1)?.id ?? -1);
+  const ultimoBot = vista.mensajes.filter((m) => m.autor === "bot").at(-1);
+  const anuncio = ultimoBot && ultimoBot.id > ultimoAlMontar ? resumenDeMensaje(ultimoBot) : null;
 
   // Solo lo que cargó bien: un fallo no se guarda, y el envío siguiente
   // vuelve a llamar al cargador, que reintenta (lib/chat/catalogo.ts).
@@ -157,12 +179,12 @@ export default function PanelChat({
   }, [totalMensajes, catalogo]);
 
   async function enviar(entrada: Entrada, textoCliente: string) {
-    guardar(conMensaje(actual.current, { autor: "cliente", texto: textoCliente }));
+    guardar(conMensaje(leer(), { autor: "cliente", texto: textoCliente }));
     // La promesa memoizada: si la carga está en curso, se espera.
     const cargado = await cargarCatalogo();
     if (cargado) setCatalogo(cargado);
     const { conversacion: nueva, evento } = responderEnConversacion(
-      actual.current,
+      leer(),
       entrada,
       crearContexto(cargado, contacto),
     );
@@ -192,12 +214,12 @@ export default function PanelChat({
   }
 
   function alWhatsapp(motivo: "hablar" | "disponibilidad") {
-    sendChatLog(actual.current.id, { evento: "whatsapp", motivo });
+    sendChatLog(leer().id, { evento: "whatsapp", motivo });
   }
 
   function alAgregar(agregadas: number, sku: string) {
-    guardar(mensajeAgregado(actual.current, agregadas));
-    sendChatLog(actual.current.id, { evento: "agregar", sku });
+    guardar(mensajeAgregado(leer(), agregadas));
+    sendChatLog(leer().id, { evento: "agregar", sku });
   }
 
   // En móvil la hoja tapa la página: al seguir un enlace interno se cierra,
@@ -256,7 +278,11 @@ export default function PanelChat({
 
         <div
           ref={historialRef}
-          aria-live="polite"
+          // Enfocable: se recorre con las flechas y, en escritorio, un clic en
+          // el texto deja el foco adentro del panel, así que Esc lo cierra.
+          tabIndex={0}
+          role="region"
+          aria-label="Conversación"
           className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-5 py-4"
         >
           {vista.mensajes.map((mensaje) =>
@@ -284,6 +310,12 @@ export default function PanelChat({
               </div>
             ),
           )}
+        </div>
+
+        {/* Un nodo por respuesta (key): dos respuestas con el mismo texto
+            seguidas («Has añadido 1 ítem…») se anuncian las dos. */}
+        <div aria-live="polite" className="sr-only">
+          {anuncio && ultimoBot ? <p key={ultimoBot.id}>{anuncio}</p> : null}
         </div>
 
         <form

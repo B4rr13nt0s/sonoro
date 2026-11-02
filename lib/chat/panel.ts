@@ -3,6 +3,8 @@
 // entrada por el motor. Vive aparte para probarse con `node --test`; el
 // componente solo dibuja y cablea eventos.
 
+import type { ModoBusqueda } from "../busqueda/busqueda.ts";
+import { textoAgregado } from "../cart/confirmacion.ts";
 import type { CatalogoChat } from "./catalogo.ts";
 import { ESTADO_INICIAL, bloquesDeInicio, cortar, responder } from "./motor.ts";
 import type { Bloque, Contexto, Conversacion, Entrada, EventoChat, Mensaje } from "./tipos.ts";
@@ -16,9 +18,17 @@ export function etiquetaVerTodos(total: number): string {
   return total === 1 ? "Ver en Buscar" : `Ver los ${total} resultados`;
 }
 
-/** El mismo texto de la confirmación de la ficha (AgregarConCantidad). */
-export function textoAgregado(n: number): string {
-  return `Has añadido ${n} ${n === 1 ? "ítem" : "ítems"} al carrito.`;
+/** «Filtros de tu búsqueda: …», el mismo texto de /buscar (SearchExperience). */
+export function textoFiltros(aplicados: readonly string[]): string | null {
+  return aplicados.length > 0 ? `Filtros de tu búsqueda: ${aplicados.join(" · ")}` : null;
+}
+
+/** El aviso de /buscar cuando la búsqueda no fue exacta. */
+export function textoModo(modo: ModoBusqueda): string | null {
+  if (modo === "exacta") return null;
+  return modo === "parcial"
+    ? "Ningún producto coincide con todo lo que escribiste; estos coinciden con alguna palabra."
+    : "No hay coincidencias exactas; estos se le parecen.";
 }
 
 /**
@@ -84,4 +94,69 @@ export function responderEnConversacion(
     },
     evento: respuesta.evento,
   };
+}
+
+/** Con punto final, salvo que ya lo traiga. */
+function frase(texto: string): string {
+  return /[.!?]$/.test(texto) ? texto : `${texto}.`;
+}
+
+/**
+ * Lo que la región en vivo del panel anuncia de un mensaje: un resumen corto
+ * de la respuesta del bot, no el historial entero. Una búsqueda dice cuántos
+ * resultados hay, no cada fila con su precio y su botón; las opciones no se
+ * leen (están a un Tab). Lo del cliente no se anuncia: es lo que acaba de
+ * escribir.
+ */
+export function resumenDeMensaje(mensaje: Mensaje): string | null {
+  if (mensaje.autor === "cliente") return null;
+  const partes: string[] = [];
+  for (const bloque of mensaje.bloques) {
+    switch (bloque.tipo) {
+      case "texto":
+        partes.push(frase(bloque.texto));
+        if (bloque.enlace) partes.push(frase(bloque.enlace.etiqueta));
+        break;
+      case "filtros": {
+        const filtros = textoFiltros(bloque.aplicados);
+        const modo = textoModo(bloque.modo);
+        if (filtros) partes.push(frase(filtros));
+        if (modo) partes.push(frase(modo));
+        if (modo && bloque.correccion) partes.push(`Quizá quisiste decir «${bloque.correccion}».`);
+        break;
+      }
+      case "productos": {
+        const { total } = bloque;
+        const mostrados = bloque.skus.length;
+        partes.push(
+          total === 1
+            ? "1 resultado."
+            : mostrados < total
+              ? `${total} resultados; se muestran ${mostrados}.`
+              : `${total} resultados.`,
+        );
+        break;
+      }
+      case "whatsapp":
+        partes.push(frase(bloque.etiqueta));
+        break;
+      case "opciones":
+        break;
+    }
+  }
+  return partes.length > 0 ? partes.join(" ") : null;
+}
+
+/**
+ * La conversación de la que parte el próximo cambio. `prop` es la que tiene
+ * el lanzador según el último render; `guardada`, la última que escribió un
+ * panel (este u otro montaje anterior). Una conversación solo crece, así que
+ * si es la misma y la guardada va más adelante, la prop se quedó atrás (el
+ * render todavía no llegó, o una respuesta tardía la escribió un panel ya
+ * desmontado) y gana la guardada. Si es otra conversación, manda el lanzador.
+ */
+export function adoptar(prop: Conversacion, guardada: Conversacion | null): Conversacion {
+  if (!guardada || guardada.id !== prop.id) return prop;
+  const ultimo = (c: Conversacion) => c.mensajes.at(-1)?.id ?? -1;
+  return ultimo(guardada) > ultimo(prop) ? guardada : prop;
 }
