@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import type { ProductoTarjeta } from "../../lib/catalog/types.ts";
+import type { ProductoTarjeta } from "../catalog/types.ts";
 import {
   buscar,
   canonizar,
