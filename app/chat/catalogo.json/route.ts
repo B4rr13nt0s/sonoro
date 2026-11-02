@@ -12,8 +12,13 @@ export const dynamic = "force-static";
 export async function GET() {
   const [productos, marcas] = await Promise.all([listAllProducts({ activo: true }), listBrands()]);
 
-  return Response.json({
-    productos: tarjetasBuscables(productos),
-    marcas: marcas.map((marca) => ({ nombre: marca.nombre, slug: marca.slug })),
-  });
+  return Response.json(
+    {
+      productos: tarjetasBuscables(productos),
+      marcas: marcas.map((marca) => ({ nombre: marca.nombre, slug: marca.slug })),
+    },
+    // Es público y se genera aunque el chat esté apagado; no es una página
+    // para el buscador.
+    { headers: { "X-Robots-Tag": "noindex" } },
+  );
 }
