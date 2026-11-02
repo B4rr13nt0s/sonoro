@@ -105,7 +105,8 @@ type Bloque =
       modo: ModoBusqueda }          // los mismos avisos de /buscar
   | { tipo: "productos"; skus: string[]; total: number; verTodosHref: string }
   | { tipo: "opciones"; opciones: { id: OpcionId; etiqueta: string }[] }
-  | { tipo: "whatsapp"; etiqueta: string; mensaje: string };
+  | { tipo: "whatsapp"; etiqueta: string; mensaje: string;
+      motivo: "hablar" | "disponibilidad" };
 
 interface Estado {
   ultimaConsulta: string | null;    // para el mensaje de «Hablar con Sonoro»
@@ -115,6 +116,8 @@ interface Estado {
 interface Contexto {
   productos: readonly ProductoBuscable[] | null;   // null = catálogo no cargó
   marcas: readonly { nombre: string; slug: string }[];
+  // Las BUSINESS_* son variables de servidor: el layout las lee y las pasa.
+  contacto: { telefono?: string; correo?: string; direccion?: string };
 }
 
 type EventoChat =
@@ -167,7 +170,10 @@ el navegador. Los tipos de arriba no cambian para eso.
 
 ### Al abrir
 
-Saludo: «Buscá un producto por nombre, marca, código o medida, o elegí un
+Todo el texto del bot le habla al cliente de **tú**, como el resto del sitio
+(«Agregas», «Puedes», «lo que llevas»).
+
+Saludo: «Busca un producto por nombre, marca, código o medida, o elige un
 tema.» Le siguen las opciones *Buscar un producto · Envíos · Garantía ·
 Instalación · Pagos en cuotas · Cómo pedir · Hablar con Sonoro*. El campo de
 texto está siempre disponible.
@@ -214,18 +220,20 @@ se quitan antes los arranques conversacionales («tienen», «hay», «venden»,
 - **Instalación:**
   - Cada producto incluye la instalación básica.
   - Una instalación más compleja tiene costo adicional.
-  - Al cerrar el pedido se informa cuál requiere lo que llevás.
+  - Al cerrar el pedido se informa cuál requiere lo que llevas.
   - Sin precios, tiempos ni agenda.
 - **Cuotas:** «Hasta 6 pagos precio contado.» Las condiciones se acuerdan al
   confirmar el pedido por WhatsApp (mismo texto que `/legal/terminos`).
 - **Cómo pedir:**
-  - Agregá los productos al carrito y pulsá «Pedir por WhatsApp»; el pedido
-    se confirma por ese chat.
+  - El párrafo «Cómo funciona un pedido» de `/legal/terminos` («Agregas
+    productos al carrito, revisas el resumen en /carrito y presionas «Pedir
+    por WhatsApp»…»).
   - No hay pago en línea.
   - Prohibido decir «pagar», «comprar ahora» o «finalizar compra»
     (regla 3).
 - **Contacto:** dirección, teléfono y correo desde las variables `BUSINESS_*`
-  (las mismas de `/nosotros`). El campo que falta no se muestra.
+  (las mismas de `/nosotros`), que llegan por `Contexto.contacto`. El campo
+  que falta no se muestra.
 - **Lo no definido** (horarios, plazos, qué cuenta como instalación compleja):
   «Eso te lo confirma Sonoro directamente.» + `whatsapp` (hablar).
 
@@ -253,10 +261,12 @@ de «te ayudamos a escoger» ni de «nuestros expertos».
   - Etiqueta mono «MARCA · CÓDIGO», nombre en 14px/600.
   - Precio con `formatQ` y la línea «o Q X al mes × 6» (`Math.ceil`, la misma
     función que la ficha).
-  - `PildoraDisponibilidad`.
-  - «Agregar al carrito» con `claseBoton`. Lo agotado va con
-    `claseBotonInactivo`, deshabilitado y con el texto «Agotado». Al
-    agregar, confirma igual que la ficha.
+  - `PildoraDisponibilidad`: como en la ficha, solo «bajo pedido» y
+    «agotado» llevan píldora; lo disponible no lleva nada.
+  - «Agregar al carrito» es `AddToCartButton` en tamaño compacto: lo agotado
+    sale gris, deshabilitado y con el texto «Agotado». Al agregar, el bot
+    suma una línea con el texto de la ficha, «Has añadido 1 ítem al
+    carrito.», y un enlace «Ver carrito».
   - El nombre enlaza a `/producto/[slug]`.
   - *Decisión de esta conversación:* el chat **sí** muestra precio y cuota,
     aunque las tarjetas de los listados no los muestren.
@@ -290,8 +300,9 @@ acento.
     en la línea de `IconosContacto` y el texto «Preguntar».
   - Fija abajo a la derecha: 24 px en `lg:`, 16 px debajo, más
     `env(safe-area-inset-bottom)`.
-  - **No se dibuja en `/carrito`.** En `/comparar`, mientras
-    `BarraComparador` está visible, sube por encima de la barra.
+  - **No se dibuja en `/carrito`.** (`BarraComparador` hoy no está montada,
+    así que no hay choque en `/comparar`. Si se repone, el lanzador tiene que
+    subir por encima de la barra.)
   - Con el panel abierto en escritorio sigue visible y lo cierra.
 - **Escritorio (`lg:`):**
   - Panel de 380 × 560 px sobre el lanzador: `bg-white`, `border-borde-tarjeta`,
@@ -399,6 +410,9 @@ puede crecer más que el lanzador.
   - `lib/chat/enmascarar.test.ts`.
   - `lib/chatLog/*.test.ts`: esquema, topes y cuerpo máximo.
   - `lib/whatsapp/message.test.ts`: los dos mensajes nuevos.
+  - `lib/chat/bandera.test.ts`: `chatHabilitado()` solo con `"true"` exacto.
+    El e2e corre con la bandera encendida, así que el caso apagado se prueba
+    acá.
 - **E2E (`e2e/chat.spec.ts`, con la bandera encendida):**
   - Abrir → buscar → agregar al carrito → el contador del nav sube.
   - Pregunta de envíos → respuesta con «Q 500.00».
