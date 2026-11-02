@@ -105,6 +105,15 @@ test("decideChatLogForward: enmascara la consulta OTRA VEZ en el servidor", () =
   if (decision.forward) assert.equal(decision.request.consulta, "mi cel •••••••");
 });
 
+test("decideChatLogForward: enmascara teléfonos con puntos y paréntesis", () => {
+  const decision = decideChatLogForward(
+    { ...BODY_VALIDO, consulta: "llamar (502) 5295.5555" },
+    ENV_COMPLETO,
+  );
+  assert.equal(decision.forward, true);
+  if (decision.forward) assert.equal(decision.request.consulta, "llamar •••••••");
+});
+
 test("ChatLogRequestSchema: los eventos con pocos campos son válidos", () => {
   const casos = [
     { evento: "tema", tema: "categoria:insonorizacion" },
