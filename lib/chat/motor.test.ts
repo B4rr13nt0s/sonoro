@@ -339,6 +339,23 @@ test("slug desconocido cae al saludo", () => {
   }
 });
 
+test("nombres del prototipo no son opciones: caen al saludo", () => {
+  const estado: Estado = { ultimaConsulta: "algo", ultimoTema: "envios" };
+  for (const id of ["constructor", "toString", "__proto__", "hasOwnProperty"]) {
+    const r = responder(estado, opcion(id as OpcionId), CONTEXTO);
+    assert.deepEqual(r.bloques, bloquesDeInicio(), id);
+    assert.equal(r.evento, null, id);
+    assert.deepEqual(r.estado, estado, id);
+  }
+  // Y un ultimoTema ajeno a TEMA_NOMBRE no se cuela en el mensaje de «Hablar».
+  const raro = responder(
+    { ultimaConsulta: null, ultimoTema: "constructor" as OpcionId },
+    opcion("hablar"),
+    CONTEXTO,
+  );
+  assert.equal(de(raro.bloques, "whatsapp")?.mensaje, "Hola Sonoro, tengo una consulta");
+});
+
 test("texto largo: se corta a 200 antes de todo", () => {
   const r = responder(ESTADO_INICIAL, texto("subwoofer ".repeat(100)), CONTEXTO);
   assert.ok(r.evento && "consulta" in r.evento);

@@ -66,7 +66,7 @@ export function bloquesDeInicio(): Bloque[] {
 
 /** El tema de `ultimoTema`, si es uno de los que tienen nombre. */
 function nombreDeTema(id: OpcionId | null): string | null {
-  return id !== null && id in TEMA_NOMBRE ? TEMA_NOMBRE[id as Tema] : null;
+  return id !== null && Object.hasOwn(TEMA_NOMBRE, id) ? TEMA_NOMBRE[id as Tema] : null;
 }
 
 /** «Hablar con Sonoro»: la consulta escrita manda; si no hay, el tema; si no, el saludo. */
@@ -148,5 +148,13 @@ export function bloquesDeTema(tema: Tema, contacto: Contexto["contacto"]): Bloqu
         { tipo: "opciones", opciones: [OPCION_BUSCAR] },
       ];
     }
+    default:
+      // Si se agrega un Tema sin su caso, TypeScript marca esta línea.
+      return sinCaso(tema);
   }
+}
+
+/** Nunca llega un valor: `never` hace que un Tema sin caso no compile. */
+function sinCaso(tema: never): Bloque[] {
+  throw new Error(`Tema sin respuesta: ${String(tema)}`);
 }

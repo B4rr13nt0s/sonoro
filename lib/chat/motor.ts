@@ -139,7 +139,7 @@ function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respue
     return { estado, bloques: [{ tipo: "texto", texto: TEXTO_PEDIR_BUSQUEDA }], evento: null };
   }
   if (id === "hablar") return { estado, bloques: [bloqueHablar(estado)], evento: null };
-  if (id in TEMA_NOMBRE) return responderTema(id as Tema, contexto);
+  if (Object.hasOwn(TEMA_NOMBRE, id)) return responderTema(id as Tema, contexto);
 
   if (id.startsWith("categoria:")) {
     const slug = id.slice("categoria:".length);
