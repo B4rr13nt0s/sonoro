@@ -19,6 +19,12 @@
  *        QUOTE_LOG_URL=https://script.google.com/macros/s/.../exec
  *        QUOTE_LOG_TOKEN=<el token del paso 3>
  *
+ * CAMBIOS QUE EXIGEN VOLVER A PEGAR ESTE ARCHIVO
+ *   Noviembre de 2026: rama `tipo === 'chat'` (hoja «Chat», registro anónimo
+ *   del chat). Hay que volver a pegar el script en el editor y re-implementar;
+ *   mientras no se haga, los eventos del chat no se escriben (el script los
+ *   rechaza como «Falta ref»). No se hace desde el repositorio.
+ *
  * IMPORTANTE
  *   Cada vez que edites este archivo debes volver a implementar
  *   (Implementar → Administrar implementaciones → editar → Versión: Nueva).
@@ -63,6 +69,39 @@ const MAX_PRODUCTOS = 45000;
 const MAX_SKUS = 20000;
 
 /**
+ * Hoja del registro anónimo del chat (lib/chatLog/, /api/chat-log). Una fila
+ * por evento, sin `ref` y sin deduplicar. Columnas de texto: B–E y G–I; F
+ * (Resultados) es número.
+ */
+const HOJA_CHAT = 'Chat';
+
+const ENCABEZADOS_CHAT = [
+  'Fecha',
+  'Conversación',
+  'Evento',
+  'Consulta',
+  'Modo',
+  'Resultados',
+  'Tema',
+  'SKU',
+  'Motivo',
+];
+
+const COLUMNAS_DE_TEXTO_CHAT = [2, 3, 4, 5, 7, 8, 9];
+
+/**
+ * Topes del chat, iguales a los de lib/chatLog/types.ts (conversacion 8,
+ * consulta 200, tema 40, sku 64; si cambian allá, cambian acá). Evento, modo y
+ * motivo son enums cortos del sitio.
+ */
+const MAX_CONVERSACION = 8;
+const MAX_EVENTO = 20;
+const MAX_CONSULTA = 200;
+const MAX_MODO = 20;
+const MAX_TEMA = 40;
+const MAX_MOTIVO = 20;
+
+/**
  * Ejecutar una sola vez, a mano, desde el editor.
  * Genera el token compartido y prepara la hoja.
  */
@@ -80,6 +119,7 @@ function configurar() {
   SpreadsheetApp.getActiveSpreadsheet().setSpreadsheetTimeZone(ZONA);
 
   obtenerHoja();
+  obtenerHojaChat();
 
   Logger.log('QUOTE_LOG_TOKEN=' + token);
   Logger.log('Copia esa línea a tu .env.local y a las variables de entorno de Vercel.');
@@ -117,6 +157,38 @@ function obtenerHoja() {
   // y es la mitad de la defensa contra fórmulas (la otra mitad es `sanear`).
   for (let i = 0; i < COLUMNAS_DE_TEXTO.length; i++) {
     const letra = String.fromCharCode(64 + COLUMNAS_DE_TEXTO[i]);
+    hoja.getRange(letra + '2:' + letra).setNumberFormat('@');
+  }
+
+  return hoja;
+}
+
+function obtenerHojaChat() {
+  const libro = SpreadsheetApp.getActiveSpreadsheet();
+  let hoja = libro.getSheetByName(HOJA_CHAT);
+
+  if (!hoja) {
+    hoja = libro.insertSheet(HOJA_CHAT);
+  }
+
+  if (hoja.getLastRow() === 0) {
+    hoja.appendRow(ENCABEZADOS_CHAT);
+    const cabecera = hoja.getRange(1, 1, 1, ENCABEZADOS_CHAT.length);
+    cabecera.setFontWeight('bold');
+    cabecera.setBackground('#0B0B0C');
+    cabecera.setFontColor('#FFFFFF');
+    hoja.setFrozenRows(1);
+    hoja.setColumnWidth(1, 150); // Fecha
+    hoja.setColumnWidth(2, 110); // Conversación
+    hoja.setColumnWidth(4, 320); // Consulta
+  }
+
+  // En cada llamada, igual que en obtenerHoja: la fecha legible y las columnas
+  // de texto como TEXTO (la otra mitad de la defensa contra fórmulas es
+  // `sanear`). La consulta la escribe un desconocido.
+  hoja.getRange('A2:A').setNumberFormat('yyyy-mm-dd hh:mm:ss');
+  for (let i = 0; i < COLUMNAS_DE_TEXTO_CHAT.length; i++) {
+    const letra = String.fromCharCode(64 + COLUMNAS_DE_TEXTO_CHAT[i]);
     hoja.getRange(letra + '2:' + letra).setNumberFormat('@');
   }
 
@@ -233,6 +305,46 @@ function respuesta(ok, mensaje, extra) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+/**
+ * Escribe un evento del chat en la hoja «Chat». El token ya se verificó en
+ * doPost. Sin deduplicación: los eventos no tienen `ref` y dos búsquedas
+ * iguales seguidas son dos búsquedas.
+ *
+ * La consulta llega ya enmascarada (teléfonos → «•••••••») por el navegador y
+ * otra vez por el servidor; aquí solo se acotan los largos y se sanea.
+ */
+function registrarChat(datos) {
+  const conversacion = String(datos.conversacion || '').slice(0, MAX_CONVERSACION);
+  const evento = String(datos.evento || '').slice(0, MAX_EVENTO);
+  if (!conversacion || !evento) {
+    return respuesta(false, 'Falta conversacion o evento');
+  }
+
+  const resultados = Number(datos.resultados);
+  const fila = [
+    new Date(),
+    sanear(conversacion, MAX_CONVERSACION),
+    sanear(evento, MAX_EVENTO),
+    sanear(String(datos.consulta || '').slice(0, MAX_CONSULTA), MAX_CONSULTA),
+    sanear(String(datos.modo || '').slice(0, MAX_MODO), MAX_MODO),
+    datos.resultados == null || isNaN(resultados) ? '' : resultados,
+    sanear(String(datos.tema || '').slice(0, MAX_TEMA), MAX_TEMA),
+    sanear(String(datos.sku || '').slice(0, MAX_SKU), MAX_SKU),
+    sanear(String(datos.motivo || '').slice(0, MAX_MOTIVO), MAX_MOTIVO),
+  ];
+
+  // Mismo candado que los pedidos: dos eventos simultáneos no pisan la fila.
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(10000);
+    obtenerHojaChat().appendRow(fila);
+  } finally {
+    lock.releaseLock();
+  }
+
+  return respuesta(true, 'Registrado');
+}
+
 function doPost(e) {
   try {
     if (!e || !e.postData || !e.postData.contents) {
@@ -255,6 +367,9 @@ function doPost(e) {
     if (datos.token !== esperado) {
       return respuesta(false, 'No autorizado');
     }
+
+    // Eventos del chat: otra hoja, sin ref ni deduplicación.
+    if (datos.tipo === 'chat') return registrarChat(datos);
 
     const ref = String(datos.ref || '').slice(0, 40);
     if (!ref) {
