@@ -260,6 +260,11 @@ test("contacto vacío: lo confirma Sonoro, con WhatsApp", () => {
   assert.ok(wa);
   assert.equal(wa.motivo, "hablar");
   assert.equal(wa.mensaje, "Hola Sonoro, tengo una consulta sobre contacto");
+  // «Hablar» ya es el botón de WhatsApp: el cierre solo ofrece buscar.
+  assert.deepEqual(r.bloques[r.bloques.length - 1], {
+    tipo: "opciones",
+    opciones: [{ id: "buscar", etiqueta: "Buscar un producto" }],
+  });
 });
 
 test("hablar tras un tema: el mensaje nombra el tema", () => {
@@ -341,6 +346,31 @@ test("texto largo: se corta a 200 antes de todo", () => {
   assert.ok((r.estado.ultimaConsulta ?? "").length <= 200);
   const rec = responder(ESTADO_INICIAL, texto(`recomienda ${"x".repeat(1000)}`), CONTEXTO);
   assert.ok((rec.estado.ultimaConsulta ?? "").length <= 200);
+});
+
+test("texto largo: un emoji en el corte no deja un surrogate suelto", () => {
+  // Con 199 o 198 caracteres antes, el corte en 200 cae a mitad del emoji (o justo en él).
+  for (const relleno of [199, 198]) {
+    const emoji = "😀";
+    const entradas = [
+      `recomienda ${"x".repeat(relleno - 10)}${emoji}${emoji}`,
+      `${"x".repeat(relleno)}${emoji}${emoji}`,
+      `xyz123${"y".repeat(relleno - 6)}${emoji}`,
+    ];
+    for (const entrada of entradas) {
+      const r = responder(ESTADO_INICIAL, texto(entrada), CONTEXTO);
+      const consulta = r.estado.ultimaConsulta;
+      assert.ok(consulta !== null && consulta.length <= 200);
+      assert.ok(consulta.isWellFormed(), "ultimaConsulta mal formada");
+      if (r.evento && "consulta" in r.evento) assert.ok(r.evento.consulta.isWellFormed());
+      const hablar = responder(r.estado, opcion("hablar"), CONTEXTO);
+      const mensajes = [...hablar.bloques, ...r.bloques].flatMap((b) =>
+        b.tipo === "whatsapp" ? [b.mensaje] : [],
+      );
+      assert.ok(mensajes.length > 0);
+      for (const m of mensajes) assert.doesNotThrow(() => encodeURIComponent(m));
+    }
+  }
 });
 
 test("copy prohibido: ninguna respuesta lo usa", () => {

@@ -144,7 +144,8 @@ export function bloquesDeTema(tema: Tema, contacto: Contexto["contacto"]): Bloqu
       return [
         ...parrafos([TEXTO_NO_DEFINIDO]),
         bloqueHablar({ ultimaConsulta: null, ultimoTema: "contacto" }),
-        cierre,
+        // «Hablar» ya está arriba como botón de WhatsApp: no se repite.
+        { tipo: "opciones", opciones: [OPCION_BUSCAR] },
       ];
     }
   }

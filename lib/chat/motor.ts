@@ -14,6 +14,7 @@ import {
   bloqueHablar,
   bloquesDeInicio,
   bloquesDeRecomendacion,
+  TEMA_NOMBRE,
   bloquesDeTema,
   opcionesHablar,
 } from "./respuestas.ts";
@@ -38,15 +39,6 @@ interface Respuesta {
   bloques: Bloque[];
   evento: EventoChat | null;
 }
-
-const OPCION_ES_TEMA: ReadonlySet<string> = new Set<Tema>([
-  "envios",
-  "garantia",
-  "instalacion",
-  "cuotas",
-  "como_pedir",
-  "contacto",
-]);
 
 function saludo(estado: Estado): Respuesta {
   return { estado, bloques: bloquesDeInicio(), evento: null };
@@ -147,7 +139,7 @@ function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respue
     return { estado, bloques: [{ tipo: "texto", texto: TEXTO_PEDIR_BUSQUEDA }], evento: null };
   }
   if (id === "hablar") return { estado, bloques: [bloqueHablar(estado)], evento: null };
-  if (OPCION_ES_TEMA.has(id)) return responderTema(id as Tema, contexto);
+  if (id in TEMA_NOMBRE) return responderTema(id as Tema, contexto);
 
   if (id.startsWith("categoria:")) {
     const slug = id.slice("categoria:".length);
@@ -162,12 +154,23 @@ function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respue
   return saludo(estado);
 }
 
+/**
+ * Corta a MAX_CONSULTA unidades UTF-16 sin dejar medio emoji: un surrogate
+ * alto suelto en el último lugar haría fallar `encodeURIComponent` (URIError)
+ * al armar el enlace de WhatsApp.
+ */
+function cortar(texto: string): string {
+  const corte = texto.slice(0, MAX_CONSULTA);
+  const ultimo = corte.charCodeAt(corte.length - 1);
+  return ultimo >= 0xd800 && ultimo <= 0xdbff ? corte.slice(0, -1) : corte;
+}
+
 export function responder(estado: Estado, entrada: Entrada, contexto: Contexto): Respuesta {
   if (entrada.tipo === "opcion") return responderOpcion(estado, entrada.id, contexto);
 
   // Lo escrito se corta antes de cualquier otra cosa: nada de lo que sigue
   // (intención, búsqueda, evento, mensaje de WhatsApp) ve más de MAX_CONSULTA.
-  const texto = entrada.texto.trim().slice(0, MAX_CONSULTA).trimEnd();
+  const texto = cortar(entrada.texto.trim()).trimEnd();
   if (texto === "") return saludo(estado);
 
   const intencion = detectarIntencion(texto);
