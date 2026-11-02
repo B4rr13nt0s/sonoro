@@ -18,6 +18,14 @@ export default defineConfig({
   fullyParallel: true,
   retries: process.env.CI ? 2 : 0,
   reporter: "list",
+  // Tope de workers: por defecto Playwright usa la mitad de los núcleos (8 en
+  // una máquina de 16), y desde que hay más pruebas que eso corren TODAS a la
+  // vez. Cada una abre su Chromium, y el carrusel 3D de la portada se dibuja
+  // en software (sin GPU): con tantos a la vez, al test del carrusel de
+  // menu-y-carrusel.spec.ts no le llega el procesador para crear su canvas en
+  // los 20 s que se da, y el panel del chat tarda en bajar. Con 4 sobra
+  // holgura y la suite sigue en ~30 s, casi todo el build.
+  workers: 4,
   use: {
     baseURL: BASE_URL,
     trace: "on-first-retry",
@@ -33,6 +41,9 @@ export default defineConfig({
     env: {
       SITE_URL: BASE_URL,
       NEXT_PUBLIC_WHATSAPP_NUMBER: "50200000000",
+      // El chat va tras esta bandera, que se lee al compilar: sin ella el
+      // build no trae el lanzador y e2e/chat.spec.ts no tiene qué probar.
+      NEXT_PUBLIC_CHAT_ENABLED: "true",
     },
   },
 });
