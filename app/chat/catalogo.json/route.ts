@@ -1,0 +1,19 @@
+import { tarjetasBuscables } from "@/lib/catalog/buscables.ts";
+import { listAllProducts, listBrands } from "@/lib/catalog/index.ts";
+
+// El catálogo que baja el chat al primer clic del lanzador. Se genera en el
+// build, como llms.txt y sitemap.xml: el catálogo es estático entre deploys,
+// así que cada visitante recibe un archivo ya hecho y no una función. Desde
+// Next 15 un GET no se cachea si no se pide.
+//
+// Lleva lo mismo que baja /buscar (tarjetasBuscables), no el Producto entero.
+export const dynamic = "force-static";
+
+export async function GET() {
+  const [productos, marcas] = await Promise.all([listAllProducts({ activo: true }), listBrands()]);
+
+  return Response.json({
+    productos: tarjetasBuscables(productos),
+    marcas: marcas.map((marca) => ({ nombre: marca.nombre, slug: marca.slug })),
+  });
+}
