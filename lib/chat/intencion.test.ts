@@ -1,0 +1,149 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+
+import { detectarIntencion } from "./intencion.ts";
+
+test("saludo: el texto entero es un saludo o agradecimiento", () => {
+  for (const texto of ["Hola", "¡gracias!", "Buenos días", "muchas gracias", "OK", "adiós"]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "saludo" }, texto);
+  }
+});
+
+test("saludo: un saludo con más texto no es saludo", () => {
+  assert.deepEqual(detectarIntencion("hola, tienen subwoofers"), {
+    tipo: "busqueda",
+    consulta: "hola, tienen subwoofers",
+  });
+});
+
+test("recomendación: pide criterio", () => {
+  for (const texto of [
+    "¿Qué me recomiendan para mi carro?",
+    "cuál es mejor",
+    "¿cuál me conviene?",
+    "¿qué le queda a mi carro?",
+  ]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "recomendacion" }, texto);
+  }
+});
+
+test("tema: envios", () => {
+  for (const texto of [
+    "¿hacen envíos a Xela?",
+    "¿entregan a domicilio?",
+    "cuánto cuesta el flete",
+  ]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema: "envios" }, texto);
+  }
+});
+
+test("tema: garantia, y gana el tema sobre el producto", () => {
+  for (const texto of [
+    "¿el SQ12 trae garantía?",
+    "llegó con defecto",
+    "se arruinó",
+    "se dañó mi sub",
+  ]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema: "garantia" }, texto);
+  }
+});
+
+test("tema: instalacion", () => {
+  for (const texto of [
+    "¿ustedes instalan?",
+    "¿cuánto cuesta la instalación?",
+    "¿lo colocan ustedes?",
+  ]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema: "instalacion" }, texto);
+  }
+});
+
+test("instalación con «kit» es una búsqueda, no el tema", () => {
+  assert.deepEqual(detectarIntencion("kits de instalación 4 AWG"), {
+    tipo: "busqueda",
+    consulta: "kits de instalacion 4 awg",
+  });
+  assert.deepEqual(detectarIntencion("kit para instalar un amplificador"), {
+    tipo: "busqueda",
+    consulta: "kit para instalar un amplificador",
+  });
+});
+
+test("tema: cuotas", () => {
+  for (const texto of [
+    "¿puedo pagar en cuotas?",
+    "financiamiento",
+    "aceptan tarjeta",
+    "visacuotas",
+  ]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema: "cuotas" }, texto);
+  }
+});
+
+test("tema: como_pedir", () => {
+  for (const texto of [
+    "¿cómo compro?",
+    "como pido",
+    "¿cómo hago el pedido?",
+    "puedo pagar en línea",
+  ]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema: "como_pedir" }, texto);
+  }
+});
+
+test("tema: contacto", () => {
+  for (const texto of ["¿dónde están ubicados?", "su teléfono", "dirección", "tienen correo"]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema: "contacto" }, texto);
+  }
+});
+
+test("los temas comparan palabras enteras, no pedazos de palabra", () => {
+  // «pagos» dentro de «mapagos», «envio» dentro de «envioletado», «hay» no es tema.
+  assert.deepEqual(detectarIntencion("mapagos"), { tipo: "busqueda", consulta: "mapagos" });
+  assert.deepEqual(detectarIntencion("envioletado"), { tipo: "busqueda", consulta: "envioletado" });
+  assert.deepEqual(detectarIntencion("entregando"), { tipo: "busqueda", consulta: "entregando" });
+});
+
+test("búsqueda: quita el arranque conversacional", () => {
+  assert.deepEqual(detectarIntencion("¿tienen subwoofers de 12?"), {
+    tipo: "busqueda",
+    consulta: "subwoofers de 12",
+  });
+  assert.deepEqual(detectarIntencion("cuánto cuesta el SQ12"), {
+    tipo: "busqueda",
+    consulta: "sq12",
+  });
+  assert.deepEqual(detectarIntencion("precio del SQ12-D2"), {
+    tipo: "busqueda",
+    consulta: "sq12-d2",
+  });
+  assert.deepEqual(detectarIntencion("quiero un amplificador 4 canales"), {
+    tipo: "busqueda",
+    consulta: "amplificador 4 canales",
+  });
+});
+
+test("búsqueda: los arranques se quitan repetidos y solo al inicio", () => {
+  assert.deepEqual(detectarIntencion("busco tienen precio de las bocinas"), {
+    tipo: "busqueda",
+    consulta: "bocinas",
+  });
+  assert.deepEqual(detectarIntencion("memphis hay"), { tipo: "busqueda", consulta: "memphis hay" });
+});
+
+test("búsqueda: un texto sin arranque pasa tal cual, normalizado", () => {
+  assert.deepEqual(detectarIntencion("Sub 12 2 OHM"), {
+    tipo: "busqueda",
+    consulta: "sub 12 2 ohm",
+  });
+  assert.deepEqual(detectarIntencion('bocinas 6.5"'), {
+    tipo: "busqueda",
+    consulta: 'bocinas 6.5"',
+  });
+});
+
+test("sin nada que buscar tras el arranque es un saludo", () => {
+  for (const texto of ["¿tienen?", "hay", "quiero", "  ", "", "¿cuánto cuesta?", "tienen un"]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "saludo" }, JSON.stringify(texto));
+  }
+});
