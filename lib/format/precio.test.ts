@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { formatQ, calcularCuotaCents } from "./precio.ts";
+import { formatQ, calcularCuotaCents, lineaCuota } from "./precio.ts";
 
 const ESPACIO_DURO = "\u00A0";
 
@@ -37,4 +37,8 @@ test("formatQ usa espacio duro U+00A0, no un espacio normal", () => {
 
 test("calcularCuotaCents: Q 2,450.00 entre 6 pagos redondea hacia arriba al centavo", () => {
   assert.equal(calcularCuotaCents(245000, 6), 40834); // Q 408.34
+});
+
+test("lineaCuota: la línea bajo el precio, con la cuota en seis pagos", () => {
+  assert.equal(lineaCuota(245000), `o Q${ESPACIO_DURO}408.34 al mes × 6`);
 });

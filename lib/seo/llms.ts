@@ -5,6 +5,7 @@
 // Solo afirma lo que el sitio ya dice en sus páginas, con las mismas frases
 // de CLAUDE.md § Reglas: nada de «te ayudamos a escoger» (regla 2), y ningún
 // plazo, precio de instalación ni condición que no esté definida.
+import { CUOTAS, ENVIO_PUBLICO, GARANTIA_ALCANCE } from "../politicas.ts";
 import { absoluteUrl } from "./site.ts";
 import type { Brand, Categoria } from "@/lib/catalog/index.ts";
 
@@ -31,10 +32,10 @@ export function buildLlmsTxt({
     "> Tienda en línea de equipo de audio para carro, marino y motorsports en Guatemala: bocinas, subwoofers, amplificadores, receptores, ecualizadores, kits de instalación, insonorización y accesorios. Precios en quetzales con IVA incluido.",
     "",
     "- El sitio es un catálogo con carrito. No hay pago en línea: el pedido se envía por WhatsApp desde el carrito.",
-    "- Envíos gratis a todo el país. Aplican restricciones según destino y volumen del pedido.",
-    "- Hasta 6 pagos precio contado.",
+    `- ${ENVIO_PUBLICO}`,
+    `- ${CUOTAS}`,
     "- Cada producto incluye la instalación básica; una instalación más compleja tiene costo adicional, y se informa al cerrar el pedido.",
-    "- La garantía cubre únicamente desperfectos de fábrica.",
+    `- ${GARANTIA_ALCANCE}`,
     "- Cada ficha de producto muestra el código del fabricante, el precio, la disponibilidad y la ficha técnica publicada por el fabricante.",
     "",
     "## Catálogo",

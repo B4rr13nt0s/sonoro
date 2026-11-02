@@ -23,3 +23,9 @@ export function formatQ(cents: number): string {
 export function calcularCuotaCents(totalCents: number, pagos: number): number {
   return Math.ceil(totalCents / pagos);
 }
+
+// La línea bajo el precio (CLAUDE.md regla 6): `o Q 408.34 al mes × 6`. Un solo
+// lugar para la ficha, el carrito y el chatbot.
+export function lineaCuota(precioCents: number): string {
+  return `o ${formatQ(calcularCuotaCents(precioCents, 6))} al mes × 6`;
+}
