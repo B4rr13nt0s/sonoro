@@ -159,7 +159,7 @@ function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respue
  * alto suelto en el último lugar haría fallar `encodeURIComponent` (URIError)
  * al armar el enlace de WhatsApp.
  */
-function cortar(texto: string): string {
+export function cortar(texto: string): string {
   const corte = texto.slice(0, MAX_CONSULTA);
   const ultimo = corte.charCodeAt(corte.length - 1);
   return ultimo >= 0xd800 && ultimo <= 0xdbff ? corte.slice(0, -1) : corte;
