@@ -94,6 +94,7 @@ type Entrada =
 
 type OpcionId =
   | "buscar" | "envios" | "garantia" | "instalacion" | "cuotas" | "como_pedir"
+  | "contacto"                      // por texto; no está en el menú de inicio
   | "hablar"                        // pasar a una persona
   | `categoria:${string}`           // slug de categoría del sitio
   | `marca:${string}`;              // slug de marca
