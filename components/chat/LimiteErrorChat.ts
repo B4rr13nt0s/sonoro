@@ -10,7 +10,7 @@ import { Component, type ReactNode } from "react";
 
 interface Props {
   alFallar: () => void;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export class LimiteErrorChat extends Component<Props, { fallo: boolean }> {

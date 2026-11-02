@@ -9,33 +9,16 @@
 // conserva entre páginas y se pierde al recargar (no hay localStorage). En
 // /carrito el lanzador no se dibuja pero sigue montado, así que la
 // conversación sobrevive a pasar por el carrito.
-import { createElement, lazy, Suspense, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
-import { LimiteErrorChat } from "@/components/chat/LimiteErrorChat";
+import { crearPanelDiferido } from "@/components/chat/PanelDiferido.ts";
 import { crearCargadorCatalogo } from "@/lib/chat/catalogo.ts";
-import { crearReintentable } from "@/lib/chat/reintentable.ts";
 import type { Contexto, Conversacion } from "@/lib/chat/tipos.ts";
 
-import type { PanelChatProps } from "./PanelChat";
-
-// lazy recuerda el import() que falló; si el panel no se pudo bajar, el
-// siguiente clic necesita un lazy nuevo (ver lib/chat/reintentable.ts).
-const panel = crearReintentable((alFallar) =>
-  lazy(() =>
-    import("./PanelChat").catch((error: unknown) => {
-      alFallar();
-      throw error;
-    }),
-  ),
-);
-
-// El lazy vigente se lee al dibujar; createElement y no JSX, porque un
-// componente elegido en pleno render no es lo que la regla de lint teme (no
-// se crea uno nuevo por render: es el mismo hasta que falle).
-function PanelDiferido(props: PanelChatProps) {
-  return createElement(panel.actual(), props);
-}
+// El panel se baja con import() al primer clic y, si eso falla, el siguiente
+// clic lo reintenta (components/chat/PanelDiferido.ts).
+const PanelDiferido = crearPanelDiferido(() => import("./PanelChat"));
 
 // Uno por carga de página: reabrir el panel no vuelve a pedir el catálogo.
 const cargarCatalogo = crearCargadorCatalogo();
@@ -93,18 +76,15 @@ export function LanzadorChat({ contacto }: { contacto: Contexto["contacto"] }) {
         Preguntar
       </button>
       {abierto ? (
-        <LimiteErrorChat alFallar={() => setAbierto(false)}>
-          <Suspense fallback={null}>
-            <PanelDiferido
-              conversacion={conversacion}
-              setConversacion={setConversacion}
-              contacto={contacto}
-              cargarCatalogo={cargarCatalogo}
-              alCerrar={() => setAbierto(false)}
-              lanzadorRef={lanzadorRef}
-            />
-          </Suspense>
-        </LimiteErrorChat>
+        <PanelDiferido
+          conversacion={conversacion}
+          setConversacion={setConversacion}
+          contacto={contacto}
+          cargarCatalogo={cargarCatalogo}
+          alCerrar={() => setAbierto(false)}
+          alFallar={() => setAbierto(false)}
+          lanzadorRef={lanzadorRef}
+        />
       ) : null}
     </>
   );

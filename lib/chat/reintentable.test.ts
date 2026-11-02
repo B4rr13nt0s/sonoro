@@ -3,23 +3,19 @@ import assert from "node:assert/strict";
 
 import { crearReintentable } from "./reintentable.ts";
 
-test("devuelve siempre la misma instancia mientras nada falle", () => {
+test("devuelve siempre la misma instancia mientras no se descarte", () => {
   let creadas = 0;
   const fuente = crearReintentable(() => ({ n: ++creadas }));
   assert.equal(fuente.actual(), fuente.actual());
   assert.equal(creadas, 1);
 });
 
-test("tras un fallo la siguiente lectura es una instancia nueva", () => {
+test("tras descartar, la siguiente lectura es una instancia nueva y estable", () => {
   let creadas = 0;
-  let fallar: () => void = () => {};
-  const fuente = crearReintentable((alFallar) => {
-    fallar = alFallar;
-    return { n: ++creadas };
-  });
+  const fuente = crearReintentable(() => ({ n: ++creadas }));
 
   const primera = fuente.actual();
-  fallar();
+  fuente.descartar();
   const segunda = fuente.actual();
 
   assert.notEqual(primera, segunda);
@@ -27,18 +23,9 @@ test("tras un fallo la siguiente lectura es una instancia nueva", () => {
   assert.equal(fuente.actual(), segunda);
 });
 
-test("un fallo de una instancia vieja no descarta la nueva", () => {
+test("descartar sin instancia no crea nada", () => {
   let creadas = 0;
-  const fallos: (() => void)[] = [];
-  const fuente = crearReintentable((alFallar) => {
-    fallos.push(alFallar);
-    return { n: ++creadas };
-  });
-
-  fuente.actual();
-  fallos[0]!();
-  const nueva = fuente.actual();
-  fallos[0]!(); // llega tarde: la instancia 1 ya fue reemplazada
-  assert.equal(fuente.actual(), nueva);
-  assert.equal(creadas, 2);
+  const fuente = crearReintentable(() => ({ n: ++creadas }));
+  fuente.descartar();
+  assert.equal(creadas, 0);
 });

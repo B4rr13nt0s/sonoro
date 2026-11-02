@@ -1,25 +1,24 @@
 // Un valor que se puede descartar y volver a crear. Sirve para `React.lazy`:
 // lazy guarda la promesa que falló, así que reintentar un import() rechazado
 // (sin red al primer clic, un chunk viejo tras un deploy) exige un lazy NUEVO.
-// La fábrica recibe `alFallar`; al llamarlo, la próxima lectura crea otra
-// instancia. Un fallo de una instancia ya reemplazada se ignora.
+//
+// Se descarta A MANO (`descartar`), nunca en el momento del rechazo: mientras
+// el error viaja hacia el límite de error, el lazy fallido tiene que seguir
+// siendo el vigente. Si se reemplazara al rechazarse, React volvería a dibujar,
+// leería el lazy nuevo y arrancaría otro import() en lugar de lanzar el error:
+// sin red, eso se repite sin fin. Quien atrapa el error llama `descartar()`, y
+// la PRÓXIMA lectura crea otra instancia.
 
-export function crearReintentable<T>(fabrica: (alFallar: () => void) => T): { actual(): T } {
+export function crearReintentable<T>(fabrica: () => T): { actual(): T; descartar(): void } {
   let instancia: { valor: T } | null = null;
-
-  function crear(): { valor: T } {
-    const nueva: { valor: T } = {
-      valor: fabrica(() => {
-        if (instancia === nueva) instancia = null;
-      }),
-    };
-    return nueva;
-  }
 
   return {
     actual() {
-      instancia ??= crear();
+      instancia ??= { valor: fabrica() };
       return instancia.valor;
+    },
+    descartar() {
+      instancia = null;
     },
   };
 }
