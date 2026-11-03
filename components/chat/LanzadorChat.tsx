@@ -1,9 +1,12 @@
 "use client";
 
-// La píldora «Preguntar» y nada más. Es lo único del chat que viaja en el JS
-// de cada página: el panel, el motor y la búsqueda se bajan con import() al
-// primer clic, y el catálogo con fetch (lib/chat/catalogo.ts). Por eso este
-// archivo solo importa ese módulo (pequeño) y tipos.
+// El botón «Preguntar» y nada más: en reposo es un círculo negro con el ícono
+// (44×44, el mínimo táctil) y con el puntero encima, o con el foco del
+// teclado, se expande hacia la izquierda a la píldora «Preguntar». Es lo único
+// del chat que viaja en el JS de cada página: el panel, el motor y la búsqueda
+// se bajan con import() al primer clic, y el catálogo con fetch
+// (lib/chat/catalogo.ts). Por eso este archivo solo importa ese módulo
+// (pequeño) y tipos.
 //
 // La conversación vive AQUÍ, en el layout, que no se desmonta al navegar: se
 // conserva entre páginas y se pierde al recargar (no hay localStorage). En
@@ -73,10 +76,16 @@ export function LanzadorChat({ contacto }: { contacto: Contexto["contacto"] }) {
         onFocus={() => PanelDiferido.precargar()}
         aria-expanded={abierto}
         aria-controls="panel-chat"
-        className="bg-negro fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center gap-2 rounded-full px-4 py-2.5 text-[14px] text-white lg:right-6 lg:bottom-6"
+        // `hover:` de Tailwind 4 va dentro de `@media (hover: hover)`: en el
+        // celular no hay expansión al tocar. La palabra sigue en el DOM
+        // (nombre accesible «Preguntar»), solo colapsada a ancho 0; anclado a
+        // la derecha, el botón crece hacia la izquierda.
+        className="group bg-negro fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex h-11 min-w-11 items-center justify-center rounded-full px-[13px] text-[14px] text-white transition-[padding] duration-200 hover:px-4 focus-visible:px-4 motion-reduce:transition-none lg:right-6 lg:bottom-6"
       >
         <IconoPreguntar />
-        Preguntar
+        <span className="ml-0 max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-[max-width,margin,opacity] duration-200 group-hover:ml-2 group-hover:max-w-24 group-hover:opacity-100 group-focus-visible:ml-2 group-focus-visible:max-w-24 group-focus-visible:opacity-100 motion-reduce:transition-none">
+          Preguntar
+        </span>
       </button>
       {abierto ? (
         <PanelDiferido

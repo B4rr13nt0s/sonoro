@@ -70,6 +70,26 @@ async function abrirChat(page: Page) {
   return panel;
 }
 
+test("el lanzador es un círculo de 44 px y se expande con el puntero o el foco", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const lanzador = page.getByRole("button", { name: "Preguntar" });
+  const ancho = async () => (await lanzador.boundingBox())?.width ?? 0;
+
+  // En reposo: círculo de 44 × 44, con la palabra en el DOM pero colapsada.
+  await expect.poll(ancho).toBe(44);
+  expect((await lanzador.boundingBox())?.height).toBe(44);
+
+  await lanzador.hover();
+  await expect.poll(ancho).toBeGreaterThan(100);
+  await page.mouse.move(0, 0);
+  await expect.poll(ancho).toBe(44);
+
+  await lanzador.focus();
+  await expect.poll(ancho).toBeGreaterThan(100);
+});
+
 async function preguntar(page: Page, texto: string) {
   const campo = page.getByLabel("Tu pregunta");
   await campo.fill(texto);

@@ -76,7 +76,7 @@ lib/chatLog/              Esquema zod con topes, decide/forward (patrón de lib/
 app/api/chat-log/route.ts POST abierto, siempre 204, reenvía en after()
 
 components/chat/
-  LanzadorChat.tsx        Componente cliente mínimo que va en el layout: la píldora
+  LanzadorChat.tsx        Componente cliente mínimo que va en el layout: el botón
                           «Preguntar». Al primer clic hace import() del panel.
   PanelChat.tsx           Dialog: cabecera, historial, campo. Llama a responder().
   BloqueChat.tsx          Dibuja cada tipo de Bloque.
@@ -141,7 +141,7 @@ type EventoChat =
 
 ### Flujo en la web
 
-1. Al cargar cualquier página (menos `/carrito`) se dibuja solo la píldora.
+1. Al cargar cualquier página (menos `/carrito`) se dibuja solo el botón.
 2. Primer clic: `import()` de `PanelChat` y `fetch("/chat/catalogo.json")` en
    paralelo. El panel abre de inmediato con el saludo y el menú (no necesita el
    catálogo).
@@ -313,8 +313,14 @@ aprobada en la conversación). Sin sombras, degradados, emoji ni color de
 acento.
 
 - **Lanzador:**
-  - Píldora `bg-negro text-white rounded-full`, 14 px, con un ícono de trazo
-    en la línea de `IconosContacto` y el texto «Preguntar».
+  - Botón `bg-negro text-white rounded-full`. En reposo es un círculo de
+    44 × 44 px (mínimo táctil) con solo el ícono de burbuja de trazo (el SVG,
+    nunca un emoji). Con el puntero encima (`hover:`, que en Tailwind 4 solo
+    aplica en dispositivos que pueden hacer hover) o con el foco del teclado
+    (`focus-visible`), se expande hacia la izquierda a la píldora de 14 px con
+    el ícono y el texto «Preguntar», con una transición de ancho que
+    `motion-reduce` desactiva. El texto está siempre en el DOM, colapsado a
+    ancho 0 en reposo: es el nombre accesible. En táctil no se expande.
   - Fija abajo a la derecha: 24 px en `lg:`, 16 px debajo, más
     `env(safe-area-inset-bottom)`.
   - **No se dibuja en `/carrito`.** (`BarraComparador` hoy no está montada,

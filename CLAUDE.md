@@ -356,11 +356,11 @@ ACX 165_frontal.jpg      ← el sku se escribe tal cual (con su espacio interno)
 
 ## Chatbot
 
-El botón flotante **«Preguntar»** abre un panel que busca productos, responde dudas de políticas y pasa a una persona. Diseño y razones: `docs/superpowers/specs/2026-11-02-chatbot-design.md`.
+El botón flotante —un círculo negro con el ícono de burbuja de 44 px que, con el puntero encima o el foco del teclado, se expande a la píldora **«Preguntar»**; la palabra siempre está en el DOM como nombre accesible— abre un panel que busca productos, responde dudas de políticas y pasa a una persona. Diseño y razones: `docs/superpowers/specs/2026-11-02-chatbot-design.md`.
 
 - **No usa LLM.** Es guiado, por reglas, sobre la misma búsqueda de `/buscar` (`lib/busqueda/`): entiende lo mismo que ella y no inventa datos. **No asesora** (regla 2): ante «¿cuál es mejor?» responde neutro y ofrece hablar con una persona. Prohibido sumarle un «te recomendamos».
 - **Los textos de políticas salen de `lib/politicas.ts`**, los mismos que muestran las páginas legales. No se escribe una segunda versión en el chat; lo que está en «Decisiones abiertas» no se responde.
-- **Va tras `NEXT_PUBLIC_CHAT_ENABLED`** (se lee al compilar; apagada o ausente, `app/layout.tsx` no dibuja el lanzador). El JS de la portada solo carga la píldora (~1 KB gzip), y la carga **también con la bandera apagada**: el import es estático y solo se evita dibujarla; el panel, el motor y la búsqueda se bajan con `import()` al primer clic, y el catálogo con `fetch` a `/chat/catalogo.json`, estático y `noindex`.
+- **Va tras `NEXT_PUBLIC_CHAT_ENABLED`** (se lee al compilar; apagada o ausente, `app/layout.tsx` no dibuja el lanzador). El JS de la portada solo carga el botón (~1 KB gzip), y lo carga **también con la bandera apagada**: el import es estático y solo se evita dibujarla; el panel, el motor y la búsqueda se bajan con `import()` al primer clic, y el catálogo con `fetch` a `/chat/catalogo.json`, estático y `noindex`.
 - **No aparece en `/carrito`**: ahí el lanzador no se dibuja, pero la conversación sobrevive, porque vive en el layout y no en el panel. No se guarda entre recargas.
 - **Registro anónimo** en la hoja «Chat» (`/api/chat-log`, `lib/chatLog/`): sin nombre, IP ni identificador persistente. Toda tira de 7 o más dígitos se enmascara dos veces, en el navegador (`lib/chat/enmascarar.ts`) y en el servidor. **El Apps Script hay que volver a pegarlo a mano** (`docs/apps-script/quote-log.gs`, rama `tipo === "chat"`) en el editor de Apps Script: sin eso la hoja «Chat» no recibe nada, aunque el endpoint responda 204.
 - **Canal WhatsApp: pendiente.** El motor no conoce el canal y los tipos ya lo prevén, pero el bot de WhatsApp no está construido.
