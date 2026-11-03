@@ -42,7 +42,7 @@ export const OPCIONES_INICIO: readonly Opcion[] = [
 ];
 
 export const TEXTO_INICIO =
-  "Hola. Busca un producto por nombre, marca, código o medida, o elige un tema.";
+  "Busca un producto por nombre, marca, código o medida, o elige un tema.";
 
 export const TEXTO_PEDIR_BUSQUEDA = "Escribe el nombre, la marca, el código o la medida.";
 

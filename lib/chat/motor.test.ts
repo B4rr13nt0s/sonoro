@@ -86,7 +86,7 @@ test("inicio: termina en las siete opciones, en orden", () => {
   assert.equal(bloques[0].tipo, "texto");
   assert.equal(
     textos(bloques)[0],
-    "Hola. Busca un producto por nombre, marca, código o medida, o elige un tema.",
+    "Busca un producto por nombre, marca, código o medida, o elige un tema.",
   );
   const ultimo = bloques[bloques.length - 1];
   assert.equal(ultimo.tipo, "opciones");

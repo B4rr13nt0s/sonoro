@@ -23,7 +23,7 @@ export function ProductoChat({
 }) {
   return (
     <div className="border-borde-tarjeta flex gap-3 border-t py-3">
-      <div className="h-14 w-14 flex-none overflow-hidden rounded-[10px]">
+      <div className="rounded-field h-14 w-14 flex-none overflow-hidden">
         <ProductImage
           imagenes={producto.imagenes}
           nombre={producto.nombre}

@@ -298,7 +298,7 @@ export default function PanelChat({
             mensaje.autor === "cliente" ? (
               <p
                 key={mensaje.id}
-                className="bg-fondo-alt max-w-[85%] self-end rounded-[14px] px-3 py-2 text-[14px] break-words"
+                className="bg-fondo-alt rounded-card max-w-[85%] self-end px-3 py-2 text-[14px] break-words"
               >
                 {mensaje.texto}
               </p>
