@@ -6,10 +6,13 @@
 import {
   acoteDeId,
   aplicarAcotes,
+  canalesDe,
+  cercanosEnLista,
   describirAcote,
   gruposDeAcote,
   hrefAcotado,
   idDeAcote,
+  medidasDe,
   type Acote,
 } from "../busqueda/acotar.ts";
 import {
@@ -32,7 +35,10 @@ import {
   type Campo,
   type CampoSpec,
 } from "./datos.ts";
+import { fraseResultados } from "./charla.ts";
 import { consultaVisible, detectarIntencion } from "./intencion.ts";
+import { accionDe } from "./referencia.ts";
+import { aplicarCambios, fraseCambios, type Cambio } from "./seguimiento.ts";
 import {
   TEXTO_DATOS_FABRICANTE,
   TEXTO_PEDIR_BUSQUEDA,
@@ -110,6 +116,7 @@ function responderBusqueda(
   contexto: Contexto,
   verTodosHref?: string,
   opcionTema?: Tema,
+  turno = 0,
 ): Respuesta {
   // Con un tema de palabra ambigua que quedó de lado, el estado lo conserva
   // junto a la consulta: «Hablar con Sonoro» lleva las dos cosas.
@@ -154,6 +161,9 @@ function responderBusqueda(
       tipo: "texto",
       texto: `Esto encontramos para «${visible}». Si preguntabas por ${TEMA_NOMBRE[opcionTema]}, está abajo.`,
     });
+  } else if (resultado.modo === "exacta") {
+    // Lo aproximado, lo cercano y lo parcial ya traen su línea de avisos.
+    bloques.push({ tipo: "texto", texto: fraseResultados(resultado.productos.length, turno) });
   }
   const filtros = bloqueFiltros(resultado);
   if (filtros) bloques.push(filtros);
@@ -171,8 +181,9 @@ function responderBusqueda(
   if (acotar) bloques.push(acotar);
   bloques.push(opcionTema ? opcionesTemaYHablar(opcionTema) : opcionesHablar());
   return {
-    // La búsqueda se recuerda solo si hay botones que la acoten.
-    estado: acotar
+    // La búsqueda se recuerda para acotarla, con botones o escribiendo («y de
+    // 10?»). La parcial no: no es lo que se buscó.
+    estado: acotable
       ? { ...estado, busqueda: { base: { tipo: "texto", consulta, visible }, acotes: [] } }
       : estado,
     bloques,
@@ -193,8 +204,9 @@ function bloqueProductos(
   lista: readonly ProductoBuscable[],
   verTodosHref: string,
   consulta: string | null,
+  desde = 0,
 ): Bloque {
-  const primeros = lista.slice(0, MAX_PRODUCTOS_CHAT);
+  const primeros = lista.slice(desde, desde + MAX_PRODUCTOS_CHAT);
   const datos: Record<string, Spec[]> = {};
   if (consulta) {
     for (const p of primeros) {
@@ -248,56 +260,244 @@ function productosDeBase(
   return { lista, resultado: null };
 }
 
+/** Lo que se muestra como búsqueda base: lo escrito, o el nombre de la categoría. */
+function visibleDe(base: BusquedaAcotable["base"]): string {
+  return base.tipo === "texto"
+    ? base.visible
+    : (CATEGORIAS_SITIO.find((c) => c.slug === base.slug)?.nombre ?? "");
+}
+
+/** Los productos de una búsqueda guardada, acotados y en su orden. */
+function listaDe(
+  busqueda: BusquedaAcotable,
+  productos: readonly ProductoBuscable[],
+  marcas: Contexto["marcas"],
+) {
+  const { lista, resultado } = productosDeBase(busqueda.base, productos);
+  const acotada = aplicarAcotes(lista, busqueda.acotes, marcas);
+  const { orden } = busqueda;
+  // Por precio, y a igual precio lo que ya traía la búsqueda (sort es estable).
+  if (orden) {
+    acotada.sort((a, b) =>
+      orden === "precio_asc" ? a.precioCents - b.precioCents : b.precioCents - a.precioCents,
+    );
+  }
+  return { lista, acotada, resultado };
+}
+
+/** A qué campo va un número suelto escrito sobre esta búsqueda: el que traen sus productos. */
+export function numeroSueltoDe(estado: Estado, contexto: Contexto): "medida" | "canales" | null {
+  if (!estado.busqueda || contexto.productos === null) return null;
+  const { lista } = productosDeBase(estado.busqueda.base, contexto.productos);
+  if (medidasDe(lista).length > 0) return "medida";
+  if (canalesDe(lista).length > 0) return "canales";
+  return null;
+}
+
+/** «No hay Pioneer en esta búsqueda.», «No hay productos de 15" en esta búsqueda.» */
+function fraseSinResultados(cambios: readonly Cambio[], marcas: Contexto["marcas"]): string {
+  const acotes = cambios.flatMap((c) => (c.tipo === "acote" ? [c.acote] : []));
+  const marca = acotes.find((a) => a.campo === "marca");
+  const resto = acotes
+    .filter((a) => a.campo !== "marca")
+    .map((a) =>
+      a.campo === "disponibilidad"
+        ? "disponibles"
+        : a.campo === "precio"
+          ? describirAcote(a, marcas).replace(/^Precio /, "")
+          : `de ${describirAcote(a, marcas)}`,
+    );
+  const sujeto = marca ? describirAcote(marca, marcas) : "productos";
+  return `No hay ${[sujeto, ...resto].join(" ")} en esta búsqueda.`;
+}
+
 /**
- * Un botón de «acotar»: vuelve a correr la última búsqueda con lo que ya se
- * había acotado más lo nuevo (un mismo campo se reemplaza, no se suma). Sin
- * búsqueda anterior, o si con eso no queda nada, el menú de inicio.
+ * Un seguimiento escrito («y de 10?», «solo Memphis», «más baratos», «más»)
+ * o un botón de acotar: la búsqueda guardada con los cambios. Siempre dice qué
+ * entendió. Un cambio que deja cero no se aplica: con una medida o canales,
+ * muestra los valores más cercanos de esa misma búsqueda; con lo demás, dice
+ * que no hay y la memoria queda como estaba.
  */
-function responderAcote(estado: Estado, acote: Acote, contexto: Contexto): Respuesta {
+function responderSeguimiento(
+  estado: Estado,
+  cambios: readonly Cambio[],
+  contexto: Contexto,
+): Respuesta {
   const busqueda = estado.busqueda;
-  const { productos } = contexto;
+  const { productos, marcas } = contexto;
   if (!busqueda) return saludo(estado);
   if (productos === null) return sinCatalogo(estado);
 
-  const acotes = [...busqueda.acotes.filter((a) => a.campo !== acote.campo), acote];
-  const { lista, resultado } = productosDeBase(busqueda.base, productos);
-  const acotada = aplicarAcotes(lista, acotes, contexto.marcas);
-  if (acotada.length === 0) return saludo(estado);
+  const nueva = aplicarCambios(busqueda, cambios);
+  const { lista, acotada, resultado } = listaDe(nueva, productos, marcas);
+  const visible = visibleDe(nueva.base);
+  const consultaBase = nueva.base.tipo === "texto" ? nueva.base.consulta : null;
 
-  const base = busqueda.base;
-  const visible =
-    base.tipo === "texto"
-      ? base.visible
-      : (CATEGORIAS_SITIO.find((c) => c.slug === base.slug)?.nombre ?? "");
-  const descritos = acotes.map((a) => describirAcote(a, contexto.marcas));
-  const bloques: Bloque[] = [
-    {
+  if (acotada.length === 0) {
+    const medida = cambios.flatMap((c) =>
+      c.tipo === "acote" && (c.acote.campo === "medida" || c.acote.campo === "canales")
+        ? [c.acote]
+        : [],
+    )[0];
+    if (medida && (medida.campo === "medida" || medida.campo === "canales")) {
+      const sinEsa = aplicarAcotes(
+        lista,
+        nueva.acotes.filter((a) => a.campo !== medida.campo),
+        marcas,
+      );
+      const valor = medida.campo === "medida" ? medida.pulgadas : medida.canales;
+      const cercanos = cercanosEnLista(sinEsa, medida.campo, valor);
+      if (cercanos) {
+        const dicho = (v: number) =>
+          describirAcote(
+            medida.campo === "medida"
+              ? { campo: "medida", pulgadas: v }
+              : { campo: "canales", canales: v },
+            marcas,
+          );
+        const valores = cercanos.valores.map(dicho);
+        const frase =
+          `Ninguno es de ${dicho(valor)}. ` +
+          (valores.length === 1
+            ? `El más cercano es de ${valores[0]}.`
+            : `Los más cercanos son de ${valores.join(" y ")}.`);
+        const bloque = bloqueProductos(
+          cercanos.productos,
+          hrefAcotado(visible, busqueda.acotes, marcas),
+          consultaBase,
+        );
+        return {
+          estado: { ...estado, mostrados: bloque.tipo === "productos" ? bloque.skus : [] },
+          bloques: [{ tipo: "texto", texto: frase }, bloque, opcionesHablar()],
+          evento: null,
+        };
+      }
+    }
+    const anterior = listaDe(busqueda, productos, marcas).acotada;
+    const acotar = bloqueAcotar(anterior, contexto, elegidosDe(busqueda));
+    return {
+      estado,
+      bloques: [
+        { tipo: "texto", texto: fraseSinResultados(cambios, marcas) },
+        ...(acotar ? [acotar] : []),
+        opcionesHablar(),
+      ],
+      evento: null,
+    };
+  }
+
+  const pagina = nueva.pagina ?? 0;
+  const desde = pagina * MAX_PRODUCTOS_CHAT;
+  if (desde >= acotada.length) {
+    return {
+      estado,
+      bloques: [{ tipo: "texto", texto: `Ya te mostré los ${acotada.length}.` }, opcionesHablar()],
+      evento: null,
+    };
+  }
+
+  const cuenta = acotada.length === 1 ? "Queda 1." : `Quedan ${acotada.length}.`;
+  const frase = cambios.some((c) => c.tipo === "mas")
+    ? `Del ${desde + 1} al ${Math.min(desde + MAX_PRODUCTOS_CHAT, acotada.length)} de ${acotada.length}.`
+    : [fraseCambios(busqueda, cambios, marcas), cuenta].filter(Boolean).join(" ");
+  const descritos = nueva.acotes.map((a) => describirAcote(a, marcas));
+  const productosBloque = bloqueProductos(
+    acotada,
+    hrefAcotado(visible, nueva.acotes, marcas, nueva.orden),
+    consultaBase,
+    desde,
+  );
+  const bloques: Bloque[] = [{ tipo: "texto", texto: frase }];
+  if (descritos.length > 0 || (resultado && resultado.modo !== "exacta")) {
+    bloques.push({
       tipo: "filtros",
       aplicados: [...(resultado?.aplicados ?? []), ...descritos],
       correccion: resultado?.correccion ?? null,
       modo: resultado?.modo ?? "exacta",
       cercania: resultado?.cercania ?? null,
-    },
-    bloqueProductos(
-      acotada,
-      hrefAcotado(visible, acotes, contexto.marcas),
-      base.tipo === "texto" ? base.consulta : null,
-    ),
-  ];
-  const elegidos: Acote["campo"][] = acotes.map((a) => a.campo);
-  if (base.tipo === "categoria") elegidos.push("categoria");
-  const acotar = bloqueAcotar(acotada, contexto, elegidos);
+    });
+  }
+  bloques.push(productosBloque);
+  const acotar = bloqueAcotar(acotada, contexto, elegidosDe(nueva));
   if (acotar) bloques.push(acotar);
   bloques.push(opcionesHablar());
+  const combinada = [visible, ...descritos].join(" · ");
   return {
-    estado: { ultimaConsulta: visible, ultimoTema: null, busqueda: { base, acotes } },
+    estado: {
+      ultimaConsulta: combinada,
+      ultimoTema: null,
+      busqueda: nueva,
+      mostrados: productosBloque.tipo === "productos" ? productosBloque.skus : [],
+    },
     bloques,
     evento: {
       evento: "busqueda",
-      consulta: [base.tipo === "texto" ? base.consulta : visible, ...descritos].join(" · "),
+      consulta: [consultaBase ?? visible, ...descritos].join(" · "),
       modo: resultado?.modo ?? "exacta",
       resultados: acotada.length,
     },
+  };
+}
+
+/** Los campos ya acotados de una búsqueda, que no vuelven como botón. */
+function elegidosDe(busqueda: BusquedaAcotable): Acote["campo"][] {
+  const elegidos: Acote["campo"][] = busqueda.acotes.map((a) => a.campo);
+  if (busqueda.base.tipo === "categoria") elegidos.push("categoria");
+  return elegidos;
+}
+
+/**
+ * «¿cuánto cuesta el primero?», «agrégalo», «¿y el segundo?»: un producto de
+ * los que se mostraron. Con un dato que preguntar, el de su ficha; con un
+ * pedido de carrito, su fila con el botón (el chat no agrega solo); con nada
+ * más, el mismo dato de antes o su fila. No toca la búsqueda ni lo mostrado.
+ */
+function responderReferencia(
+  estado: Estado,
+  sku: string,
+  resto: string,
+  texto: string,
+  contexto: Contexto,
+): Respuesta {
+  const { productos } = contexto;
+  if (productos === null) return sinCatalogo(estado);
+  const producto = productos.find((p) => p.sku === sku);
+  // Otro deploy entre mensajes: el sku ya no está. Lo escrito, como búsqueda.
+  if (!producto) return responderBusqueda(normalizar(texto), consultaVisible(texto), contexto);
+
+  const memoria: Estado = {
+    ...estado,
+    ultimaConsulta: producto.nombre,
+    ultimoTema: null,
+    enfoque: sku,
+    pendiente: null,
+  };
+  if (accionDe(resto) === "carrito") {
+    return {
+      estado: memoria,
+      bloques: [
+        { tipo: "texto", texto: `Aquí está ${producto.nombre} para agregarlo al carrito.` },
+        bloqueProductos([producto], `/producto/${producto.slug}`, null),
+        opcionesHablar(),
+      ],
+      evento: null,
+    };
+  }
+  const pregunta = detectarIntencion(resto);
+  const campos =
+    pregunta.tipo === "dato" ? pregunta.campos : resto === "" ? (estado.ultimosCampos ?? []) : [];
+  if (campos.length > 0) {
+    const codigo = normalizar(producto.sku);
+    const r = responderDato(campos, codigo, producto.sku, producto.nombre, contexto);
+    return {
+      ...r,
+      estado: { ...memoria, ultimosCampos: [...campos] },
+    };
+  }
+  return {
+    estado: memoria,
+    bloques: [bloqueProductos([producto], `/producto/${producto.slug}`, null), opcionesHablar()],
+    evento: null,
   };
 }
 
@@ -448,6 +648,7 @@ function responderDato(
 function responderCategoria(
   categoria: { slug: string; nombre: string },
   contexto: Contexto,
+  turno = 0,
 ): Respuesta {
   const href = `/catalogo/${categoria.slug}`;
   const { productos } = contexto;
@@ -463,10 +664,16 @@ function responderCategoria(
 
   const acotar = bloqueAcotar(lista, contexto, ["categoria"]);
   return {
-    estado: acotar
-      ? { ...estado, busqueda: { base: { tipo: "categoria", slug: categoria.slug }, acotes: [] } }
-      : estado,
-    bloques: [bloqueProductos(lista, href, null), ...(acotar ? [acotar] : []), opcionesHablar()],
+    estado: {
+      ...estado,
+      busqueda: { base: { tipo: "categoria", slug: categoria.slug }, acotes: [] },
+    },
+    bloques: [
+      { tipo: "texto", texto: fraseResultados(lista.length, turno) },
+      bloqueProductos(lista, href, null),
+      ...(acotar ? [acotar] : []),
+      opcionesHablar(),
+    ],
     evento: {
       evento: "busqueda",
       consulta: categoria.nombre,
@@ -510,16 +717,25 @@ function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respue
   if (id.startsWith("categoria:")) {
     const slug = id.slice("categoria:".length);
     const categoria = CATEGORIAS_SITIO.find((c) => c.slug === slug);
-    if (categoria) return responderCategoria(categoria, contexto);
+    if (categoria) return responderCategoria(categoria, contexto, estado.turno);
   }
   if (id.startsWith("acotar:")) {
     const acote = acoteDeId(id);
-    if (acote) return responderAcote(estado, acote, contexto);
+    if (acote) return responderSeguimiento(estado, [{ tipo: "acote", acote }], contexto);
   }
   if (id.startsWith("marca:")) {
     const slug = id.slice("marca:".length);
     const marca = contexto.marcas.find((m) => m.slug === slug);
-    if (marca) return responderBusqueda(marca.nombre, marca.nombre, contexto, `/marcas/${slug}`);
+    if (marca) {
+      return responderBusqueda(
+        marca.nombre,
+        marca.nombre,
+        contexto,
+        `/marcas/${slug}`,
+        undefined,
+        estado.turno,
+      );
+    }
   }
   return saludo(estado);
 }
@@ -536,6 +752,23 @@ export function cortar(texto: string): string {
 }
 
 export function responder(estado: Estado, entrada: Entrada, contexto: Contexto): Respuesta {
+  const r = responderSinMemoria(estado, entrada, contexto);
+  // Lo que se mostró, para «el primero» del próximo mensaje: si la respuesta
+  // no lo fijó, sus productos. Y el turno, para rotar las frases.
+  const productos = r.bloques.find((b) => b.tipo === "productos");
+  const mostrados =
+    r.estado.mostrados ?? (productos?.tipo === "productos" ? productos.skus : undefined);
+  return {
+    ...r,
+    estado: {
+      ...r.estado,
+      ...(mostrados ? { mostrados } : {}),
+      turno: (estado.turno ?? 0) + 1,
+    },
+  };
+}
+
+function responderSinMemoria(estado: Estado, entrada: Entrada, contexto: Contexto): Respuesta {
   if (entrada.tipo === "opcion") return responderOpcion(estado, entrada.id, contexto);
 
   // Lo escrito se corta antes de cualquier otra cosa: nada de lo que sigue
@@ -543,7 +776,10 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
   const texto = cortar(entrada.texto.trim()).trimEnd();
   if (texto === "") return saludo(estado);
 
-  const intencion = detectarIntencion(texto);
+  const intencion = detectarIntencion(texto, estado, {
+    marcas: contexto.marcas,
+    numeroSuelto: numeroSueltoDe(estado, contexto),
+  });
   switch (intencion.tipo) {
     case "saludo":
       return saludo(estado);
@@ -566,14 +802,23 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
         contexto,
       );
     case "busqueda":
-      return responderBusqueda(intencion.consulta, consultaVisible(texto), contexto);
-    // Las de conversación se responden en las tareas 7 y 8 del plan
+      return responderBusqueda(
+        intencion.consulta,
+        consultaVisible(texto),
+        contexto,
+        undefined,
+        undefined,
+        estado.turno,
+      );
+    case "seguimiento":
+      return responderSeguimiento(estado, intencion.cambios, contexto);
+    case "referencia":
+      return responderReferencia(estado, intencion.sku, intencion.resto, texto, contexto);
+    // Charla, pregunta pendiente y pedidos vagos: tarea 8 del plan
     // (docs/superpowers/plans/2026-11-03-chat-conversacion.md); mientras
-    // tanto, lo de antes: el menú de inicio.
+    // tanto, el menú de inicio.
     case "charla":
     case "respuesta_pendiente":
-    case "referencia":
-    case "seguimiento":
     case "vago":
       return saludo(estado);
   }

@@ -15,6 +15,11 @@ import {
 import { TEMA_NOMBRE, bloquesDeTema } from "./respuestas.ts";
 import type { Bloque, Contexto, Entrada, Estado, OpcionId, Tema } from "./tipos.ts";
 
+/** Lo que el estado tenía antes de la memoria: la consulta y el tema para «Hablar con Sonoro». */
+function sinMemoria(estado: { ultimaConsulta: string | null; ultimoTema: unknown }) {
+  return { ultimaConsulta: estado.ultimaConsulta, ultimoTema: estado.ultimoTema };
+}
+
 function producto(
   sku: string,
   nombre: string,
@@ -113,7 +118,7 @@ test("saludo: responde el inicio y no registra evento", () => {
   const r = responder(ESTADO_INICIAL, texto("Hola"), CONTEXTO);
   assert.deepEqual(r.bloques, bloquesDeInicio());
   assert.equal(r.evento, null);
-  assert.deepEqual(r.estado, ESTADO_INICIAL);
+  assert.deepEqual(sinMemoria(r.estado), sinMemoria(ESTADO_INICIAL));
 });
 
 test("texto en blanco se trata como saludo", () => {
@@ -235,7 +240,11 @@ test("acotar: los acotes se suman, y uno del mismo campo reemplaza al anterior",
 test("acotar: una búsqueda nueva escrita a mano olvida lo acotado", () => {
   const r = responder(ESTADO_INICIAL, texto("memphis"), CONTEXTO);
   const otra = responder(r.estado, texto("kit"), CONTEXTO);
-  assert.equal(otra.estado.busqueda, undefined);
+  // La búsqueda nueva reemplaza a la anterior, sin lo acotado.
+  assert.deepEqual(otra.estado.busqueda, {
+    base: { tipo: "texto", consulta: "kit", visible: "kit" },
+    acotes: [],
+  });
   const tema = responder(r.estado, texto("envíos"), CONTEXTO);
   assert.equal(tema.estado.busqueda, undefined);
   // Un botón viejo sin búsqueda a la cual volver lleva al inicio.
@@ -324,7 +333,7 @@ test("envíos: el texto trae el umbral formateado y los enlaces", () => {
   const enlace = r.bloques.flatMap((b) => (b.tipo === "texto" && b.enlace ? [b.enlace] : []));
   assert.deepEqual(enlace, [{ etiqueta: "Términos y condiciones", href: "/legal/terminos" }]);
   assert.deepEqual(r.evento, { evento: "tema", tema: "envios" });
-  assert.deepEqual(r.estado, { ultimaConsulta: null, ultimoTema: "envios" });
+  assert.deepEqual(sinMemoria(r.estado), { ultimaConsulta: null, ultimoTema: "envios" });
   assert.deepEqual(r.bloques[r.bloques.length - 1], {
     tipo: "opciones",
     opciones: [
@@ -422,9 +431,9 @@ test("hablar sin contexto: el saludo a secas", () => {
 test("un tema deja la consulta anterior en null y una búsqueda el tema", () => {
   const a = responder(ESTADO_INICIAL, texto("sub 12 2 ohm"), CONTEXTO);
   const b = responder(a.estado, opcion("garantia"), CONTEXTO);
-  assert.deepEqual(b.estado, { ultimaConsulta: null, ultimoTema: "garantia" });
+  assert.deepEqual(sinMemoria(b.estado), { ultimaConsulta: null, ultimoTema: "garantia" });
   const c = responder(b.estado, texto("sub 12 2 ohm"), CONTEXTO);
-  assert.deepEqual(c.estado, { ultimaConsulta: "sub 12 2 ohm", ultimoTema: null });
+  assert.deepEqual(sinMemoria(c.estado), { ultimaConsulta: "sub 12 2 ohm", ultimoTema: null });
 });
 
 test("recomendación: redirige a las categorías y guarda el texto sin normalizar", () => {
@@ -515,7 +524,7 @@ test("nombres del prototipo no son opciones: caen al saludo", () => {
     const r = responder(estado, opcion(id as OpcionId), CONTEXTO);
     assert.deepEqual(r.bloques, bloquesDeInicio(), id);
     assert.equal(r.evento, null, id);
-    assert.deepEqual(r.estado, estado, id);
+    assert.deepEqual(sinMemoria(r.estado), sinMemoria(estado), id);
   }
   // Y un ultimoTema ajeno a TEMA_NOMBRE no se cuela en el mensaje de «Hablar».
   const raro = responder(
@@ -659,7 +668,10 @@ test("palabra ambigua con productos exactos: productos y el tema como botón", (
   // Lo que se muestra y se manda por WhatsApp es la búsqueda que dio los
   // productos, sin la palabra del tema.
   // El estado lleva también el tema, para que «Hablar con Sonoro» lo cargue.
-  assert.deepEqual(r.estado, { ultimaConsulta: "radio con carplay", ultimoTema: "contacto" });
+  assert.deepEqual(sinMemoria(r.estado), {
+    ultimaConsulta: "radio con carplay",
+    ultimoTema: "contacto",
+  });
   assert.equal(de(r.bloques, "productos")?.verTodosHref, "/buscar?q=radio+con+carplay");
   // Un aviso antes de los productos dice qué se buscó y dónde quedó el tema.
   assert.deepEqual(r.bloques[0], {
@@ -693,7 +705,7 @@ test("palabra ambigua: «tarjeta de sonido» con producto exacto muestra product
 test("palabra ambigua sin coincidencia exacta: se responde el tema", () => {
   const r = responder(ESTADO_INICIAL, texto("tarjeta de sonido"), CONTEXTO);
   assert.deepEqual(r.evento, { evento: "tema", tema: "cuotas" });
-  assert.deepEqual(r.estado, { ultimaConsulta: null, ultimoTema: "cuotas" });
+  assert.deepEqual(sinMemoria(r.estado), { ultimaConsulta: null, ultimoTema: "cuotas" });
   assert.equal(de(r.bloques, "productos"), undefined);
 });
 
@@ -756,7 +768,7 @@ test("dato: un producto responde con los valores de su ficha, en su orden", () =
   });
   assert.deepEqual(textos(r.bloques), ["Datos publicados por el fabricante."]);
   assert.equal(r.bloques.at(-1)?.tipo, "opciones");
-  assert.deepEqual(r.estado, {
+  assert.deepEqual(sinMemoria(r.estado), {
     ultimaConsulta: "cuántos watts tiene el SQ12-D2",
     ultimoTema: null,
   });
@@ -850,4 +862,139 @@ test("dato: un catálogo sin fichas (anterior al deploy) no dice «no publica»:
   // La disponibilidad no depende de la ficha.
   const d = responder(ESTADO_INICIAL, texto("¿está disponible el SQ12-D2?"), CONTEXTO);
   assert.deepEqual(textos(d.bloques), ['Subwoofer Serie SQ de 12" SQ12-D2: disponible.']);
+});
+
+// ---------------------------------------------------------------------------
+// Conversación con memoria (spec 2026-11-03)
+// ---------------------------------------------------------------------------
+
+function sub(sku: string, marca: string, pulgadas: number, precioCents: number, extra = {}) {
+  return producto(sku, `Subwoofer ${marca} de ${pulgadas}" ${sku}`, "Subwoofers", {
+    marca,
+    pulgadas,
+    precioCents,
+    claves: `${pulgadas}"`,
+    ...extra,
+  });
+}
+
+// Ocho subwoofers: más de los que caben en el chat, con medidas, marcas y
+// precios distintos.
+const GRANDE: Contexto = {
+  ...CONTEXTO,
+  productos: [
+    sub("G1", "Memphis", 12, 300000),
+    sub("G2", "Memphis", 12, 200000),
+    sub("G3", "Memphis", 10, 150000),
+    sub("G4", "KBT", 12, 100000),
+    sub("G5", "KBT", 10, 90000),
+    sub("G6", "Memphis", 15, 400000),
+    sub("G7", "KBT", 15, 80000),
+    sub("G8", "Memphis", 12, 250000, { disponibilidad: "bajo_pedido" }),
+  ],
+  marcas: [
+    { nombre: "Memphis", slug: "memphis" },
+    { nombre: "KBT", slug: "kbt" },
+    { nombre: "Pioneer", slug: "pioneer" },
+  ],
+};
+
+/** Corre los mensajes en orden, cada uno sobre el estado del anterior. */
+function conversar(mensajes: (string | Entrada)[], contexto = GRANDE) {
+  let estado = ESTADO_INICIAL;
+  return mensajes.map((m) => {
+    const r = responder(estado, typeof m === "string" ? texto(m) : m, contexto);
+    estado = r.estado;
+    return r;
+  });
+}
+
+const skusDe = (r: { bloques: Bloque[] }) => de(r.bloques, "productos")?.skus ?? [];
+
+test("conversación: subwoofers → 12 → solo Memphis → más baratos → precio del primero → agrégalo", () => {
+  const [r1, r2, r3, r4, r5, r6] = conversar([
+    "subwoofers",
+    "12",
+    "solo memphis",
+    "más baratos",
+    "¿cuánto cuesta el primero?",
+    "agrégalo",
+  ]);
+  assert.equal(textos(r1.bloques)[0], "Encontré 8 resultados.");
+  assert.equal(textos(r2.bloques)[0], 'Ahora de 12". Quedan 4.');
+  assert.deepEqual([...skusDe(r2)].sort(), ["G1", "G2", "G4", "G8"]);
+  assert.equal(textos(r3.bloques)[0], "Ahora solo Memphis. Quedan 3.");
+  assert.equal(textos(r4.bloques)[0], "Ordené de menor a mayor precio. Quedan 3.");
+  assert.deepEqual(skusDe(r4), ["G2", "G8", "G1"]);
+  assert.ok(
+    textos(r5.bloques).includes(
+      'Subwoofer Memphis de 12" G2 cuesta Q\u00a02,000.00, o Q\u00a0333.34 al mes × 6.',
+    ),
+  );
+  assert.equal(r5.estado.enfoque, "G2");
+  // La referencia no toca la búsqueda ni lo mostrado.
+  assert.deepEqual(r5.estado.busqueda, r4.estado.busqueda);
+  assert.deepEqual(r5.estado.mostrados, ["G2", "G8", "G1"]);
+  assert.equal(
+    textos(r6.bloques)[0],
+    'Aquí está Subwoofer Memphis de 12" G2 para agregarlo al carrito.',
+  );
+  assert.deepEqual(skusDe(r6), ["G2"]);
+});
+
+test("conversación: sub 12 → y de 10?: la medida del texto pasa a acote", () => {
+  const [, r2] = conversar(["sub 12", "y de 10?"]);
+  assert.equal(textos(r2.bloques)[0], 'Cambié 12" por 10". Quedan 2.');
+  assert.deepEqual([...skusDe(r2)].sort(), ["G3", "G5"]);
+  const base = r2.estado.busqueda?.base;
+  assert.equal(base?.tipo === "texto" && base.consulta, "sub");
+});
+
+test("conversación: un cambio que deja cero no toca la memoria", () => {
+  const [, r2, r3] = conversar(["subwoofers", "12", "solo pioneer"]);
+  assert.equal(textos(r3.bloques)[0], "No hay Pioneer en esta búsqueda.");
+  assert.deepEqual(r3.estado.busqueda, r2.estado.busqueda);
+  assert.ok(de(r3.bloques, "acotar") === undefined || de(r3.bloques, "acotar"));
+});
+
+test("conversación: un tema en medio borra la memoria", () => {
+  const [, r2, r3] = conversar(["subwoofers", "¿hacen envíos?", "y de 10?"]);
+  assert.equal(r2.estado.busqueda, undefined);
+  assert.ok(!textos(r3.bloques).some((t) => t.startsWith("Ahora")));
+});
+
+test("conversación: más trae del 6 al 8, y después «ya te mostré»", () => {
+  const [, r2, r3] = conversar(["subwoofers", "más", "más"]);
+  assert.equal(textos(r2.bloques)[0], "Del 6 al 8 de 8.");
+  assert.equal(skusDe(r2).length, 3);
+  assert.equal(textos(r3.bloques)[0], "Ya te mostré los 8.");
+});
+
+test("conversación: una medida que no hay muestra la más cercana de la lista", () => {
+  const [, r2] = conversar(["subwoofers", "13"]);
+  assert.equal(textos(r2.bloques)[0], 'Ninguno es de 13". Los más cercanos son de 12" y 15".');
+  assert.ok(skusDe(r2).length > 0);
+});
+
+test("conversación: «ese» con varios en pantalla no es referencia", () => {
+  const [, r2] = conversar(["subwoofers", "¿cuánto cuesta ese?"]);
+  assert.ok(!textos(r2.bloques).some((t) => t.includes(" cuesta Q")));
+  assert.equal(r2.estado.enfoque ?? null, null);
+});
+
+test("conversación: la frase de presentación rota con el turno", () => {
+  // «memphis» sola sería un seguimiento: «sub 10» nombra otra cosa.
+  const [r1, r2] = conversar(["subwoofers", "sub 10"]);
+  assert.equal(textos(r1.bloques)[0], "Encontré 8 resultados.");
+  assert.equal(textos(r2.bloques)[0], "Estos son los 2 resultados.");
+});
+
+test("conversación: «Hablar con Sonoro» tras un seguimiento lleva la consulta combinada", () => {
+  const [, , r3] = conversar(["subwoofers", "solo memphis", "12"]);
+  assert.equal(r3.estado.ultimaConsulta, 'subwoofers · Memphis · 12"');
+});
+
+test("conversación: un botón de acotar responde igual que el texto", () => {
+  const [, porBoton] = conversar(["subwoofers", { tipo: "opcion", id: "acotar:medida:12" }]);
+  assert.equal(textos(porBoton.bloques)[0], 'Ahora de 12". Quedan 4.');
 });

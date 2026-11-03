@@ -19,6 +19,11 @@ import {
 } from "./panel.ts";
 import { MAX_CONSULTA, type Conversacion, type Mensaje } from "./tipos.ts";
 
+/** Lo que el estado tenía antes de la memoria: la consulta y el tema para «Hablar con Sonoro». */
+function sinMemoria(estado: { ultimaConsulta: string | null; ultimoTema: unknown }) {
+  return { ultimaConsulta: estado.ultimaConsulta, ultimoTema: estado.ultimoTema };
+}
+
 const CATALOGO: CatalogoChat = {
   productos: [
     {
@@ -59,7 +64,7 @@ test("prepararTexto: recorta y corta a MAX_CONSULTA sin dejar medio emoji", () =
 test("conversacionInicial: el saludo y el menú, con el estado inicial", () => {
   const c = conversacionInicial("abc12345");
   assert.equal(c.id, "abc12345");
-  assert.deepEqual(c.estado, ESTADO_INICIAL);
+  assert.deepEqual(sinMemoria(c.estado), sinMemoria(ESTADO_INICIAL));
   assert.deepEqual(c.mensajes, [{ id: 0, autor: "bot", bloques: bloquesDeInicio() }]);
 });
 
@@ -297,7 +302,7 @@ test("colaDeRespuestas: una respuesta rápida espera a la anterior lenta y el hi
     "después la del tema",
   );
   // El estado es el de la ÚLTIMA respuesta: «Hablar con Sonoro» nombra el tema.
-  assert.deepEqual(conversacion.estado, { ultimaConsulta: null, ultimoTema: "envios" });
+  assert.deepEqual(sinMemoria(conversacion.estado), { ultimaConsulta: null, ultimoTema: "envios" });
 });
 
 test("colaDeRespuestas: si una respuesta falla, las siguientes siguen saliendo", async () => {
