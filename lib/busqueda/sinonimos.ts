@@ -83,6 +83,12 @@ export const PALABRAS_VACIAS: ReadonlySet<string> = new Set([
   "mi",
   "vehiculo",
   "vehiculos",
+  // «subwoofers marca memphis»: la palabra presenta a la marca, no la busca.
+  // Ningún producto la trae en nombre, categoría ni specs.
+  "marca",
+  "marcas",
+  "modelo",
+  "modelos",
   // «potencia mayor a 1000»: la palabra describe el filtro, no el producto.
   "potencia",
   // Lo que queda de una comparación («menos de», «hasta») cuando su número

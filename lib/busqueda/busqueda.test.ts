@@ -354,6 +354,12 @@ test("cercana: si todo coincide, no hay aviso", () => {
   assert.deepEqual(skus(buscar(BOCINAS, "bocinas 8")), ["A8"]);
 });
 
+test("palabras vacías: «marca» presenta a la marca, no se busca", () => {
+  const r = buscar(CATALOGO, "subwoofers de 12 pulgadas marca kbt");
+  assert.equal(r.modo, "exacta");
+  assert.deepEqual(skus(r), ["COR2-124D"]);
+});
+
 test("palabras vacías: «bocinas para carro» pide solo bocinas", () => {
   assert.deepEqual(skus(buscar(CATALOGO, "bocinas para carro")), ["MJP6"]);
   assert.deepEqual(skus(buscar(CATALOGO, "bocinas de")), ["MJP6"]);

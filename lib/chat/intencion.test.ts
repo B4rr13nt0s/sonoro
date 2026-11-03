@@ -354,3 +354,18 @@ test("dato: sin producto, la consulta queda vacía", () => {
 test("dato: los temas de política siguen ganando", () => {
   assert.equal(detectarIntencion("¿el envío está disponible a Petén?").tipo, "tema");
 });
+
+test("arranques de pregunta: «tendrán», «ando buscando», «me gustaría ver» se quitan", () => {
+  assert.deepEqual(detectarIntencion("¿Tendrán amplificadores?"), {
+    tipo: "busqueda",
+    consulta: "amplificadores",
+  });
+  assert.deepEqual(detectarIntencion("ando buscando un radio con carplay"), {
+    tipo: "busqueda",
+    consulta: "radio con carplay",
+  });
+  assert.deepEqual(detectarIntencion("me gustaría ver subwoofers de 10"), {
+    tipo: "busqueda",
+    consulta: "subwoofers de 10",
+  });
+});

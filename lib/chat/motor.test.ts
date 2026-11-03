@@ -128,6 +128,17 @@ test("opción buscar: pide el texto, sin evento", () => {
   assert.equal(r.evento, null);
 });
 
+test("pregunta en lenguaje natural: «¿Tienen subwoofers de 12 pulgadas marca memphis?»", () => {
+  const r = responder(
+    ESTADO_INICIAL,
+    texto("Tienen subwoofers de 12 pulgadas marca memphis?"),
+    CONTEXTO,
+  );
+  // Exacta: sin el aviso de «estos coinciden con alguna palabra».
+  assert.equal(de(r.bloques, "filtros"), undefined);
+  assert.deepEqual([...(de(r.bloques, "productos")?.skus ?? [])].sort(), ["SUB1", "SUB2"]);
+});
+
 test("búsqueda: los dos subs, con enlace a /buscar y evento", () => {
   const r = responder(ESTADO_INICIAL, texto("sub 12 2 ohm"), CONTEXTO);
   const productos = de(r.bloques, "productos");

@@ -41,6 +41,10 @@ const CASOS: { consulta: string; cumple: (p: ProductoBuscable) => boolean }[] = 
   { consulta: "sub 12", cumple: y(enCategoria("Subwoofers"), nombreDice('12"')) },
   { consulta: "subwoofer 12", cumple: y(enCategoria("Subwoofers"), nombreDice('12"')) },
   { consulta: "subwoofer 12 memphis", cumple: y(nombreDice('12"'), (p) => p.marca === "Memphis") },
+  {
+    consulta: "subwoofers de 12 pulgadas marca memphis",
+    cumple: y(enCategoria("Subwoofers"), nombreDice('12"'), (p) => p.marca === "Memphis"),
+  },
   { consulta: "subwofer", cumple: enCategoria("Subwoofers") },
   { consulta: "bocinas de 6 pulgadas", cumple: enCategoria("Bocinas") },
   { consulta: "bocinas 6.5", cumple: y(enCategoria("Bocinas"), nombreDice('6.5"')) },
