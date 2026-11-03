@@ -347,6 +347,47 @@ test("opción de categoría: busca por su nombre y enlaza al listado", () => {
   assert.equal(r.evento?.evento, "busqueda");
 });
 
+test("opción de categoría: elige por la categoría del producto, como el listado del sitio", () => {
+  const productos = [
+    ...FIXTURE,
+    // Un sistema completo aparece en el listado de sus categorías secundarias.
+    producto("SIS1", "Sistema completo SIS", "Sistemas", {
+      categoriasSecundarias: ["Amplificadores", "Subwoofers"],
+    }),
+    // Dice «kit» en el nombre, pero es de Insonorización: no es de Kits.
+    producto("INS1", "Kit de insonorización para puertas INS", "Insonorización"),
+    // Un amplificador que no menciona «amplificador» en ninguna parte.
+    producto("AMP3", "Memphis Power AMP3", "Amplificadores", { destacado: true }),
+  ];
+  const contexto: Contexto = { ...CONTEXTO, productos };
+
+  const amp = responder(ESTADO_INICIAL, opcion("categoria:amplificadores"), contexto);
+  const bloqueAmp = de(amp.bloques, "productos");
+  assert.ok(bloqueAmp);
+  assert.deepEqual([...bloqueAmp.skus].sort(), ["AMP1", "AMP2", "AMP3", "SIS1"]);
+  assert.equal(bloqueAmp.total, 4);
+  assert.equal(bloqueAmp.verTodosHref, "/catalogo/amplificadores");
+  // Lo destacado abre, como en el listado.
+  assert.equal(bloqueAmp.skus[0], "AMP3");
+  assert.deepEqual(amp.evento, {
+    evento: "busqueda",
+    consulta: "Amplificadores",
+    modo: "exacta",
+    resultados: 4,
+  });
+
+  const kits = responder(ESTADO_INICIAL, opcion("categoria:kits"), contexto);
+  assert.deepEqual(de(kits.bloques, "productos")?.skus, ["KIT1"]);
+  assert.equal(de(kits.bloques, "productos")?.total, 1);
+  assert.equal(de(kits.bloques, "filtros"), undefined);
+});
+
+test("opción de categoría sin catálogo: dice que no cargó, no inventa una lista", () => {
+  const r = responder(ESTADO_INICIAL, opcion("categoria:kits"), { ...CONTEXTO, productos: null });
+  assert.equal(de(r.bloques, "productos"), undefined);
+  assert.equal(textos(r.bloques)[0], "No pudimos cargar el catálogo.");
+});
+
 test("opción de marca: enlaza a la página de la marca", () => {
   const r = responder(ESTADO_INICIAL, opcion("marca:memphis"), CONTEXTO);
   assert.equal(de(r.bloques, "productos")?.verTodosHref, "/marcas/memphis");

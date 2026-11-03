@@ -4,7 +4,7 @@
 // Spec: docs/superpowers/specs/2026-11-02-chatbot-design.md § Conversación.
 
 import { buscar, sugerir } from "../busqueda/busqueda.ts";
-import { CATEGORIAS_SITIO } from "../catalog/categorias.ts";
+import { CATEGORIAS_SITIO, perteneceACategoria } from "../catalog/categorias.ts";
 import { compararRelevancia } from "../catalog/orden.ts";
 import { buildAvailabilityInquiryMessage } from "../whatsapp/message.ts";
 import { consultaVisible, detectarIntencion } from "./intencion.ts";
@@ -52,6 +52,21 @@ function responderTema(tema: Tema, contexto: Contexto): Respuesta {
   };
 }
 
+function sinCatalogo(estado: Estado): Respuesta {
+  return {
+    estado,
+    bloques: [
+      {
+        tipo: "texto",
+        texto: TEXTO_SIN_CATALOGO,
+        enlace: { etiqueta: "Ir a Buscar", href: "/buscar" },
+      },
+      opcionesHablar(),
+    ],
+    evento: null,
+  };
+}
+
 /**
  * Busca `consulta` (normalizada) en el catálogo. `visible` es la misma
  * consulta como la escribió el cliente: es la que se muestra, se enlaza y se
@@ -69,20 +84,7 @@ function responderBusqueda(
   const estado: Estado = { ultimaConsulta: visible, ultimoTema: null };
   const { productos } = contexto;
 
-  if (productos === null) {
-    return {
-      estado,
-      bloques: [
-        {
-          tipo: "texto",
-          texto: TEXTO_SIN_CATALOGO,
-          enlace: { etiqueta: "Ir a Buscar", href: "/buscar" },
-        },
-        opcionesHablar(),
-      ],
-      evento: null,
-    };
-  }
+  if (productos === null) return sinCatalogo(estado);
 
   const resultado = buscar(productos, consulta, compararRelevancia);
 
@@ -142,6 +144,49 @@ function responderBusqueda(
   };
 }
 
+/**
+ * Una categoría del sitio se elige por la categoría del producto, no buscando
+ * su nombre como texto: «Kits» traía una pieza de Insonorización que dice «kit»
+ * y «Amplificadores» dejaba fuera los sistemas completos que el listado sí
+ * agrupa. Es la misma regla (`perteneceACategoria`) y el mismo orden que
+ * /catalogo/[categoria], así que «Ver los N» cuenta lo que el listado tiene.
+ */
+function responderCategoria(
+  categoria: { slug: string; nombre: string },
+  contexto: Contexto,
+): Respuesta {
+  const href = `/catalogo/${categoria.slug}`;
+  const { productos } = contexto;
+  const estado: Estado = { ultimaConsulta: categoria.nombre, ultimoTema: null };
+  if (productos === null) return sinCatalogo(estado);
+
+  const lista = productos
+    .filter((p) => perteneceACategoria(p, categoria.nombre))
+    .sort(compararRelevancia);
+  // Una categoría sin productos activos: el aviso de «sin resultados».
+  if (lista.length === 0)
+    return responderBusqueda(categoria.nombre, categoria.nombre, contexto, href);
+
+  return {
+    estado,
+    bloques: [
+      {
+        tipo: "productos",
+        skus: lista.slice(0, MAX_PRODUCTOS_CHAT).map((p) => p.sku),
+        total: lista.length,
+        verTodosHref: href,
+      },
+      opcionesHablar(),
+    ],
+    evento: {
+      evento: "busqueda",
+      consulta: categoria.nombre,
+      modo: "exacta",
+      resultados: lista.length,
+    },
+  };
+}
+
 function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respuesta {
   if (id === "buscar") {
     return { estado, bloques: [{ tipo: "texto", texto: TEXTO_PEDIR_BUSQUEDA }], evento: null };
@@ -152,8 +197,7 @@ function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respue
   if (id.startsWith("categoria:")) {
     const slug = id.slice("categoria:".length);
     const categoria = CATEGORIAS_SITIO.find((c) => c.slug === slug);
-    if (categoria)
-      return responderBusqueda(categoria.nombre, categoria.nombre, contexto, `/catalogo/${slug}`);
+    if (categoria) return responderCategoria(categoria, contexto);
   }
   if (id.startsWith("marca:")) {
     const slug = id.slice("marca:".length);
