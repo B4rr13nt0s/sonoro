@@ -18,6 +18,7 @@ async function conLanzador(
   importar: () => Promise<{ default: ComponentType<PanelChatProps> }>,
   cuerpo: (ctx: {
     clic: () => Promise<void>;
+    precargar: () => void;
     soltar: () => Promise<void>;
     panel: () => Element | null;
     abierto: () => boolean;
@@ -86,6 +87,7 @@ async function conLanzador(
             .dispatchEvent(new dom.window.MouseEvent("click", { bubbles: true }));
         });
       },
+      precargar: () => PanelDiferido.precargar(),
       // Deja correr las promesas pendientes (el rechazo del import, el re-render).
       soltar: async () => {
         for (let i = 0; i < 5; i++) {
@@ -157,6 +159,89 @@ test("con red el panel se dibuja y reabrirlo no vuelve a importar", async () => 
       assert.ok(panel());
       assert.equal(intentos, 1);
       assert.equal(fallos(), 0);
+    },
+  );
+});
+
+test("precargar y luego abrir importa una sola vez", async () => {
+  let intentos = 0;
+  await conLanzador(
+    async () => {
+      intentos += 1;
+      return { default: PanelFalso };
+    },
+    async ({ clic, precargar, soltar, panel, fallos }) => {
+      // Entrar con el puntero y luego enfocar disparan la precarga dos veces.
+      precargar();
+      precargar();
+      await soltar();
+      assert.equal(intentos, 1);
+      assert.equal(panel(), null, "precargar no abre el panel");
+
+      await clic();
+      await soltar();
+      assert.ok(panel());
+      assert.equal(intentos, 1, "abrir reutiliza la precarga");
+      assert.equal(fallos(), 0);
+    },
+  );
+});
+
+test("una precarga que falla no cuesta un clic: abrir vuelve a importar y dibuja", async () => {
+  let intentos = 0;
+  let hayRed = false;
+  await conLanzador(
+    async () => {
+      intentos += 1;
+      if (intentos > 3) return new Promise<never>(() => {});
+      if (!hayRed) throw new TypeError("sin red");
+      return { default: PanelFalso };
+    },
+    async ({ clic, precargar, soltar, panel, fallos }) => {
+      precargar();
+      await soltar();
+      assert.equal(intentos, 1);
+
+      hayRed = true;
+      await clic();
+      await soltar();
+      assert.equal(intentos, 2);
+      assert.ok(panel(), "el primer clic debe abrir el panel");
+      assert.equal(fallos(), 0);
+    },
+  );
+});
+
+test("un fallo al abrir después de precargar se contiene y el siguiente clic reintenta", async () => {
+  let intentos = 0;
+  let hayRed = false;
+  await conLanzador(
+    async () => {
+      intentos += 1;
+      if (intentos > 4) return new Promise<never>(() => {});
+      if (!hayRed) {
+        // Tarda en fallar: el clic llega mientras la precarga sigue en vuelo.
+        await new Promise((r) => setTimeout(r, 5));
+        throw new TypeError("sin red");
+      }
+      return { default: PanelFalso };
+    },
+    async ({ clic, precargar, soltar, panel, abierto, fallos }) => {
+      precargar();
+      await clic();
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 20));
+      });
+      await soltar();
+      assert.equal(intentos, 1, "el clic comparte la precarga en vuelo");
+      assert.equal(fallos(), 1);
+      assert.equal(abierto(), false);
+
+      hayRed = true;
+      await clic();
+      await soltar();
+      assert.equal(intentos, 2);
+      assert.ok(panel());
     },
   );
 });

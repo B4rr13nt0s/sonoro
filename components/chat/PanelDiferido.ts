@@ -23,21 +23,55 @@ export type PanelDiferidoProps = PanelChatProps & {
   alFallar: () => void;
 };
 
+export type PanelDiferido = ((props: PanelDiferidoProps) => ReactElement) & {
+  /**
+   * Empieza a bajar el panel sin abrirlo (al acercar el puntero o enfocar el
+   * lanzador), para que el primer clic ya lo encuentre. Comparte el import()
+   * con el lazy: abrir mientras la precarga vuela no baja el panel dos veces.
+   */
+  precargar: () => void;
+};
+
 export function crearPanelDiferido(
   importar: () => Promise<{ default: ComponentType<PanelChatProps> }>,
-): (props: PanelDiferidoProps) => ReactElement {
-  const panel = crearReintentable(() => lazy(importar));
+): PanelDiferido {
+  // El import() en vuelo o ya resuelto, compartido por la precarga y el lazy.
+  // `leido` dice si un lazy ya se quedó con esta promesa.
+  let modulo: Promise<{ default: ComponentType<PanelChatProps> }> | null = null;
+  let leido = false;
+  const bajar = () => (modulo ??= importar());
 
-  return function PanelDiferido({ alFallar, ...propsPanel }) {
+  const panel = crearReintentable(() =>
+    lazy(() => {
+      leido = true;
+      return bajar();
+    }),
+  );
+
+  function PanelDiferido({ alFallar, ...propsPanel }: PanelDiferidoProps) {
     return createElement(
       LimiteErrorChat,
       {
         alFallar: () => {
           panel.descartar();
+          modulo = null;
+          leido = false;
           alFallar();
         },
       },
       createElement(Suspense, { fallback: null }, createElement(panel.actual(), propsPanel)),
     );
-  };
+  }
+
+  function precargar() {
+    const esta = bajar();
+    // Una precarga que falla (sin red al pasar el puntero) se olvida, para que
+    // el clic intente de nuevo. Si el lazy ya la leyó, el error le toca al
+    // límite de error, que la descarta al atraparlo.
+    esta.catch(() => {
+      if (modulo === esta && !leido) modulo = null;
+    });
+  }
+
+  return Object.assign(PanelDiferido, { precargar });
 }

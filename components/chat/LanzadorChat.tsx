@@ -68,6 +68,9 @@ export function LanzadorChat({ contacto }: { contacto: Contexto["contacto"] }) {
         ref={lanzadorRef}
         type="button"
         onClick={alternar}
+        // Precarga el panel: al primer clic ya está bajado, o va en camino.
+        onPointerEnter={() => PanelDiferido.precargar()}
+        onFocus={() => PanelDiferido.precargar()}
         aria-expanded={abierto}
         aria-controls="panel-chat"
         className="bg-negro fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex items-center gap-2 rounded-full px-4 py-2.5 text-[14px] text-white lg:right-6 lg:bottom-6"
