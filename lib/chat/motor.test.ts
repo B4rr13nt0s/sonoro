@@ -577,8 +577,21 @@ test("palabra ambigua con productos exactos: productos y el tema como botón", (
   assert.equal(r.evento?.evento, "busqueda");
   // Lo que se muestra y se manda por WhatsApp es la búsqueda que dio los
   // productos, sin la palabra del tema.
-  assert.deepEqual(r.estado, { ultimaConsulta: "radio con carplay", ultimoTema: null });
+  // El estado lleva también el tema, para que «Hablar con Sonoro» lo cargue.
+  assert.deepEqual(r.estado, { ultimaConsulta: "radio con carplay", ultimoTema: "contacto" });
   assert.equal(de(r.bloques, "productos")?.verTodosHref, "/buscar?q=radio+con+carplay");
+  // Un aviso antes de los productos dice qué se buscó y dónde quedó el tema.
+  assert.deepEqual(r.bloques[0], {
+    tipo: "texto",
+    texto: "Esto encontramos para «radio con carplay». Si preguntabas por contacto, está abajo.",
+  });
+
+  // «Hablar con Sonoro» desde aquí nombra la consulta y también el tema.
+  const hablar = responder(r.estado, opcion("hablar"), CON_CARPLAY);
+  assert.deepEqual(
+    de(hablar.bloques, "whatsapp")?.mensaje,
+    "Hola Sonoro, tengo una consulta: radio con carplay. También sobre contacto",
+  );
 
   // El botón lleva al tema, que se responde igual que si lo hubieran escrito.
   const tema = responder(r.estado, opcion("contacto"), CON_CARPLAY);
@@ -590,6 +603,10 @@ test("palabra ambigua: «tarjeta de sonido» con producto exacto muestra product
   assert.deepEqual(de(r.bloques, "productos")?.skus, ["TAR1"]);
   const opciones = r.bloques.flatMap((b) => (b.tipo === "opciones" ? b.opciones : []));
   assert.deepEqual(opciones[0], { id: "cuotas", etiqueta: "Ver pagos en cuotas" });
+  assert.equal(
+    textos(r.bloques)[0],
+    "Esto encontramos para «tarjeta de sonido». Si preguntabas por pagos en cuotas, está abajo.",
+  );
 });
 
 test("palabra ambigua sin coincidencia exacta: se responde el tema", () => {

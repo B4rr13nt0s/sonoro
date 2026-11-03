@@ -207,7 +207,9 @@ búsqueda —primero con el texto entero y luego sin la palabra del tema, porque
 «teléfono» no está en la ficha de un radio— y, **solo si da resultados en modo
 exacto**, responde con los productos y deja el tema como botón extra («Ver
 contacto», «Ver pagos en cuotas») junto a *Hablar con Sonoro*, para que no se
-pierda en silencio. Con resultados aproximados o parciales, sin resultados o
+pierda en silencio. Antes de los productos va una línea: «Esto encontramos
+para «<consulta>». Si preguntabas por <tema>, está abajo.», y el estado
+conserva el tema junto a la consulta. Con resultados aproximados o parciales, sin resultados o
 con el catálogo sin cargar, se responde el tema como siempre. Por eso esa
 entrada sí espera al catálogo (`necesitaCatalogo`). En `busqueda`
 se quitan antes los arranques conversacionales («tienen», «hay», «venden»,
@@ -300,6 +302,8 @@ de «te ayudamos a escoger» ni de «nuestros expertos».
 
 Abre `wa.me` (`buildWhatsAppUrl`, `NEXT_PUBLIC_WHATSAPP_NUMBER`) con
 `buildChatHandoffMessage`:
+- Hay consulta y tema (una búsqueda que dejó de lado un tema de palabra
+  ambigua) → «Hola Sonoro, tengo una consulta: <consulta>. También sobre <tema>».
 - Hay consulta → «Hola Sonoro, tengo una consulta: <última consulta>».
 - Solo hay tema → «Hola Sonoro, tengo una consulta sobre <tema>».
 - No hay nada → «Hola Sonoro, tengo una consulta».

@@ -83,7 +83,9 @@ function responderBusqueda(
   verTodosHref?: string,
   opcionTema?: Tema,
 ): Respuesta {
-  const estado: Estado = { ultimaConsulta: visible, ultimoTema: null };
+  // Con un tema de palabra ambigua que quedó de lado, el estado lo conserva
+  // junto a la consulta: «Hablar con Sonoro» lleva las dos cosas.
+  const estado: Estado = { ultimaConsulta: visible, ultimoTema: opcionTema ?? null };
   const { productos } = contexto;
 
   if (productos === null) return sinCatalogo(estado);
@@ -119,6 +121,12 @@ function responderBusqueda(
   }
 
   const bloques: Bloque[] = [];
+  if (opcionTema) {
+    bloques.push({
+      tipo: "texto",
+      texto: `Esto encontramos para «${visible}». Si preguntabas por ${TEMA_NOMBRE[opcionTema]}, está abajo.`,
+    });
+  }
   if (resultado.aplicados.length > 0 || resultado.correccion || resultado.modo !== "exacta") {
     bloques.push({
       tipo: "filtros",

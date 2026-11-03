@@ -195,3 +195,10 @@ test("buildChatHandoffMessage: con consulta, con tema o sin nada", () => {
     "Hola Sonoro, tengo una consulta",
   );
 });
+
+test("buildChatHandoffMessage: con consulta y tema a la vez, nombra los dos", () => {
+  assert.equal(
+    buildChatHandoffMessage({ consulta: "radio con carplay", tema: "contacto" }),
+    "Hola Sonoro, tengo una consulta: radio con carplay. También sobre contacto",
+  );
+});

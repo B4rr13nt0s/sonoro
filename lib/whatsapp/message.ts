@@ -65,11 +65,15 @@ export function buildAvailabilityInquiryMessage(consulta: string): string {
 }
 
 // «Hablar con Sonoro» desde el chatbot: la consulta escrita manda; si no hay,
-// el tema que el cliente venía viendo; si tampoco, el saludo a secas.
+// el tema que el cliente venía viendo; si tampoco, el saludo a secas. Con las
+// dos (una búsqueda que dejó un tema de lado, ver el motor) se nombran ambas.
 export function buildChatHandoffMessage(params: {
   consulta: string | null;
   tema: string | null;
 }): string {
+  if (params.consulta && params.tema) {
+    return `Hola Sonoro, tengo una consulta: ${params.consulta}. También sobre ${params.tema}`;
+  }
   if (params.consulta) return `Hola Sonoro, tengo una consulta: ${params.consulta}`;
   if (params.tema) return `Hola Sonoro, tengo una consulta sobre ${params.tema}`;
   return "Hola Sonoro, tengo una consulta";
