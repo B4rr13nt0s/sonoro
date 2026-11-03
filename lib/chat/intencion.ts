@@ -5,6 +5,8 @@
 // de palabra: «pagos» no coincide dentro de «mapagos».
 
 import { normalizar } from "../busqueda/busqueda.ts";
+// Las fórmulas de saludo que abren un mensaje y se quitan antes de buscar.
+import { SALUDOS_DE_APERTURA } from "./charla.ts";
 import { PALABRAS_DE_PREGUNTA, VOCABULARIO_DATOS, type Campo } from "./datos.ts";
 import type { Tema } from "./tipos.ts";
 
@@ -148,18 +150,6 @@ const RELLENO = new Set([
   "dime",
   "favor",
 ]);
-
-/** Fórmulas de saludo que abren un mensaje y se quitan antes de buscar. */
-const SALUDOS_DE_APERTURA = [
-  "hola",
-  "buenas",
-  "buenos dias",
-  "buen dia",
-  "buenas tardes",
-  "buenas noches",
-  "que tal",
-  "saludos",
-];
 
 /** Arranques conversacionales que se quitan antes de buscar. */
 const ARRANQUES = [
