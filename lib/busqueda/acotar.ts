@@ -14,7 +14,10 @@ export type Acote =
   | { campo: "medida"; pulgadas: number }
   | { campo: "canales"; canales: number }
   | { campo: "marca"; slug: string }
-  | { campo: "precio"; min?: number; max?: number };
+  | { campo: "precio"; min?: number; max?: number }
+  // Solo lo disponible. No sale como botón: entra por un seguimiento del
+  // chat («los disponibles»).
+  | { campo: "disponibilidad" };
 
 export interface OpcionAcote {
   acote: Acote;
@@ -63,6 +66,8 @@ function cumple(producto: ProductoBuscable, acote: Acote, marcas: readonly Marca
         (acote.min === undefined || producto.precioCents > acote.min) &&
         (acote.max === undefined || producto.precioCents <= acote.max)
       );
+    case "disponibilidad":
+      return producto.disponibilidad === "disponible";
   }
 }
 
@@ -92,6 +97,8 @@ export function describirAcote(acote: Acote, marcas: readonly Marca[]): string {
         : acote.max === undefined
           ? `Precio más de ${formatQ(acote.min)}`
           : `Precio de ${formatQ(acote.min)} a ${formatQ(acote.max)}`;
+    case "disponibilidad":
+      return "Disponibles";
   }
 }
 
@@ -239,11 +246,14 @@ export function idDeAcote(acote: Acote): `acotar:${string}` {
       return `acotar:canales:${acote.canales}`;
     case "precio":
       return `acotar:precio:${acote.min ?? ""}-${acote.max ?? ""}`;
+    case "disponibilidad":
+      return "acotar:disponibilidad:si";
   }
 }
 
 /** Lo contrario de `idDeAcote`; `null` si el id no es uno. */
 export function acoteDeId(id: string): Acote | null {
+  if (id === "acotar:disponibilidad:si") return { campo: "disponibilidad" };
   const m = /^acotar:(categoria|marca|medida|canales|precio):(.+)$/.exec(id);
   if (!m) return null;
   const [, campo, valor] = m;
@@ -263,14 +273,41 @@ export function acoteDeId(id: string): Acote | null {
 }
 
 /**
- * El enlace a /buscar con lo mismo acotado: categoría, marca y medida o
- * canales como parámetros; el precio como texto que la búsqueda ya entiende
- * («más de 1495 hasta 3195»).
+ * Cuando ningún producto de `lista` trae `valor` en ese campo: los de valor
+ * más cercano por debajo y por encima, primero el lado más cercano. `null` si
+ * alguno lo trae, o si ninguno trae el campo.
+ */
+export function cercanosEnLista(
+  lista: readonly ProductoBuscable[],
+  campo: "medida" | "canales",
+  valor: number,
+): { productos: ProductoBuscable[]; valores: number[] } | null {
+  const de = (p: ProductoBuscable) => (campo === "medida" ? p.pulgadas : p.canales);
+  const valores = lista.map(de).filter((v): v is number => v !== undefined);
+  if (valores.length === 0 || valores.includes(valor)) return null;
+  const abajo = Math.max(...valores.filter((v) => v < valor));
+  const arriba = Math.min(...valores.filter((v) => v > valor));
+  const elegidos = [abajo, arriba].filter(Number.isFinite);
+  const distancia = (v: number) => Math.abs(v - valor);
+  const productos = lista
+    .filter((p) => elegidos.includes(de(p) ?? NaN))
+    .map((p, i) => ({ p, i }))
+    // Estable: dentro de un mismo valor, el orden en que venía la lista.
+    .sort((a, b) => distancia(de(a.p) ?? 0) - distancia(de(b.p) ?? 0) || a.i - b.i)
+    .map(({ p }) => p);
+  return { productos, valores: elegidos.sort((a, b) => a - b) };
+}
+
+/**
+ * El enlace a /buscar con lo mismo acotado: categoría, marca, medida o
+ * canales, disponibilidad y orden como parámetros; el precio como texto que la
+ * búsqueda ya entiende («más de 1495 hasta 3195»).
  */
 export function hrefAcotado(
   visible: string,
   acotes: readonly Acote[],
   marcas: readonly Marca[],
+  orden?: "precio_asc" | "precio_desc",
 ): string {
   const params = new URLSearchParams();
   let q = visible;
@@ -289,6 +326,8 @@ export function hrefAcotado(
     if (a.campo === "marca") params.set("marca", describirAcote(a, marcas));
     if (a.campo === "medida") params.set("medida", String(a.pulgadas));
     if (a.campo === "canales") params.set("canales", String(a.canales));
+    if (a.campo === "disponibilidad") params.set("disp", "disponible");
   }
+  if (orden) params.set("orden", orden);
   return `/buscar?${params}`;
 }
