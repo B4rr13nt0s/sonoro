@@ -69,15 +69,34 @@ test("un fetch que lanza da null y permite reintentar", async () => {
   assert.deepEqual(await cargar(), CATALOGO);
 });
 
-test("un fetch que nunca responde da null al vencer el plazo y la siguiente llamada reintenta", async () => {
+test("una descarga lenta pero que avanza: el plazo da null, no la cancela y la siguiente llamada la usa", async () => {
   let llamadas = 0;
   let senal: AbortSignal | undefined;
   const cargar = crearCargadorCatalogo(
     ((_url: string, init?: RequestInit) => {
       llamadas += 1;
+      senal = init?.signal ?? undefined;
+      return new Promise<Response>((resolve) => setTimeout(() => resolve(respuesta(CATALOGO)), 60));
+    }) as unknown as typeof fetch,
+    20,
+  );
+
+  assert.equal(await cargar(), null, "vence el plazo: quien espera sigue sin catálogo");
+  assert.notEqual(senal?.aborted, true, "la descarga no se cancela");
+  await new Promise((r) => setTimeout(r, 80)); // la descarga termina
+  assert.deepEqual(await cargar(), CATALOGO);
+  assert.equal(llamadas, 1, "nunca se pidió dos veces");
+});
+
+test("un fallo después de vencer el plazo no se recuerda: la siguiente llamada reintenta", async () => {
+  let llamadas = 0;
+  const cargar = crearCargadorCatalogo(
+    ((): Promise<Response> => {
+      llamadas += 1;
       if (llamadas === 1) {
-        senal = init?.signal ?? undefined;
-        return new Promise<Response>(() => {}); // colgado para siempre
+        return new Promise((_resolve, rechazar) =>
+          setTimeout(() => rechazar(new TypeError("se cortó")), 60),
+        );
       }
       return Promise.resolve(respuesta(CATALOGO));
     }) as unknown as typeof fetch,
@@ -85,7 +104,7 @@ test("un fetch que nunca responde da null al vencer el plazo y la siguiente llam
   );
 
   assert.equal(await cargar(), null);
-  assert.equal(senal?.aborted, true, "al vencer se cancela la descarga");
+  await new Promise((r) => setTimeout(r, 80)); // la descarga falla
   assert.deepEqual(await cargar(), CATALOGO);
   assert.equal(llamadas, 2);
 });
