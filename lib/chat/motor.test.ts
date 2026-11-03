@@ -5,7 +5,13 @@ import type { ProductoBuscable } from "../busqueda/busqueda.ts";
 import { UMBRAL_ENVIO_GRATIS_CENTS } from "../cart/envio.ts";
 import { formatQ } from "../format/precio.ts";
 import { buildAvailabilityInquiryMessage } from "../whatsapp/message.ts";
-import { ESTADO_INICIAL, MAX_PRODUCTOS_CHAT, bloquesDeInicio, responder } from "./motor.ts";
+import {
+  ESTADO_INICIAL,
+  MAX_PRODUCTOS_CHAT,
+  bloquesDeInicio,
+  necesitaCatalogo,
+  responder,
+} from "./motor.ts";
 import { TEMA_NOMBRE, bloquesDeTema } from "./respuestas.ts";
 import type { Bloque, Contexto, Entrada, Estado, OpcionId, Tema } from "./tipos.ts";
 
@@ -497,4 +503,29 @@ test("determinismo: la misma entrada da la misma respuesta", () => {
   for (const entrada of [texto("sub 12 2 ohm"), texto("xyz123"), opcion("hablar")]) {
     assert.deepEqual(responder(e, entrada, CONTEXTO), responder(e, entrada, CONTEXTO));
   }
+});
+
+test("necesitaCatalogo: solo lo que muestra productos espera al catálogo", () => {
+  const quiere: Entrada[] = [
+    texto("sub 12 2 ohm"),
+    texto("hola, tienen subwoofers memphis?"),
+    opcion("categoria:kits"),
+    opcion("marca:memphis"),
+  ];
+  for (const entrada of quiere)
+    assert.equal(necesitaCatalogo(entrada), true, JSON.stringify(entrada));
+
+  const no: Entrada[] = [
+    texto("hola"),
+    texto("   "),
+    texto("¿hacen envíos a Xela?"),
+    texto("¿qué me recomiendan?"),
+    opcion("buscar"),
+    opcion("hablar"),
+    opcion("envios"),
+    opcion("garantia"),
+    opcion("cuotas"),
+    opcion("contacto"),
+  ];
+  for (const entrada of no) assert.equal(necesitaCatalogo(entrada), false, JSON.stringify(entrada));
 });

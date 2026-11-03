@@ -25,6 +25,7 @@ import { BloqueChat } from "@/components/chat/BloqueChat";
 import { useMediaQuery } from "@/components/home/useMediaQuery";
 import type { ProductoBuscable } from "@/lib/busqueda/busqueda.ts";
 import type { CatalogoChat } from "@/lib/chat/catalogo.ts";
+import { necesitaCatalogo } from "@/lib/chat/motor.ts";
 import {
   PLACEHOLDER_BUSCAR,
   PLACEHOLDER_CAMPO,
@@ -132,6 +133,12 @@ export default function PanelChat({
       vivo = false;
     };
   }, [cargarCatalogo]);
+  // El catálogo que ya hay, leído al enviar: las respuestas que no lo usan
+  // (temas, «Hablar con Sonoro») salen con esto en vez de esperar a la red.
+  const catalogoRef = useRef(catalogo);
+  useEffect(() => {
+    catalogoRef.current = catalogo;
+  }, [catalogo]);
   const porSku = useMemo(
     () => (catalogo ? new Map(catalogo.productos.map((p) => [p.sku, p])) : SIN_PRODUCTOS),
     [catalogo],
@@ -180,8 +187,10 @@ export default function PanelChat({
 
   async function enviar(entrada: Entrada, textoCliente: string) {
     guardar(conMensaje(leer(), { autor: "cliente", texto: textoCliente }));
-    // La promesa memoizada: si la carga está en curso, se espera.
-    const cargado = await cargarCatalogo();
+    // Solo lo que muestra productos espera al catálogo (la promesa memoizada,
+    // con su plazo). Un tema o «Hablar con Sonoro» responde de inmediato con lo
+    // que haya cargado, o sin catálogo: una conexión detenida no los calla.
+    const cargado = necesitaCatalogo(entrada) ? await cargarCatalogo() : catalogoRef.current;
     if (cargado) setCatalogo(cargado);
     const { conversacion: nueva, evento } = responderEnConversacion(
       leer(),

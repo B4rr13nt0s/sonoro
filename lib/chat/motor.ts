@@ -242,3 +242,18 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
       return responderBusqueda(intencion.consulta, consultaVisible(texto), contexto);
   }
 }
+
+/**
+ * ¿La respuesta a esta entrada puede usar productos? Solo la búsqueda de
+ * texto y las opciones de categoría y marca. Saludos, recomendaciones, temas
+ * de política y «Hablar con Sonoro» responden igual con el catálogo cargado o
+ * sin él, así que no hay por qué hacerlos esperar a la red (spec: los temas
+ * siguen funcionando sin catálogo).
+ */
+export function necesitaCatalogo(entrada: Entrada): boolean {
+  if (entrada.tipo === "opcion") {
+    return entrada.id.startsWith("categoria:") || entrada.id.startsWith("marca:");
+  }
+  const texto = cortar(entrada.texto.trim()).trimEnd();
+  return texto !== "" && detectarIntencion(texto).tipo === "busqueda";
+}

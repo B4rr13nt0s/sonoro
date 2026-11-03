@@ -69,6 +69,36 @@ test("un fetch que lanza da null y permite reintentar", async () => {
   assert.deepEqual(await cargar(), CATALOGO);
 });
 
+test("un fetch que nunca responde da null al vencer el plazo y la siguiente llamada reintenta", async () => {
+  let llamadas = 0;
+  let senal: AbortSignal | undefined;
+  const cargar = crearCargadorCatalogo(
+    ((_url: string, init?: RequestInit) => {
+      llamadas += 1;
+      if (llamadas === 1) {
+        senal = init?.signal ?? undefined;
+        return new Promise<Response>(() => {}); // colgado para siempre
+      }
+      return Promise.resolve(respuesta(CATALOGO));
+    }) as unknown as typeof fetch,
+    20,
+  );
+
+  assert.equal(await cargar(), null);
+  assert.equal(senal?.aborted, true, "al vencer se cancela la descarga");
+  assert.deepEqual(await cargar(), CATALOGO);
+  assert.equal(llamadas, 2);
+});
+
+test("una descarga que llega a tiempo no deja el plazo corriendo", async () => {
+  const cargar = crearCargadorCatalogo(
+    (async () => respuesta(CATALOGO)) as unknown as typeof fetch,
+    60_000,
+  );
+  // Si el temporizador quedara vivo, el proceso de prueba no terminaría.
+  assert.deepEqual(await cargar(), CATALOGO);
+});
+
 test("un JSON sin productos da null", async () => {
   const cargar = crearCargadorCatalogo((async () =>
     respuesta({ marcas: [] })) as unknown as typeof fetch);
