@@ -70,3 +70,6 @@ scripts/models3d/
 # sonoro — transcripciones de sesión de Claude Code. Se generan en la raíz
 # del proyecto, no son parte del sitio y pesan cientos de KB cada una.
 2[0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9]*.txt
+
+# Salida de /brag (video de lanzamiento): no es parte del sitio.
+brag-output/

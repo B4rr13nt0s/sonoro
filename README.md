@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sonoro
 
-## Getting Started
+Tienda en línea de equipo de audio para carro, marino y motorsports en Guatemala: <https://sonoro-gules.vercel.app>.
 
-First, run the development server:
+Es un catálogo con carrito. No hay pago en línea: el pedido se cierra por WhatsApp con un mensaje ya redactado.
+
+## Stack
+
+Next.js (App Router) · React · TypeScript · Tailwind · three.js / React Three Fiber para el carrusel 3D de la portada · Playwright para e2e · Vercel.
+
+## Arrancar
+
+Requiere Node 22 o más nuevo.
 
 ```bash
+npm ci
+cp .env.example .env.local   # completar los valores; una variable ausente solo oculta su dato
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Comandos
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Comando                   | Qué hace                                                                   |
+| ------------------------- | -------------------------------------------------------------------------- |
+| `npm run dev`             | Servidor de desarrollo                                                     |
+| `npm run build`           | Importa el catálogo y compila el sitio                                     |
+| `npm run import:catalog`  | Lee `data/source/catalogo.xlsx` y regenera `data/` (errores en `reports/`) |
+| `npm run typecheck`       | Tipos                                                                      |
+| `npm run lint`            | ESLint                                                                     |
+| `npm run test`            | Tests unitarios (`node --test`)                                            |
+| `npm run test:e2e`        | Tests e2e con Playwright                                                   |
+| `npm run fotos:sin-fondo` | Genera las fotos de la portada desde `assets/fotos_pagina_de_inicio/`      |
+| `npm run fotos:logos`     | Genera los logos de marca desde `assets/logos_marcas/`                     |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+El CI (`.github/workflows/ci.yml`) corre typecheck, lint, tests, e2e y Lighthouse en cada push y PR.
 
-## Learn More
+## Estructura
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/          rutas
+components/   componentes de interfaz
+lib/          lógica: catálogo, carrito, búsqueda, chat, formato de precios
+scripts/      importador del catálogo, fotos y modelos 3D (Blender)
+data/         catálogo publicado (generado por el importador) y su fuente
+public/       fotos de producto, logos, modelos .glb
+assets/       originales que no se sirven
+design/       handoff de diseño, solo como referencia
+docs/         especificaciones y planes
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Documentación
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [`CLAUDE.md`](CLAUDE.md): reglas del negocio, modelo de datos, sistema visual y decisiones abiertas. Es la referencia principal.
+- [`docs/IMPORTADOR.md`](docs/IMPORTADOR.md): el importador del catálogo.
+- [`docs/superpowers/specs/2026-11-02-chatbot-design.md`](docs/superpowers/specs/2026-11-02-chatbot-design.md): el chatbot.
