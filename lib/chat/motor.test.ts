@@ -178,6 +178,27 @@ test("sin resultados: avisa, ofrece WhatsApp y registra el evento", () => {
   assert.equal(r.estado.ultimaConsulta, "xyz123");
 });
 
+test("sin resultados: muestra y manda lo que escribió el cliente, no el texto normalizado", () => {
+  const r = responder(ESTADO_INICIAL, texto("Hola, ¿tienen Zumbador Peñón?"), CONTEXTO);
+  assert.deepEqual(textos(r.bloques), ["No encontramos productos para «Zumbador Peñón»."]);
+  const wa = de(r.bloques, "whatsapp");
+  assert.equal(wa?.mensaje, buildAvailabilityInquiryMessage("Zumbador Peñón"));
+  assert.equal(r.estado.ultimaConsulta, "Zumbador Peñón");
+
+  // «Hablar con Sonoro» después lleva la misma consulta.
+  const hablar = responder(r.estado, opcion("hablar"), CONTEXTO);
+  assert.equal(
+    de(hablar.bloques, "whatsapp")?.mensaje,
+    "Hola Sonoro, tengo una consulta: Zumbador Peñón",
+  );
+});
+
+test("búsqueda con resultados: el enlace a /buscar lleva lo que escribió el cliente", () => {
+  const r = responder(ESTADO_INICIAL, texto("Subwoofer SQ12-D2"), CONTEXTO);
+  const productos = de(r.bloques, "productos");
+  assert.equal(productos?.verTodosHref, "/buscar?q=Subwoofer+SQ12-D2");
+});
+
 test("sin resultados: ofrece la categoría cercana aunque no tenga productos", () => {
   // El fixture no trae ecualizadores: la búsqueda queda vacía, la categoría sí existe.
   const r = responder(ESTADO_INICIAL, texto("ecualizador"), CONTEXTO);

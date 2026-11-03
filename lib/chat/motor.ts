@@ -7,7 +7,7 @@ import { buscar, sugerir } from "../busqueda/busqueda.ts";
 import { CATEGORIAS_SITIO } from "../catalog/categorias.ts";
 import { compararRelevancia } from "../catalog/orden.ts";
 import { buildAvailabilityInquiryMessage } from "../whatsapp/message.ts";
-import { detectarIntencion } from "./intencion.ts";
+import { consultaVisible, detectarIntencion } from "./intencion.ts";
 import {
   TEXTO_PEDIR_BUSQUEDA,
   TEXTO_SIN_CATALOGO,
@@ -53,12 +53,20 @@ function responderTema(tema: Tema, contexto: Contexto): Respuesta {
 }
 
 /**
- * Busca `consulta` en el catálogo. `verTodosHref` es el destino de «ver
- * todos»: por defecto la misma búsqueda en /buscar; una categoría o una marca
- * lleva al suyo.
+ * Busca `consulta` (normalizada) en el catálogo. `visible` es la misma
+ * consulta como la escribió el cliente: es la que se muestra, se enlaza y se
+ * manda por WhatsApp (el mensaje promete «tal cual la escribió»). Solo la
+ * búsqueda usa la normalizada. `verTodosHref` es el destino de «ver todos»:
+ * por defecto la misma búsqueda en /buscar; una categoría o una marca lleva
+ * al suyo.
  */
-function responderBusqueda(consulta: string, contexto: Contexto, verTodosHref?: string): Respuesta {
-  const estado: Estado = { ultimaConsulta: consulta, ultimoTema: null };
+function responderBusqueda(
+  consulta: string,
+  visible: string,
+  contexto: Contexto,
+  verTodosHref?: string,
+): Respuesta {
+  const estado: Estado = { ultimaConsulta: visible, ultimoTema: null };
   const { productos } = contexto;
 
   if (productos === null) {
@@ -94,14 +102,14 @@ function responderBusqueda(consulta: string, contexto: Contexto, verTodosHref?: 
       ...sugerencias.marcas.map((m) => ({ id: `marca:${m.slug}` as const, etiqueta: m.nombre })),
     ];
     const bloques: Bloque[] = [
-      { tipo: "texto", texto: `No encontramos productos para «${consulta}».` },
+      { tipo: "texto", texto: `No encontramos productos para «${visible}».` },
     ];
     if (opciones.length > 0) bloques.push({ tipo: "opciones", opciones });
     bloques.push({
       tipo: "whatsapp",
       etiqueta: "Consultar disponibilidad por WhatsApp",
       motivo: "disponibilidad",
-      mensaje: buildAvailabilityInquiryMessage(consulta),
+      mensaje: buildAvailabilityInquiryMessage(visible),
     });
     return { estado, bloques, evento: { evento: "sin_resultados", consulta } };
   }
@@ -119,7 +127,7 @@ function responderBusqueda(consulta: string, contexto: Contexto, verTodosHref?: 
     tipo: "productos",
     skus: resultado.productos.slice(0, MAX_PRODUCTOS_CHAT).map((p) => p.sku),
     total: resultado.productos.length,
-    verTodosHref: verTodosHref ?? `/buscar?${new URLSearchParams({ q: consulta })}`,
+    verTodosHref: verTodosHref ?? `/buscar?${new URLSearchParams({ q: visible })}`,
   });
   bloques.push(opcionesHablar());
   return {
@@ -144,12 +152,13 @@ function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respue
   if (id.startsWith("categoria:")) {
     const slug = id.slice("categoria:".length);
     const categoria = CATEGORIAS_SITIO.find((c) => c.slug === slug);
-    if (categoria) return responderBusqueda(categoria.nombre, contexto, `/catalogo/${slug}`);
+    if (categoria)
+      return responderBusqueda(categoria.nombre, categoria.nombre, contexto, `/catalogo/${slug}`);
   }
   if (id.startsWith("marca:")) {
     const slug = id.slice("marca:".length);
     const marca = contexto.marcas.find((m) => m.slug === slug);
-    if (marca) return responderBusqueda(marca.nombre, contexto, `/marcas/${slug}`);
+    if (marca) return responderBusqueda(marca.nombre, marca.nombre, contexto, `/marcas/${slug}`);
   }
   return saludo(estado);
 }
@@ -186,6 +195,6 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
     case "tema":
       return responderTema(intencion.tema, contexto);
     case "busqueda":
-      return responderBusqueda(intencion.consulta, contexto);
+      return responderBusqueda(intencion.consulta, consultaVisible(texto), contexto);
   }
 }
