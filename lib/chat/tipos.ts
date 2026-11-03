@@ -75,6 +75,10 @@ export interface Estado {
 export interface BusquedaAcotable {
   base: { tipo: "texto"; consulta: string; visible: string } | { tipo: "categoria"; slug: string };
   acotes: Acote[];
+  /** Sin él, el orden de relevancia de la búsqueda. */
+  orden?: "precio_asc" | "precio_desc";
+  /** De a MAX_PRODUCTOS_CHAT: 0 son los primeros. */
+  pagina?: number;
 }
 
 export interface Contexto {
