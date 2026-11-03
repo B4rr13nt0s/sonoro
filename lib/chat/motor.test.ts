@@ -272,9 +272,30 @@ test("contacto: solo los datos que vienen", () => {
     "Teléfono: +502 5295 5555",
     "Correo: sonoro502@gmail.com",
     "Dirección: Ciudad de Guatemala",
+    "La dirección completa está en",
   ]);
   const parcial = textos(bloquesDeTema("contacto", { correo: "a@b.gt" }));
   assert.deepEqual(parcial, ["Correo: a@b.gt"]);
+});
+
+test("contacto: la dirección del chat remite a Nosotros, justo después de ella", () => {
+  const bloques = bloquesDeTema("contacto", CONTEXTO.contacto);
+  const iDireccion = bloques.findIndex(
+    (b) => b.tipo === "texto" && b.texto.startsWith("Dirección:"),
+  );
+  assert.ok(iDireccion >= 0);
+  assert.deepEqual(bloques[iDireccion + 1], {
+    tipo: "texto",
+    texto: "La dirección completa está en",
+    enlace: { etiqueta: "Nosotros", href: "/nosotros" },
+  });
+  // Sin dirección no hay nada que completar.
+  for (const contacto of [{ telefono: "1234", correo: "a@b.gt" }, {}]) {
+    const enlaces = bloquesDeTema("contacto", contacto).flatMap((b) =>
+      b.tipo === "texto" && b.enlace ? [b.enlace.href] : [],
+    );
+    assert.deepEqual(enlaces, []);
+  }
 });
 
 test("contacto vacío: lo confirma Sonoro, con WhatsApp", () => {

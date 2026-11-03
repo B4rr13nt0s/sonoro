@@ -118,6 +118,8 @@ function parrafos(
   );
 }
 
+const DIRECCION_COMPLETA = { etiqueta: "Nosotros", href: "/nosotros" };
+
 /** La respuesta a un tema de política, cerrada con «Buscar un producto» y «Hablar con Sonoro». */
 export function bloquesDeTema(tema: Tema, contacto: Contexto["contacto"]): Bloque[] {
   const cierre: Bloque = { tipo: "opciones", opciones: [OPCION_BUSCAR, OPCION_HABLAR] };
@@ -150,7 +152,14 @@ export function bloquesDeTema(tema: Tema, contacto: Contexto["contacto"]): Bloqu
         contacto.correo && `Correo: ${contacto.correo}`,
         contacto.direccion && `Dirección: ${contacto.direccion}`,
       ].filter((d): d is string => Boolean(d));
-      if (datos.length > 0) return [...parrafos(datos), cierre];
+      if (datos.length > 0) {
+        // El chat solo trae calle y localidad (app/layout.tsx); la dirección
+        // completa está en /nosotros.
+        const completa = contacto.direccion
+          ? parrafos(["La dirección completa está en"], DIRECCION_COMPLETA)
+          : [];
+        return [...parrafos(datos), ...completa, cierre];
+      }
       // El estado con el que se responde ya trae `ultimoTema: "contacto"`.
       return [
         ...parrafos([TEXTO_NO_DEFINIDO]),
