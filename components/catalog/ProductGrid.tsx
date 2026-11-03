@@ -1,5 +1,6 @@
 import { ProductCard } from "@/components/catalog/ProductCard";
 import type { ProductoTarjeta } from "@/lib/catalog/index.ts";
+import type { Spec } from "@/lib/catalog/types.ts";
 
 // Rejilla de tarjetas de producto — CLAUDE.md § Patrones que se repiten no
 // define estados de carga ni vacío (el handoff es estático), así que los
@@ -16,6 +17,8 @@ type ProductGridProps = {
   loading?: boolean;
   skeletonCount?: number;
   emptyMessage?: string;
+  /** Por sku, las specs que muestran el dato que pidió la búsqueda (/buscar). */
+  destacadas?: Readonly<Record<string, readonly Spec[]>>;
 };
 
 export function ProductGrid({
@@ -23,6 +26,7 @@ export function ProductGrid({
   loading = false,
   skeletonCount = 8,
   emptyMessage = "No encontramos productos con estos filtros.",
+  destacadas,
 }: ProductGridProps) {
   if (loading) {
     return (
@@ -48,7 +52,7 @@ export function ProductGrid({
   return (
     <div className={CLASES_GRID}>
       {productos.map((producto) => (
-        <ProductCard key={producto.sku} producto={producto} />
+        <ProductCard key={producto.sku} producto={producto} destacar={destacadas?.[producto.sku]} />
       ))}
     </div>
   );

@@ -122,6 +122,38 @@ export function BloqueChat({
         </div>
       );
 
+    case "acotar":
+      // Un grupo por fila: la etiqueta en mono y sus botones, con el mismo
+      // dibujo que las opciones. Se envían como cualquier opción.
+      return (
+        <div className="flex flex-col gap-3">
+          {bloque.grupos.map((grupo) => (
+            <div
+              key={grupo.titulo}
+              role="group"
+              aria-label={grupo.titulo}
+              className="flex flex-col gap-1.5"
+            >
+              <span className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">
+                {grupo.titulo}
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {grupo.opciones.map((opcion) => (
+                  <button
+                    key={opcion.id}
+                    type="button"
+                    onClick={() => alOpcion(opcion.id, opcion.etiqueta)}
+                    className="border-borde-pildora rounded-full border px-3 py-1.5 text-[13px]"
+                  >
+                    {opcion.etiqueta}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+
     case "whatsapp":
       return (
         <div className="flex">

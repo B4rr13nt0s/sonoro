@@ -188,6 +188,7 @@ export function resumenDeMensaje(mensaje: Mensaje): string | null {
         partes.push(frase(bloque.etiqueta));
         break;
       case "opciones":
+      case "acotar":
         break;
     }
   }

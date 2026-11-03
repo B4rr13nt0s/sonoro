@@ -8,8 +8,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { tarjetasBuscables } from "../catalog/buscables.ts";
-import { listAllProducts } from "../catalog/index.ts";
+import { listAllProducts, listBrands } from "../catalog/index.ts";
 import { compararRelevancia } from "../catalog/orden.ts";
+import { gruposDeAcote } from "./acotar.ts";
 import { buscar, type ProductoBuscable } from "./busqueda.ts";
 
 const PRIMEROS = 5;
@@ -102,3 +103,17 @@ for (const { consulta, cumple } of CERCANAS) {
     assert.deepEqual(fuera, []);
   });
 }
+
+test("«subwoofer»: para acotar ofrece sus medidas y marcas", async () => {
+  const marcas = (await listBrands()).map((m) => ({ nombre: m.nombre, slug: m.slug }));
+  const grupos = gruposDeAcote(
+    buscar(productos, "subwoofer", compararRelevancia).productos,
+    marcas,
+  );
+  const medida = grupos.find((g) => g.campo === "medida");
+  assert.deepEqual(
+    medida?.opciones.map((o) => o.etiqueta),
+    ['6.5"', '8"', '10"', '12"', '15"'],
+  );
+  assert.ok(grupos.some((g) => g.campo === "marca"));
+});

@@ -172,6 +172,47 @@ test("búsqueda aproximada: avisa con un bloque filtros", () => {
   assert.deepEqual(r.bloques.map((b) => b.tipo).slice(0, 2), ["filtros", "productos"]);
 });
 
+test("acotar: una búsqueda amplia ofrece botones, y uno de ellos acota", () => {
+  // Los ocho son Memphis: hay categorías y precios distintos, no marcas.
+  const r = responder(ESTADO_INICIAL, texto("memphis"), CONTEXTO);
+  const acotar = de(r.bloques, "acotar");
+  assert.ok(acotar);
+  assert.deepEqual(
+    acotar.grupos.map((g) => g.titulo),
+    ["Categoría", "Precio"],
+  );
+  const subwoofers = acotar.grupos[0].opciones.find((o) => o.etiqueta === "Subwoofers");
+  assert.equal(subwoofers?.id, "acotar:categoria:subwoofers");
+
+  const r2 = responder(r.estado, opcion("acotar:categoria:subwoofers"), CONTEXTO);
+  assert.deepEqual(de(r2.bloques, "productos")?.skus, ["SUB1", "SUB2"]);
+  assert.deepEqual(de(r2.bloques, "filtros")?.aplicados, ["Subwoofers"]);
+  assert.equal(de(r2.bloques, "productos")?.verTodosHref, "/buscar?q=memphis&categoria=Subwoofers");
+  // Dos resultados caben en el chat: no hay más que acotar.
+  assert.equal(de(r2.bloques, "acotar"), undefined);
+  assert.deepEqual(r2.estado.busqueda?.acotes, [{ campo: "categoria", slug: "subwoofers" }]);
+});
+
+test("acotar: los acotes se suman, y uno del mismo campo reemplaza al anterior", () => {
+  const r = responder(ESTADO_INICIAL, texto("memphis"), CONTEXTO);
+  const barato = responder(r.estado, opcion("acotar:precio:-100000"), CONTEXTO);
+  assert.equal(de(barato.bloques, "productos")?.total, 6);
+  const caro = responder(barato.estado, opcion("acotar:precio:100000-"), CONTEXTO);
+  assert.deepEqual(de(caro.bloques, "productos")?.skus, ["SUB1", "SUB2"]);
+  assert.equal(caro.estado.busqueda?.acotes.length, 1);
+});
+
+test("acotar: una búsqueda nueva escrita a mano olvida lo acotado", () => {
+  const r = responder(ESTADO_INICIAL, texto("memphis"), CONTEXTO);
+  const otra = responder(r.estado, texto("kit"), CONTEXTO);
+  assert.equal(otra.estado.busqueda, undefined);
+  const tema = responder(r.estado, texto("envíos"), CONTEXTO);
+  assert.equal(tema.estado.busqueda, undefined);
+  // Un botón viejo sin búsqueda a la cual volver lleva al inicio.
+  const viejo = responder(tema.estado, opcion("acotar:categoria:subwoofers"), CONTEXTO);
+  assert.deepEqual(viejo.bloques, bloquesDeInicio());
+});
+
 test("búsqueda cercana: dice qué no hay y muestra lo más cercano", () => {
   const r = responder(ESTADO_INICIAL, texto("subwoofer de 10 pulgadas"), CONTEXTO);
   const filtros = de(r.bloques, "filtros");

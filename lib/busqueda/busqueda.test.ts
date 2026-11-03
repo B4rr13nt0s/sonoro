@@ -11,6 +11,7 @@ import {
   normalizar,
   numerosDeAtributos,
   raiz,
+  specsCoincidentes,
   sugerir,
   type ProductoBuscable,
 } from "./busqueda.ts";
@@ -646,4 +647,22 @@ test("buscar: el nombre completo de un cable RCA encuentra ese cable", () => {
     r.productos.map((p) => p.sku),
     ["RFI-16"],
   );
+});
+
+test("specsCoincidentes: la spec que muestra el dato pedido", () => {
+  const sub = producto('Subwoofer de 12" S12', "X", "S12", {
+    specsDestacadas: [
+      { etiqueta: "Diámetro", valor: '12" (30 cm)' },
+      { etiqueta: "Potencia RMS", valor: "500 W" },
+      { etiqueta: "Impedancia", valor: "Bobina doble de 2 Ω" },
+    ],
+  });
+  const etiquetas = (consulta: string) => specsCoincidentes(sub, consulta).map((s) => s.etiqueta);
+  assert.deepEqual(etiquetas("subwoofer 2 ohm"), ["Impedancia"]);
+  assert.deepEqual(etiquetas("subwoofer 12 pulgadas"), ["Diámetro"]);
+  assert.deepEqual(etiquetas("subwoofer de mas de 300 w"), ["Potencia RMS"]);
+  // Un 4 Ω que el producto no trae no muestra nada; tampoco una consulta sin dato.
+  assert.deepEqual(etiquetas("subwoofer 4 ohm"), []);
+  assert.deepEqual(etiquetas("subwoofer memphis"), []);
+  assert.deepEqual(etiquetas("subwoofer menos de 1000"), []);
 });

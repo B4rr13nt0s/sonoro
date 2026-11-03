@@ -2,6 +2,7 @@
 // § Contratos del motor). Solo tipos y constantes: sin React, sin DOM y sin
 // leer variables de entorno, para que el motor se pruebe con `node --test`.
 
+import type { Acote } from "../busqueda/acotar.ts";
 import type { ModoBusqueda, ProductoBuscable } from "../busqueda/busqueda.ts";
 import type { Spec } from "../catalog/types.ts";
 
@@ -21,7 +22,8 @@ export type OpcionId =
   | "contacto" // por texto; no está en el menú de inicio
   | "hablar" // pasar a una persona
   | `categoria:${string}` // slug de categoría del sitio
-  | `marca:${string}`; // slug de marca
+  | `marca:${string}` // slug de marca
+  | `acotar:${string}`; // un botón para acotar la última búsqueda (lib/busqueda/acotar.ts)
 
 export type Entrada = { tipo: "texto"; texto: string } | { tipo: "opcion"; id: OpcionId };
 
@@ -51,6 +53,11 @@ export type Bloque =
     }
   | { tipo: "opciones"; opciones: { id: OpcionId; etiqueta: string }[] }
   | {
+      // Botones para acotar una búsqueda amplia, por grupo: «Medida», «Marca»…
+      tipo: "acotar";
+      grupos: { titulo: string; opciones: { id: OpcionId; etiqueta: string }[] }[];
+    }
+  | {
       tipo: "whatsapp";
       etiqueta: string;
       mensaje: string;
@@ -60,6 +67,14 @@ export type Bloque =
 export interface Estado {
   ultimaConsulta: string | null; // para el mensaje de «Hablar con Sonoro»
   ultimoTema: OpcionId | null;
+  // La última búsqueda y lo que se acotó de ella, para que un botón de
+  // «acotar» la vuelva a correr. Cualquier otra respuesta la olvida.
+  busqueda?: BusquedaAcotable | null;
+}
+
+export interface BusquedaAcotable {
+  base: { tipo: "texto"; consulta: string; visible: string } | { tipo: "categoria"; slug: string };
+  acotes: Acote[];
 }
 
 export interface Contexto {

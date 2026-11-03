@@ -20,7 +20,14 @@ import {
 } from "@/lib/catalog/orden.ts";
 import { formatQ } from "@/lib/format/precio.ts";
 
-import { buscar, sugerir, type ProductoBuscable } from "@/lib/busqueda/busqueda.ts";
+import { canalesDe, etiquetaCanales, medidasDe } from "@/lib/busqueda/acotar.ts";
+import {
+  buscar,
+  specsCoincidentes,
+  sugerir,
+  type ProductoBuscable,
+} from "@/lib/busqueda/busqueda.ts";
+import type { Spec } from "@/lib/catalog/types.ts";
 
 // Múltiplo de 2, 4 y 6, las columnas de ProductGrid: cada «Ver más» llena
 // filas enteras en cualquier ancho.
@@ -89,9 +96,17 @@ function leerDisponibilidad(valor: string | null): Disponibilidad | null {
     : null;
 }
 
+/** Una medida o un número de canales de la URL: un número positivo, o nada. */
+function leerNumero(valor: string | null): number | null {
+  const numero = Number(valor);
+  return valor !== null && Number.isFinite(numero) && numero > 0 ? numero : null;
+}
+
 interface Estado {
   q: string;
   categoria?: string | null;
+  medida?: number | null;
+  canales?: number | null;
   marca?: string | null;
   disp?: Disponibilidad | null;
   uso?: Uso | null;
@@ -101,6 +116,8 @@ interface Estado {
 
 interface Filtros {
   categoria: string | null;
+  medida: number | null;
+  canales: number | null;
   marca: string | null;
   disp: Disponibilidad | null;
   uso: Uso | null;
@@ -112,6 +129,8 @@ function pasa(producto: ProductoBuscable, filtros: Filtros, omitir?: keyof Filtr
     (omitir === "categoria" ||
       !filtros.categoria ||
       perteneceACategoria(producto, filtros.categoria)) &&
+    (omitir === "medida" || filtros.medida === null || producto.pulgadas === filtros.medida) &&
+    (omitir === "canales" || filtros.canales === null || producto.canales === filtros.canales) &&
     (omitir === "marca" || !filtros.marca || producto.marca === filtros.marca) &&
     (omitir === "disp" || !filtros.disp || producto.disponibilidad === filtros.disp) &&
     // Sin `uso`, el producto es de carro (igual que en busqueda.ts).
@@ -143,6 +162,8 @@ export function Busqueda({
   const params = useMemo(() => new URLSearchParams(busqueda), [busqueda]);
   const consulta = (params.get("q") ?? "").trim();
   const categoriaPedida = params.get("categoria");
+  const medidaPedida = leerNumero(params.get("medida"));
+  const canalesPedidos = leerNumero(params.get("canales"));
   const marcaPedida = params.get("marca");
   const dispPedida = leerDisponibilidad(params.get("disp"));
   const usoPedido = leerUso(params.get("uso"));
@@ -168,10 +189,12 @@ export function Busqueda({
   // atrás sale de /buscar en vez de recorrer cada consulta o filtro. Next
   // sincroniza useSearchParams con la historia nativa, sin pedir la página de
   // nuevo al servidor. Sin consulta no hay filtros que guardar.
-  function irA({ q, categoria, marca, disp, uso, orden, ver }: Estado) {
+  function irA({ q, categoria, medida, canales, marca, disp, uso, orden, ver }: Estado) {
     const query = new URLSearchParams();
     if (q) query.set("q", q);
     if (q && categoria) query.set("categoria", categoria);
+    if (q && medida) query.set("medida", String(medida));
+    if (q && canales) query.set("canales", String(canales));
     if (q && marca) query.set("marca", marca);
     if (q && disp) query.set("disp", disp);
     if (q && uso) query.set("uso", uso);
@@ -210,12 +233,52 @@ export function Busqueda({
     }
     return {
       categoria: categoriaPedida && categorias.has(categoriaPedida) ? categoriaPedida : null,
+      medida:
+        medidaPedida !== null && base.some((p) => p.pulgadas === medidaPedida)
+          ? medidaPedida
+          : null,
+      canales:
+        canalesPedidos !== null && base.some((p) => p.canales === canalesPedidos)
+          ? canalesPedidos
+          : null,
       marca: marcaPedida && marcasEnBase.has(marcaPedida) ? marcaPedida : null,
       disp: dispPedida && base.some((p) => p.disponibilidad === dispPedida) ? dispPedida : null,
       uso:
         usoPedido && base.some((p) => (p.uso ?? ["carro"]).includes(usoPedido)) ? usoPedido : null,
     };
-  }, [base, categoriaPedida, marcaPedida, dispPedida, usoPedido]);
+  }, [base, categoriaPedida, medidaPedida, canalesPedidos, marcaPedida, dispPedida, usoPedido]);
+
+  // Medida y canales: los valores que traen los resultados, con los OTROS
+  // filtros puestos (lib/busqueda/acotar.ts, la misma cuenta que los botones
+  // del chat). Todos, no solo los seis más comunes: un selector no se desborda.
+  const opcionesMedida = useMemo(
+    () =>
+      medidasDe(
+        base.filter((p) => pasa(p, filtros, "medida")),
+        Infinity,
+      ),
+    [base, filtros],
+  );
+  const opcionesCanales = useMemo(
+    () =>
+      canalesDe(
+        base.filter((p) => pasa(p, filtros, "canales")),
+        Infinity,
+      ),
+    [base, filtros],
+  );
+
+  // El dato que pidió la consulta («2 ohm», «más de 500 W»), por sku, para la
+  // línea gris de cada tarjeta.
+  const destacadas = useMemo(() => {
+    const porSku: Record<string, Spec[]> = {};
+    if (!consulta) return porSku;
+    for (const producto of base) {
+      const specs = specsCoincidentes(producto, consulta);
+      if (specs.length > 0) porSku[producto.sku] = specs;
+    }
+    return porSku;
+  }, [base, consulta]);
 
   // Las píldoras cuentan con la misma regla que los listados
   // (perteneceACategoria): un Sistema cuenta en las categorías que trae como
@@ -272,13 +335,22 @@ export function Busqueda({
   }, [base, filtros, ordenActivo]);
   const resultadosVisibles = resultadosFiltrados.slice(0, visibles);
   const restantes = resultadosFiltrados.length - resultadosVisibles.length;
-  const hayFiltros = Boolean(filtros.categoria || filtros.marca || filtros.disp || filtros.uso);
+  const hayFiltros = Boolean(
+    filtros.categoria ||
+    filtros.medida ||
+    filtros.canales ||
+    filtros.marca ||
+    filtros.disp ||
+    filtros.uso,
+  );
 
   // Los filtros de hoy, para cambiar solo uno. Al cambiar la lista, «Ver más»
   // vuelve a empezar.
   const actual: Estado = {
     q: consulta,
     categoria: filtros.categoria,
+    medida: filtros.medida,
+    canales: filtros.canales,
     marca: filtros.marca,
     disp: filtros.disp,
     uso: filtros.uso,
@@ -544,6 +616,36 @@ export function Busqueda({
                       ))}
                     </select>
                   ) : null}
+                  {opcionesMedida.length > 1 || filtros.medida ? (
+                    <select
+                      aria-label="Filtrar por medida"
+                      value={filtros.medida ?? ""}
+                      onChange={(e) => cambiar({ medida: leerNumero(e.target.value) })}
+                      className={CLASE_SELECT}
+                    >
+                      <option value="">Medida: todas</option>
+                      {opcionesMedida.map(([pulgadas, cantidad]) => (
+                        <option key={pulgadas} value={pulgadas}>
+                          Medida: {pulgadas}&quot; ({cantidad})
+                        </option>
+                      ))}
+                    </select>
+                  ) : null}
+                  {opcionesCanales.length > 1 || filtros.canales ? (
+                    <select
+                      aria-label="Filtrar por canales"
+                      value={filtros.canales ?? ""}
+                      onChange={(e) => cambiar({ canales: leerNumero(e.target.value) })}
+                      className={CLASE_SELECT}
+                    >
+                      <option value="">Canales: todos</option>
+                      {opcionesCanales.map(([canales, cantidad]) => (
+                        <option key={canales} value={canales}>
+                          {etiquetaCanales(canales)} ({cantidad})
+                        </option>
+                      ))}
+                    </select>
+                  ) : null}
                   {opcionesMarca.length > 1 || filtros.marca ? (
                     <select
                       aria-label="Filtrar por marca"
@@ -605,6 +707,7 @@ export function Busqueda({
               <>
                 <ProductGrid
                   productos={resultadosVisibles}
+                  destacadas={destacadas}
                   emptyMessage="Ningún resultado con estos filtros."
                 />
                 {resultadosFiltrados.length === 0 && hayFiltros ? (
@@ -612,7 +715,14 @@ export function Busqueda({
                     <button
                       type="button"
                       onClick={() =>
-                        cambiar({ categoria: null, marca: null, disp: null, uso: null })
+                        cambiar({
+                          categoria: null,
+                          medida: null,
+                          canales: null,
+                          marca: null,
+                          disp: null,
+                          uso: null,
+                        })
                       }
                       className="border-borde-boton rounded-full border px-7 py-3.5 text-[15px]"
                     >

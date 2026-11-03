@@ -21,7 +21,7 @@
 // comparaciones con número («menos de Q 1,000», «más de 500 W», «de 8 a 10
 // pulgadas») dejan de ser texto y pasan a ser FILTROS sobre el dato.
 import { formatQ } from "../format/precio.ts";
-import type { Atributos, ProductoTarjeta, Uso } from "../catalog/types.ts";
+import type { Atributos, ProductoTarjeta, Spec, Uso } from "../catalog/types.ts";
 import { PALABRAS_VACIAS, SINONIMOS, USO_PALABRAS } from "./sinonimos.ts";
 
 /**
@@ -1102,6 +1102,54 @@ export function buscar(
   }
 
   return { productos: [], modo: "exacta", correccion, aplicados, usos, cercania: null };
+}
+
+// ---------------------------------------------------------------------------
+// El dato que coincidió
+// ---------------------------------------------------------------------------
+
+// Qué spec muestra cada tipo de dato pedido, por su etiqueta. La medida y la
+// potencia se buscan por etiqueta y no por el valor exacto: en la búsqueda
+// «cercana» el valor pedido («6"») justamente no está.
+const ETIQUETA_DE_CAMPO: Readonly<Record<Restriccion["campo"], RegExp | null>> = {
+  pulgadas: /^(?:tamaño|diámetro|pantalla|medida)/i,
+  potencia: /potencia/i,
+  canales: /canal/i,
+  precio: null,
+};
+
+/**
+ * Las specs destacadas de `producto` que muestran el dato que pidió la
+ * consulta: con «2 ohm», la impedancia; con «12 pulgadas» o «más de 500 W», la
+ * medida o la potencia; con «clase d», la clase. Vacío si la consulta no pide
+ * un dato o el producto no lo trae entre sus destacadas. Hasta dos, en el
+ * orden de la ficha.
+ */
+export function specsCoincidentes(producto: ProductoTarjeta, consulta: string): Spec[] {
+  const c = compilar(normalizar(consulta).replace(/\s+/g, " "));
+  const porEtiqueta: RegExp[] = [];
+  const porValor: string[] = [];
+  for (const r of c.restricciones) {
+    const etiqueta = ETIQUETA_DE_CAMPO[r.campo];
+    if (etiqueta) porEtiqueta.push(etiqueta);
+  }
+  for (const t of c.terminos) {
+    if (t.texto.startsWith("clase-")) porEtiqueta.push(/clase/i);
+    if (!t.medida) continue;
+    const unidad = /(?:"|ohm|w|ch|mm|m|din|awg)$/.exec(t.texto)?.[0];
+    if (unidad === '"') porEtiqueta.push(ETIQUETA_DE_CAMPO.pulgadas as RegExp);
+    else if (unidad === "w") porEtiqueta.push(/potencia/i);
+    else if (unidad === "ch") porEtiqueta.push(/canal/i);
+    else porValor.push(t.texto);
+  }
+  if (porEtiqueta.length === 0 && porValor.length === 0) return [];
+  return producto.specsDestacadas
+    .filter((spec) => {
+      if (porEtiqueta.some((r) => r.test(spec.etiqueta))) return true;
+      const tokens = canonizar(normalizar(spec.valor)).split(SEPARADORES);
+      return porValor.some((v) => tokens.includes(v));
+    })
+    .slice(0, 2);
 }
 
 // ---------------------------------------------------------------------------

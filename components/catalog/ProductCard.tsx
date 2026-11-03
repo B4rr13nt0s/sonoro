@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { ProductImage } from "@/components/media/ProductImage";
 import type { ProductoTarjeta } from "@/lib/catalog/index.ts";
+import type { Spec } from "@/lib/catalog/types.ts";
 import { etiquetaDisponibilidad } from "@/lib/catalog/disponibilidad.ts";
 
 // CLAUDE.md § Patrones que se repiten — "Tarjeta de producto": foto cuadrada
@@ -19,8 +20,21 @@ import { etiquetaDisponibilidad } from "@/lib/catalog/disponibilidad.ts";
 // meter un botón dentro sin romper el HTML: un <button> dentro de un <a> es
 // inválido, y ese botón tiene que ir como hermano con `relative z-10` para
 // quedar por encima de la capa del enlace estirado.
-export function ProductCard({ producto }: { producto: ProductoTarjeta }) {
-  const especificacion = producto.specsDestacadas
+export function ProductCard({
+  producto,
+  destacar = [],
+}: {
+  producto: ProductoTarjeta;
+  /**
+   * En /buscar, las specs que traen el dato que pidió la consulta («2 ohm»):
+   * abren la línea gris, y la completa la primera de las otras destacadas.
+   */
+  destacar?: readonly Spec[];
+}) {
+  const especificacion = [
+    ...destacar,
+    ...producto.specsDestacadas.filter((spec) => !destacar.includes(spec)),
+  ]
     .slice(0, 2)
     .map((spec) => spec.valor)
     .join(" · ");
