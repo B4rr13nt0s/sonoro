@@ -65,12 +65,37 @@ test("conversacionInicial: el saludo y el menú, con el estado inicial", () => {
 
 test("crearContexto: sin catálogo, productos null y sin marcas", () => {
   const contacto = { telefono: "+502 5295 5555" };
-  assert.deepEqual(crearContexto(null, contacto), { productos: null, marcas: [], contacto });
+  assert.deepEqual(crearContexto(null, contacto), {
+    productos: null,
+    marcas: [],
+    fichas: {},
+    contacto,
+  });
   assert.deepEqual(crearContexto(CATALOGO, contacto), {
     productos: CATALOGO.productos,
     marcas: CATALOGO.marcas,
+    fichas: {},
     contacto,
   });
+  const fichas = { SQ12: [{ etiqueta: "Potencia RMS", valor: "500 W" }] };
+  assert.deepEqual(crearContexto({ ...CATALOGO, fichas }, contacto).fichas, fichas);
+});
+
+test("resumenDeMensaje: lo preguntado de un solo producto se anuncia", () => {
+  const mensaje: Mensaje = {
+    id: 1,
+    autor: "bot",
+    bloques: [
+      {
+        tipo: "productos",
+        skus: ["SQ12"],
+        total: 1,
+        verTodosHref: "/buscar?q=SQ12",
+        datos: { SQ12: [{ etiqueta: "Potencia RMS", valor: "500 W" }] },
+      },
+    ],
+  };
+  assert.equal(resumenDeMensaje(mensaje), "1 resultado. Potencia RMS: 500 W.");
 });
 
 test("conMensaje: ids crecientes y sin mutar la conversación", () => {

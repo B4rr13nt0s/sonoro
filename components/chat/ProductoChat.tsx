@@ -10,14 +10,18 @@ import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { PildoraDisponibilidad } from "@/components/catalog/PildoraDisponibilidad";
 import { ProductImage } from "@/components/media/ProductImage";
 import type { ProductoBuscable } from "@/lib/busqueda/busqueda.ts";
+import type { Spec } from "@/lib/catalog/types.ts";
 import { formatQ, lineaCuota } from "@/lib/format/precio.ts";
 
 export function ProductoChat({
   producto,
+  datos,
   alAgregar,
   alNavegar,
 }: {
   producto: ProductoBuscable;
+  /** Lo que preguntó el cliente («Potencia RMS: 750 W»), bajo el nombre. */
+  datos?: readonly Spec[];
   alAgregar: (agregadas: number, sku: string) => void;
   alNavegar?: () => void;
 }) {
@@ -42,6 +46,16 @@ export function ProductoChat({
         >
           {producto.nombre}
         </Link>
+        {datos && datos.length > 0 ? (
+          <dl className="text-[13px] leading-snug">
+            {datos.map(({ etiqueta, valor }) => (
+              <div key={etiqueta}>
+                <dt className="text-texto-secundario inline">{etiqueta}: </dt>
+                <dd className="inline">{valor}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
         <div className="text-[14px]">{formatQ(producto.precioCents)}</div>
         <div className="text-texto-secundario text-[12px]">{lineaCuota(producto.precioCents)}</div>
         <div className="flex flex-wrap items-center gap-2 pt-1">

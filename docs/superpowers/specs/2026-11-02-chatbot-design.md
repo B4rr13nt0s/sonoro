@@ -192,7 +192,8 @@ vive en el mismo archivo, como `sinonimos.ts`, y se compara sobre
 | 1 | es un saludo o agradecimiento, solo | `saludo` | «hola», «buenas», «gracias» |
 | 2 | pide criterio | `recomendacion` | «qué me recomiendan», «cuál es mejor», «cuál me conviene», «qué le queda a mi carro» |
 | 3 | nombra un tema de política | `tema:<id>` | envío/envían/entregan/flete → `envios`; garantía/se arruinó/defecto → `garantia`; instalan/instalación/colocan → `instalacion`; cuotas/financiamiento/visacuotas → `cuotas`; cómo compro/cómo pido/cómo pago/pagar en línea → `como_pedir`; dónde están/ubicados → contacto (ver abajo). Más las palabras ambiguas de abajo, que solo ganan si van solas |
-| 4 | cualquier otra cosa | `busqueda` | «sub 12 2 ohm», «tienen memphis?», «cuánto cuesta el SQ12» |
+| 4 | pregunta por un dato del producto (ver § Datos de un producto) | `dato` | «cuántos watts tiene el MJP1244», «¿está disponible el SQ12-D2?» |
+| 5 | cualquier otra cosa | `busqueda` | «sub 12 2 ohm», «tienen memphis?», «cuánto cuesta el SQ12» |
 
 Si un texto nombra un tema y un producto a la vez («¿el SQ12 trae
 garantía?»), gana el tema: la garantía no cambia por producto. **Salvo las
@@ -297,6 +298,38 @@ de «te ayudamos a escoger» ni de «nuestros expertos».
 - **Catálogo no cargado** (`productos === null`): «No pudimos cargar el
   catálogo.» Le siguen un enlace a `/buscar` y *Hablar con Sonoro*. Los temas
   siguen funcionando.
+
+### Datos de un producto
+
+*Agregado el 3 de noviembre de 2026.* «¿Cuántos watts tiene el MJP1244?»,
+«profundidad del PRXS1224», «¿está disponible el SQ12-D2?». El vocabulario
+(`lib/chat/datos.ts`) traduce palabras de la pregunta a etiquetas de
+`specsFicha`: potencia, impedancia, medida, profundidad, canales, respuesta en
+frecuencia, sensibilidad, peso, calibre y contenido, más la disponibilidad.
+
+- **Tras un número no es pregunta:** «1000 watts», «2 ohm», «4 canales» y
+  «1000 w rms» son filtros de la búsqueda, como hasta ahora. Por lo mismo,
+  «¿es de 2 ohm?» busca los de 2 Ω: no se contesta «sí» o «no».
+- **El producto** es lo que queda sin las palabras de la pregunta, buscado con
+  `buscar()`. Uno nombrado por su código (con o sin separadores), o el único
+  resultado, responde en frases; si no, los 5 primeros con una fila del dato
+  bajo cada uno (`datos` del bloque `productos`).
+- **Lo que no publica la ficha:** con un producto, «<nombre>: el fabricante no
+  publica la potencia.»; en una lista, «Potencia: sin dato del fabricante».
+  Lo que sí se muestra cierra con «Datos publicados por el fabricante.»
+- **Disponibilidad:** «<nombre>: disponible.», «…: bajo pedido. Sonoro te
+  confirma el tiempo de entrega.» o «…: agotado.»; los dos últimos con la
+  consulta de disponibilidad por WhatsApp. En una lista, una fila por
+  producto.
+- **El precio no es un dato aparte:** la fila de producto ya trae precio y
+  cuota, así que «cuánto cuesta…» sigue siendo una búsqueda.
+- **Sin producto** («¿cuántos watts?»): «Escribe el nombre o el código del
+  producto junto con lo que quieres saber.», sin esperar al catálogo.
+- Las fichas viajan en el mismo `/chat/catalogo.json` (`fichas`, por sku;
+  ~22 KB comprimidos). Un archivo anterior que no las traiga responde la
+  búsqueda de siempre en vez de decir que el fabricante no publica el dato.
+- Se registra como `busqueda`, con la consulta sin las palabras de la
+  pregunta.
 
 ### Hablar con Sonoro
 

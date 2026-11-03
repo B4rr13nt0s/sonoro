@@ -53,7 +53,12 @@ export function crearContexto(
   catalogo: CatalogoChat | null,
   contacto: Contexto["contacto"],
 ): Contexto {
-  return { productos: catalogo?.productos ?? null, marcas: catalogo?.marcas ?? [], contacto };
+  return {
+    productos: catalogo?.productos ?? null,
+    marcas: catalogo?.marcas ?? [],
+    fichas: catalogo?.fichas ?? {},
+    contacto,
+  };
 }
 
 /** Un Mensaje antes de tener id. */
@@ -170,6 +175,9 @@ export function resumenDeMensaje(mensaje: Mensaje): string | null {
               ? `${total} resultados; se muestran ${mostrados}.`
               : `${total} resultados.`,
         );
+        // Lo preguntado de un solo producto también se anuncia: es la respuesta.
+        const filas = mostrados === 1 ? bloque.datos?.[bloque.skus[0]] : undefined;
+        for (const { etiqueta, valor } of filas ?? []) partes.push(frase(`${etiqueta}: ${valor}`));
         break;
       }
       case "whatsapp":

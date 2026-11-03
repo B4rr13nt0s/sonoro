@@ -88,6 +88,7 @@ export function BloqueChat({
             <ProductoChat
               key={producto.sku}
               producto={producto}
+              datos={bloque.datos?.[producto.sku]}
               alAgregar={alAgregar}
               alNavegar={alNavegar}
             />

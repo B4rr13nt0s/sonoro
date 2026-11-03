@@ -4,10 +4,13 @@
 // pequeño a propósito: solo `fetch` y tipos (nada del motor ni de la búsqueda).
 
 import type { ProductoBuscable } from "../busqueda/busqueda.ts";
+import type { Spec } from "../catalog/types.ts";
 
 export interface CatalogoChat {
   productos: ProductoBuscable[];
   marcas: { nombre: string; slug: string }[];
+  /** La ficha técnica por sku. Opcional: un archivo de antes del deploy no la trae. */
+  fichas?: Record<string, Spec[]>;
 }
 
 export const RUTA_CATALOGO_CHAT = "/chat/catalogo.json";

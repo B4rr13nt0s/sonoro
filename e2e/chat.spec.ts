@@ -17,6 +17,7 @@ const CATALOGO = (
     precioCents: number;
     disponibilidad: "disponible" | "bajo_pedido" | "agotado";
     activo: boolean;
+    specsFicha: { etiqueta: string; valor: string }[];
   }[]
 ).filter((p) => p.activo);
 
@@ -24,6 +25,7 @@ const CATALOGO = (
 // con activo: true), y un agotado descontinuado no está.
 const DISPONIBLE = CATALOGO.find((p) => p.disponibilidad === "disponible");
 const AGOTADO = CATALOGO.find((p) => p.disponibilidad === "agotado");
+const CON_POTENCIA = CATALOGO.find((p) => p.specsFicha.some((s) => s.etiqueta === "Potencia RMS"));
 
 // El chat no depende de la portada, pero la portada pesa: el carrusel 3D se
 // dibuja en software (sin GPU en el runner) y, con un worker por núcleo, el
@@ -120,6 +122,17 @@ test("«Envíos» nombra el mínimo", async ({ page }) => {
 
   await panel.getByRole("button", { name: "Envíos" }).click();
   await expect(panel.getByText(formatQ(50000)).first()).toBeVisible();
+});
+
+test("contesta un dato de la ficha técnica", async ({ page }) => {
+  if (!CON_POTENCIA) throw new Error("data/catalog.json no trae productos con «Potencia RMS»");
+  const potencia = CON_POTENCIA.specsFicha.find((s) => s.etiqueta === "Potencia RMS")!;
+  const panel = await abrirChat(page);
+
+  await preguntar(page, `¿Cuántos watts tiene el ${CON_POTENCIA.sku}?`);
+  const conversacion = panel.getByRole("region", { name: "Conversación" });
+  await expect(conversacion.getByText(potencia.valor, { exact: true }).first()).toBeVisible();
+  await expect(conversacion.getByText("Datos publicados por el fabricante.")).toBeVisible();
 });
 
 test("un producto agotado no se puede agregar", async ({ page }) => {

@@ -51,6 +51,12 @@ export const TEXTO_RECOMENDACION =
 
 export const TEXTO_SIN_CATALOGO = "No pudimos cargar el catálogo.";
 
+export const TEXTO_PEDIR_PRODUCTO =
+  "Escribe el nombre o el código del producto junto con lo que quieres saber.";
+
+/** El mismo cierre de la ficha técnica (CLAUDE.md § Esquema de producto). */
+export const TEXTO_DATOS_FABRICANTE = "Datos publicados por el fabricante.";
+
 export const TEXTO_NO_DEFINIDO = "Eso te lo confirma Sonoro directamente.";
 
 export function opcionesHablar(): Bloque {

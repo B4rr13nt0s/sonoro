@@ -5,6 +5,7 @@
 // de palabra: «pagos» no coincide dentro de «mapagos».
 
 import { normalizar } from "../busqueda/busqueda.ts";
+import { PALABRAS_DE_PREGUNTA, VOCABULARIO_DATOS, type Campo } from "./datos.ts";
 import type { Tema } from "./tipos.ts";
 
 interface Consulta {
@@ -28,6 +29,13 @@ export type Intencion =
        * ficha de un radio con CarPlay y con ella la búsqueda nunca es exacta.
        */
       ambigua?: readonly Consulta[];
+    }
+  | {
+      tipo: "dato";
+      campos: readonly Campo[];
+      /** El producto por el que se pregunta, sin las palabras de la pregunta. Vacía si no nombró ninguno. */
+      consulta: string;
+      visible: string;
     }
   | { tipo: "busqueda"; consulta: string };
 
@@ -266,6 +274,45 @@ function sinPalabras(despojado: Consulta, quitar: readonly string[]): Consulta {
   };
 }
 
+/**
+ * Una pregunta por un dato del producto (`datos.ts`): una palabra del
+ * vocabulario que no va tras un número —«1000 watts», «2 ohm», «4 canales» o
+ * «1000 w rms» son lo que se busca, no una pregunta—. Lo que queda sin
+ * saludos, palabras de la pregunta ni relleno es el producto.
+ */
+function detectarDato(texto: string): Extract<Intencion, { tipo: "dato" }> | null {
+  const originales = sinPuntuacion(texto).split(/\s+/).filter(Boolean);
+  const normalizadas = originales.map(normalizar);
+  quitarAlInicio(originales, normalizadas, APERTURAS);
+
+  const trasNumero = (i: number) =>
+    [normalizadas[i - 1], normalizadas[i - 2]].some((p) => p !== undefined && /^\d/.test(p));
+  const usadas = new Set<number>();
+  const campos: Campo[] = [];
+  for (const { campo, palabras } of VOCABULARIO_DATOS) {
+    for (const frase of palabras) {
+      const partes = frase.split(" ");
+      for (let i = 0; i + partes.length <= normalizadas.length; i++) {
+        if (!partes.every((p, j) => normalizadas[i + j] === p)) continue;
+        if (campo.tipo === "spec" && trasNumero(i)) continue;
+        partes.forEach((_, j) => usadas.add(i + j));
+        if (!campos.includes(campo)) campos.push(campo);
+      }
+    }
+  }
+  if (campos.length === 0) return null;
+
+  const quedan = normalizadas.flatMap((p, i) =>
+    usadas.has(i) || RELLENO.has(p) || PALABRAS_DE_PREGUNTA.has(p) ? [] : [i],
+  );
+  return {
+    tipo: "dato",
+    campos,
+    consulta: quedan.map((i) => normalizadas[i]).join(" "),
+    visible: quedan.map((i) => originales[i]).join(" "),
+  };
+}
+
 /** La consulta como la escribió el cliente: con mayúsculas, acentos y ñ. */
 export function consultaVisible(texto: string): string {
   return despojar(texto).visible;
@@ -296,6 +343,9 @@ export function detectarIntencion(texto: string): Intencion {
       ? { tipo: "tema", tema }
       : { tipo: "tema", tema, ambigua: [despojado, sinPalabras(despojado, nombradas)] };
   }
+
+  const dato = detectarDato(texto);
+  if (dato) return dato;
 
   const { consulta } = despojado;
   if (consulta === "" || CORTESIAS.includes(consulta)) return { tipo: "saludo" };

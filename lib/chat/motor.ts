@@ -3,13 +3,29 @@
 // (el contacto llega por `Contexto`), para probarlo con `node --test`.
 // Spec: docs/superpowers/specs/2026-11-02-chatbot-design.md § Conversación.
 
-import { buscar, sugerir } from "../busqueda/busqueda.ts";
+import {
+  buscar,
+  normalizar,
+  sugerir,
+  type ProductoBuscable,
+  type ResultadoBusqueda,
+} from "../busqueda/busqueda.ts";
 import { CATEGORIAS_SITIO, perteneceACategoria } from "../catalog/categorias.ts";
 import { compararRelevancia } from "../catalog/orden.ts";
+import type { Spec } from "../catalog/types.ts";
 import { buildAvailabilityInquiryMessage } from "../whatsapp/message.ts";
+import {
+  fraseDisponibilidad,
+  valorDisponibilidad,
+  valoresDeCampo,
+  type Campo,
+  type CampoSpec,
+} from "./datos.ts";
 import { consultaVisible, detectarIntencion } from "./intencion.ts";
 import {
+  TEXTO_DATOS_FABRICANTE,
   TEXTO_PEDIR_BUSQUEDA,
+  TEXTO_PEDIR_PRODUCTO,
   TEXTO_SIN_CATALOGO,
   bloqueHablar,
   bloquesDeInicio,
@@ -127,14 +143,8 @@ function responderBusqueda(
       texto: `Esto encontramos para «${visible}». Si preguntabas por ${TEMA_NOMBRE[opcionTema]}, está abajo.`,
     });
   }
-  if (resultado.aplicados.length > 0 || resultado.correccion || resultado.modo !== "exacta") {
-    bloques.push({
-      tipo: "filtros",
-      aplicados: resultado.aplicados,
-      correccion: resultado.correccion,
-      modo: resultado.modo,
-    });
-  }
+  const filtros = bloqueFiltros(resultado);
+  if (filtros) bloques.push(filtros);
   bloques.push({
     tipo: "productos",
     skus: resultado.productos.slice(0, MAX_PRODUCTOS_CHAT).map((p) => p.sku),
@@ -142,6 +152,134 @@ function responderBusqueda(
     verTodosHref: verTodosHref ?? `/buscar?${new URLSearchParams({ q: visible })}`,
   });
   bloques.push(opcionTema ? opcionesTemaYHablar(opcionTema) : opcionesHablar());
+  return {
+    estado,
+    bloques,
+    evento: {
+      evento: "busqueda",
+      consulta,
+      modo: resultado.modo,
+      resultados: resultado.productos.length,
+    },
+  };
+}
+
+/** Los avisos de /buscar (filtros, corrección, búsqueda no exacta), si hay alguno. */
+function bloqueFiltros(resultado: ResultadoBusqueda): Bloque | null {
+  if (resultado.aplicados.length === 0 && !resultado.correccion && resultado.modo === "exacta") {
+    return null;
+  }
+  return {
+    tipo: "filtros",
+    aplicados: resultado.aplicados,
+    correccion: resultado.correccion,
+    modo: resultado.modo,
+  };
+}
+
+/** El producto que la consulta nombra por su código (con o sin separadores), o el único resultado. */
+function productoNombrado(
+  productos: readonly ProductoBuscable[],
+  consulta: string,
+): ProductoBuscable | null {
+  const palabras = ` ${consulta} `;
+  const porCodigo = productos.find((p) => {
+    const sku = normalizar(p.sku);
+    return palabras.includes(` ${sku} `) || palabras.includes(` ${sku.replace(/[\s.-]+/g, "")} `);
+  });
+  return porCodigo ?? (productos.length === 1 ? productos[0] : null);
+}
+
+/**
+ * «¿Cuántos watts tiene el MJP1244?», «¿está disponible el SQ12-D2?»: el
+ * producto se busca con la misma búsqueda y lo preguntado sale de su ficha.
+ * Un producto nombrado por su código (o el único resultado) responde en
+ * frases; varios, con una fila del dato bajo cada uno. `textoVisible` es la
+ * pregunta entera, para el mensaje de «Hablar con Sonoro».
+ */
+function responderDato(
+  campos: readonly Campo[],
+  consulta: string,
+  visible: string,
+  textoVisible: string,
+  contexto: Contexto,
+): Respuesta {
+  const estado: Estado = { ultimaConsulta: textoVisible, ultimoTema: null };
+  if (consulta === "") {
+    return { estado, bloques: [{ tipo: "texto", texto: TEXTO_PEDIR_PRODUCTO }], evento: null };
+  }
+  const { productos } = contexto;
+  if (productos === null) return sinCatalogo(estado);
+
+  const resultado = buscar(productos, consulta, compararRelevancia);
+  if (resultado.productos.length === 0) return responderBusqueda(consulta, visible, contexto);
+
+  const nombrado = productoNombrado(resultado.productos, consulta);
+  const mostrados = nombrado ? [nombrado] : resultado.productos.slice(0, MAX_PRODUCTOS_CHAT);
+  const specs = campos.filter((c): c is CampoSpec => c.tipo === "spec");
+  const disponibilidad = campos.some((c) => c.tipo === "disponibilidad");
+  // Sin la ficha (un catálogo bajado antes del deploy que la agregó) no se
+  // sabe qué publica el fabricante: decir que «no publica» sería falso, así
+  // que esos productos no llevan fila y, si no queda nada que contestar, va la
+  // búsqueda de siempre.
+  const ficha = (p: ProductoBuscable) => contexto.fichas?.[p.sku];
+  if (!disponibilidad && !mostrados.some(ficha)) {
+    return responderBusqueda(consulta, visible, contexto);
+  }
+
+  const avisos: Bloque[] = [];
+  const datos: Record<string, Spec[]> = {};
+  let publicados = false;
+  for (const p of mostrados) {
+    const filas: Spec[] = [];
+    const publicada = ficha(p);
+    for (const campo of publicada ? specs : []) {
+      const valores = valoresDeCampo(publicada ?? [], campo);
+      if (valores.length === 0) {
+        if (nombrado) {
+          avisos.push({
+            tipo: "texto",
+            texto: `${p.nombre}: el fabricante no publica ${campo.frase}.`,
+          });
+        } else {
+          filas.push({ etiqueta: campo.nombre, valor: "sin dato del fabricante" });
+        }
+        continue;
+      }
+      publicados = true;
+      // «medida» y «profundidad» comparten «Profundidad de montaje»: una vez.
+      filas.push(...valores.filter((v) => !filas.some((f) => f.etiqueta === v.etiqueta)));
+    }
+    if (disponibilidad) {
+      if (nombrado) {
+        avisos.push({ tipo: "texto", texto: fraseDisponibilidad(p.nombre, p.disponibilidad) });
+      } else {
+        filas.push({ etiqueta: "Disponibilidad", valor: valorDisponibilidad(p.disponibilidad) });
+      }
+    }
+    if (filas.length > 0) datos[p.sku] = filas;
+  }
+
+  const bloques: Bloque[] = [];
+  const filtros = bloqueFiltros(resultado);
+  if (filtros) bloques.push(filtros);
+  bloques.push(...avisos, {
+    tipo: "productos",
+    skus: mostrados.map((p) => p.sku),
+    total: nombrado ? 1 : resultado.productos.length,
+    verTodosHref: `/buscar?${new URLSearchParams({ q: visible })}`,
+    ...(Object.keys(datos).length > 0 ? { datos } : {}),
+  });
+  if (publicados) bloques.push({ tipo: "texto", texto: TEXTO_DATOS_FABRICANTE });
+  if (disponibilidad && nombrado && nombrado.disponibilidad !== "disponible") {
+    bloques.push({
+      tipo: "whatsapp",
+      etiqueta: "Consultar disponibilidad por WhatsApp",
+      motivo: "disponibilidad",
+      mensaje: buildAvailabilityInquiryMessage(nombrado.nombre),
+    });
+  }
+  bloques.push(opcionesHablar());
   return {
     estado,
     bloques,
@@ -274,6 +412,14 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
       return intencion.ambigua
         ? responderTemaAmbiguo(intencion.tema, intencion.ambigua, contexto)
         : responderTema(intencion.tema, contexto);
+    case "dato":
+      return responderDato(
+        intencion.campos,
+        intencion.consulta,
+        intencion.visible,
+        consultaVisible(texto),
+        contexto,
+      );
     case "busqueda":
       return responderBusqueda(intencion.consulta, consultaVisible(texto), contexto);
   }
@@ -295,5 +441,9 @@ export function necesitaCatalogo(entrada: Entrada): boolean {
   if (texto === "") return false;
   const intencion = detectarIntencion(texto);
   // Un tema de palabra ambigua prueba la búsqueda antes de contestar.
-  return intencion.tipo === "busqueda" || (intencion.tipo === "tema" && !!intencion.ambigua);
+  return (
+    intencion.tipo === "busqueda" ||
+    (intencion.tipo === "dato" && intencion.consulta !== "") ||
+    (intencion.tipo === "tema" && !!intencion.ambigua)
+  );
 }

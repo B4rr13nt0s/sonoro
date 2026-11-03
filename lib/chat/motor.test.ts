@@ -644,3 +644,129 @@ test("necesitaCatalogo: una palabra ambigua con más texto espera al catálogo; 
   assert.equal(necesitaCatalogo(texto("teléfono")), false);
   assert.equal(necesitaCatalogo(texto("¿cuál es su correo?")), false);
 });
+
+// SUB1 publica potencia e impedancia; SUB2 (agotado) no publica potencia.
+const CON_FICHAS: Contexto = {
+  ...CONTEXTO,
+  fichas: {
+    SUB1: [
+      { etiqueta: "Tamaño", valor: '12"' },
+      { etiqueta: "Potencia RMS", valor: "500 W" },
+      { etiqueta: "Potencia máxima", valor: "1,000 W" },
+      { etiqueta: "Impedancia", valor: "2 Ω" },
+    ],
+    SUB2: [
+      { etiqueta: "Tamaño", valor: '12"' },
+      { etiqueta: "Impedancia", valor: "2 Ω" },
+    ],
+  },
+};
+
+test("dato: un producto responde con los valores de su ficha, en su orden", () => {
+  const r = responder(ESTADO_INICIAL, texto("¿cuántos watts tiene el SQ12-D2?"), CON_FICHAS);
+  const productos = de(r.bloques, "productos");
+  assert.deepEqual(productos?.skus, ["SUB1"]);
+  assert.equal(productos?.total, 1);
+  assert.deepEqual(productos?.datos, {
+    SUB1: [
+      { etiqueta: "Potencia RMS", valor: "500 W" },
+      { etiqueta: "Potencia máxima", valor: "1,000 W" },
+    ],
+  });
+  assert.deepEqual(textos(r.bloques), ["Datos publicados por el fabricante."]);
+  assert.equal(r.bloques.at(-1)?.tipo, "opciones");
+  assert.deepEqual(r.estado, {
+    ultimaConsulta: "cuántos watts tiene el SQ12-D2",
+    ultimoTema: null,
+  });
+  assert.deepEqual(r.evento, {
+    evento: "busqueda",
+    consulta: "sq12-d2",
+    modo: "exacta",
+    resultados: 1,
+  });
+});
+
+test("dato: un producto que no publica el dato lo dice, sin inventarlo", () => {
+  const r = responder(ESTADO_INICIAL, texto("potencia del STR12-D2"), CON_FICHAS);
+  assert.deepEqual(textos(r.bloques), [
+    'Subwoofer Serie Street de 12" STR12-D2: el fabricante no publica la potencia.',
+  ]);
+  assert.equal(de(r.bloques, "productos")?.datos, undefined);
+  assert.equal(r.bloques.at(-1)?.tipo, "opciones");
+});
+
+test("dato: varios productos llevan cada uno su fila, y el que no publica dice «sin dato»", () => {
+  const r = responder(
+    ESTADO_INICIAL,
+    texto("cuántos watts tienen los subwoofer de 12"),
+    CON_FICHAS,
+  );
+  const productos = de(r.bloques, "productos");
+  assert.deepEqual(productos?.skus, ["SUB1", "SUB2"]);
+  assert.equal(productos?.total, 2);
+  assert.deepEqual(productos?.datos, {
+    SUB1: [
+      { etiqueta: "Potencia RMS", valor: "500 W" },
+      { etiqueta: "Potencia máxima", valor: "1,000 W" },
+    ],
+    SUB2: [{ etiqueta: "Potencia", valor: "sin dato del fabricante" }],
+  });
+  assert.equal(productos?.verTodosHref, "/buscar?q=subwoofer+12");
+  assert.deepEqual(textos(r.bloques), ["Datos publicados por el fabricante."]);
+});
+
+test("dato: disponibilidad de un producto agotado, con la consulta por WhatsApp", () => {
+  const r = responder(ESTADO_INICIAL, texto("¿está disponible el STR12-D2?"), CON_FICHAS);
+  assert.deepEqual(textos(r.bloques), ['Subwoofer Serie Street de 12" STR12-D2: agotado.']);
+  assert.equal(
+    de(r.bloques, "whatsapp")?.mensaje,
+    buildAvailabilityInquiryMessage('Subwoofer Serie Street de 12" STR12-D2'),
+  );
+});
+
+test("dato: disponibilidad de un producto disponible, sin WhatsApp", () => {
+  const r = responder(ESTADO_INICIAL, texto("hay existencia del SQ12-D2"), CON_FICHAS);
+  assert.deepEqual(textos(r.bloques), ['Subwoofer Serie SQ de 12" SQ12-D2: disponible.']);
+  assert.equal(de(r.bloques, "whatsapp"), undefined);
+});
+
+test("dato: disponibilidad de varios, una fila por producto", () => {
+  const r = responder(ESTADO_INICIAL, texto("subwoofer de 12 disponibles"), CON_FICHAS);
+  assert.deepEqual(de(r.bloques, "productos")?.datos, {
+    SUB1: [{ etiqueta: "Disponibilidad", valor: "Disponible" }],
+    SUB2: [{ etiqueta: "Disponibilidad", valor: "Agotado" }],
+  });
+  assert.deepEqual(textos(r.bloques), []);
+});
+
+test("dato: sin producto, pide cuál y no espera al catálogo", () => {
+  const entrada = texto("¿cuántos watts?");
+  assert.equal(necesitaCatalogo(entrada), false);
+  const r = responder(ESTADO_INICIAL, entrada, CON_FICHAS);
+  assert.deepEqual(textos(r.bloques), [
+    "Escribe el nombre o el código del producto junto con lo que quieres saber.",
+  ]);
+  assert.equal(r.evento, null);
+});
+
+test("dato: con producto espera al catálogo, y sin él responde lo de siempre", () => {
+  const entrada = texto("potencia del SQ12-D2");
+  assert.equal(necesitaCatalogo(entrada), true);
+  const r = responder(ESTADO_INICIAL, entrada, { ...CON_FICHAS, productos: null });
+  assert.deepEqual(textos(r.bloques), ["No pudimos cargar el catálogo."]);
+});
+
+test("dato: si el producto no existe, la respuesta de «sin resultados»", () => {
+  const r = responder(ESTADO_INICIAL, texto("potencia del XYZ999"), CON_FICHAS);
+  assert.deepEqual(textos(r.bloques), ["No encontramos productos para «XYZ999»."]);
+  assert.deepEqual(r.evento, { evento: "sin_resultados", consulta: "xyz999" });
+});
+
+test("dato: un catálogo sin fichas (anterior al deploy) no dice «no publica»: responde la búsqueda", () => {
+  const r = responder(ESTADO_INICIAL, texto("potencia del SQ12-D2"), CONTEXTO);
+  assert.deepEqual(r.bloques, responder(ESTADO_INICIAL, texto("SQ12-D2"), CONTEXTO).bloques);
+  // La disponibilidad no depende de la ficha.
+  const d = responder(ESTADO_INICIAL, texto("¿está disponible el SQ12-D2?"), CONTEXTO);
+  assert.deepEqual(textos(d.bloques), ['Subwoofer Serie SQ de 12" SQ12-D2: disponible.']);
+});

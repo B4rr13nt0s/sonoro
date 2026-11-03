@@ -3,6 +3,7 @@
 // leer variables de entorno, para que el motor se pruebe con `node --test`.
 
 import type { ModoBusqueda, ProductoBuscable } from "../busqueda/busqueda.ts";
+import type { Spec } from "../catalog/types.ts";
 
 /** Largo máximo de lo que el cliente escribe en el chat. */
 export const MAX_CONSULTA = 200;
@@ -37,7 +38,15 @@ export type Bloque =
       correccion: string | null;
       modo: ModoBusqueda; // los mismos avisos de /buscar
     }
-  | { tipo: "productos"; skus: string[]; total: number; verTodosHref: string }
+  | {
+      tipo: "productos";
+      skus: string[];
+      total: number;
+      verTodosHref: string;
+      // Lo que preguntó el cliente («¿cuántos watts…?»), por sku, para
+      // mostrarlo en la fila del producto.
+      datos?: Record<string, Spec[]>;
+    }
   | { tipo: "opciones"; opciones: { id: OpcionId; etiqueta: string }[] }
   | {
       tipo: "whatsapp";
@@ -54,6 +63,8 @@ export interface Estado {
 export interface Contexto {
   productos: readonly ProductoBuscable[] | null; // null = catálogo no cargó
   marcas: readonly { nombre: string; slug: string }[];
+  /** Ficha técnica por sku; sin ella, una pregunta por un dato no encuentra ninguno. */
+  fichas?: Readonly<Record<string, readonly Spec[]>>;
   // Las BUSINESS_* son variables de servidor: el layout las lee y las pasa.
   contacto: { telefono?: string; correo?: string; direccion?: string };
 }

@@ -278,3 +278,79 @@ test("la puntuación se quita sin regex de lookbehind (Safari < 16.4 no la parse
     consulta: 'mjp800.4 1,000 w 6.5"',
   });
 });
+
+/** Solo lo que decide la intención: qué datos y qué producto. */
+function dato(texto: string) {
+  const r = detectarIntencion(texto);
+  if (r.tipo !== "dato") return r.tipo;
+  return {
+    campos: r.campos.map((c) => (c.tipo === "spec" ? c.id : c.tipo)),
+    consulta: r.consulta,
+    visible: r.visible,
+  };
+}
+
+test("dato: la pregunta por un dato del producto, sin las palabras de la pregunta", () => {
+  assert.deepEqual(dato("¿Cuántos watts tiene el MJP1244?"), {
+    campos: ["potencia"],
+    consulta: "mjp1244",
+    visible: "MJP1244",
+  });
+  assert.deepEqual(dato("cuantos canales tiene el XED4"), {
+    campos: ["canales"],
+    consulta: "xed4",
+    visible: "XED4",
+  });
+  assert.deepEqual(dato("profundidad del PRXS1224"), {
+    campos: ["profundidad"],
+    consulta: "prxs1224",
+    visible: "PRXS1224",
+  });
+  assert.deepEqual(dato("hola, ¿qué incluye el kit KIT4?"), {
+    campos: ["contenido"],
+    consulta: "kit kit4",
+    visible: "kit KIT4",
+  });
+  assert.deepEqual(dato("impedancia y potencia del sub Memphis de 12"), {
+    campos: ["potencia", "impedancia"],
+    consulta: "sub memphis 12",
+    visible: "sub Memphis 12",
+  });
+});
+
+test("dato: la disponibilidad, también tras un arranque", () => {
+  assert.deepEqual(dato("¿Está disponible el SQ12-D2?"), {
+    campos: ["disponibilidad"],
+    consulta: "sq12-d2",
+    visible: "SQ12-D2",
+  });
+  assert.deepEqual(dato("hola, ¿tienen el MJP1244 en existencia?"), {
+    campos: ["disponibilidad"],
+    consulta: "mjp1244",
+    visible: "MJP1244",
+  });
+});
+
+test("dato: tras un número, la unidad es un filtro de la búsqueda, no una pregunta", () => {
+  for (const texto of [
+    "amplificador 1,000 watts",
+    "sub 12 2 ohm",
+    "amplificador de 1000 w rms",
+    "quiero un amplificador 4 canales",
+    "kit 4 awg",
+  ]) {
+    assert.equal(dato(texto), "busqueda", texto);
+  }
+});
+
+test("dato: «que trae» suelto no pregunta por el contenido", () => {
+  assert.equal(dato("radio que trae bluetooth"), "busqueda");
+});
+
+test("dato: sin producto, la consulta queda vacía", () => {
+  assert.deepEqual(dato("¿cuántos watts?"), { campos: ["potencia"], consulta: "", visible: "" });
+});
+
+test("dato: los temas de política siguen ganando", () => {
+  assert.equal(detectarIntencion("¿el envío está disponible a Petén?").tipo, "tema");
+});
