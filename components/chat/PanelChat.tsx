@@ -196,7 +196,7 @@ export default function PanelChat({
     // con su plazo). Un tema o «Hablar con Sonoro» no lo espera: sale con lo
     // que haya cargado, o sin catálogo, en cuanto no quede una respuesta
     // anterior pendiente.
-    const catalogoListo = necesitaCatalogo(entrada)
+    const catalogoListo = necesitaCatalogo(entrada, leer().estado)
       ? cargarCatalogo()
       : Promise.resolve(catalogoRef.current);
     await cola.encolar(catalogoListo, (cargado) => {

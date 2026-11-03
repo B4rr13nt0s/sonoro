@@ -26,7 +26,10 @@ const ORDINALES: Readonly<Record<string, number>> = {
   quinta: 4,
 };
 const ULTIMO = new Set(["ultimo", "ultima"]);
-const PRONOMBRES = new Set(["ese", "este", "esa", "esta", "eso", "esto", "lo", "la"]);
+const PRONOMBRES = new Set(["ese", "este", "esa", "esta", "eso", "esto"]);
+// «lo» y «la» solo en estas frases: sueltos son artículos («y de la marca
+// memphis?» es un seguimiento, no una referencia).
+const CON_LO = ["lo quiero", "la quiero", "me lo llevo", "me la llevo", "lo compro", "la compro"];
 // «agrégalo», «cómpralo», «añádelo»: el pronombre pegado al verbo.
 const CON_PRONOMBRE =
   /^(?:agrega|agregar|compra|comprar|anade|anadir|pasa|pasame|dame|muestra|ensena)(?:lo|la)$/;
@@ -92,6 +95,9 @@ export function encontrarReferencia(
   for (const [i, p] of lista.entries()) {
     if (PRONOMBRES.has(p)) return { sku: aludido, resto: resto(lista, new Set([i])) };
     if (CON_PRONOMBRE.test(p)) return { sku: aludido, resto: resto(lista, new Set()) };
+  }
+  if (CON_LO.some((f) => enTexto.includes(` ${f} `))) {
+    return { sku: aludido, resto: lista.join(" ") };
   }
   return null;
 }

@@ -5,6 +5,7 @@
 import type { Acote } from "../busqueda/acotar.ts";
 import type { ModoBusqueda, ProductoBuscable } from "../busqueda/busqueda.ts";
 import type { Spec } from "../catalog/types.ts";
+import type { Campo } from "./datos.ts";
 
 /** Largo máximo de lo que el cliente escribe en el chat. */
 export const MAX_CONSULTA = 200;
@@ -70,6 +71,13 @@ export interface Estado {
   // La última búsqueda y lo que se acotó de ella, para que un botón de
   // «acotar» la vuelva a correr. Cualquier otra respuesta la olvida.
   busqueda?: BusquedaAcotable | null;
+  // La memoria de la conversación (spec 2026-11-03 § Memoria). Todo es
+  // opcional: ausente vale «sin memoria».
+  mostrados?: string[]; // skus de la última respuesta con productos, en orden
+  enfoque?: string | null; // el último producto del que se habló
+  ultimosCampos?: Campo[]; // el último dato preguntado
+  pendiente?: "medida" | "canales" | "categoria" | null; // la pregunta del bot sin contestar
+  turno?: number; // cuántas respuestas lleva: rota las frases sin azar
 }
 
 export interface BusquedaAcotable {

@@ -1,14 +1,21 @@
 // Intención del texto del cliente: reglas a mano, en orden, y gana la primera
-// que coincide (spec § Intención): saludo → recomendación → tema → búsqueda.
+// que coincide (spec 2026-11-03 § Intención): charla → saludo → recomendación
+// → tema → respuesta pendiente → referencia → seguimiento → vago → dato →
+// búsqueda. Los pasos de memoria (pendiente, referencia, seguimiento) solo
+// aplican con un Estado que los traiga: sin él, el chat es el de siempre.
 // El vocabulario vive acá, como `sinonimos.ts`, ya normalizado (sin acentos ni
 // mayúsculas). Todo se compara por palabras o frases enteras, nunca por pedazos
 // de palabra: «pagos» no coincide dentro de «mapagos».
 
-import { normalizar } from "../busqueda/busqueda.ts";
+import { normalizar, raiz } from "../busqueda/busqueda.ts";
+import { SINONIMOS } from "../busqueda/sinonimos.ts";
+import { CATEGORIAS_SITIO } from "../catalog/categorias.ts";
 // Las fórmulas de saludo que abren un mensaje y se quitan antes de buscar.
-import { SALUDOS_DE_APERTURA } from "./charla.ts";
+import { SALUDOS_DE_APERTURA, detectarCharla, esVago, type ClaseCharla } from "./charla.ts";
 import { PALABRAS_DE_PREGUNTA, VOCABULARIO_DATOS, type Campo } from "./datos.ts";
-import type { Tema } from "./tipos.ts";
+import { encontrarReferencia } from "./referencia.ts";
+import { interpretarSeguimiento, type Cambio } from "./seguimiento.ts";
+import type { Contexto, Estado, Tema } from "./tipos.ts";
 
 interface Consulta {
   consulta: string;
@@ -39,7 +46,18 @@ export type Intencion =
       consulta: string;
       visible: string;
     }
-  | { tipo: "busqueda"; consulta: string };
+  | { tipo: "busqueda"; consulta: string }
+  | { tipo: "charla"; clase: ClaseCharla }
+  /** Contesta «¿Qué tipo de equipo buscas?»: el slug de la categoría nombrada. */
+  | { tipo: "respuesta_pendiente"; categoria: string }
+  | { tipo: "referencia"; sku: string; resto: string }
+  | { tipo: "seguimiento"; cambios: Cambio[] }
+  | { tipo: "vago" };
+
+/** Lo que la memoria necesita del contexto: las marcas, y a qué va un número suelto. */
+export type ContextoIntencion = Pick<Contexto, "marcas"> & {
+  numeroSuelto?: "medida" | "canales" | null;
+};
 
 /** El texto entero, sin puntuación, es uno de estos. */
 const SALUDOS = [
@@ -52,10 +70,6 @@ const SALUDOS = [
   "buenas noches",
   "que tal",
   "saludos",
-  "gracias",
-  "muchas gracias",
-  "ok",
-  "adios",
 ];
 
 /** Pide criterio: el sitio no asesora (regla 2), así que se redirige. */
@@ -328,9 +342,28 @@ export function consultaVisible(texto: string): string {
   return despojar(texto).visible;
 }
 
-export function detectarIntencion(texto: string): Intencion {
+/** La categoría del sitio que el texto ENTERO nombra («subwoofers», «un radio»), por nombre o sinónimo. */
+function categoriaNombrada(consulta: string): string | null {
+  const palabras = consulta
+    .split(" ")
+    .filter((p) => p && !["un", "una", "unos", "unas"].includes(p));
+  if (palabras.length !== 1) return null;
+  const r = raiz(palabras[0]);
+  const buscadas = [r, ...(SINONIMOS[r] ?? [])];
+  const categoria = CATEGORIAS_SITIO.find((c) => buscadas.includes(raiz(normalizar(c.nombre))));
+  return categoria?.slug ?? null;
+}
+
+export function detectarIntencion(
+  texto: string,
+  estado?: Estado,
+  contexto?: ContextoIntencion,
+): Intencion {
   const normalizado = normalizar(texto);
   const palabras = enPalabras(normalizado);
+
+  const clase = detectarCharla(texto);
+  if (clase) return { tipo: "charla", clase };
 
   if (SALUDOS.some((s) => palabras === ` ${s} `)) return { tipo: "saludo" };
 
@@ -353,6 +386,28 @@ export function detectarIntencion(texto: string): Intencion {
       ? { tipo: "tema", tema }
       : { tipo: "tema", tema, ambigua: [despojado, sinPalabras(despojado, nombradas)] };
   }
+
+  if (estado?.pendiente === "categoria") {
+    const categoria = categoriaNombrada(despojado.consulta);
+    if (categoria) return { tipo: "respuesta_pendiente", categoria };
+  }
+
+  if (estado?.mostrados?.length) {
+    const referencia = encontrarReferencia(texto, estado);
+    if (referencia) return { tipo: "referencia", ...referencia };
+  }
+
+  if (estado?.busqueda) {
+    const pendienteNumero =
+      estado.pendiente === "medida" || estado.pendiente === "canales" ? estado.pendiente : null;
+    const cambios = interpretarSeguimiento(texto, {
+      marcas: contexto?.marcas ?? [],
+      numeroSuelto: pendienteNumero ?? contexto?.numeroSuelto ?? null,
+    });
+    if (cambios) return { tipo: "seguimiento", cambios };
+  }
+
+  if (esVago(texto)) return { tipo: "vago" };
 
   const dato = detectarDato(texto);
   if (dato) return dato;

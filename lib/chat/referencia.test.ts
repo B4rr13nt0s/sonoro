@@ -35,6 +35,11 @@ test("referencia: el resto conserva la pregunta, sin la referencia", () => {
   assert.equal(encontrarReferencia("agrégalo", { ...M, enfoque: "A" })?.resto, "agregalo");
 });
 
+test("referencia: «la» y «lo» sueltos son artículos", () => {
+  assert.equal(encontrarReferencia("y de la marca memphis?", { ...M, enfoque: "A" }), null);
+  assert.equal(encontrarReferencia("la quiero", { ...M, enfoque: "A" })?.sku, "A");
+});
+
 test("referencia: el código de un mostrado", () => {
   const conCodigos = { mostrados: ["MJP1244", "PRX12FT"] };
   assert.equal(encontrarReferencia("¿y el PRX12FT?", conCodigos)?.sku, "PRX12FT");

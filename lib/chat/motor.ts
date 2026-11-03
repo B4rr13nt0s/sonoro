@@ -567,6 +567,15 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
       );
     case "busqueda":
       return responderBusqueda(intencion.consulta, consultaVisible(texto), contexto);
+    // Las de conversación se responden en las tareas 7 y 8 del plan
+    // (docs/superpowers/plans/2026-11-03-chat-conversacion.md); mientras
+    // tanto, lo de antes: el menú de inicio.
+    case "charla":
+    case "respuesta_pendiente":
+    case "referencia":
+    case "seguimiento":
+    case "vago":
+      return saludo(estado);
   }
 }
 
@@ -578,7 +587,7 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
  * sin él, así que no hay por qué hacerlos esperar a la red (spec: los temas
  * siguen funcionando sin catálogo).
  */
-export function necesitaCatalogo(entrada: Entrada): boolean {
+export function necesitaCatalogo(entrada: Entrada, estado?: Estado): boolean {
   if (entrada.tipo === "opcion") {
     return (
       entrada.id.startsWith("categoria:") ||
@@ -588,10 +597,13 @@ export function necesitaCatalogo(entrada: Entrada): boolean {
   }
   const texto = cortar(entrada.texto.trim()).trimEnd();
   if (texto === "") return false;
-  const intencion = detectarIntencion(texto);
+  const intencion = detectarIntencion(texto, estado);
   // Un tema de palabra ambigua prueba la búsqueda antes de contestar.
   return (
     intencion.tipo === "busqueda" ||
+    intencion.tipo === "referencia" ||
+    intencion.tipo === "seguimiento" ||
+    intencion.tipo === "respuesta_pendiente" ||
     (intencion.tipo === "dato" && intencion.consulta !== "") ||
     (intencion.tipo === "tema" && !!intencion.ambigua)
   );
