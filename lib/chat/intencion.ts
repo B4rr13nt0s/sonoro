@@ -181,6 +181,9 @@ const APERTURAS = [...SALUDOS_DE_APERTURA, ...ARRANQUES]
   .sort((a, b) => b.length - a.length)
   .map((frase) => frase.split(" "));
 
+/** Cortesías que, solas tras un saludo («hola gracias»), siguen siendo un saludo. */
+const CORTESIAS = ["gracias", "muchas gracias", "ok", "okay", "vale", "adios", "listo"];
+
 const ARTICULOS = [["el"], ["la"], ["los"], ["las"], ["un"], ["una"]];
 
 const SIGNOS = /[¿?¡!]/g;
@@ -192,11 +195,13 @@ const SIGNOS = /[¿?¡!]/g;
  * queda: «1,000 W», «6.5"» y «MJP800.4» son datos del producto.
  */
 function sinPuntuacion(texto: string): string {
+  // Sin lookbehind (aserción hacia atrás): Safari anterior a 16.4 no lo parsea y con él
+  // fallaría la carga de todo el chunk del chat.
   return texto
     .replace(SIGNOS, " ")
-    .replace(/(?<=\p{L})[,;:](?=\p{L})/gu, " ")
+    .replace(/(\p{L})[,;:](?=\p{L})/gu, "$1 ")
     .replace(/[,.;:]+(?=\s|$)/g, " ")
-    .replace(/(?<=^|\s)[,.;:]+/g, " ");
+    .replace(/(^|\s)[,.;:]+/g, "$1 ");
 }
 
 /** Palabras del texto ya normalizado, sin puntuación, rodeadas de espacios. */
@@ -293,6 +298,6 @@ export function detectarIntencion(texto: string): Intencion {
   }
 
   const { consulta } = despojado;
-  if (consulta === "") return { tipo: "saludo" };
+  if (consulta === "" || CORTESIAS.includes(consulta)) return { tipo: "saludo" };
   return { tipo: "busqueda", consulta };
 }

@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import { consultaVisible, detectarIntencion } from "./intencion.ts";
 
@@ -247,4 +248,33 @@ test("palabra fuerte: el tema gana aunque haya más contenido y no pide contexto
   ] as const) {
     assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema }, texto);
   }
+});
+
+test("saludo + cortesía es un saludo, no una búsqueda", () => {
+  for (const texto of [
+    "hola gracias",
+    "hola ok",
+    "buenas, adiós",
+    "Hola, muchas gracias",
+    "vale",
+  ]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "saludo" }, texto);
+  }
+  // Una cortesía dentro de una búsqueda real no la vuelve saludo.
+  assert.equal(detectarIntencion("hola, busco un ok 12").tipo, "busqueda");
+});
+
+test("la puntuación se quita sin regex de lookbehind (Safari < 16.4 no la parsea)", () => {
+  const fuente = readFileSync(new URL("./intencion.ts", import.meta.url), "utf8");
+  assert.equal(fuente.includes("(?<"), false);
+  // Mismo comportamiento que antes: entre letras, junto a espacios y bordes.
+  assert.deepEqual(detectarIntencion("sub,memphis,kicker"), {
+    tipo: "busqueda",
+    consulta: "sub memphis kicker",
+  });
+  assert.deepEqual(detectarIntencion(" , .sub 12 ; ").tipo, "busqueda");
+  assert.deepEqual(detectarIntencion('MJP800.4 1,000 W 6.5"'), {
+    tipo: "busqueda",
+    consulta: 'mjp800.4 1,000 w 6.5"',
+  });
 });
