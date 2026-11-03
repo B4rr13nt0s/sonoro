@@ -58,6 +58,27 @@ export function formatearLinea(item: CartItem, disponibilidad: Disponibilidad | 
   return `${item.qty}x ${item.nombreSnapshot} (${item.sku}) — ${precioUnitario}${sufijo}${marca}`;
 }
 
+// Consulta de disponibilidad de lo que el cliente buscó y no encontró (página
+// «sin resultados»). Lleva la consulta tal cual la escribió.
+export function buildAvailabilityInquiryMessage(consulta: string): string {
+  return `Hola Sonoro, quiero consultar disponibilidad de: ${consulta}`;
+}
+
+// «Hablar con Sonoro» desde el chatbot: la consulta escrita manda; si no hay,
+// el tema que el cliente venía viendo; si tampoco, el saludo a secas. Con las
+// dos (una búsqueda que dejó un tema de lado, ver el motor) se nombran ambas.
+export function buildChatHandoffMessage(params: {
+  consulta: string | null;
+  tema: string | null;
+}): string {
+  if (params.consulta && params.tema) {
+    return `Hola Sonoro, tengo una consulta: ${params.consulta}. También sobre ${params.tema}`;
+  }
+  if (params.consulta) return `Hola Sonoro, tengo una consulta: ${params.consulta}`;
+  if (params.tema) return `Hola Sonoro, tengo una consulta sobre ${params.tema}`;
+  return "Hola Sonoro, tengo una consulta";
+}
+
 // Consulta por UN producto, desde la ficha. No todo cliente arma un
 // carrito: mucha gente quiere preguntar por una pieza puntual, y hasta
 // ahora la ficha solo ofrecía "Agregar al carrito".

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { Busqueda, SearchExperience } from "@/components/catalog/SearchExperience";
-import { clavesDeAtributos, numerosDeAtributos } from "@/components/catalog/busqueda.ts";
+import { tarjetasBuscables } from "@/lib/catalog/buscables.ts";
 import { listAllProducts, listBrands } from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 import { TEXTOS_BUSCAR } from "@/lib/seo/textos.ts";
@@ -21,29 +21,7 @@ export const metadata: Metadata = metadataPagina({ ...TEXTOS_BUSCAR, ruta: "/bus
 // eran 452 KB por visita.
 export default async function BuscarPage() {
   const productos = await listAllProducts({ activo: true });
-  const tarjetas = productos.map((producto) => ({
-    sku: producto.sku,
-    slug: producto.slug,
-    nombre: producto.nombre,
-    marca: producto.marca,
-    categoria: producto.categoria,
-    // Para agrupar los Sistemas en sus categorías, como los listados.
-    ...(producto.categoriasSecundarias
-      ? { categoriasSecundarias: producto.categoriasSecundarias }
-      : {}),
-    precioCents: producto.precioCents,
-    disponibilidad: producto.disponibilidad,
-    destacado: producto.destacado,
-    imagenes: producto.imagenes,
-    specsDestacadas: producto.specsDestacadas,
-    // Los atributos como palabras de búsqueda (`12"`, `4ohm`, `clase-d`…):
-    // unas pocas por producto, en lugar de mandar `atributos` entero.
-    claves: clavesDeAtributos(producto.atributos),
-    // Para «más de 500 W», «de 8 a 10 pulgadas» y la categoría (carro, marino,
-    // motorsports): los números ya sacados, no el objeto entero.
-    ...numerosDeAtributos(producto.atributos),
-    ...(producto.uso ? { uso: producto.uso } : {}),
-  }));
+  const tarjetas = tarjetasBuscables(productos);
   const marcas = (await listBrands()).map((marca) => ({ nombre: marca.nombre, slug: marca.slug }));
 
   // Prerenderizada: la búsqueda lee `?q=` con useSearchParams, que no existe

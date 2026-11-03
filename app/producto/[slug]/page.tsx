@@ -9,7 +9,7 @@ import { PildoraDisponibilidad } from "@/components/catalog/PildoraDisponibilida
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ProductGallery } from "@/components/media/ProductGallery";
 import { claseBoton } from "@/components/ui/boton.ts";
-import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
+import { formatQ, lineaCuota } from "@/lib/format/precio.ts";
 import { getProduct, listAllProducts, listBrands, listCategories } from "@/lib/catalog/index.ts";
 import { buildCatalogHref, buildMarcaHref } from "@/lib/catalog/href.ts";
 import { RETIRADOS_A_410, retiradoPorSlug } from "@/lib/catalog/retirados.ts";
@@ -146,7 +146,6 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
   // Esquema de producto). specsDestacadas y specsFicha se pintan en el
   // orden del arreglo, sin reordenar.
   const tarjetas = [...producto.specsDestacadas, { etiqueta: "Código", valor: producto.sku }];
-  const cuota = calcularCuotaCents(producto.precioCents, 6);
 
   return (
     <div className="flex flex-col">
@@ -205,7 +204,7 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
               <PildoraDisponibilidad disponibilidad={producto.disponibilidad} />
             </div>
             <div className="text-texto-secundario text-[14px]">
-              o {formatQ(cuota)} al mes × 6 · IVA incluido
+              {lineaCuota(producto.precioCents)} · IVA incluido
             </div>
           </div>
 

@@ -17,15 +17,22 @@ import {
 // `variante` para poder usarlo como acción secundaria junto a «Consultar por
 // WhatsApp». Con el producto agotado no hay variante que valga: el botón queda
 // deshabilitado (ver abajo).
+//
+// `producto` pide solo lo que el ítem del carrito necesita, para que el chat
+// pueda pasarle una tarjeta del buscador (sin `moneda` ni la ficha completa);
+// un `Producto` entero sigue sirviendo. `onAgregado` avisa cuántas unidades
+// entraron de verdad, solo cuando fueron más de cero.
 export function AddToCartButton({
   producto,
   variante = "principal",
   tamano = "normal",
+  onAgregado,
 }: {
-  producto: Producto;
+  producto: Pick<Producto, "sku" | "nombre" | "precioCents" | "disponibilidad" | "imagenes">;
   variante?: VarianteBoton;
-  // "compacto" para las columnas de la tabla comparativa.
+  // "compacto" para las columnas de la tabla comparativa y la fila del chat.
   tamano?: TamanoBoton;
+  onAgregado?: (agregadas: number) => void;
 }) {
   const { addItem } = useCart();
 
@@ -47,7 +54,8 @@ export function AddToCartButton({
           sku: producto.sku,
           qty: 1,
           unitPriceCents: producto.precioCents,
-          currency: producto.moneda,
+          // La única moneda del esquema (Producto.moneda es el literal "GTQ").
+          currency: "GTQ",
           nombreSnapshot: producto.nombre,
           imagenSnapshot: producto.imagenes[0]?.url ?? null,
         });
@@ -61,6 +69,7 @@ export function AddToCartButton({
           currency: "GTQ",
           quantity: agregadas,
         });
+        onAgregado?.(agregadas);
       }}
       className={claseBoton(variante, tamano)}
     >

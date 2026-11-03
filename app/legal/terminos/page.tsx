@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { LegalPage } from "@/components/legal/LegalPage";
+import { COMO_PEDIR, CUOTAS, CUOTAS_CONDICIONES, ENVIOS, INSTALACION } from "@/lib/politicas.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 
 const TITULO = "Términos y condiciones";
@@ -28,7 +29,7 @@ export default function TerminosPage() {
         {
           titulo: "Cómo funciona un pedido",
           parrafos: [
-            "Agregas productos al carrito, revisas el resumen en /carrito y presionas «Pedir por WhatsApp». Eso abre una conversación de WhatsApp con el pedido ya redactado — el pedido se confirma en esa conversación con Sonoro, no al presionar el botón.",
+            COMO_PEDIR,
             "Los precios que ves en el sitio están en quetzales e incluyen IVA.",
           ],
         },
@@ -40,22 +41,15 @@ export default function TerminosPage() {
         },
         {
           titulo: "Pagos",
-          parrafos: [
-            "Hasta 6 pagos precio contado. Las condiciones de pago se acuerdan directamente con Sonoro al confirmar el pedido por WhatsApp.",
-          ],
+          parrafos: [`${CUOTAS} ${CUOTAS_CONDICIONES}`],
         },
         {
           titulo: "Envíos",
-          parrafos: [
-            "Envíos gratis a todo el país en pedidos con un total mayor a Q 500.00; en pedidos de Q 500.00 o menos, el envío es por cobrar. Aplican restricciones según destino y volumen del pedido.",
-            "El tiempo de entrega depende del departamento de destino.",
-          ],
+          parrafos: [ENVIOS, "El tiempo de entrega depende del departamento de destino."],
         },
         {
           titulo: "Instalación",
-          parrafos: [
-            "Cada producto incluye la instalación básica. Una instalación más compleja tiene un costo adicional, y al cerrar el pedido se te informa cuál requiere lo que llevas.",
-          ],
+          parrafos: [INSTALACION],
         },
         {
           titulo: "Garantías",

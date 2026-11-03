@@ -18,7 +18,7 @@ import { PildoraDisponibilidad } from "@/components/catalog/PildoraDisponibilida
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { claseBoton } from "@/components/ui/boton.ts";
 import type { Disponibilidad } from "@/lib/catalog/index.ts";
-import { calcularCuotaCents, formatQ } from "@/lib/format/precio.ts";
+import { formatQ, lineaCuota } from "@/lib/format/precio.ts";
 import {
   acumularCambios,
   MAX_CANTIDAD_POR_LINEA,
@@ -314,7 +314,6 @@ function OrderSummary({
   // pedidos distintos del mismo carrito no compartan identificador (ver
   // lib/whatsapp/ref.ts).
   const ref = useMemo(() => buildOrderRef(createdAt, items), [createdAt, items]);
-  const cuota = calcularCuotaCents(subtotalCents, 6);
 
   // El número sale de NEXT_PUBLIC_WHATSAPP_NUMBER, nunca incrustado
   // (CLAUDE.md § Modelo de conversión). El mensaje lleva siempre la lista
@@ -393,7 +392,7 @@ function OrderSummary({
         </span>
       </div>
       <div className="text-texto-secundario text-[14px]">
-        o {formatQ(cuota)} al mes × 6 · IVA incluido
+        {lineaCuota(subtotalCents)} · IVA incluido
       </div>
 
       <a

@@ -1,7 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { buildOrderMessage, buildProductInquiryMessage } from "./message.ts";
+import {
+  buildAvailabilityInquiryMessage,
+  buildChatHandoffMessage,
+  buildOrderMessage,
+  buildProductInquiryMessage,
+} from "./message.ts";
 import { formatQ } from "../format/precio.ts";
 import type { CartItem } from "../cart/index.ts";
 
@@ -167,4 +172,33 @@ test("buildProductInquiryMessage: no habla de pedir, ni de precio, ni de instala
   assert.ok(!/instalamos|asesor|te ayudamos/i.test(mensaje));
   // El sku va tal cual, con su espacio interno.
   assert.ok(mensaje.includes("(ACX 165)"));
+});
+
+test("buildAvailabilityInquiryMessage: consulta de disponibilidad con lo buscado", () => {
+  assert.equal(
+    buildAvailabilityInquiryMessage("sub 12"),
+    "Hola Sonoro, quiero consultar disponibilidad de: sub 12",
+  );
+});
+
+test("buildChatHandoffMessage: con consulta, con tema o sin nada", () => {
+  assert.equal(
+    buildChatHandoffMessage({ consulta: "sub 12", tema: null }),
+    "Hola Sonoro, tengo una consulta: sub 12",
+  );
+  assert.equal(
+    buildChatHandoffMessage({ consulta: null, tema: "envíos" }),
+    "Hola Sonoro, tengo una consulta sobre envíos",
+  );
+  assert.equal(
+    buildChatHandoffMessage({ consulta: null, tema: null }),
+    "Hola Sonoro, tengo una consulta",
+  );
+});
+
+test("buildChatHandoffMessage: con consulta y tema a la vez, nombra los dos", () => {
+  assert.equal(
+    buildChatHandoffMessage({ consulta: "radio con carplay", tema: "contacto" }),
+    "Hola Sonoro, tengo una consulta: radio con carplay. También sobre contacto",
+  );
 });

@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import { Bakbak_One, JetBrains_Mono } from "next/font/google";
 
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { LanzadorChat } from "@/components/chat/LanzadorChat";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { CartProvider } from "@/lib/cart/index.ts";
 import type { CatalogoSku } from "@/lib/cart/index.ts";
 import { listAllProducts } from "@/lib/catalog/index.ts";
+import { chatHabilitado } from "@/lib/chat/bandera.ts";
+import type { Contexto } from "@/lib/chat/tipos.ts";
 import { SUFIJO_TITULO } from "@/lib/seo/metadata.ts";
 import { DESCRIPCION_SITIO, TITULO_SITIO } from "@/lib/seo/textos.ts";
 import { SITE_URL } from "@/lib/seo/site.ts";
@@ -48,6 +51,23 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
+
+// Las BUSINESS_* son variables de servidor: el chat vive en el navegador, así
+// que el layout le pasa los datos ya armados. Lo que falte se omite, nunca se
+// inventa (igual que el pie y /nosotros).
+function contactoDelNegocio(): Contexto["contacto"] {
+  const telefono = process.env.BUSINESS_PHONE;
+  const correo = process.env.BUSINESS_EMAIL;
+  const direccion = [process.env.BUSINESS_ADDRESS_STREET, process.env.BUSINESS_ADDRESS_LOCALITY]
+    .filter(Boolean)
+    .join(", ");
+
+  return {
+    ...(telefono ? { telefono } : {}),
+    ...(correo ? { correo } : {}),
+    ...(direccion ? { direccion } : {}),
+  };
+}
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   // CartProvider corre en el navegador y no puede leer el catálogo (el
@@ -111,6 +131,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </main>
           <SiteFooter />
+          {/* Detrás de una bandera: apagada (o ausente) no se dibuja ni el
+              lanzador. Solo la píldora viaja en el JS de cada página; el
+              panel se baja al primer clic (components/chat/LanzadorChat.tsx). */}
+          {chatHabilitado(process.env.NEXT_PUBLIC_CHAT_ENABLED) ? (
+            <LanzadorChat contacto={contactoDelNegocio()} />
+          ) : null}
         </CartProvider>
       </body>
     </html>

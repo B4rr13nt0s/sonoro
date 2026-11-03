@@ -20,7 +20,7 @@ import {
 } from "@/lib/catalog/orden.ts";
 import { formatQ } from "@/lib/format/precio.ts";
 
-import { buscar, sugerir, type ProductoBuscable } from "./busqueda.ts";
+import { buscar, sugerir, type ProductoBuscable } from "@/lib/busqueda/busqueda.ts";
 
 // Múltiplo de 2, 4 y 6, las columnas de ProductGrid: cada «Ver más» llena
 // filas enteras en cualquier ancho.

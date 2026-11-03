@@ -18,8 +18,8 @@
 // palabras que nombran una categoría de uso («marino», «utv», «carro») y las
 // comparaciones con número («menos de Q 1,000», «más de 500 W», «de 8 a 10
 // pulgadas») dejan de ser texto y pasan a ser FILTROS sobre el dato.
-import { formatQ } from "../../lib/format/precio.ts";
-import type { Atributos, ProductoTarjeta, Uso } from "../../lib/catalog/types.ts";
+import { formatQ } from "../format/precio.ts";
+import type { Atributos, ProductoTarjeta, Uso } from "../catalog/types.ts";
 import { PALABRAS_VACIAS, SINONIMOS, USO_PALABRAS } from "./sinonimos.ts";
 
 /**

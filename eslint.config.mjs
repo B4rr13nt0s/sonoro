@@ -55,6 +55,8 @@ const eslintConfig = defineConfig([
     ".lighthouseci/**",
     "test-results/**",
     "playwright-report/**",
+    // Salida generada por /brag (video de lanzamiento), no código del proyecto.
+    "brag-output/**",
   ]),
 ]);
 

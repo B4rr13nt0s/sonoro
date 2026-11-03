@@ -505,7 +505,7 @@ Cuatro anclajes, todos gratis si se sigue el plan:
 
 Además, el registro de cotizaciones acumulará durante meses **preguntas y combinaciones reales de producto**. Ese log será mejor insumo para definir qué debe responder el chatbot que cualquier suposición actual.
 
-**Lo que NO se hace ahora:** ni embeddings, ni vector store, ni endpoint de chat, ni prompt. Escribirlos hoy sería código sin uso envejeciendo.
+Diseño del chatbot: [`docs/superpowers/specs/2026-11-02-chatbot-design.md`](superpowers/specs/2026-11-02-chatbot-design.md). Se construyó sin LLM (noviembre de 2026).
 
 ---
 

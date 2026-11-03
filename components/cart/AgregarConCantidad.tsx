@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { claseBoton, claseBotonInactivo, type VarianteBoton } from "@/components/ui/boton.ts";
 import { trackEvent } from "@/lib/analytics/track.ts";
-import { MAX_CANTIDAD_POR_LINEA, useCart } from "@/lib/cart/index.ts";
+import { MAX_CANTIDAD_POR_LINEA, textoAgregado, useCart } from "@/lib/cart/index.ts";
 import type { Producto } from "@/lib/catalog/index.ts";
 
 /**
@@ -93,11 +93,7 @@ export function AgregarConCantidad({
         aria-live="polite"
         className={inactivo ? claseBotonInactivo(variante) : claseBoton(variante)}
       >
-        {agotado
-          ? "Agotado"
-          : confirmando
-            ? `Has añadido ${anadidas} ${anadidas === 1 ? "ítem" : "ítems"} al carrito.`
-            : "Agregar al carrito"}
+        {agotado ? "Agotado" : confirmando ? textoAgregado(anadidas) : "Agregar al carrito"}
       </button>
 
       {/* Mismo control de cantidad que el carrito (CarritoView): píldora con

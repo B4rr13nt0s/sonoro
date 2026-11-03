@@ -17,7 +17,7 @@ export default function PrivacidadPage() {
     <LegalPage
       etiqueta="Legal"
       titulo="Aviso de privacidad"
-      actualizado="Última actualización: 28 de septiembre de 2026"
+      actualizado="Última actualización: 2 de noviembre de 2026"
       secciones={[
         {
           titulo: "Qué información recopilamos",
@@ -25,6 +25,7 @@ export default function PrivacidadPage() {
             "El carrito de compras vive únicamente en tu navegador (localStorage) — no llega a Sonoro a menos que decidas enviarlo.",
             "Cuando presionas «Pedir por WhatsApp», se abre una conversación de WhatsApp con el pedido ya redactado; a partir de ahí, lo que escribes y tu número de WhatsApp los ve Sonoro como en cualquier conversación de WhatsApp.",
             "Guardamos un registro interno de las cotizaciones que se envían por WhatsApp — los productos cotizados, la referencia del pedido, el subtotal y datos técnicos básicos del navegador — para dar seguimiento a pedidos y entender qué se cotiza más.",
+            "Lo que escribes en «Preguntar» se registra de forma anónima para saber qué productos y temas se buscan: la consulta, el tema elegido y si hubo resultados. No te pedimos nombre ni teléfono, y si escribes un número de teléfono, lo ocultamos antes de guardarlo.",
             "Usamos Google Analytics para medir cómo se usa el sitio: las páginas que se visitan, los productos que se ven y se agregan al carrito, y los pedidos que se envían por WhatsApp, con su referencia y su monto. Google Analytics guarda cookies en tu navegador para distinguir una visita de otra.",
           ],
         },

@@ -1,7 +1,11 @@
 import Link from "next/link";
 
 import { CATEGORIAS_SITIO } from "@/lib/catalog/categorias.ts";
-import { buildWhatsAppUrl, WHATSAPP_NUMBER } from "@/lib/whatsapp/index.ts";
+import {
+  buildAvailabilityInquiryMessage,
+  buildWhatsAppUrl,
+  WHATSAPP_NUMBER,
+} from "@/lib/whatsapp/index.ts";
 
 const CLASE_PILDORA =
   "border-borde-pildora text-texto-nav rounded-full border px-4.5 py-3 text-[13px] lg:py-2";
@@ -29,7 +33,7 @@ export function SinResultadosBusqueda({
   alCorregir: (consulta: string) => void;
 }) {
   const hayRelacionadas = marcas.length + categorias.length > 0;
-  const mensaje = `Hola Sonoro, quiero consultar disponibilidad de: ${consulta}`;
+  const mensaje = buildAvailabilityInquiryMessage(consulta);
 
   return (
     <div className="border-borde-tarjeta rounded-card-lg flex flex-col items-center gap-6 border border-dashed px-6 py-14 text-center">

@@ -7,14 +7,15 @@
 // CRÍTICO (CLAUDE.md): el registro es secundario al cierre de la venta y
 // nunca puede bloquearlo — esta función NUNCA lanza. Cualquier falla (red,
 // timeout, status no-2xx) se traga y solo queda en el log del servidor.
-import type { QuoteLogRequest } from "./types.ts";
 
 const TIMEOUT_MS = 5000;
 
 export async function forwardQuoteLog(params: {
   url: string;
   token: string;
-  request: QuoteLogRequest;
+  // Cualquier cuerpo ya validado: QuoteLogRequest, o el de /api/chat-log, que
+  // reutiliza este reenvío hacia el mismo Apps Script.
+  request: Readonly<Record<string, unknown>>;
   fetchImpl?: typeof fetch;
 }): Promise<void> {
   const fetchImpl = params.fetchImpl ?? fetch;

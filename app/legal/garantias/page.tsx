@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { LegalPage } from "@/components/legal/LegalPage";
+import { GARANTIA_ALCANCE, GARANTIA_ANULA } from "@/lib/politicas.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 
 const TITULO = "Garantías";
@@ -21,7 +22,7 @@ export default function GarantiasPage() {
       secciones={[
         {
           titulo: "Alcance",
-          parrafos: ["La garantía de Sonoro cubre únicamente desperfectos de fábrica."],
+          parrafos: [GARANTIA_ALCANCE],
         },
         // Tampoco está definido el proceso de reclamo (qué se pide, cómo se
         // gestiona): no se escribe uno hasta que el negocio lo confirme.
@@ -44,7 +45,7 @@ export default function GarantiasPage() {
         {
           titulo: "Qué anula la garantía",
           parrafos: [
-            "La garantía se pierde si hay evidencia de mal uso del producto, o de una instalación incorrecta hecha fuera de Sonoro.",
+            GARANTIA_ANULA,
             "Si el producto lo instaló un tercero y hay evidencia de que la instalación fue incorrecta, la garantía no cubre ese daño.",
           ],
         },
