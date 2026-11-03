@@ -276,7 +276,7 @@ export default function PanelChat({
         aria-label="Preguntas"
         aria-modal={escritorio ? undefined : true}
         onKeyDown={atraparFoco}
-        className="border-borde-tarjeta rounded-t-card-lg lg:rounded-card-lg fixed inset-x-0 bottom-0 z-50 flex max-h-[90dvh] flex-col border-t bg-white pb-[env(safe-area-inset-bottom)] lg:right-6 lg:bottom-20 lg:left-auto lg:z-40 lg:h-[560px] lg:max-h-[calc(100dvh-104px)] lg:w-[380px] lg:border lg:pb-0"
+        className="border-borde-tarjeta rounded-t-card-lg lg:rounded-card-lg fixed inset-x-0 bottom-0 z-50 flex max-h-[90dvh] flex-col border-t bg-white pb-[max(1rem,env(safe-area-inset-bottom))] lg:right-6 lg:bottom-20 lg:left-auto lg:z-40 lg:h-[560px] lg:max-h-[calc(100dvh-104px)] lg:w-[380px] lg:border lg:pb-0"
       >
         <div className="border-borde-tarjeta flex flex-none items-center justify-between border-b py-1 pr-2 pl-5">
           <div className="flex items-baseline gap-2.5">
