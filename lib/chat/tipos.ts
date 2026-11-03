@@ -25,7 +25,12 @@ export type OpcionId =
 export type Entrada = { tipo: "texto"; texto: string } | { tipo: "opcion"; id: OpcionId };
 
 export type Bloque =
-  | { tipo: "texto"; texto: string; enlace?: { etiqueta: string; href: string } }
+  | {
+      tipo: "texto";
+      texto: string;
+      // `despues`: lo que cierra la frase tras el enlace (un punto).
+      enlace?: { etiqueta: string; href: string; despues?: string };
+    }
   | {
       tipo: "filtros";
       aplicados: string[];

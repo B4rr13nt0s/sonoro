@@ -5,6 +5,7 @@ import type { CatalogoChat } from "./catalogo.ts";
 import { ESTADO_INICIAL, bloquesDeInicio } from "./motor.ts";
 import {
   adoptar,
+  colaDeRespuestas,
   conMensaje,
   conversacionInicial,
   crearContexto,
@@ -214,4 +215,87 @@ test("adoptar: la conversación guardada solo gana si es la misma y va más adel
     texto: "b",
   });
   assert.equal(adoptar(c0, otra), c0);
+});
+
+test("colaDeRespuestas: una respuesta rápida espera a la anterior lenta y el historial queda en orden", async () => {
+  const cola = colaDeRespuestas();
+  let conversacion = conversacionInicial("x");
+  const escribir = (texto: string) => {
+    conversacion = conMensaje(conversacion, { autor: "cliente", texto });
+  };
+  // Lo que hace el panel al responder: sobre la conversación MÁS RECIENTE.
+  const responderCon =
+    (entrada: Parameters<typeof responderEnConversacion>[1]) => (catalogo: CatalogoChat | null) => {
+      conversacion = responderEnConversacion(
+        conversacion,
+        entrada,
+        crearContexto(catalogo, {}),
+      ).conversacion;
+    };
+
+  // Q1 espera al catálogo (llega tarde); Q2 es un tema y no espera nada.
+  let llegaElCatalogo!: (c: CatalogoChat) => void;
+  const catalogo = new Promise<CatalogoChat>((r) => (llegaElCatalogo = r));
+
+  escribir("sq12");
+  const r1 = cola.encolar(catalogo, responderCon({ tipo: "texto", texto: "sq12" }));
+  escribir("Envíos");
+  const r2 = cola.encolar(null, responderCon({ tipo: "opcion", id: "envios" }));
+
+  // El tema está listo, pero no se adelanta a la respuesta pendiente.
+  await new Promise((r) => setTimeout(r, 10));
+  assert.deepEqual(
+    conversacion.mensajes.map((m) => m.autor),
+    ["bot", "cliente", "cliente"],
+  );
+
+  llegaElCatalogo(CATALOGO);
+  await Promise.all([r1, r2]);
+
+  // Ids crecientes, sin insertar respuestas en medio del historial.
+  assert.deepEqual(
+    conversacion.mensajes.map((m) => m.id),
+    [0, 1, 2, 3, 4],
+  );
+  const respuestas = conversacion.mensajes.slice(3);
+  assert.ok(
+    respuestas[0].autor === "bot" && respuestas[0].bloques.some((b) => b.tipo === "productos"),
+    "primero la respuesta a la búsqueda",
+  );
+  assert.ok(
+    respuestas[1].autor === "bot" &&
+      respuestas[1].bloques.some((b) => b.tipo === "texto" && b.texto.includes("Envío")),
+    "después la del tema",
+  );
+  // El estado es el de la ÚLTIMA respuesta: «Hablar con Sonoro» nombra el tema.
+  assert.deepEqual(conversacion.estado, { ultimaConsulta: null, ultimoTema: "envios" });
+});
+
+test("colaDeRespuestas: si una respuesta falla, las siguientes siguen saliendo", async () => {
+  const cola = colaDeRespuestas();
+  const salidas: string[] = [];
+  const fallida = cola.encolar(Promise.reject(new Error("sin catálogo")), () => {
+    salidas.push("A");
+  });
+  const siguiente = cola.encolar(null, () => {
+    salidas.push("B");
+  });
+  await assert.rejects(fallida);
+  await siguiente;
+  assert.deepEqual(salidas, ["B"]);
+});
+
+test("resumenDeMensaje: lo que cierra el enlace se lee pegado a su etiqueta", () => {
+  const mensaje: Mensaje = {
+    id: 1,
+    autor: "bot",
+    bloques: [
+      {
+        tipo: "texto",
+        texto: "La dirección completa está en",
+        enlace: { etiqueta: "Nosotros", href: "/nosotros", despues: "." },
+      },
+    ],
+  };
+  assert.equal(resumenDeMensaje(mensaje), "La dirección completa está en Nosotros.");
 });

@@ -111,14 +111,14 @@ export function bloquesDeRecomendacion(
 /** Un bloque de texto por párrafo; el enlace, si lo hay, va en el último. */
 function parrafos(
   textos: readonly string[],
-  enlace?: { etiqueta: string; href: string },
+  enlace?: { etiqueta: string; href: string; despues?: string },
 ): Bloque[] {
   return textos.map((texto, i) =>
     enlace && i === textos.length - 1 ? { tipo: "texto", texto, enlace } : { tipo: "texto", texto },
   );
 }
 
-const DIRECCION_COMPLETA = { etiqueta: "Nosotros", href: "/nosotros" };
+const DIRECCION_COMPLETA = { etiqueta: "Nosotros", href: "/nosotros", despues: "." };
 
 /** La respuesta a un tema de política, cerrada con «Buscar un producto» y «Hablar con Sonoro». */
 export function bloquesDeTema(tema: Tema, contacto: Contexto["contacto"]): Bloque[] {

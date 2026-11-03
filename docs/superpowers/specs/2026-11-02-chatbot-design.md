@@ -249,7 +249,7 @@ se quitan antes los arranques conversacionales («tienen», «hay», «venden»,
   (las mismas de `/nosotros`), que llegan por `Contexto.contacto`. El campo
   que falta no se muestra.
   El chat solo trae calle y localidad, así que, cuando muestra la dirección,
-  le sigue la línea «La dirección completa está en <Nosotros>» con enlace a
+  le sigue la línea «La dirección completa está en <Nosotros>.» (el punto cierra la frase tras el enlace) con enlace a
   `/nosotros`. Sin dirección no se agrega.
 - **Lo no definido** (horarios, plazos, qué cuenta como instalación compleja):
   «Eso te lo confirma Sonoro directamente.» + `whatsapp` (hablar).

@@ -96,6 +96,36 @@ export function responderEnConversacion(
   };
 }
 
+export interface ColaDeRespuestas {
+  /**
+   * `preparar` es lo que la respuesta espera (el catálogo, ya en camino);
+   * `aplicar` la escribe en la conversación. Las respuestas se aplican en el
+   * orden en que se encolaron, aunque una posterior esté lista antes: así el
+   * historial queda Q1, Q2, R1, R2 y el estado de la conversación (consulta o
+   * tema para «Hablar con Sonoro») es el de la última respuesta, no el de una
+   * lenta que llega tarde. Una respuesta que no espera nada solo se demora
+   * mientras haya otra anterior pendiente. Si `preparar` rechaza, esa
+   * respuesta falla y las siguientes salen igual.
+   */
+  encolar<T>(preparar: Promise<T> | T, aplicar: (valor: T) => void): Promise<void>;
+}
+
+export function colaDeRespuestas(): ColaDeRespuestas {
+  let ultima: Promise<void> = Promise.resolve();
+  return {
+    encolar(preparar, aplicar) {
+      const previo = ultima;
+      const esta = (async () => {
+        const valor = await preparar;
+        await previo;
+        aplicar(valor);
+      })();
+      ultima = esta.catch(() => {});
+      return esta;
+    },
+  };
+}
+
 /** Con punto final, salvo que ya lo traiga. */
 function frase(texto: string): string {
   return /[.!?]$/.test(texto) ? texto : `${texto}.`;
@@ -114,6 +144,11 @@ export function resumenDeMensaje(mensaje: Mensaje): string | null {
   for (const bloque of mensaje.bloques) {
     switch (bloque.tipo) {
       case "texto":
+        if (bloque.enlace?.despues) {
+          // La frase sigue después del enlace: se lee de corrido.
+          partes.push(`${bloque.texto} ${bloque.enlace.etiqueta}${bloque.enlace.despues}`);
+          break;
+        }
         partes.push(frase(bloque.texto));
         if (bloque.enlace) partes.push(frase(bloque.enlace.etiqueta));
         break;

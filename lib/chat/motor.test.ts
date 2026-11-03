@@ -287,7 +287,7 @@ test("contacto: la dirección del chat remite a Nosotros, justo después de ella
   assert.deepEqual(bloques[iDireccion + 1], {
     tipo: "texto",
     texto: "La dirección completa está en",
-    enlace: { etiqueta: "Nosotros", href: "/nosotros" },
+    enlace: { etiqueta: "Nosotros", href: "/nosotros", despues: "." },
   });
   // Sin dirección no hay nada que completar.
   for (const contacto of [{ telefono: "1234", correo: "a@b.gt" }, {}]) {

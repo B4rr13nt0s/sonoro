@@ -45,6 +45,7 @@ export function BloqueChat({
               <Link href={bloque.enlace.href} onNavigate={alNavegar} className="underline">
                 {bloque.enlace.etiqueta}
               </Link>
+              {bloque.enlace.despues}
             </>
           ) : null}
         </p>

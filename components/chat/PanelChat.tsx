@@ -29,6 +29,7 @@ import { necesitaCatalogo } from "@/lib/chat/motor.ts";
 import {
   PLACEHOLDER_BUSCAR,
   PLACEHOLDER_CAMPO,
+  colaDeRespuestas,
   conMensaje,
   conversacionInicial,
   crearContexto,
@@ -185,20 +186,29 @@ export default function PanelChat({
     if (historial) historial.scrollTop = historial.scrollHeight;
   }, [totalMensajes, catalogo]);
 
+  // Las respuestas salen en el orden en que se envió cada cosa: un tema no se
+  // adelanta a una búsqueda que sigue esperando el catálogo (lib/chat/panel.ts).
+  const [cola] = useState(colaDeRespuestas);
+
   async function enviar(entrada: Entrada, textoCliente: string) {
     guardar(conMensaje(leer(), { autor: "cliente", texto: textoCliente }));
     // Solo lo que muestra productos espera al catálogo (la promesa memoizada,
-    // con su plazo). Un tema o «Hablar con Sonoro» responde de inmediato con lo
-    // que haya cargado, o sin catálogo: una conexión detenida no los calla.
-    const cargado = necesitaCatalogo(entrada) ? await cargarCatalogo() : catalogoRef.current;
-    if (cargado) setCatalogo(cargado);
-    const { conversacion: nueva, evento } = responderEnConversacion(
-      leer(),
-      entrada,
-      crearContexto(cargado, contacto),
-    );
-    guardar(nueva);
-    if (evento) sendChatLog(nueva.id, evento);
+    // con su plazo). Un tema o «Hablar con Sonoro» no lo espera: sale con lo
+    // que haya cargado, o sin catálogo, en cuanto no quede una respuesta
+    // anterior pendiente.
+    const catalogoListo = necesitaCatalogo(entrada)
+      ? cargarCatalogo()
+      : Promise.resolve(catalogoRef.current);
+    await cola.encolar(catalogoListo, (cargado) => {
+      if (cargado) setCatalogo(cargado);
+      const { conversacion: nueva, evento } = responderEnConversacion(
+        leer(),
+        entrada,
+        crearContexto(cargado, contacto),
+      );
+      guardar(nueva);
+      if (evento) sendChatLog(nueva.id, evento);
+    });
   }
 
   function alEnviar(evento: FormEvent<HTMLFormElement>) {
