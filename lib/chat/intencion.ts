@@ -16,10 +16,14 @@ export type Intencion =
 /** El texto entero, sin puntuación, es uno de estos. */
 const SALUDOS = [
   "hola",
+  "hola buenas",
   "buenas",
   "buenos dias",
+  "buen dia",
   "buenas tardes",
   "buenas noches",
+  "que tal",
+  "saludos",
   "gracias",
   "muchas gracias",
   "ok",
@@ -60,6 +64,18 @@ const TEMAS: readonly { tema: Tema; palabras: readonly string[]; salvo?: readonl
   { tema: "contacto", palabras: ["direccion", "donde estan", "ubicados", "telefono", "correo"] },
 ];
 
+/** Fórmulas de saludo que abren un mensaje y se quitan antes de buscar. */
+const SALUDOS_DE_APERTURA = [
+  "hola",
+  "buenas",
+  "buenos dias",
+  "buen dia",
+  "buenas tardes",
+  "buenas noches",
+  "que tal",
+  "saludos",
+];
+
 /** Arranques conversacionales que se quitan antes de buscar. */
 const ARRANQUES = [
   "tienen",
@@ -77,13 +93,34 @@ const ARRANQUES = [
   "quiero",
   "necesito",
   "me interesa",
-]
-  // Los más largos primero: «precio de» antes que «precio».
-  .sort((a, b) => b.length - a.length);
+];
 
-const ARTICULOS = ["el", "la", "los", "las", "un", "una"];
+/**
+ * Saludos y arranques juntos, porque llegan mezclados («hola, busco…»).
+ * Los más largos primero: «precio de» antes que «precio», «buenas tardes»
+ * antes que «buenas».
+ */
+const APERTURAS = [...SALUDOS_DE_APERTURA, ...ARRANQUES]
+  .sort((a, b) => b.length - a.length)
+  .map((frase) => frase.split(" "));
+
+const ARTICULOS = [["el"], ["la"], ["los"], ["las"], ["un"], ["una"]];
 
 const SIGNOS = /[¿?¡!]/g;
+
+/**
+ * Quita la puntuación que separa palabras: los signos de pregunta y
+ * exclamación, y `, . ; :` cuando están pegados a un espacio, al borde del
+ * texto o (salvo el punto) entre letras. Lo que está entre dos cifras se
+ * queda: «1,000 W», «6.5"» y «MJP800.4» son datos del producto.
+ */
+function sinPuntuacion(texto: string): string {
+  return texto
+    .replace(SIGNOS, " ")
+    .replace(/(?<=\p{L})[,;:](?=\p{L})/gu, " ")
+    .replace(/[,.;:]+(?=\s|$)/g, " ")
+    .replace(/(?<=^|\s)[,.;:]+/g, " ");
+}
 
 /** Palabras del texto ya normalizado, sin puntuación, rodeadas de espacios. */
 function enPalabras(normalizado: string): string {
@@ -97,14 +134,43 @@ function contiene(palabras: string, frase: string): boolean {
   return palabras.includes(` ${frase} `);
 }
 
-/** Quita `prefijos` del inicio de `texto`, de a uno y repetidos. */
-function quitarAlInicio(texto: string, prefijos: readonly string[]): string {
-  let resto = texto;
+/**
+ * Quita `prefijos` del inicio, de a uno y repetidos. `originales` y
+ * `normalizadas` son las mismas palabras, una con lo que escribió el cliente y
+ * otra normalizada para comparar; se recortan juntas.
+ */
+function quitarAlInicio(
+  originales: string[],
+  normalizadas: string[],
+  prefijos: readonly (readonly string[])[],
+): void {
   for (;;) {
-    const prefijo = prefijos.find((p) => resto === p || resto.startsWith(`${p} `));
-    if (prefijo === undefined) return resto;
-    resto = resto.slice(prefijo.length).trimStart();
+    const prefijo = prefijos.find(
+      (p) =>
+        p.length <= normalizadas.length && p.every((palabra, i) => normalizadas[i] === palabra),
+    );
+    if (prefijo === undefined) return;
+    originales.splice(0, prefijo.length);
+    normalizadas.splice(0, prefijo.length);
   }
+}
+
+/**
+ * Lo que queda de lo escrito sin saludos, arranques ni artículos al inicio:
+ * normalizado (para buscar) y tal como lo escribió el cliente (para mostrarlo
+ * y mandarlo por WhatsApp).
+ */
+function despojar(texto: string): { consulta: string; visible: string } {
+  const originales = sinPuntuacion(texto).split(/\s+/).filter(Boolean);
+  const normalizadas = originales.map(normalizar);
+  quitarAlInicio(originales, normalizadas, APERTURAS);
+  quitarAlInicio(originales, normalizadas, ARTICULOS);
+  return { consulta: normalizadas.join(" "), visible: originales.join(" ") };
+}
+
+/** La consulta como la escribió el cliente: con mayúsculas, acentos y ñ. */
+export function consultaVisible(texto: string): string {
+  return despojar(texto).visible;
 }
 
 export function detectarIntencion(texto: string): Intencion {
@@ -120,8 +186,7 @@ export function detectarIntencion(texto: string): Intencion {
     if (vocabulario.some((p) => contiene(palabras, p))) return { tipo: "tema", tema };
   }
 
-  const limpio = normalizado.replace(SIGNOS, " ").replace(/\s+/g, " ").trim();
-  const consulta = quitarAlInicio(quitarAlInicio(limpio, ARRANQUES), ARTICULOS);
+  const { consulta } = despojar(texto);
   if (consulta === "") return { tipo: "saludo" };
   return { tipo: "busqueda", consulta };
 }

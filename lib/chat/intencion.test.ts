@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { detectarIntencion } from "./intencion.ts";
+import { consultaVisible, detectarIntencion } from "./intencion.ts";
 
 test("saludo: el texto entero es un saludo o agradecimiento", () => {
   for (const texto of ["Hola", "¡gracias!", "Buenos días", "muchas gracias", "OK", "adiós"]) {
@@ -9,11 +9,53 @@ test("saludo: el texto entero es un saludo o agradecimiento", () => {
   }
 });
 
-test("saludo: un saludo con más texto no es saludo", () => {
-  assert.deepEqual(detectarIntencion("hola, tienen subwoofers"), {
+test("saludo: varias fórmulas de saludo juntas siguen siendo saludo", () => {
+  for (const texto of ["hola buenas", "Saludos", "Buen día", "¿Qué tal?", "hola, buenas tardes"]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "saludo" }, texto);
+  }
+});
+
+test("saludo antes de la pregunta: se quita, con coma o signos, y se busca lo demás", () => {
+  const esperada = detectarIntencion("tienen subwoofers memphis");
+  assert.deepEqual(esperada, { tipo: "busqueda", consulta: "subwoofers memphis" });
+  assert.deepEqual(detectarIntencion("hola, tienen subwoofers memphis?"), esperada);
+  assert.deepEqual(detectarIntencion("Buenas tardes, ¿tienen subwoofers memphis?"), esperada);
+  assert.deepEqual(detectarIntencion("buenas, cuánto cuesta el MJP800.4"), {
     tipo: "busqueda",
-    consulta: "hola, tienen subwoofers",
+    consulta: "mjp800.4",
   });
+  assert.deepEqual(detectarIntencion("Hola! busco un amplificador"), {
+    tipo: "busqueda",
+    consulta: "amplificador",
+  });
+  assert.deepEqual(detectarIntencion("hola buenas, que tal; quiero bocinas"), {
+    tipo: "busqueda",
+    consulta: "bocinas",
+  });
+});
+
+test("saludo antes de un tema: el tema gana", () => {
+  assert.deepEqual(detectarIntencion("hola, hacen envíos a Xela?"), {
+    tipo: "tema",
+    tema: "envios",
+  });
+});
+
+test("la puntuación solo se quita cuando separa: 1,000 W y 6.5 se conservan", () => {
+  assert.deepEqual(detectarIntencion("hola, amplificador 1,000 watts."), {
+    tipo: "busqueda",
+    consulta: "amplificador 1,000 watts",
+  });
+  assert.deepEqual(detectarIntencion('hola: bocinas 6.5"'), {
+    tipo: "busqueda",
+    consulta: 'bocinas 6.5"',
+  });
+});
+
+test("consultaVisible: lo que escribió el cliente, sin saludo ni arranque, con sus acentos", () => {
+  assert.equal(consultaVisible("Hola, ¿tienen Subwoofer Peñón?"), "Subwoofer Peñón");
+  assert.equal(consultaVisible("precio del SQ12-D2"), "SQ12-D2");
+  assert.equal(consultaVisible("  Sub 12 2 OHM "), "Sub 12 2 OHM");
 });
 
 test("recomendación: pide criterio", () => {
