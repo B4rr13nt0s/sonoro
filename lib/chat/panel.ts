@@ -23,9 +23,13 @@ export function textoFiltros(aplicados: readonly string[]): string | null {
   return aplicados.length > 0 ? `Filtros de tu búsqueda: ${aplicados.join(" · ")}` : null;
 }
 
-/** El aviso de /buscar cuando la búsqueda no fue exacta. */
-export function textoModo(modo: ModoBusqueda): string | null {
+/**
+ * El aviso de /buscar cuando la búsqueda no fue exacta. En la «cercana» es la
+ * frase que armó la búsqueda (`cercania`): qué no hay y qué se muestra.
+ */
+export function textoModo(modo: ModoBusqueda, cercania?: string | null): string | null {
   if (modo === "exacta") return null;
+  if (modo === "cercana") return cercania ?? null;
   return modo === "parcial"
     ? "Ningún producto coincide con todo lo que escribiste; estos coinciden con alguna palabra."
     : "No hay coincidencias exactas; estos se le parecen.";
@@ -159,7 +163,7 @@ export function resumenDeMensaje(mensaje: Mensaje): string | null {
         break;
       case "filtros": {
         const filtros = textoFiltros(bloque.aplicados);
-        const modo = textoModo(bloque.modo);
+        const modo = textoModo(bloque.modo, bloque.cercania);
         if (filtros) partes.push(frase(filtros));
         if (modo) partes.push(frase(modo));
         if (modo && bloque.correccion) partes.push(`Quizá quisiste decir «${bloque.correccion}».`);

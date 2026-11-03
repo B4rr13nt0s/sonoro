@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import type { ProductoTarjeta } from "../catalog/types.ts";
+import type { Atributos, ProductoTarjeta } from "../catalog/types.ts";
 import {
   buscar,
   canonizar,
@@ -187,9 +187,8 @@ test("un número suelto no se cuela por las specs", () => {
   assert.equal(coincide(AMP4, normalizar("500")), false);
 });
 
-test("un número suelto pesa más como número entero del nombre que dentro de un código", () => {
-  // «12» está dentro de «MJM612», pero ese es un sub de 6.5": el de 12" va
-  // primero aunque el desempate (precio ↓) prefiera al otro.
+test("un número suelto de una o dos cifras no se cuela dentro de un código", () => {
+  // «12» está dentro de «MJM612», pero ese es un sub de 6.5": no es un 12.
   const caros = (a: ProductoBuscable, b: ProductoBuscable) => b.precioCents - a.precioCents;
   const de65 = producto('Subwoofer MOJO Mini de 6.5" MJM612', "Memphis", "MJM612", {
     precioCents: 239500,
@@ -199,9 +198,12 @@ test("un número suelto pesa más como número entero del nombre que dentro de u
   });
   const skus = (consulta: string) =>
     buscar([de65, de12], consulta, caros).productos.map((p) => p.sku);
-  assert.deepEqual(skus("subwoofer 12"), ["MJP1244", "MJM612"]);
-  assert.deepEqual(skus("subwoofer 12 memphis"), ["MJP1244", "MJM612"]);
-  // El pedazo de un código lo sigue encontrando.
+  assert.deepEqual(skus("subwoofer 12"), ["MJP1244"]);
+  assert.deepEqual(skus("subwoofer 12 memphis"), ["MJP1244"]);
+  // Ni el código que cierra el nombre: el «6» de «PPS4-6» (un medio rango de 6.5").
+  const pps = producto('Bocina de medio rango de 6.5" PPS4-6', "Rockford Fosgate", "PPS4-6");
+  assert.equal(coincide(pps, "bocina 6"), false);
+  // Un pedazo de código de tres cifras o más lo sigue encontrando.
   assert.deepEqual(skus("612"), ["MJM612"]);
 });
 
@@ -247,7 +249,7 @@ test("la palabra que nombra la categoría pesa más que la que solo aparece en l
 test("una palabra que el catálogo trae tal cual no se corrige: «bocina» no es «bobina»", () => {
   // COR dice «doble bobina» en sus claves; no hay bocinas de 6".
   const r = buscar([COR, BOC], "bocinas de 6 pulgadas");
-  assert.equal(r.modo, "parcial");
+  assert.equal(r.modo, "cercana");
   assert.deepEqual(skus(r), ["MJP6"]);
   // Lo que nadie trae sigue corrigiéndose.
   assert.deepEqual(skus(buscar([COR, BOC], "bocnas")), ["MJP6"]);
@@ -256,13 +258,99 @@ test("una palabra que el catálogo trae tal cual no se corrige: «bocina» no es
 test("parcial: la palabra que dice qué producto es pesa más que el número", () => {
   // Ninguna pantalla es de 10": van primero las pantallas, después el sub de
   // 10", aunque el desempate (precio ↑) prefiera al sub.
+  // La pantalla no trae su medida como dato: no hay «más cercana» que ofrecer.
   const baratos = (a: ProductoBuscable, b: ProductoBuscable) => a.precioCents - b.precioCents;
-  const r = buscar([SUB2, RADIO], "pantalla 10", baratos);
+  const pantalla = producto('Pantalla de 7" P7', "X", "P7", {
+    categoria: "Receptores",
+    precioCents: 900000,
+  });
+  const r = buscar([SUB2, pantalla], "pantalla 10", baratos);
   assert.equal(r.modo, "parcial");
   assert.deepEqual(
     r.productos.map((p) => p.sku),
-    ["DMH-A375BT", "MM1024"],
+    ["P7", "MM1024"],
   );
+});
+
+const bocina = (medida: NonNullable<Atributos["medida"]>, sku: string) =>
+  producto(`Bocinas coaxiales de ${medida} ${sku}`, "X", sku, {
+    categoria: "Bocinas",
+    ...numerosDeAtributos({ medida }),
+    claves: clavesDeAtributos({ medida }),
+  });
+const BOC525 = bocina('5.25"', "A525");
+const BOC69 = bocina('6x9"', "A69");
+const BOC8 = bocina('8"', "A8");
+const BOCINAS = [BOC525, BOC, BOC69, BOC8];
+
+test("cercana: sin la medida pedida, la más cercana de arriba y la de abajo", () => {
+  const r = buscar(BOCINAS, "bocinas de 6 pulgadas");
+  assert.equal(r.modo, "cercana");
+  assert.equal(r.cercania, 'Ninguno es de 6". Los más cercanos son de 5.25" y 6.5".');
+  // Primero la más cercana: 6.5" está a media pulgada, 5.25" a tres cuartos.
+  assert.deepEqual(
+    r.productos.map((p) => p.sku),
+    ["MJP6", "A525"],
+  );
+  // Un número suelto junto a la palabra se lee como pulgadas.
+  assert.deepEqual(
+    buscar(BOCINAS, "bocinas 6").productos.map((p) => p.sku),
+    ["MJP6", "A525"],
+  );
+});
+
+test("cercana: una 6x9 es otra medida; sale con «6x9», no con «6»", () => {
+  assert.deepEqual(skus(buscar(BOCINAS, "bocinas 6x9")), ["A69"]);
+  assert.ok(!buscar(BOCINAS, "bocinas 6").productos.some((p) => p.sku === "A69"));
+});
+
+test("cercana: si solo hay de un lado, la de ese lado", () => {
+  const r = buscar([RADIO, SUB2], "pantalla 10");
+  assert.equal(r.modo, "cercana");
+  assert.equal(r.cercania, 'Ninguno es de 10". El más cercano es de 7".');
+  assert.deepEqual(skus(r), ["DMH-A375BT"]);
+});
+
+test("cercana: canales", () => {
+  const r = buscar(CATALOGO, "amplificador 3 canales");
+  assert.equal(r.modo, "cercana");
+  assert.equal(r.cercania, "Ninguno es de 3 canales. Los más cercanos son de 1 y 4 canales.");
+  assert.deepEqual(
+    r.productos.map((p) => p.sku),
+    ["XED4", "PRX1500.1V2"],
+  );
+});
+
+test("cercana: un precio que nadie cumple trae los de precio más cercano, sin ese filtro", () => {
+  const r = buscar(CATALOGO, "subwoofer menos de 500");
+  assert.equal(r.modo, "cercana");
+  assert.equal(
+    r.cercania,
+    "Ninguno cuesta menos de Q 500.00. Estos son los de precio más cercano.",
+  );
+  assert.deepEqual(
+    r.productos.map((p) => p.sku),
+    ["COR2-124D", "MM1024"],
+  );
+  assert.deepEqual(r.aplicados, []);
+});
+
+test("cercana: potencia", () => {
+  const r = buscar(CATALOGO, "subwoofer de mas de 1000 w");
+  assert.equal(r.modo, "cercana");
+  assert.equal(r.cercania, "Ninguno tiene más de 1000 W. El más cercano es de 500 W.");
+  assert.deepEqual(skus(r), ["COR2-124D"]);
+});
+
+test("cercana: con dos datos que faltan no se adivina cuál soltar", () => {
+  const r = buscar(BOCINAS, "bocinas 6 pulgadas menos de 100");
+  assert.notEqual(r.modo, "cercana");
+  assert.equal(r.cercania, null);
+});
+
+test("cercana: si todo coincide, no hay aviso", () => {
+  assert.equal(buscar(BOCINAS, "bocinas 8").cercania, null);
+  assert.deepEqual(skus(buscar(BOCINAS, "bocinas 8")), ["A8"]);
 });
 
 test("palabras vacías: «bocinas para carro» pide solo bocinas", () => {
@@ -493,7 +581,8 @@ test("numerosDeAtributos: potencia máxima, pulgadas y canales", () => {
       .potenciaW,
     600,
   );
-  assert.equal(numerosDeAtributos({ medida: '6x9"' }).pulgadas, 6);
+  // Una 6x9" es otra medida, no una de 6": no entra en «de 6 a 7 pulgadas».
+  assert.equal(numerosDeAtributos({ medida: '6x9"' }).pulgadas, undefined);
   assert.equal(numerosDeAtributos({ medida: '7/8"' }).pulgadas, 0.875);
   assert.equal(numerosDeAtributos({ medida: "50 mm" }).pulgadas, 1.97);
   assert.equal(numerosDeAtributos({ pantalla_pulg: 7 }).pulgadas, 7);

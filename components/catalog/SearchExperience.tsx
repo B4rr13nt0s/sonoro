@@ -453,9 +453,11 @@ export function Busqueda({
                 cambian los resultados sin avisar. */}
             {resultado && resultado.modo !== "exacta" && base.length > 0 ? (
               <p role="status" className="text-texto-secundario text-[15px]">
-                {resultado.modo === "parcial"
-                  ? "Ningún producto coincide con todo lo que escribiste; estos coinciden con alguna palabra."
-                  : "No hay coincidencias exactas; estos se le parecen."}
+                {resultado.modo === "cercana"
+                  ? resultado.cercania
+                  : resultado.modo === "parcial"
+                    ? "Ningún producto coincide con todo lo que escribiste; estos coinciden con alguna palabra."
+                    : "No hay coincidencias exactas; estos se le parecen."}
                 {resultado.correccion ? (
                   <>
                     {" "}

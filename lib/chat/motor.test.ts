@@ -172,6 +172,16 @@ test("búsqueda aproximada: avisa con un bloque filtros", () => {
   assert.deepEqual(r.bloques.map((b) => b.tipo).slice(0, 2), ["filtros", "productos"]);
 });
 
+test("búsqueda cercana: dice qué no hay y muestra lo más cercano", () => {
+  const r = responder(ESTADO_INICIAL, texto("subwoofer de 10 pulgadas"), CONTEXTO);
+  const filtros = de(r.bloques, "filtros");
+  assert.ok(filtros);
+  assert.equal(filtros.modo, "cercana");
+  assert.equal(filtros.cercania, 'Ninguno es de 10". El más cercano es de 12".');
+  assert.deepEqual(de(r.bloques, "productos")?.skus, ["SUB1", "SUB2"]);
+  assert.equal(r.evento?.evento === "busqueda" && r.evento.modo, "cercana");
+});
+
 test("sin resultados: avisa, ofrece WhatsApp y registra el evento", () => {
   const r = responder(ESTADO_INICIAL, texto("xyz123"), CONTEXTO);
   assert.deepEqual(textos(r.bloques), ["No encontramos productos para «xyz123»."]);

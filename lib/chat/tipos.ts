@@ -37,6 +37,8 @@ export type Bloque =
       aplicados: string[];
       correccion: string | null;
       modo: ModoBusqueda; // los mismos avisos de /buscar
+      // En el modo «cercana»: «Ninguno es de 6". Los más cercanos son de…».
+      cercania?: string | null;
     }
   | {
       tipo: "productos";

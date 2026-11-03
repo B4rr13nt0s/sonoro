@@ -70,3 +70,35 @@ for (const { consulta, cumple } of CASOS) {
 test("un código exacto sale primero", () => {
   assert.equal(buscar(productos, "MJP1244", compararRelevancia).productos[0]?.sku, "MJP1244");
 });
+
+const CERCANAS: {
+  consulta: string;
+  cumple: (p: ProductoBuscable) => boolean;
+}[] = [
+  {
+    consulta: "bocinas de 6 pulgadas",
+    cumple: y(enCategoria("Bocinas"), (p) => p.pulgadas === 5.25 || p.pulgadas === 6.5),
+  },
+  {
+    consulta: "bocinas 6",
+    cumple: y(enCategoria("Bocinas"), (p) => p.pulgadas === 5.25 || p.pulgadas === 6.5),
+  },
+  {
+    consulta: "amplificador 3 canales",
+    cumple: y(enCategoria("Amplificadores"), (p) => p.canales === 2 || p.canales === 4),
+  },
+  { consulta: "pantalla 10", cumple: y(enCategoria("Receptores"), (p) => p.pulgadas === 9) },
+];
+
+for (const { consulta, cumple } of CERCANAS) {
+  test(`«${consulta}»: no existe, y se muestra lo más cercano`, () => {
+    const r = buscar(productos, consulta, compararRelevancia);
+    assert.equal(r.modo, "cercana");
+    assert.ok(r.cercania);
+    assert.ok(r.productos.length > 0, "sin resultados");
+    const fuera = r.productos
+      .filter((p) => !cumple(p))
+      .map((p) => `${p.sku} (${p.pulgadas ?? p.canales})`);
+    assert.deepEqual(fuera, []);
+  });
+}

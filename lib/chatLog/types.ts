@@ -37,7 +37,7 @@ export const ChatLogRequestSchema = z
     conversacion: z.string().regex(/^[a-z0-9]{8}$/),
     evento: z.enum(["busqueda", "sin_resultados", "tema", "recomendacion", "agregar", "whatsapp"]),
     consulta: z.string().max(MAX_CONSULTA).optional(),
-    modo: z.enum(["exacta", "aproximada", "parcial"]).optional(),
+    modo: z.enum(["exacta", "aproximada", "cercana", "parcial"]).optional(),
     resultados: z.number().int().min(0).max(MAX_RESULTADOS).optional(),
     tema: z.string().max(MAX_TEMA).optional(),
     sku: z.string().max(MAX_SKU_CHAT).optional(),

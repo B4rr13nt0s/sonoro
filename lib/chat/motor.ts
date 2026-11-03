@@ -174,6 +174,7 @@ function bloqueFiltros(resultado: ResultadoBusqueda): Bloque | null {
     aplicados: resultado.aplicados,
     correccion: resultado.correccion,
     modo: resultado.modo,
+    cercania: resultado.cercania,
   };
 }
 

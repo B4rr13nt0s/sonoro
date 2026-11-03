@@ -6,12 +6,14 @@
 // que ya viajó con la página. Entiende lo que el cliente ESCRIBIÓ, no decide
 // por él (CLAUDE.md § reglas 2): sin «te recomendamos», sin «lo más buscado».
 //
-// Tres niveles, del más preciso al más tolerante; solo se baja al siguiente
+// Cuatro niveles, del más preciso al más tolerante; solo se baja al siguiente
 // si el anterior no trajo nada:
 //
 //   exacta      cada palabra aparece (tal cual, en singular o plural, o por un
 //               sinónimo) en nombre, marca, código, categoría o specs.
 //   aproximada  igual, pero perdonando errores de escritura («rockfor»).
+//   cercana     todo coincide menos una medida o un rango: lo más cercano a
+//               ese dato, con un aviso de qué no hay («Ninguno es de 6"…»).
 //   parcial     coincide al menos una palabra, no todas.
 //
 // Antes de buscar texto, la consulta se «interpreta» (`interpretar`): las
@@ -143,13 +145,28 @@ export function clavesDeAtributos(atributos: Atributos | undefined): string {
 }
 
 /**
+ * La medida nominal en pulgadas: `6.5"` → 6.5, `7/8"` → 0.875, `50 mm` →
+ * 1.97. Una ovalada (`6x9"`) es otra medida, no una de 6": no tiene un número
+ * que comparar, y sale cuando se escribe «6x9».
+ */
+function pulgadasDeMedida(medida: string): number | undefined {
+  if (/^\d+(?:\.\d+)?x\d/.test(medida)) return undefined;
+  const fraccion = /^(\d+)\/(\d+)"$/.exec(medida);
+  if (fraccion) return Number(fraccion[1]) / Number(fraccion[2]);
+  const primero = /\d+(?:\.\d+)?/.exec(medida);
+  if (!primero) return undefined;
+  const n = Number(primero[0]);
+  return /mm$/.test(medida) ? Math.round((n / 25.4) * 100) / 100 : n;
+}
+
+/**
  * Los números de un producto contra los que se comparan «más de 500 W» o «de
  * 8 a 10 pulgadas». Solo viajan los que existen:
  *
  *   potenciaW  la mayor potencia RMS publicada (en un amplificador de varias
  *              cargas, la más alta de cualquier canal).
- *   pulgadas   la medida nominal: `6x9"` → 6, `7/8"` → 0.875, `50 mm` → 1.97;
- *              en un receptor, la pantalla.
+ *   pulgadas   la medida nominal (`pulgadasDeMedida`); en un receptor, la
+ *              pantalla. Una 6x9" no lleva.
  *   canales    los de un amplificador o un ecualizador.
  */
 export function numerosDeAtributos(
@@ -169,13 +186,8 @@ export function numerosDeAtributos(
   if (potencia !== undefined && potencia > 0) numeros.potenciaW = potencia;
 
   if (a.medida) {
-    const fraccion = /^(\d+)\/(\d+)"$/.exec(a.medida);
-    const primero = /\d+(?:\.\d+)?/.exec(a.medida);
-    if (fraccion) numeros.pulgadas = Number(fraccion[1]) / Number(fraccion[2]);
-    else if (primero) {
-      const n = Number(primero[0]);
-      numeros.pulgadas = /mm$/.test(a.medida) ? Math.round((n / 25.4) * 100) / 100 : n;
-    }
+    const pulgadas = pulgadasDeMedida(a.medida);
+    if (pulgadas !== undefined) numeros.pulgadas = pulgadas;
   } else if (a.pantalla_pulg) numeros.pulgadas = a.pantalla_pulg;
 
   if (a.canales) numeros.canales = a.canales;
@@ -240,6 +252,8 @@ interface Entrada {
   producto: ProductoBuscable;
   /** Nombre canonizado. */
   nombre: string;
+  /** El nombre sin el código que lo cierra: el «6» de «PPS4-6» no es un 6 del nombre. */
+  nombreSinCodigo: string;
   marca: string;
   sku: string;
   /** Nombre, marca y código. */
@@ -283,6 +297,7 @@ function entradaDe(producto: ProductoBuscable): Entrada {
   const entrada: Entrada = {
     producto,
     nombre,
+    nombreSinCodigo: nombre.endsWith(sku) ? nombre.slice(0, -sku.length) : nombre,
     marca,
     sku,
     principal,
@@ -349,9 +364,12 @@ function terminosDe(textoCanonico: string, conFallback = true): Termino[] {
       numero,
       // Sin lookbehind: Safari anterior a 16.4 no lo entiende. Delante no
       // puede ir letra, cifra ni punto («q12», «612», «6.5»); detrás, ni
-      // cifra ni decimal, pero sí la unidad («12"», «4ohm»).
+      // cifra, ni decimal, ni la otra mitad de una ovalada (una 6x9" no es
+      // una de 6), pero sí la unidad («12"», «4ohm»).
       entero: numero
-        ? new RegExp(String.raw`(?:^|[^a-z0-9.])${texto.replace(".", "\\.")}(?![0-9]|\.[0-9])`)
+        ? new RegExp(
+            String.raw`(?:^|[^a-z0-9.])${texto.replace(".", "\\.")}(?![0-9]|\.[0-9]|x[0-9])`,
+          )
         : null,
       alternativas: SINONIMOS[r] ?? [],
       tolerable: !medida && !numero && !/\d/.test(r) && r.length >= 4,
@@ -379,9 +397,12 @@ function nivelExacto(e: Entrada, t: Termino): number {
   }
   if (t.numero) {
     // El nombre trae el código al final: «12» dentro de «MJM612» (un sub de
-    // 6.5") es una coincidencia de código, no del nombre.
-    if (t.entero?.test(e.nombre)) return NIVEL_NOMBRE;
-    if (e.principal.includes(t.texto)) return NIVEL_MARCA_O_CODIGO;
+    // 6.5") no es un 12 del nombre. Y en el código solo cuenta un número de
+    // tres cifras o más («612» encuentra MJM612): un «6» o un «12» metidos
+    // en un código («MJP6», «MJM612») son ruido, y taparían que no hay
+    // bocinas de 6".
+    if (t.entero?.test(e.nombreSinCodigo)) return NIVEL_NOMBRE;
+    if (t.texto.length >= 3 && e.principal.includes(t.texto)) return NIVEL_MARCA_O_CODIGO;
     return e.tokensExtra.has(t.texto) ? NIVEL_EXTRA : 0;
   }
   if (e.nombre.includes(t.raiz)) return NIVEL_NOMBRE;
@@ -534,20 +555,28 @@ function describir(r: Restriccion): string {
     pulgadas: "Tamaño",
     canales: "Canales",
   }[r.campo];
-  const valor = (n: number) =>
-    r.campo === "precio"
-      ? formatQ(Math.round(n * 100))
-      : r.campo === "potencia"
-        ? `${n} W`
-        : r.campo === "pulgadas"
-          ? `${n}"`
-          : `${n} canales`;
+  return `${etiqueta} ${textoRango(r)}`;
+}
+
+/** Un valor de un campo, dicho: «Q 1,000.00», «500 W», «12"», «4 canales». */
+function textoValor(campo: Restriccion["campo"], n: number): string {
+  return campo === "precio"
+    ? formatQ(Math.round(n * 100))
+    : campo === "potencia"
+      ? `${n} W`
+      : campo === "pulgadas"
+        ? `${n}"`
+        : `${n} canales`;
+}
+
+/** «entre Q 500.00 y Q 1,000.00», «hasta 4 canales», «más de 500 W». */
+function textoRango(r: Restriccion): string {
+  const valor = (n: number) => textoValor(r.campo, n);
   if (r.min !== undefined && r.max !== undefined) {
-    return `${etiqueta} entre ${valor(r.min)} y ${valor(r.max)}`;
+    return `entre ${valor(r.min)} y ${valor(r.max)}`;
   }
-  if (r.max !== undefined)
-    return `${etiqueta} ${r.maxIncluye ? "hasta" : "menos de"} ${valor(r.max)}`;
-  return `${etiqueta} ${r.minIncluye ? "desde" : "más de"} ${valor(r.min ?? 0)}`;
+  if (r.max !== undefined) return `${r.maxIncluye ? "hasta" : "menos de"} ${valor(r.max)}`;
+  return `${r.minIncluye ? "desde" : "más de"} ${valor(r.min ?? 0)}`;
 }
 
 export interface Interpretacion {
@@ -688,7 +717,7 @@ function cumpleFiltros(p: ProductoBuscable, c: Consulta): boolean {
 // API
 // ---------------------------------------------------------------------------
 
-export type ModoBusqueda = "exacta" | "aproximada" | "parcial";
+export type ModoBusqueda = "exacta" | "aproximada" | "cercana" | "parcial";
 
 export interface ResultadoBusqueda {
   /** Sin ordenar por `compararRelevancia`: vienen por puntaje, de mayor a menor. */
@@ -700,6 +729,11 @@ export interface ResultadoBusqueda {
   aplicados: string[];
   /** Las categorías de uso que nombró la consulta (vacío si ninguna). */
   usos: Uso[];
+  /**
+   * En el modo «cercana», qué no hay y qué se muestra en su lugar: «Ninguno es
+   * de 6". Los más cercanos son de 5.25" y 6.5".». `null` en los demás.
+   */
+  cercania: string | null;
 }
 
 const SIN_RESULTADOS: ResultadoBusqueda = {
@@ -708,6 +742,7 @@ const SIN_RESULTADOS: ResultadoBusqueda = {
   correccion: null,
   aplicados: [],
   usos: [],
+  cercania: null,
 };
 
 // Cuando la consulta es solo filtros («marino», «menos de 1000») no hay texto
@@ -761,6 +796,177 @@ function ordenar(
     .map((p) => p.producto);
 }
 
+// ---------------------------------------------------------------------------
+// Lo más cercano
+// ---------------------------------------------------------------------------
+
+// Un número suelto junto a la palabra («bocinas 6», «pantalla 10») se lee
+// como pulgadas solo hasta acá; más arriba no es una medida de este catálogo.
+const MAX_PULGADAS_SUELTAS = 20;
+
+/** La medida que una palabra escribe: `6"`, `3ch`, `1000w`, o un número suelto (pulgadas). */
+function medidaDe(t: Termino): { campo: Restriccion["campo"]; valor: number } | null {
+  if (t.numero) {
+    const n = Number(t.texto);
+    return n > 0 && n <= MAX_PULGADAS_SUELTAS ? { campo: "pulgadas", valor: n } : null;
+  }
+  if (!t.medida) return null;
+  const m = /^(\d+(?:\.\d+)?)("|ch|w)$/.exec(t.texto);
+  if (!m) return null;
+  const campo = m[2] === '"' ? "pulgadas" : m[2] === "ch" ? "canales" : "potencia";
+  return { campo, valor: Number(m[1]) };
+}
+
+interface Cercanos {
+  productos: ProductoBuscable[];
+  /** Los valores que quedaron, de menor a mayor; vacío para el precio. */
+  valores: number[];
+}
+
+/**
+ * Los productos que cumplen todas las palabras pero no `objetivo`, con el
+ * valor más cercano de cada lado: con 6" pedidas, las de 5.25" y las de
+ * 6.5". En precio cada producto tiene el suyo, así que van todos, del más
+ * cercano al más lejano. `null` si no queda ninguno, o si alguno sí cumple
+ * (no se dice «ninguno es de 6"» de algo que lo es).
+ */
+function masCercanos(
+  lista: readonly Entrada[],
+  terminos: readonly Termino[],
+  objetivo: Restriccion,
+  desempate: (a: ProductoBuscable, b: ProductoBuscable) => number,
+): Cercanos | null {
+  const candidatos: {
+    producto: ProductoBuscable;
+    valor: number;
+    falta: number;
+    puntaje: number;
+  }[] = [];
+  for (const e of lista) {
+    const nivel = terminos.length > 0 ? nivelDeProducto(e, terminos, nivelExacto) : NIVEL_NOMBRE;
+    if (nivel === 0) continue;
+    const valor = valorDe(e.producto, objetivo.campo);
+    if (valor === undefined) continue;
+    const { min, max } = objetivo;
+    const debajo = min !== undefined && (objetivo.minIncluye ? valor < min : valor <= min);
+    const encima = max !== undefined && (objetivo.maxIncluye ? valor > max : valor >= max);
+    if (!debajo && !encima) return null;
+    candidatos.push({
+      producto: e.producto,
+      valor,
+      falta: debajo ? (min ?? 0) - valor : valor - (max ?? 0),
+      puntaje: (PUNTAJE_POR_NIVEL[nivel] ?? 0) + afinidad(e, terminos),
+    });
+  }
+  if (candidatos.length === 0) return null;
+
+  let elegidos = candidatos;
+  if (objetivo.campo !== "precio") {
+    const abajo = Math.max(
+      ...candidatos
+        .filter((c) => objetivo.min !== undefined && c.valor < objetivo.min)
+        .map((c) => c.valor),
+    );
+    const arriba = Math.min(
+      ...candidatos
+        .filter((c) => objetivo.max !== undefined && c.valor > objetivo.max)
+        .map((c) => c.valor),
+    );
+    elegidos = candidatos.filter((c) => c.valor === abajo || c.valor === arriba);
+  }
+  elegidos.sort(
+    (a, b) => a.falta - b.falta || b.puntaje - a.puntaje || desempate(a.producto, b.producto),
+  );
+  return {
+    productos: elegidos.map((c) => c.producto),
+    valores:
+      objetivo.campo === "precio"
+        ? []
+        : [...new Set(elegidos.map((c) => c.valor))].sort((a, b) => a - b),
+  };
+}
+
+/** «Ninguno es de 6". Los más cercanos son de 5.25" y 6.5".» */
+function fraseCercania(
+  objetivo: Restriccion,
+  escrita: number | null,
+  valores: readonly number[],
+): string {
+  const { campo } = objetivo;
+  const pedido =
+    escrita !== null
+      ? `Ninguno es de ${textoValor(campo, escrita)}.`
+      : campo === "precio"
+        ? `Ninguno cuesta ${textoRango(objetivo)}.`
+        : campo === "pulgadas"
+          ? `Ninguno mide ${textoRango(objetivo)}.`
+          : `Ninguno tiene ${textoRango(objetivo)}.`;
+  if (campo === "precio") return `${pedido} Estos son los de precio más cercano.`;
+  // «de 1 y 4 canales», no «de 1 canales y 4 canales».
+  const dichos =
+    campo === "canales" ? valores.map(String) : valores.map((v) => textoValor(campo, v));
+  const lista = dichos.join(" y ") + (campo === "canales" ? " canales" : "");
+  return valores.length === 1
+    ? `${pedido} El más cercano es de ${lista}.`
+    : `${pedido} Los más cercanos son de ${lista}.`;
+}
+
+/**
+ * Cuando ningún producto cumple TODO pero sí todo menos un dato —una medida
+ * escrita («6 pulgadas», «3 canales», un 10 suelto) o un rango («menos de
+ * Q 1,000»)—, lo más cercano a ese dato, con el aviso de qué no hay. Con dos
+ * datos que faltan no se adivina cuál soltar: `null`, y sigue la parcial.
+ */
+function cercana(
+  productos: readonly ProductoBuscable[],
+  c: Consulta,
+  desempate: (a: ProductoBuscable, b: ProductoBuscable) => number,
+): ResultadoBusqueda | null {
+  const conFiltros = productos.filter((p) => cumpleFiltros(p, c)).map(entradaDe);
+  for (const [i, t] of c.terminos.entries()) {
+    const medida = medidaDe(t);
+    if (!medida) continue;
+    const resto = c.terminos.filter((_, j) => j !== i);
+    if (resto.length === 0) continue;
+    const objetivo: Restriccion = {
+      campo: medida.campo,
+      min: medida.valor,
+      max: medida.valor,
+      minIncluye: true,
+      maxIncluye: true,
+    };
+    const r = masCercanos(conFiltros, resto, objetivo, desempate);
+    if (r) {
+      return {
+        productos: r.productos,
+        modo: "cercana",
+        correccion: null,
+        aplicados: c.aplicados,
+        usos: c.usos,
+        cercania: fraseCercania(objetivo, medida.valor, r.valores),
+      };
+    }
+  }
+  for (const objetivo of c.restricciones) {
+    const sinEse = { ...c, restricciones: c.restricciones.filter((r) => r !== objetivo) };
+    const lista = productos.filter((p) => cumpleFiltros(p, sinEse)).map(entradaDe);
+    const r = masCercanos(lista, c.terminos, objetivo, desempate);
+    if (r) {
+      // El filtro que no se cumplió ya no se anuncia como aplicado: lo dice el aviso.
+      const soltado = describir(objetivo);
+      return {
+        productos: r.productos,
+        modo: "cercana",
+        correccion: null,
+        aplicados: c.aplicados.filter((a) => a !== soltado),
+        usos: c.usos,
+        cercania: fraseCercania(objetivo, null, r.valores),
+      };
+    }
+  }
+  return null;
+}
+
 /**
  * La búsqueda completa. `desempate` es el orden con que se rompen los
  * empates de puntaje (el de «relevancia» de los listados: destacado → precio
@@ -784,18 +990,25 @@ export function buscar(
 
   if (terminos.length === 0) {
     const todos = lista.map((e) => ({ producto: e.producto, puntaje: PUNTAJE_SOLO_FILTROS }));
+    if (todos.length === 0) {
+      const cercanos = cercana(productos, c, desempate);
+      if (cercanos) return cercanos;
+    }
     return {
       productos: ordenar(todos, desempate),
       modo: "exacta",
       correccion: null,
       aplicados,
       usos,
+      cercania: null,
     };
   }
 
   const exactos: Puntuado[] = [];
+  let mejorNivel = 0;
   for (const e of lista) {
     const nivel = nivelDeProducto(e, terminos, nivelExacto);
+    if (nivel > mejorNivel) mejorNivel = nivel;
     if (nivel > 0) {
       exactos.push({
         producto: e.producto,
@@ -806,6 +1019,14 @@ export function buscar(
       });
     }
   }
+  // Si lo único que coincide con todo lo hace por las specs («bocinas 6»: un
+  // adaptador de 6 canales cuya ficha dice «salidas de bocina»), y falta una
+  // medida o un rango, lo más cercano dice mejor lo que hay. `cercana` no
+  // dispara si algún producto cumple el dato pedido.
+  if (exactos.length > 0 && mejorNivel < NIVEL_MARCA_O_CODIGO) {
+    const cercanos = cercana(productos, c, desempate);
+    if (cercanos) return cercanos;
+  }
   if (exactos.length > 0) {
     return {
       productos: ordenar(exactos, desempate),
@@ -813,6 +1034,7 @@ export function buscar(
       correccion: null,
       aplicados,
       usos,
+      cercania: null,
     };
   }
 
@@ -836,8 +1058,12 @@ export function buscar(
       correccion,
       aplicados,
       usos,
+      cercania: null,
     };
   }
+
+  const cercanos = cercana(productos, c, desempate);
+  if (cercanos) return cercanos;
 
   if (terminos.length > 1) {
     // La palabra que dice qué producto es («pantalla», «bocinas») pesa más que
@@ -870,11 +1096,12 @@ export function buscar(
         correccion,
         aplicados,
         usos,
+        cercania: null,
       };
     }
   }
 
-  return { productos: [], modo: "exacta", correccion, aplicados, usos };
+  return { productos: [], modo: "exacta", correccion, aplicados, usos, cercania: null };
 }
 
 // ---------------------------------------------------------------------------
@@ -905,7 +1132,8 @@ function nombreSeParece(nombre: string, escrito: string): boolean {
  * Lo que se ofrece mientras se teclea: marcas y categorías que coinciden con
  * lo escrito (también por sinónimo y con errores: «sub» → Subwoofers,
  * «rockfor» → Rockford Fosgate) y los primeros productos. Los de la búsqueda
- * «parcial» no entran: sugerir algo que no coincide con lo escrito es ruido.
+ * «parcial» y la «cercana» no entran: sugerir algo que no coincide con lo
+ * escrito es ruido.
  */
 export function sugerir(
   productos: readonly ProductoBuscable[],
@@ -931,6 +1159,8 @@ export function sugerir(
           .slice(0, 3)
       : [],
     productos:
-      resultado.modo === "parcial" ? [] : resultado.productos.slice(0, MAX_PRODUCTOS_SUGERIDOS),
+      resultado.modo === "parcial" || resultado.modo === "cercana"
+        ? []
+        : resultado.productos.slice(0, MAX_PRODUCTOS_SUGERIDOS),
   };
 }

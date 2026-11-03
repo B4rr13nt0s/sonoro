@@ -168,6 +168,10 @@ test("textoFiltros y textoModo: los textos de /buscar", () => {
     textoModo("parcial"),
     "Ningún producto coincide con todo lo que escribiste; estos coinciden con alguna palabra.",
   );
+  assert.equal(
+    textoModo("cercana", 'Ninguno es de 6". El más cercano es de 6.5".'),
+    'Ninguno es de 6". El más cercano es de 6.5".',
+  );
 });
 
 function bot(bloques: Extract<Mensaje, { autor: "bot" }>["bloques"]): Mensaje {

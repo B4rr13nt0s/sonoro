@@ -53,7 +53,7 @@ export function BloqueChat({
 
     case "filtros": {
       const filtros = textoFiltros(bloque.aplicados);
-      const modo = textoModo(bloque.modo);
+      const modo = textoModo(bloque.modo, bloque.cercania);
       return (
         <div className="text-texto-secundario flex flex-col gap-1 text-[14px] leading-relaxed">
           {filtros ? <p>{filtros}</p> : null}
