@@ -297,12 +297,18 @@ function sinPalabras(despojado: Consulta, quitar: readonly string[]): Consulta {
 function detectarDato(texto: string): Extract<Intencion, { tipo: "dato" }> | null {
   const originales = sinPuntuacion(texto).split(/\s+/).filter(Boolean);
   const normalizadas = originales.map(normalizar);
+  // «cuánto cuesta» y «precio de» son también arranques de búsqueda: el
+  // precio se pregunta ANTES de que `quitarAlInicio` se los lleve.
+  const campos: Campo[] = [];
+  const precio = VOCABULARIO_DATOS.find((v) => v.campo.tipo === "precio");
+  if (precio?.palabras.some((p) => enPalabras(normalizadas.join(" ")).includes(` ${p} `))) {
+    campos.push(precio.campo);
+  }
   quitarAlInicio(originales, normalizadas, APERTURAS);
 
   const trasNumero = (i: number) =>
     [normalizadas[i - 1], normalizadas[i - 2]].some((p) => p !== undefined && /^\d/.test(p));
   const usadas = new Set<number>();
-  const campos: Campo[] = [];
   for (const { campo, palabras } of VOCABULARIO_DATOS) {
     for (const frase of palabras) {
       const partes = frase.split(" ");

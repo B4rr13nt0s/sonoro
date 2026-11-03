@@ -26,6 +26,7 @@ import type { Spec } from "../catalog/types.ts";
 import { buildAvailabilityInquiryMessage } from "../whatsapp/message.ts";
 import {
   fraseDisponibilidad,
+  frasePrecio,
   valorDisponibilidad,
   valoresDeCampo,
   type Campo,
@@ -352,6 +353,11 @@ function responderDato(
   if (resultado.productos.length === 0) return responderBusqueda(consulta, visible, contexto);
 
   const nombrado = productoNombrado(resultado.productos, consulta);
+  const precio = campos.some((c) => c.tipo === "precio");
+  // Solo el precio, de una lista: cada fila ya lo lleva. Es la búsqueda.
+  if (!nombrado && campos.every((c) => c.tipo === "precio")) {
+    return responderBusqueda(consulta, visible, contexto);
+  }
   const mostrados = nombrado ? [nombrado] : resultado.productos.slice(0, MAX_PRODUCTOS_CHAT);
   const specs = campos.filter((c): c is CampoSpec => c.tipo === "spec");
   const disponibilidad = campos.some((c) => c.tipo === "disponibilidad");
@@ -360,7 +366,7 @@ function responderDato(
   // que esos productos no llevan fila y, si no queda nada que contestar, va la
   // búsqueda de siempre.
   const ficha = (p: ProductoBuscable) => contexto.fichas?.[p.sku];
-  if (!disponibilidad && !mostrados.some(ficha)) {
+  if (!disponibilidad && !(precio && nombrado) && !mostrados.some(ficha)) {
     return responderBusqueda(consulta, visible, contexto);
   }
 
@@ -386,6 +392,9 @@ function responderDato(
       publicados = true;
       // «medida» y «profundidad» comparten «Profundidad de montaje»: una vez.
       filas.push(...valores.filter((v) => !filas.some((f) => f.etiqueta === v.etiqueta)));
+    }
+    if (precio && nombrado) {
+      avisos.push({ tipo: "texto", texto: frasePrecio(p.nombre, p.precioCents) });
     }
     if (disponibilidad) {
       if (nombrado) {

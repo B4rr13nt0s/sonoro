@@ -139,6 +139,25 @@ test("pregunta en lenguaje natural: «¿Tienen subwoofers de 12 pulgadas marca m
   assert.deepEqual([...(de(r.bloques, "productos")?.skus ?? [])].sort(), ["SUB1", "SUB2"]);
 });
 
+test("dato: precio de un producto nombrado", () => {
+  const r = responder(ESTADO_INICIAL, texto("¿cuánto cuesta el SUB1?"), CONTEXTO);
+  assert.ok(
+    textos(r.bloques).includes(
+      'Subwoofer Serie SQ de 12" SQ12-D2 cuesta Q 2,450.00, o Q 408.34 al mes × 6.',
+    ),
+  );
+  assert.ok(!textos(r.bloques).includes("Datos publicados por el fabricante."));
+});
+
+test("dato: solo precio sobre una lista es la búsqueda de siempre", () => {
+  const r = responder(ESTADO_INICIAL, texto("cuanto cuesta un subwoofer"), CONTEXTO);
+  assert.equal(
+    textos(r.bloques).some((t) => t.includes(" cuesta ")),
+    false,
+  );
+  assert.ok(de(r.bloques, "productos"));
+});
+
 test("búsqueda: los dos subs, con enlace a /buscar y evento", () => {
   const r = responder(ESTADO_INICIAL, texto("sub 12 2 ohm"), CONTEXTO);
   const productos = de(r.bloques, "productos");
