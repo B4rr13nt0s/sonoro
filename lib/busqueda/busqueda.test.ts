@@ -187,6 +187,24 @@ test("un número suelto no se cuela por las specs", () => {
   assert.equal(coincide(AMP4, normalizar("500")), false);
 });
 
+test("un número suelto pesa más como número entero del nombre que dentro de un código", () => {
+  // «12» está dentro de «MJM612», pero ese es un sub de 6.5": el de 12" va
+  // primero aunque el desempate (precio ↓) prefiera al otro.
+  const caros = (a: ProductoBuscable, b: ProductoBuscable) => b.precioCents - a.precioCents;
+  const de65 = producto('Subwoofer MOJO Mini de 6.5" MJM612', "Memphis", "MJM612", {
+    precioCents: 239500,
+  });
+  const de12 = producto('Subwoofer MOJO Pro de 12" MJP1244', "Memphis", "MJP1244", {
+    precioCents: 209500,
+  });
+  const skus = (consulta: string) =>
+    buscar([de65, de12], consulta, caros).productos.map((p) => p.sku);
+  assert.deepEqual(skus("subwoofer 12"), ["MJP1244", "MJM612"]);
+  assert.deepEqual(skus("subwoofer 12 memphis"), ["MJP1244", "MJM612"]);
+  // El pedazo de un código lo sigue encontrando.
+  assert.deepEqual(skus("612"), ["MJM612"]);
+});
+
 test("sinónimos: cómo lo dice la gente", () => {
   assert.deepEqual(skus(buscar(CATALOGO, "sub")), ["COR2-124D", "MM1024"]);
   assert.deepEqual(skus(buscar(CATALOGO, "parlantes")), ["MJP6"]);

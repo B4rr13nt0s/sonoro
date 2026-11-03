@@ -317,6 +317,8 @@ interface Termino {
   raiz: string;
   medida: boolean;
   numero: boolean;
+  /** Para un número: el número entero, sin otra cifra pegada («12» en `12"`, no en «mjm612»). */
+  entero: RegExp | null;
   alternativas: readonly string[];
   /** Una palabra de verdad, sin dígitos: se le pueden perdonar errores. */
   tolerable: boolean;
@@ -341,6 +343,12 @@ function terminosDe(textoCanonico: string, conFallback = true): Termino[] {
       raiz: r,
       medida,
       numero,
+      // Sin lookbehind: Safari anterior a 16.4 no lo entiende. Delante no
+      // puede ir letra, cifra ni punto («q12», «612», «6.5»); detrás, ni
+      // cifra ni decimal, pero sí la unidad («12"», «4ohm»).
+      entero: numero
+        ? new RegExp(String.raw`(?:^|[^a-z0-9.])${texto.replace(".", "\\.")}(?![0-9]|\.[0-9])`)
+        : null,
       alternativas: SINONIMOS[r] ?? [],
       tolerable: !medida && !numero && !/\d/.test(r) && r.length >= 4,
     };
@@ -362,7 +370,9 @@ function nivelExacto(e: Entrada, t: Termino): number {
     return e.tokensExtra.has(t.texto) ? NIVEL_EXTRA : 0;
   }
   if (t.numero) {
-    if (e.nombre.includes(t.texto)) return NIVEL_NOMBRE;
+    // El nombre trae el código al final: «12» dentro de «MJM612» (un sub de
+    // 6.5") es una coincidencia de código, no del nombre.
+    if (t.entero?.test(e.nombre)) return NIVEL_NOMBRE;
     if (e.principal.includes(t.texto)) return NIVEL_MARCA_O_CODIGO;
     return e.tokensExtra.has(t.texto) ? NIVEL_EXTRA : 0;
   }
@@ -405,6 +415,18 @@ function nivelDeProducto(
     if (n < peor) peor = n;
   }
   return peor;
+}
+
+/**
+ * Una fracción menor que 1 con la suma de los niveles de todas las palabras:
+ * desempata DENTRO de un mismo nivel. En «subwoofer 12 memphis» la marca deja
+ * a todos en el nivel de marca, y sin esto daba igual si el «12» estaba en el
+ * nombre o metido en el código.
+ */
+function afinidad(e: Entrada, terminos: readonly Termino[]): number {
+  let suma = 0;
+  for (const t of terminos) suma += nivelExacto(e, t);
+  return suma / (NIVEL_NOMBRE * terminos.length + 1);
 }
 
 const PUNTAJE_POR_NIVEL: Readonly<Record<number, number>> = {
@@ -761,7 +783,10 @@ export function buscar(
     if (nivel > 0) {
       exactos.push({
         producto: e.producto,
-        puntaje: Math.max(puntajeDeFrase(e, c.resto), PUNTAJE_POR_NIVEL[nivel] ?? 0),
+        puntaje: Math.max(
+          puntajeDeFrase(e, c.resto),
+          (PUNTAJE_POR_NIVEL[nivel] ?? 0) + afinidad(e, terminos),
+        ),
       });
     }
   }
