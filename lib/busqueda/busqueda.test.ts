@@ -221,6 +221,50 @@ test("lo que dice el nombre pesa más que lo que solo coincide por sinónimo", (
   );
 });
 
+test("la palabra que nombra la categoría pesa más que la que solo aparece en las specs", () => {
+  const caros = (a: ProductoBuscable, b: ProductoBuscable) => b.precioCents - a.precioCents;
+  // Un convertidor cuya ficha dice «radio» no es un radio, aunque sea más caro.
+  const convertidor = producto("Convertidor de alta a baja KHL-4", "KBT", "KHL-4", {
+    categoria: "Accesorios",
+    precioCents: 900000,
+    specsDestacadas: [{ etiqueta: "Entradas", valor: "Desde las salidas de bocina del radio" }],
+  });
+  assert.deepEqual(
+    buscar([convertidor, RADIO], "radio", caros).productos.map((p) => p.sku),
+    ["DMH-A375BT", "KHL-4"],
+  );
+  const procesador = producto("Procesador de graves MEMBX", "Memphis", "MEMBX", {
+    categoria: "Accesorios",
+    precioCents: 900000,
+    specsDestacadas: [{ etiqueta: "Entrada", valor: "Señal de alto y bajo nivel" }],
+  });
+  assert.deepEqual(
+    buscar([procesador, COR], "bajo", caros).productos.map((p) => p.sku),
+    ["COR2-124D", "MEMBX"],
+  );
+});
+
+test("una palabra que el catálogo trae tal cual no se corrige: «bocina» no es «bobina»", () => {
+  // COR dice «doble bobina» en sus claves; no hay bocinas de 6".
+  const r = buscar([COR, BOC], "bocinas de 6 pulgadas");
+  assert.equal(r.modo, "parcial");
+  assert.deepEqual(skus(r), ["MJP6"]);
+  // Lo que nadie trae sigue corrigiéndose.
+  assert.deepEqual(skus(buscar([COR, BOC], "bocnas")), ["MJP6"]);
+});
+
+test("parcial: la palabra que dice qué producto es pesa más que el número", () => {
+  // Ninguna pantalla es de 10": van primero las pantallas, después el sub de
+  // 10", aunque el desempate (precio ↑) prefiera al sub.
+  const baratos = (a: ProductoBuscable, b: ProductoBuscable) => a.precioCents - b.precioCents;
+  const r = buscar([SUB2, RADIO], "pantalla 10", baratos);
+  assert.equal(r.modo, "parcial");
+  assert.deepEqual(
+    r.productos.map((p) => p.sku),
+    ["DMH-A375BT", "MM1024"],
+  );
+});
+
 test("palabras vacías: «bocinas para carro» pide solo bocinas", () => {
   assert.deepEqual(skus(buscar(CATALOGO, "bocinas para carro")), ["MJP6"]);
   assert.deepEqual(skus(buscar(CATALOGO, "bocinas de")), ["MJP6"]);

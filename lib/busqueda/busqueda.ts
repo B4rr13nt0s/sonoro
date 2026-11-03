@@ -246,6 +246,8 @@ interface Entrada {
   principal: string;
   /** Categoría, specs y claves: lo que el nombre no dice. */
   extra: string;
+  /** La categoría y las secundarias, en singular: «receptor», «subwoofer». */
+  categorias: ReadonlySet<string>;
   tokensPrincipal: ReadonlySet<string>;
   tokensExtra: ReadonlySet<string>;
   /** Solo letras, 4 o más: contra lo que se perdonan los errores de escritura. */
@@ -269,7 +271,8 @@ function entradaDe(producto: ProductoBuscable): Entrada {
   const skuCompacto = sku.replace(/[\s.-]+/g, "");
   const principal = `${nombre} ${marca} ${sku}${skuCompacto === sku ? "" : ` ${skuCompacto}`}`;
   const specs = producto.specsDestacadas.map((s) => `${s.etiqueta} ${s.valor}`).join(" ");
-  const categorias = [producto.categoria, ...(producto.categoriasSecundarias ?? [])].join(" ");
+  const listaCategorias = [producto.categoria, ...(producto.categoriasSecundarias ?? [])];
+  const categorias = listaCategorias.join(" ");
   const extra = canonizar(normalizar(`${categorias} ${specs} ${producto.claves ?? ""}`));
 
   const palabras = new Set<string>();
@@ -286,6 +289,7 @@ function entradaDe(producto: ProductoBuscable): Entrada {
     extra,
     tokensPrincipal: new Set(principal.split(SEPARADORES)),
     tokensExtra: new Set(extra.split(SEPARADORES)),
+    categorias: new Set(listaCategorias.map((c) => raiz(normalizar(c)))),
     palabras: [...palabras],
   };
   entradas.set(producto, entrada);
@@ -355,10 +359,14 @@ function terminosDe(textoCanonico: string, conFallback = true): Termino[] {
   });
 }
 
-// Qué tan arriba coincide una palabra. Lo que dice el nombre pesa más que lo
-// que dicen la marca o el código, y eso más que la categoría o las specs; lo
-// que solo coincide por un sinónimo o por un error de escritura, lo último.
-const NIVEL_NOMBRE = 4;
+// Qué tan arriba coincide una palabra. Lo que dice el nombre pesa más que la
+// categoría que la palabra nombra, eso más que la marca o el código, y eso más
+// que las specs; lo que solo coincide por un sinónimo o por un error de
+// escritura, lo último. La categoría va arriba porque dice qué ES el producto:
+// con «radio» las pantallas (Receptores) van antes que un convertidor cuya
+// ficha menciona «las salidas de bocina del radio».
+const NIVEL_NOMBRE = 5;
+const NIVEL_CATEGORIA = 4;
 const NIVEL_MARCA_O_CODIGO = 3;
 const NIVEL_EXTRA = 2;
 const NIVEL_APROXIMADO = 1;
@@ -377,6 +385,10 @@ function nivelExacto(e: Entrada, t: Termino): number {
     return e.tokensExtra.has(t.texto) ? NIVEL_EXTRA : 0;
   }
   if (e.nombre.includes(t.raiz)) return NIVEL_NOMBRE;
+  // La palabra o su sinónimo ES la categoría: «radio» → receptor, «bajo» → subwoofer.
+  if (e.categorias.has(t.raiz) || t.alternativas.some((a) => e.categorias.has(a))) {
+    return NIVEL_CATEGORIA;
+  }
   if (e.principal.includes(t.raiz)) return NIVEL_MARCA_O_CODIGO;
   // Una palabra de 3 letras o menos («amp», «eq») pegada en medio de otra de
   // las specs («Amperaje») no es una coincidencia: en categoría y specs se
@@ -392,9 +404,12 @@ function nivelExacto(e: Entrada, t: Termino): number {
   return 0;
 }
 
-function nivelConErrores(e: Entrada, t: Termino): number {
+// `enCatalogo`: las palabras que algún producto trae tal cual. Esas están bien
+// escritas y no se leen como error de otra: «bocina» no es «bobina», la
+// impedancia de casi todos los subwoofers.
+function nivelConErrores(e: Entrada, t: Termino, enCatalogo: ReadonlySet<Termino>): number {
   const exacto = nivelExacto(e, t);
-  if (exacto > 0 || !t.tolerable) return exacto;
+  if (exacto > 0 || !t.tolerable || enCatalogo.has(t)) return exacto;
   const maximo = errorMaximo(t.raiz.length);
   for (const palabra of e.palabras) {
     if (distancia(t.raiz, raiz(palabra), maximo) <= maximo) return NIVEL_APROXIMADO;
@@ -431,6 +446,7 @@ function afinidad(e: Entrada, terminos: readonly Termino[]): number {
 
 const PUNTAJE_POR_NIVEL: Readonly<Record<number, number>> = {
   [NIVEL_NOMBRE]: 25,
+  [NIVEL_CATEGORIA]: 24,
   [NIVEL_MARCA_O_CODIGO]: 22,
   [NIVEL_EXTRA]: 20,
   [NIVEL_APROXIMADO]: 17,
@@ -706,12 +722,12 @@ const PUNTAJE_SOLO_FILTROS = 20;
 function corregir(
   productos: readonly ProductoBuscable[],
   terminos: readonly Termino[],
+  enCatalogo: ReadonlySet<Termino>,
 ): string | null {
   const vocabulario = vocabularioDe(productos);
   let cambio = false;
   const palabras = terminos.map((t) => {
-    if (!t.tolerable) return t.texto;
-    if (productos.some((p) => nivelExacto(entradaDe(p), t) > 0)) return t.texto;
+    if (!t.tolerable || enCatalogo.has(t)) return t.texto;
     const maximo = errorMaximo(t.raiz.length);
     let mejor: string | null = null;
     let mejorDistancia = maximo + 1;
@@ -800,11 +816,17 @@ export function buscar(
     };
   }
 
-  const correccion = corregir(productos, terminos);
+  // En todo el catálogo, no solo en lo que pasó los filtros: una palabra bien
+  // escrita lo sigue estando aunque el filtro deje fuera a quien la trae.
+  const enCatalogo = new Set(
+    terminos.filter((t) => productos.some((p) => nivelExacto(entradaDe(p), t) > 0)),
+  );
+  const conErrores = (e: Entrada, t: Termino) => nivelConErrores(e, t, enCatalogo);
+  const correccion = corregir(productos, terminos, enCatalogo);
 
   const aproximados: Puntuado[] = [];
   for (const e of lista) {
-    const nivel = nivelDeProducto(e, terminos, nivelConErrores);
+    const nivel = nivelDeProducto(e, terminos, conErrores);
     if (nivel > 0) aproximados.push({ producto: e.producto, puntaje: 10 + nivel });
   }
   if (aproximados.length > 0) {
@@ -818,10 +840,28 @@ export function buscar(
   }
 
   if (terminos.length > 1) {
+    // La palabra que dice qué producto es («pantalla», «bocinas») pesa más que
+    // el número o la medida que lo acota: con «pantalla 10» van primero las
+    // pantallas, aunque ninguna sea de 10", y después lo que solo trae el 10.
+    // A igual cuenta, el que coincide más arriba (nombre antes que specs).
     const parciales: Puntuado[] = [];
     for (const e of lista) {
-      const aciertos = terminos.filter((t) => nivelConErrores(e, t) > 0).length;
-      if (aciertos > 0) parciales.push({ producto: e.producto, puntaje: aciertos });
+      let palabras = 0;
+      let numeros = 0;
+      let niveles = 0;
+      for (const t of terminos) {
+        const nivel = conErrores(e, t);
+        if (nivel === 0) continue;
+        if (t.medida || t.numero) numeros++;
+        else palabras++;
+        niveles += nivel;
+      }
+      if (palabras + numeros > 0) {
+        parciales.push({
+          producto: e.producto,
+          puntaje: palabras * 10000 + numeros * 100 + niveles,
+        });
+      }
     }
     if (parciales.length > 0) {
       return {
