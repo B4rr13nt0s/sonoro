@@ -7,10 +7,28 @@
 import { normalizar } from "../busqueda/busqueda.ts";
 import type { Tema } from "./tipos.ts";
 
+interface Consulta {
+  consulta: string;
+  visible: string;
+}
+
 export type Intencion =
   | { tipo: "saludo" }
   | { tipo: "recomendacion" }
-  | { tipo: "tema"; tema: Tema }
+  | {
+      tipo: "tema";
+      tema: Tema;
+      /**
+       * Presente solo cuando el tema salió de una palabra AMBIGUA y el texto
+       * trae además otras palabras de contenido: las consultas que el motor
+       * prueba en el catálogo, en este orden, antes de contestar el tema.
+       * Cada una va normalizada (para buscar) y tal como la escribió el
+       * cliente (para mostrar). La primera es el texto entero; la segunda, el
+       * texto sin la palabra del tema, porque «teléfono» no aparece en la
+       * ficha de un radio con CarPlay y con ella la búsqueda nunca es exacta.
+       */
+      ambigua?: readonly Consulta[];
+    }
   | { tipo: "busqueda"; consulta: string };
 
 /** El texto entero, sin puntuación, es uno de estos. */
@@ -56,13 +74,72 @@ const TEMAS: readonly { tema: Tema; palabras: readonly string[]; salvo?: readonl
     // «kits de instalación» es un producto, no la pregunta por el servicio.
     salvo: ["kit", "kits"],
   },
-  { tema: "cuotas", palabras: ["cuotas", "pagos", "financiamiento", "visacuotas", "tarjeta"] },
+  { tema: "cuotas", palabras: ["cuotas", "financiamiento", "visacuotas"] },
   {
     tema: "como_pedir",
     palabras: ["como compro", "como pido", "como pago", "como hago el pedido", "pagar en linea"],
   },
-  { tema: "contacto", palabras: ["direccion", "donde estan", "ubicados", "telefono", "correo"] },
+  { tema: "contacto", palabras: ["donde estan", "ubicados"] },
 ];
+
+/**
+ * Palabras de tema que también son palabras corrientes de una pregunta por un
+ * producto: «radio con carplay para el teléfono» (teléfono es el aparato que
+ * se conecta), «tarjeta de sonido» (tarjeta no es la de crédito). Solo ganan
+ * si el texto no trae nada más que preguntar; si trae, el motor prueba primero
+ * la búsqueda y, si encuentra productos, deja el tema como botón. Las de
+ * `TEMAS` son inequívocas y ganan siempre. Se prueban después de aquellas.
+ */
+const TEMAS_AMBIGUOS: readonly { tema: Tema; palabras: readonly string[] }[] = [
+  { tema: "cuotas", palabras: ["pagos", "tarjeta"] },
+  { tema: "contacto", palabras: ["direccion", "telefono", "correo"] },
+];
+
+/**
+ * Palabras de relleno de una pregunta («cuál es su teléfono», «número de
+ * correo»): no cuentan como contenido al decidir si una palabra ambigua va
+ * sola. Verbos como «aceptan» o «tienen» van aquí porque preguntan por el
+ * tema, no por un producto.
+ */
+const RELLENO = new Set([
+  "el",
+  "la",
+  "los",
+  "las",
+  "un",
+  "una",
+  "cual",
+  "cuales",
+  "es",
+  "son",
+  "su",
+  "sus",
+  "mi",
+  "me",
+  "de",
+  "del",
+  "en",
+  "con",
+  "para",
+  "por",
+  "y",
+  "o",
+  "a",
+  "que",
+  "numero",
+  "aceptan",
+  "aceptas",
+  "reciben",
+  "manejan",
+  "dan",
+  "pueden",
+  "puedo",
+  "pasar",
+  "pasan",
+  "dame",
+  "dime",
+  "favor",
+]);
 
 /** Fórmulas de saludo que abren un mensaje y se quitan antes de buscar. */
 const SALUDOS_DE_APERTURA = [
@@ -160,12 +237,28 @@ function quitarAlInicio(
  * normalizado (para buscar) y tal como lo escribió el cliente (para mostrarlo
  * y mandarlo por WhatsApp).
  */
-function despojar(texto: string): { consulta: string; visible: string } {
+function despojar(texto: string): Consulta {
   const originales = sinPuntuacion(texto).split(/\s+/).filter(Boolean);
   const normalizadas = originales.map(normalizar);
   quitarAlInicio(originales, normalizadas, APERTURAS);
   quitarAlInicio(originales, normalizadas, ARTICULOS);
   return { consulta: normalizadas.join(" "), visible: originales.join(" ") };
+}
+
+/**
+ * La consulta sin las palabras del tema, y sin el relleno que quedó colgando
+ * en los bordes («radio con carplay para el teléfono» → «radio con carplay»).
+ */
+function sinPalabras(despojado: Consulta, quitar: readonly string[]): Consulta {
+  const visibles = despojado.visible.split(" ");
+  const normalizadas = despojado.consulta.split(" ");
+  const quedan = normalizadas.flatMap((p, i) => (quitar.includes(p) ? [] : [i]));
+  while (quedan.length > 0 && RELLENO.has(normalizadas[quedan[0]])) quedan.shift();
+  while (quedan.length > 0 && RELLENO.has(normalizadas[quedan[quedan.length - 1]])) quedan.pop();
+  return {
+    consulta: quedan.map((i) => normalizadas[i]).join(" "),
+    visible: quedan.map((i) => visibles[i]).join(" "),
+  };
 }
 
 /** La consulta como la escribió el cliente: con mayúsculas, acentos y ñ. */
@@ -186,7 +279,20 @@ export function detectarIntencion(texto: string): Intencion {
     if (vocabulario.some((p) => contiene(palabras, p))) return { tipo: "tema", tema };
   }
 
-  const { consulta } = despojar(texto);
+  const despojado = despojar(texto);
+
+  for (const { tema, palabras: vocabulario } of TEMAS_AMBIGUOS) {
+    const nombradas = vocabulario.filter((p) => contiene(palabras, p));
+    if (nombradas.length === 0) continue;
+    const otras = despojado.consulta
+      .split(" ")
+      .filter((p) => p !== "" && !nombradas.includes(p) && !RELLENO.has(p));
+    return otras.length === 0
+      ? { tipo: "tema", tema }
+      : { tipo: "tema", tema, ambigua: [despojado, sinPalabras(despojado, nombradas)] };
+  }
+
+  const { consulta } = despojado;
   if (consulta === "") return { tipo: "saludo" };
   return { tipo: "busqueda", consulta };
 }

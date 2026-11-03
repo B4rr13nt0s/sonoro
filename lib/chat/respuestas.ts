@@ -57,6 +57,17 @@ export function opcionesHablar(): Bloque {
   return { tipo: "opciones", opciones: [OPCION_HABLAR] };
 }
 
+/**
+ * «Hablar con Sonoro» precedido del tema que una palabra ambigua dejó de lado
+ * («Ver contacto»): la respuesta lleva productos, pero el tema no se pierde.
+ */
+export function opcionesTemaYHablar(tema: Tema): Bloque {
+  return {
+    tipo: "opciones",
+    opciones: [{ id: tema, etiqueta: `Ver ${TEMA_NOMBRE[tema]}` }, OPCION_HABLAR],
+  };
+}
+
 export function bloquesDeInicio(): Bloque[] {
   return [
     { tipo: "texto", texto: TEXTO_INICIO },

@@ -17,6 +17,7 @@ import {
   TEMA_NOMBRE,
   bloquesDeTema,
   opcionesHablar,
+  opcionesTemaYHablar,
 } from "./respuestas.ts";
 import {
   MAX_CONSULTA,
@@ -80,6 +81,7 @@ function responderBusqueda(
   visible: string,
   contexto: Contexto,
   verTodosHref?: string,
+  opcionTema?: Tema,
 ): Respuesta {
   const estado: Estado = { ultimaConsulta: visible, ultimoTema: null };
   const { productos } = contexto;
@@ -131,7 +133,7 @@ function responderBusqueda(
     total: resultado.productos.length,
     verTodosHref: verTodosHref ?? `/buscar?${new URLSearchParams({ q: visible })}`,
   });
-  bloques.push(opcionesHablar());
+  bloques.push(opcionTema ? opcionesTemaYHablar(opcionTema) : opcionesHablar());
   return {
     estado,
     bloques,
@@ -187,6 +189,30 @@ function responderCategoria(
   };
 }
 
+/**
+ * Un tema que salió de una palabra ambigua («radio con carplay para el
+ * teléfono»): se prueba la búsqueda con cada consulta candidata y, solo si da
+ * resultados EXACTOS, se responde con los productos y el tema queda como
+ * botón, para que no se pierda en silencio. Con resultados aproximados o
+ * parciales, sin resultados o sin catálogo, se responde el tema como siempre.
+ */
+function responderTemaAmbiguo(
+  tema: Tema,
+  candidatas: readonly { consulta: string; visible: string }[],
+  contexto: Contexto,
+): Respuesta {
+  const { productos } = contexto;
+  if (productos !== null) {
+    for (const { consulta, visible } of candidatas) {
+      const resultado = buscar(productos, consulta, compararRelevancia);
+      if (resultado.modo === "exacta" && resultado.productos.length > 0) {
+        return responderBusqueda(consulta, visible, contexto, undefined, tema);
+      }
+    }
+  }
+  return responderTema(tema, contexto);
+}
+
 function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respuesta {
   if (id === "buscar") {
     return { estado, bloques: [{ tipo: "texto", texto: TEXTO_PEDIR_BUSQUEDA }], evento: null };
@@ -237,7 +263,9 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
         evento: { evento: "recomendacion", consulta: texto },
       };
     case "tema":
-      return responderTema(intencion.tema, contexto);
+      return intencion.ambigua
+        ? responderTemaAmbiguo(intencion.tema, intencion.ambigua, contexto)
+        : responderTema(intencion.tema, contexto);
     case "busqueda":
       return responderBusqueda(intencion.consulta, consultaVisible(texto), contexto);
   }
@@ -245,7 +273,8 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
 
 /**
  * ¿La respuesta a esta entrada puede usar productos? Solo la búsqueda de
- * texto y las opciones de categoría y marca. Saludos, recomendaciones, temas
+ * texto (y un tema de palabra ambigua, que la prueba primero) y las opciones de
+ * categoría y marca. Saludos, recomendaciones, temas
  * de política y «Hablar con Sonoro» responden igual con el catálogo cargado o
  * sin él, así que no hay por qué hacerlos esperar a la red (spec: los temas
  * siguen funcionando sin catálogo).
@@ -255,5 +284,8 @@ export function necesitaCatalogo(entrada: Entrada): boolean {
     return entrada.id.startsWith("categoria:") || entrada.id.startsWith("marca:");
   }
   const texto = cortar(entrada.texto.trim()).trimEnd();
-  return texto !== "" && detectarIntencion(texto).tipo === "busqueda";
+  if (texto === "") return false;
+  const intencion = detectarIntencion(texto);
+  // Un tema de palabra ambigua prueba la búsqueda antes de contestar.
+  return intencion.tipo === "busqueda" || (intencion.tipo === "tema" && !!intencion.ambigua);
 }

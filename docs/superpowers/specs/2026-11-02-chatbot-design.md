@@ -191,11 +191,25 @@ vive en el mismo archivo, como `sinonimos.ts`, y se compara sobre
 |---|---|---|---|
 | 1 | es un saludo o agradecimiento, solo | `saludo` | «hola», «buenas», «gracias» |
 | 2 | pide criterio | `recomendacion` | «qué me recomiendan», «cuál es mejor», «cuál me conviene», «qué le queda a mi carro» |
-| 3 | nombra un tema de política | `tema:<id>` | envío/envían/entregan/flete → `envios`; garantía/se arruinó/defecto → `garantia`; instalan/instalación/colocan → `instalacion`; cuotas/pagos/financiamiento/tarjeta/visacuotas → `cuotas`; cómo compro/cómo pido/cómo pago/pagar en línea → `como_pedir`; dirección/dónde están/teléfono/correo → contacto (ver abajo) |
+| 3 | nombra un tema de política | `tema:<id>` | envío/envían/entregan/flete → `envios`; garantía/se arruinó/defecto → `garantia`; instalan/instalación/colocan → `instalacion`; cuotas/financiamiento/visacuotas → `cuotas`; cómo compro/cómo pido/cómo pago/pagar en línea → `como_pedir`; dónde están/ubicados → contacto (ver abajo). Más las palabras ambiguas de abajo, que solo ganan si van solas |
 | 4 | cualquier otra cosa | `busqueda` | «sub 12 2 ohm», «tienen memphis?», «cuánto cuesta el SQ12» |
 
 Si un texto nombra un tema y un producto a la vez («¿el SQ12 trae
-garantía?»), gana el tema: la garantía no cambia por producto. En `busqueda`
+garantía?»), gana el tema: la garantía no cambia por producto. **Salvo las
+palabras ambiguas** (`TEMAS_AMBIGUOS`): *teléfono, correo, dirección,
+tarjeta, pagos*, que también son palabras corrientes de una pregunta por un
+producto («radio con carplay para el teléfono», «tarjeta de sonido»). Las
+demás palabras de tema son *fuertes* y ganan siempre. Una palabra ambigua gana
+cuando el texto no trae más contenido que ella («teléfono», «¿cuál es su
+correo?», «aceptan tarjeta»; los saludos, arranques, artículos y palabras de
+relleno como «cuál es su» no cuentan). Si trae más, el motor prueba la
+búsqueda —primero con el texto entero y luego sin la palabra del tema, porque
+«teléfono» no está en la ficha de un radio— y, **solo si da resultados en modo
+exacto**, responde con los productos y deja el tema como botón extra («Ver
+contacto», «Ver pagos en cuotas») junto a *Hablar con Sonoro*, para que no se
+pierda en silencio. Con resultados aproximados o parciales, sin resultados o
+con el catálogo sin cargar, se responde el tema como siempre. Por eso esa
+entrada sí espera al catálogo (`necesitaCatalogo`). En `busqueda`
 se quitan antes los arranques conversacionales («tienen», «hay», «venden»,
 «cuánto cuesta», «precio de», «busco», «quiero») y lo que queda va a
 `buscar()`. Si no queda nada, se trata como saludo.

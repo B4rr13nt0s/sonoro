@@ -189,3 +189,62 @@ test("sin nada que buscar tras el arranque es un saludo", () => {
     assert.deepEqual(detectarIntencion(texto), { tipo: "saludo" }, JSON.stringify(texto));
   }
 });
+
+test("palabra ambigua sola: sigue siendo el tema, sin pedir contexto", () => {
+  for (const [texto, tema] of [
+    ["teléfono", "contacto"],
+    ["¿cuál es su correo?", "contacto"],
+    ["cuál es su teléfono", "contacto"],
+    ["hola, ¿cuál es la dirección?", "contacto"],
+    ["número de teléfono", "contacto"],
+    ["tarjeta", "cuotas"],
+    ["¿aceptan tarjeta?", "cuotas"],
+    ["pagos", "cuotas"],
+  ] as const) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema }, texto);
+  }
+});
+
+test("palabra ambigua con más contenido: el tema lleva la consulta para probarla primero", () => {
+  assert.deepEqual(detectarIntencion("radio con carplay para el teléfono"), {
+    tipo: "tema",
+    tema: "contacto",
+    ambigua: [
+      {
+        consulta: "radio con carplay para el telefono",
+        visible: "radio con carplay para el teléfono",
+      },
+      { consulta: "radio con carplay", visible: "radio con carplay" },
+    ],
+  });
+  assert.deepEqual(detectarIntencion("Tarjeta de sonido"), {
+    tipo: "tema",
+    tema: "cuotas",
+    ambigua: [
+      { consulta: "tarjeta de sonido", visible: "Tarjeta de sonido" },
+      { consulta: "sonido", visible: "sonido" },
+    ],
+  });
+  // Los saludos y arranques se quitan de la consulta.
+  assert.deepEqual(detectarIntencion("hola, tienen radio con carplay y correo"), {
+    tipo: "tema",
+    tema: "contacto",
+    ambigua: [
+      { consulta: "radio con carplay y correo", visible: "radio con carplay y correo" },
+      { consulta: "radio con carplay", visible: "radio con carplay" },
+    ],
+  });
+});
+
+test("palabra fuerte: el tema gana aunque haya más contenido y no pide contexto", () => {
+  for (const [texto, tema] of [
+    ["envío de amplificador", "envios"],
+    ["garantía del subwoofer", "garantia"],
+    ["instalan el radio con carplay", "instalacion"],
+    ["cuotas para el teléfono", "cuotas"],
+    ["como pago el radio con carplay", "como_pedir"],
+    ["donde estan, cual es su telefono", "contacto"],
+  ] as const) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema }, texto);
+  }
+});
