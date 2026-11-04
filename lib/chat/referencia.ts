@@ -26,7 +26,8 @@ const ORDINALES: Readonly<Record<string, number>> = {
   quinta: 4,
 };
 const ULTIMO = new Set(["ultimo", "ultima"]);
-const PRONOMBRES = new Set(["ese", "este", "esa", "esta", "eso", "esto"]);
+// Sin «esta»: normalizado es también «está» («¿está disponible el SQ12?»).
+const PRONOMBRES = new Set(["ese", "este", "esa", "eso", "esto"]);
 // «lo» y «la» solo en estas frases: sueltos son artículos («y de la marca
 // memphis?» es un seguimiento, no una referencia).
 const CON_LO = ["lo quiero", "la quiero", "me lo llevo", "me la llevo", "lo compro", "la compro"];

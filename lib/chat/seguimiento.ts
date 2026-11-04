@@ -26,7 +26,29 @@ interface Opciones {
   numeroSuelto: "medida" | "canales" | null;
 }
 
-const CONECTORES = new Set(["y", "solo", "nada", "pero", "mejor", "ahora", "tambien", "entonces"]);
+const CONECTORES = new Set([
+  // «sí, de 10», «ok, solo Memphis»: la confirmación abre el seguimiento.
+  "si",
+  "ok",
+  "okay",
+  "dale",
+  "claro",
+  "va",
+  "vale",
+  "listo",
+  "perfecto",
+  // «está bien, y de 10?»
+  "esta",
+  "bien",
+  "y",
+  "solo",
+  "nada",
+  "pero",
+  "mejor",
+  "ahora",
+  "tambien",
+  "entonces",
+]);
 const RELLENO = new Set([
   "muestrame",
   "ensename",
@@ -87,11 +109,16 @@ const MAS = ["muestrame mas", "ver mas", "hay mas", "mas", "otros", "otras", "si
 const MAX_SUELTO = 20;
 
 function limpio(texto: string): string {
-  return normalizar(texto)
-    .replace(/[¿?¡!,;:]/g, " ")
-    .replace(/\.(?=\s|$)/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  return (
+    normalizar(texto)
+      // La coma de miles se queda («menos de 2,000»): `interpretar` la entiende.
+      .replace(/(^|\D),/g, "$1 ")
+      .replace(/,(\D|$)/g, " $1")
+      .replace(/[¿?¡!;:]/g, " ")
+      .replace(/\.(?=\s|$)/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+  );
 }
 
 /** Quita `frase` de `texto` (con espacios alrededor) si está; dice si estaba. */
@@ -147,7 +174,10 @@ export function interpretarSeguimiento(texto: string, opciones: Opciones): Cambi
   if (DISPONIBLES.some((f) => quitarFrase(resto, f))) {
     cambios.push({ tipo: "acote", acote: { campo: "disponibilidad" } });
   }
-  if (MAS.some((f) => quitarFrase(resto, f))) cambios.push({ tipo: "mas" });
+  // «más» se quita siempre, pero solo pide la página siguiente si es lo único
+  // que se pidió: en «nada más Memphis» o «más de Memphis» acompaña a otro
+  // cambio, y pasar de página saltaría los primeros cinco.
+  const pideMas = MAS.some((f) => quitarFrase(resto, f));
 
   const palabras = resto.valor.split(" ").filter(Boolean);
   const quedan: string[] = [];
@@ -177,6 +207,7 @@ export function interpretarSeguimiento(texto: string, opciones: Opciones): Cambi
       quedan.push(p);
     }
   }
+  if (pideMas && cambios.length === 0) cambios.push({ tipo: "mas" });
   return quedan.length === 0 && cambios.length > 0 ? cambios : null;
 }
 
@@ -187,11 +218,18 @@ function esMedida(palabra: string): boolean {
   return n > 0 && n <= MAX_SUELTO;
 }
 
-/** La consulta sin sus medidas escritas («sub 12» → «sub»), para pasarlas a acote. */
+/**
+ * La consulta sin sus medidas ni canales escritos («sub 12» → «sub»,
+ * «amplificador de 4 canales» → «amplificador de»), para pasarlos a acote.
+ */
 export function sinMedidas(consulta: string): string {
-  return canonizar(normalizar(consulta))
-    .split(/\s+/)
-    .filter((p) => p && !esMedida(p))
+  const palabras = canonizar(normalizar(consulta)).split(/\s+/).filter(Boolean);
+  return palabras
+    .filter((p, i) => {
+      if (esMedida(p) || /^\d+ch$/.test(p)) return false;
+      // `canonizar` deja «4ch canales»: la palabra va con el número.
+      return !(p === "canales" && /^\d+ch$/.test(palabras[i - 1] ?? ""));
+    })
     .join(" ");
 }
 

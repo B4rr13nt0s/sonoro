@@ -189,3 +189,17 @@ test("sinMedidas", () => {
   assert.equal(sinMedidas("subwoofer de 12 pulgadas"), "subwoofer de");
   assert.equal(sinMedidas("mjp1244"), "mjp1244");
 });
+
+test("revisión I3: los canales escritos en la base pasan a acote", () => {
+  const amp: BusquedaAcotable = {
+    base: {
+      tipo: "texto",
+      consulta: "amplificador de 4 canales",
+      visible: "amplificador de 4 canales",
+    },
+    acotes: [],
+  };
+  const nueva = aplicarCambios(amp, [{ tipo: "acote", acote: { campo: "canales", canales: 2 } }]);
+  assert.equal(nueva.base.tipo === "texto" && nueva.base.consulta, "amplificador de");
+  assert.equal(sinMedidas("amplificador de 4 canales"), "amplificador de");
+});

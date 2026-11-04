@@ -13,7 +13,7 @@ import { CATEGORIAS_SITIO } from "../catalog/categorias.ts";
 // Las fórmulas de saludo que abren un mensaje y se quitan antes de buscar.
 import { SALUDOS_DE_APERTURA, detectarCharla, esVago, type ClaseCharla } from "./charla.ts";
 import { PALABRAS_DE_PREGUNTA, VOCABULARIO_DATOS, type Campo } from "./datos.ts";
-import { encontrarReferencia } from "./referencia.ts";
+import { accionDe, encontrarReferencia } from "./referencia.ts";
 import { interpretarSeguimiento, type Cambio } from "./seguimiento.ts";
 import type { Contexto, Estado, Tema } from "./tipos.ts";
 
@@ -337,6 +337,12 @@ function detectarDato(texto: string): Extract<Intencion, { tipo: "dato" }> | nul
   };
 }
 
+/** ¿Lo que queda tras quitar la referencia pregunta por el producto referido, y por nada más? */
+function preguntaPorReferido(resto: string): boolean {
+  if (resto === "" || accionDe(resto) !== null) return true;
+  return detectarDato(resto)?.consulta === "";
+}
+
 /** La consulta como la escribió el cliente: con mayúsculas, acentos y ñ. */
 export function consultaVisible(texto: string): string {
   return despojar(texto).visible;
@@ -394,7 +400,12 @@ export function detectarIntencion(
 
   if (estado?.mostrados?.length) {
     const referencia = encontrarReferencia(texto, estado);
-    if (referencia) return { tipo: "referencia", ...referencia };
+    // Lo demás del mensaje tiene que preguntar POR ese producto: nada («¿y el
+    // segundo?»), un pedido de carrito o un dato sin otro producto. «busco un
+    // amplificador para este carro» o «espera un segundo» siguen su camino.
+    if (referencia && preguntaPorReferido(referencia.resto)) {
+      return { tipo: "referencia", ...referencia };
+    }
   }
 
   if (estado?.busqueda) {

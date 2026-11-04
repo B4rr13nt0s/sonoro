@@ -1087,3 +1087,38 @@ test("vago: algo para mi carro pregunta el tipo de equipo, y la categoría lo co
   assert.equal(textos(r2.bloques)[0], "Estos son los 8 resultados.");
   assert.equal(skusDe(r2).length, 5);
 });
+
+// ---------------------------------------------------------------------------
+// Hallazgos de la revisión final
+// ---------------------------------------------------------------------------
+
+test("revisión C1: «está» y «este carro» no son referencias al producto en foco", () => {
+  const [, r2] = conversar(["¿cuánto cuesta el G1?", "¿está disponible el G5?"]);
+  assert.ok(textos(r2.bloques).some((t) => t.startsWith('Subwoofer KBT de 10" G5: ')));
+  const [, r3] = conversar(["G1", "busco un subwoofer para este carro"]);
+  assert.ok(skusDe(r3).length > 1);
+  const [, , r4] = conversar(["subwoofers", "el primero", "está bien, y de 10?"]);
+  assert.equal(textos(r4.bloques)[0], 'Ahora de 10". Quedan 2.');
+});
+
+test("revisión M2/C1: un ordinal dentro de otra frase no es referencia", () => {
+  const [, r2] = conversar(["subwoofers", "espera un segundo"]);
+  assert.equal(r2.estado.enfoque ?? null, null);
+});
+
+test("revisión I1: «menos de 2,000» acota la búsqueda guardada", () => {
+  const [, r2] = conversar(["subwoofers", "menos de 2,000"]);
+  assert.equal(textos(r2.bloques)[0], "Ahora hasta Q\u00a02,000.00. Quedan 5.");
+});
+
+test("revisión I2: «más» dentro de un filtro no pasa de página", () => {
+  for (const t of ["nada más memphis", "quiero ver más de memphis", "otros memphis"]) {
+    const [, r2] = conversar(["subwoofers", t]);
+    assert.equal(textos(r2.bloques)[0], "Ahora solo Memphis. Quedan 5.", t);
+  }
+});
+
+test("revisión I4: «sí, de 10» sigue la conversación", () => {
+  const [, r2] = conversar(["subwoofers", "sí, de 10"]);
+  assert.equal(textos(r2.bloques)[0], 'Ahora de 10". Quedan 2.');
+});
