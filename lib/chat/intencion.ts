@@ -407,7 +407,8 @@ export function detectarIntencion(
     if (cambios) return { tipo: "seguimiento", cambios };
   }
 
-  if (esVago(texto)) return { tipo: "vago" };
+  // «busco algo para mi carro»: el arranque se quita antes de comparar.
+  if (esVago(texto) || esVago(despojado.consulta)) return { tipo: "vago" };
 
   const dato = detectarDato(texto);
   if (dato) return dato;

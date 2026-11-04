@@ -36,8 +36,8 @@ pero los tipos ya lo contemplan (ver § Canal WhatsApp).
 ### Fuera de alcance
 
 - El bot de WhatsApp en sí.
-- Memoria de contexto entre mensajes («¿y más barato?» no refina la búsqueda
-  anterior): sin LLM, adivinar a qué se refiere sería decidir por el cliente.
+- Memoria de contexto entre mensajes: ver
+  `2026-11-03-chat-conversacion-design.md`.
 - Persistir la conversación entre recargas.
 - Cualquier respuesta sobre lo que está en «Decisiones abiertas» de CLAUDE.md
   (plazo de garantía, qué es una instalación compleja, precios de

@@ -438,3 +438,8 @@ test("vago", () => {
   assert.deepEqual(detectarIntencion("algo para mi carro"), { tipo: "vago" });
   assert.equal(detectarIntencion("bajo de 12").tipo, "busqueda");
 });
+
+test("vago: también tras un arranque («busco algo para mi carro»)", () => {
+  assert.deepEqual(detectarIntencion("busco algo para mi carro"), { tipo: "vago" });
+  assert.deepEqual(detectarIntencion("quiero mejorar el sonido de mi carro"), { tipo: "vago" });
+});
