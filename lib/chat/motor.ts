@@ -35,7 +35,15 @@ import {
   type Campo,
   type CampoSpec,
 } from "./datos.ts";
-import { fraseResultados } from "./charla.ts";
+import {
+  TEXTOS_CHARLA,
+  TEXTO_QUE_MAS,
+  TEXTO_TIPO_EQUIPO,
+  fraseResultados,
+  pregunta,
+  preguntaVaga,
+  type ClaseCharla,
+} from "./charla.ts";
 import { consultaVisible, detectarIntencion } from "./intencion.ts";
 import { accionDe } from "./referencia.ts";
 import { aplicarCambios, fraseCambios, type Cambio } from "./seguimiento.ts";
@@ -161,9 +169,21 @@ function responderBusqueda(
       tipo: "texto",
       texto: `Esto encontramos para «${visible}». Si preguntabas por ${TEMA_NOMBRE[opcionTema]}, está abajo.`,
     });
-  } else if (resultado.modo === "exacta") {
+  }
+  // Muchos resultados y nada que los acote en lo escrito: se pregunta lo que
+  // falta (sin números en la consulta, que ya serían una medida o un rango).
+  const pendiente =
+    !opcionTema && resultado.modo === "exacta" && !/\d/.test(consulta)
+      ? preguntaPendiente(resultado.productos)
+      : null;
+  if (!opcionTema && resultado.modo === "exacta") {
     // Lo aproximado, lo cercano y lo parcial ya traen su línea de avisos.
-    bloques.push({ tipo: "texto", texto: fraseResultados(resultado.productos.length, turno) });
+    bloques.push({
+      tipo: "texto",
+      texto: pendiente
+        ? preguntaVaga(resultado.productos.length, pendiente)
+        : fraseResultados(resultado.productos.length, turno),
+    });
   }
   const filtros = bloqueFiltros(resultado);
   if (filtros) bloques.push(filtros);
@@ -177,14 +197,18 @@ function responderBusqueda(
   // Lo que coincide solo con alguna palabra no se acota: los botones
   // partirían productos que no son lo que se buscó.
   const acotable = resultado.modo !== "parcial";
-  const acotar = acotable ? bloqueAcotar(resultado.productos, contexto, []) : null;
+  const acotar = acotable ? bloqueAcotar(resultado.productos, contexto, [], pendiente) : null;
   if (acotar) bloques.push(acotar);
   bloques.push(opcionTema ? opcionesTemaYHablar(opcionTema) : opcionesHablar());
   return {
     // La búsqueda se recuerda para acotarla, con botones o escribiendo («y de
     // 10?»). La parcial no: no es lo que se buscó.
     estado: acotable
-      ? { ...estado, busqueda: { base: { tipo: "texto", consulta, visible }, acotes: [] } }
+      ? {
+          ...estado,
+          busqueda: { base: { tipo: "texto", consulta, visible }, acotes: [] },
+          ...(pendiente ? { pendiente } : {}),
+        }
       : estado,
     bloques,
     evento: {
@@ -231,10 +255,13 @@ function bloqueAcotar(
   lista: readonly ProductoBuscable[],
   contexto: Contexto,
   elegidos: readonly Acote["campo"][],
+  primero?: Acote["campo"] | null,
 ): Bloque | null {
   if (lista.length <= MAX_PRODUCTOS_CHAT) return null;
   const grupos = gruposDeAcote(lista, contexto.marcas, elegidos);
   if (grupos.length === 0) return null;
+  // El grupo de la pregunta pendiente va primero («¿Qué medida buscas?»).
+  if (primero) grupos.sort((a, b) => Number(b.campo === primero) - Number(a.campo === primero));
   return {
     tipo: "acotar",
     grupos: grupos.map((g) => ({
@@ -258,6 +285,93 @@ function productosDeBase(
     ? productos.filter((p) => perteneceACategoria(p, categoria.nombre)).sort(compararRelevancia)
     : [];
   return { lista, resultado: null };
+}
+
+/** Más que esto, y sin nada que lo acote en lo escrito, el chat pregunta. */
+const UMBRAL_PREGUNTA = 20;
+
+/**
+ * Qué preguntar ante una búsqueda de muchos resultados: la medida si traen
+ * dos o más, si no los canales, si no la categoría. `null` con pocos
+ * resultados o sin nada que preguntar.
+ */
+function preguntaPendiente(
+  lista: readonly ProductoBuscable[],
+  conCategoria = true,
+): "medida" | "canales" | "categoria" | null {
+  if (lista.length <= UMBRAL_PREGUNTA) return null;
+  if (medidasDe(lista).length >= 2) return "medida";
+  if (canalesDe(lista).length >= 2) return "canales";
+  const categorias = CATEGORIAS_SITIO.filter((c) =>
+    lista.some((p) => perteneceACategoria(p, c.nombre)),
+  );
+  return conCategoria && categorias.length >= 2 ? "categoria" : null;
+}
+
+/** Las categorías del sitio como botones, más «Hablar con Sonoro». */
+function opcionesDeCategorias(): Bloque {
+  const hablar = opcionesHablar();
+  return {
+    tipo: "opciones",
+    opciones: [
+      ...CATEGORIAS_SITIO.map((c) => ({ id: `categoria:${c.slug}` as const, etiqueta: c.nombre })),
+      ...(hablar.tipo === "opciones" ? hablar.opciones : []),
+    ],
+  };
+}
+
+/**
+ * La charla (spec 2026-11-03 § Charla): no registra evento y no toca la
+ * memoria, salvo «adiós», que la borra. Un «ok» con una pregunta pendiente
+ * la repite, con sus botones.
+ */
+function responderCharla(estado: Estado, clase: ClaseCharla, contexto: Contexto): Respuesta {
+  const texto = (t: string): Bloque => ({ tipo: "texto", texto: t });
+  switch (clase) {
+    case "adios":
+      return { estado: ESTADO_INICIAL, bloques: [texto(TEXTOS_CHARLA.adios)], evento: null };
+    case "quien_eres":
+      return {
+        estado,
+        bloques: [texto(TEXTOS_CHARLA.quien_eres), opcionesHablar()],
+        evento: null,
+      };
+    case "groseria": {
+      const menu = bloquesDeInicio().filter((b) => b.tipo === "opciones");
+      return { estado, bloques: [texto(TEXTOS_CHARLA.groseria), ...menu], evento: null };
+    }
+    case "confirmacion": {
+      const { pendiente, busqueda } = estado;
+      if (pendiente === "categoria" && !busqueda) {
+        return {
+          estado,
+          bloques: [texto(TEXTO_TIPO_EQUIPO), opcionesDeCategorias()],
+          evento: null,
+        };
+      }
+      if (pendiente && busqueda && contexto.productos !== null) {
+        const { acotada } = listaDe(busqueda, contexto.productos, contexto.marcas);
+        const acotar = bloqueAcotar(acotada, contexto, elegidosDe(busqueda), pendiente);
+        return {
+          estado,
+          bloques: [texto(pregunta(pendiente)), ...(acotar ? [acotar] : [])],
+          evento: null,
+        };
+      }
+      return { estado, bloques: [texto(TEXTO_QUE_MAS)], evento: null };
+    }
+    default:
+      return { estado, bloques: [texto(TEXTOS_CHARLA[clase])], evento: null };
+  }
+}
+
+/** Un pedido de equipo sin decir cuál: se pregunta el tipo, con las categorías. */
+function responderVago(texto: string): Respuesta {
+  return {
+    estado: { ultimaConsulta: texto, ultimoTema: null, pendiente: "categoria" },
+    bloques: [{ tipo: "texto", texto: TEXTO_TIPO_EQUIPO }, opcionesDeCategorias()],
+    evento: null,
+  };
 }
 
 /** Lo que se muestra como búsqueda base: lo escrito, o el nombre de la categoría. */
@@ -662,14 +776,21 @@ function responderCategoria(
   if (lista.length === 0)
     return responderBusqueda(categoria.nombre, categoria.nombre, contexto, href);
 
-  const acotar = bloqueAcotar(lista, contexto, ["categoria"]);
+  const pendiente = preguntaPendiente(lista, false);
+  const acotar = bloqueAcotar(lista, contexto, ["categoria"], pendiente);
   return {
     estado: {
       ...estado,
       busqueda: { base: { tipo: "categoria", slug: categoria.slug }, acotes: [] },
+      ...(pendiente ? { pendiente } : {}),
     },
     bloques: [
-      { tipo: "texto", texto: fraseResultados(lista.length, turno) },
+      {
+        tipo: "texto",
+        texto: pendiente
+          ? preguntaVaga(lista.length, pendiente)
+          : fraseResultados(lista.length, turno),
+      },
       bloqueProductos(lista, href, null),
       ...(acotar ? [acotar] : []),
       opcionesHablar(),
@@ -814,13 +935,23 @@ function responderSinMemoria(estado: Estado, entrada: Entrada, contexto: Context
       return responderSeguimiento(estado, intencion.cambios, contexto);
     case "referencia":
       return responderReferencia(estado, intencion.sku, intencion.resto, texto, contexto);
-    // Charla, pregunta pendiente y pedidos vagos: tarea 8 del plan
-    // (docs/superpowers/plans/2026-11-03-chat-conversacion.md); mientras
-    // tanto, el menú de inicio.
     case "charla":
-    case "respuesta_pendiente":
+      return responderCharla(estado, intencion.clase, contexto);
     case "vago":
-      return saludo(estado);
+      return responderVago(texto);
+    case "respuesta_pendiente": {
+      // Con una búsqueda guardada, la categoría la acota; sin ella (tras «algo
+      // para mi carro»), es la categoría entera.
+      if (estado.busqueda) {
+        return responderSeguimiento(
+          estado,
+          [{ tipo: "acote", acote: { campo: "categoria", slug: intencion.categoria } }],
+          contexto,
+        );
+      }
+      const categoria = CATEGORIAS_SITIO.find((c) => c.slug === intencion.categoria);
+      return categoria ? responderCategoria(categoria, contexto, estado.turno) : saludo(estado);
+    }
   }
 }
 

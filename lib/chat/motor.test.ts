@@ -998,3 +998,92 @@ test("conversación: un botón de acotar responde igual que el texto", () => {
   const [, porBoton] = conversar(["subwoofers", { tipo: "opcion", id: "acotar:medida:12" }]);
   assert.equal(textos(porBoton.bloques)[0], 'Ahora de 12". Quedan 4.');
 });
+
+// ---------------------------------------------------------------------------
+// Charla y preguntas cuando es vago (spec 2026-11-03)
+// ---------------------------------------------------------------------------
+
+const MEDIDAS_BOCINA = [4, 5.25, 6.5, 6.5, 6.5, 8];
+// Veintidós bocinas: más de 20, con varias medidas.
+const MUCHAS: Contexto = {
+  ...GRANDE,
+  productos: Array.from({ length: 22 }, (_, i) => {
+    const pulgadas = MEDIDAS_BOCINA[i % MEDIDAS_BOCINA.length];
+    return producto(`B${i + 1}`, `Bocinas de ${pulgadas}" B${i + 1}`, "Bocinas", {
+      pulgadas,
+      claves: `${pulgadas}"`,
+      precioCents: 10000 * (i + 1),
+    });
+  }),
+};
+
+test("charla: gracias en medio no borra la búsqueda", () => {
+  const [, r2, r3] = conversar(["subwoofers", "gracias", "y de 10?"]);
+  assert.deepEqual(textos(r2.bloques), ["Con gusto. ¿Te ayudo con algo más?"]);
+  assert.equal(textos(r3.bloques)[0], 'Ahora de 10". Quedan 2.');
+});
+
+test("charla: ¿eres un bot? dice qué es y ofrece a una persona", () => {
+  const [r] = conversar(["¿eres un bot?"]);
+  assert.equal(
+    textos(r.bloques)[0],
+    "Soy el asistente automático de Sonoro: busco productos y respondo dudas de envíos, garantía y pagos.",
+  );
+  assert.ok(de(r.bloques, "opciones")?.opciones.some((o) => o.id === "hablar"));
+  assert.equal(r.evento, null);
+});
+
+test("charla: adiós borra la memoria", () => {
+  const [, r2] = conversar(["subwoofers", "adiós"]);
+  assert.deepEqual(textos(r2.bloques), ["Gracias por escribir. Aquí estoy si necesitas algo más."]);
+  assert.equal(r2.estado.busqueda, undefined);
+  assert.equal(r2.estado.mostrados, undefined);
+});
+
+test("charla: grosería, respuesta neutra y el menú, sin repetir la palabra", () => {
+  const [r] = conversar(["eres un idiota"]);
+  assert.equal(
+    textos(r.bloques)[0],
+    "Estoy para ayudarte a buscar productos y resolver dudas de la tienda.",
+  );
+  assert.ok(de(r.bloques, "opciones")?.opciones.some((o) => o.id === "envios"));
+  assert.ok(!JSON.stringify(r.bloques).includes("idiota"));
+});
+
+test("charla: ok sin pregunta pendiente, y no gracias", () => {
+  assert.deepEqual(textos(conversar(["ok"])[0].bloques), ["¿Qué más buscas?"]);
+  assert.deepEqual(textos(conversar(["no gracias"])[0].bloques), [
+    "Está bien. Aquí estoy si necesitas algo más.",
+  ]);
+});
+
+test("vago: más de 20 resultados pregunta la medida, y «6.5» la contesta", () => {
+  const [r1, r2] = conversar(["bocinas", "6.5"], MUCHAS);
+  assert.equal(textos(r1.bloques)[0], "Hay 22 resultados. ¿Qué medida buscas?");
+  assert.equal(r1.estado.pendiente, "medida");
+  assert.equal(de(r1.bloques, "acotar")?.grupos[0]?.titulo, "Medida");
+  assert.equal(textos(r2.bloques)[0], 'Ahora de 6.5". Quedan 11.');
+  assert.equal(r2.estado.pendiente ?? null, null);
+});
+
+test("vago: una búsqueda con medida no pregunta", () => {
+  const [r] = conversar(["bocinas 6.5"], MUCHAS);
+  assert.equal(textos(r.bloques)[0], "Encontré 11 resultados.");
+});
+
+test("vago: ok con pregunta pendiente la repite con sus botones", () => {
+  const [, r2] = conversar(["bocinas", "ok"], MUCHAS);
+  assert.equal(textos(r2.bloques)[0], "¿Qué medida buscas?");
+  assert.equal(de(r2.bloques, "acotar")?.grupos[0]?.titulo, "Medida");
+});
+
+test("vago: algo para mi carro pregunta el tipo de equipo, y la categoría lo contesta", () => {
+  const [r1, r2] = conversar(["algo para mi carro", "subwoofers"]);
+  assert.deepEqual(textos(r1.bloques), ["¿Qué tipo de equipo buscas?"]);
+  const opciones = de(r1.bloques, "opciones")?.opciones.map((o) => o.id) ?? [];
+  assert.ok(opciones.includes("categoria:subwoofers"));
+  assert.ok(opciones.includes("hablar"));
+  assert.equal(r1.estado.pendiente, "categoria");
+  assert.equal(textos(r2.bloques)[0], "Estos son los 8 resultados.");
+  assert.equal(skusDe(r2).length, 5);
+});
