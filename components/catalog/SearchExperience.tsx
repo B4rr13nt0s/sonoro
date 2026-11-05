@@ -24,6 +24,12 @@ import { formatQ } from "@/lib/format/precio.ts";
 
 import { canalesDe, etiquetaCanales, medidasDe } from "@/lib/busqueda/acotar.ts";
 import {
+  DISPONIBILIDADES,
+  SIN_FILTROS,
+  USOS_ETIQUETA,
+  type Filtros,
+} from "@/lib/busqueda/filtros-activos.ts";
+import {
   buscar,
   specsCoincidentes,
   sugerir,
@@ -44,20 +50,7 @@ const ORDENES = {
 } as const;
 type Orden = keyof typeof ORDENES;
 
-const DISPONIBILIDADES: Record<Disponibilidad, string> = {
-  disponible: "Disponible",
-  bajo_pedido: "Bajo pedido",
-  agotado: "Agotado",
-};
-
-// La «categoría» de uso del libro (columna `categoria` de cada hoja): para qué
-// va el producto. No es la categoría del sitio —esas son las píldoras—.
-const USOS: Record<Uso, string> = {
-  carro: "Carro",
-  marino: "Marino",
-  motorsports: "Motorsports",
-};
-const ORDEN_USOS = Object.keys(USOS) as Uso[];
+const ORDEN_USOS = Object.keys(USOS_ETIQUETA) as Uso[];
 
 const CLASE_PILDORA = "rounded-full border px-4.5 py-3 lg:py-2";
 
@@ -96,7 +89,7 @@ function leerOrden(valor: string | null): Orden {
 }
 
 function leerUso(valor: string | null): Uso | null {
-  return valor !== null && Object.hasOwn(USOS, valor) ? (valor as Uso) : null;
+  return valor !== null && Object.hasOwn(USOS_ETIQUETA, valor) ? (valor as Uso) : null;
 }
 
 function leerDisponibilidad(valor: string | null): Disponibilidad | null {
@@ -121,15 +114,6 @@ interface Estado {
   uso?: Uso | null;
   orden?: Orden;
   ver?: number;
-}
-
-interface Filtros {
-  categoria: string | null;
-  medida: number | null;
-  canales: number | null;
-  marca: string | null;
-  disp: Disponibilidad | null;
-  uso: Uso | null;
 }
 
 /** Pasa los filtros activos; `omitir` deja uno por fuera, para contar sus opciones. */
@@ -616,7 +600,7 @@ export function Busqueda({
                       className={CLASE_SELECT}
                     >
                       <option value="escrita">
-                        Categoría: {usosEscritos.map((u) => USOS[u]).join(" o ")}
+                        Categoría: {usosEscritos.map((u) => USOS_ETIQUETA[u]).join(" o ")}
                       </option>
                     </select>
                   ) : opcionesUso.length > 1 || filtros.uso ? (
@@ -629,7 +613,7 @@ export function Busqueda({
                       <option value="">Categoría: todas</option>
                       {opcionesUso.map(([u, cantidad]) => (
                         <option key={u} value={u}>
-                          Categoría: {USOS[u]} ({cantidad})
+                          Categoría: {USOS_ETIQUETA[u]} ({cantidad})
                         </option>
                       ))}
                     </select>
@@ -732,16 +716,7 @@ export function Busqueda({
                   <div className="flex justify-center pt-6">
                     <button
                       type="button"
-                      onClick={() =>
-                        cambiar({
-                          categoria: null,
-                          medida: null,
-                          canales: null,
-                          marca: null,
-                          disp: null,
-                          uso: null,
-                        })
-                      }
+                      onClick={() => cambiar(SIN_FILTROS)}
                       className="border-borde-boton rounded-full border px-7 py-3.5 text-[15px]"
                     >
                       Quitar filtros
