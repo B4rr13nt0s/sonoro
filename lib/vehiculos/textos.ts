@@ -13,6 +13,20 @@ export const TEXTOS_ESTADO: Record<EstadoCompat["tipo"], string> = {
     "Requiere un marco que depende del año, marca y modelo del vehículo. Contacta a Sonoro para más información.",
 };
 
+// Una línea más bajo el estado de un receptor que la necesita, por su código.
+// La DMH-A5650BT sigue con formato `1-din` en el libro (decisión del negocio,
+// noviembre de 2026), pero su pantalla es de 2 DIN y el cliente tiene que
+// saberlo antes de pedirla para un tablero de 1 DIN. especiales.test.ts
+// comprueba contra el catálogo real que cada código existe.
+export const NOTAS_RECEPTOR: Readonly<Record<string, string>> = {
+  "DMH-A5650BT":
+    "Utiliza un chasis trasero de 1-DIN, pero cuenta con una pantalla frontal de 2-DIN.",
+};
+
+export function notaReceptor(sku: string): string | null {
+  return Object.hasOwn(NOTAS_RECEPTOR, sku) ? NOTAS_RECEPTOR[sku] : null;
+}
+
 export const SIN_RESULTADOS = "No hay receptores ni bocinas que quepan en este vehículo.";
 export const ERROR_CARGA = "No se pudo cargar la lista de vehículos.";
 

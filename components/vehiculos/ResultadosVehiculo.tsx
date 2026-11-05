@@ -9,6 +9,7 @@ import {
   type ProductoCompatible,
 } from "@/lib/vehiculos/compatibilidad.ts";
 import {
+  notaReceptor,
   SIN_RESULTADOS,
   TEXTOS_ESTADO,
   textoGrupoVacio,
@@ -85,14 +86,18 @@ function Rejilla({
 }) {
   return (
     <div className={CLASES_GRID}>
-      {items.map((item) => (
-        <div key={item.producto.sku} className="flex flex-col gap-2">
-          <ProductCard producto={item.producto} />
-          <p className="text-texto-secundario text-[13px]">
-            <Estado item={item} titulo={titulo} urlConsulta={urlConsulta} />
-          </p>
-        </div>
-      ))}
+      {items.map((item) => {
+        const nota = notaReceptor(item.producto.sku);
+        return (
+          <div key={item.producto.sku} className="flex flex-col gap-2">
+            <ProductCard producto={item.producto} />
+            <p className="text-texto-secundario text-[13px]">
+              <Estado item={item} titulo={titulo} urlConsulta={urlConsulta} />
+            </p>
+            {nota ? <p className="text-texto-secundario text-[13px]">{nota}</p> : null}
+          </div>
+        );
+      })}
     </div>
   );
 }

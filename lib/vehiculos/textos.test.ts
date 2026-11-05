@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { textoGrupoVacio, tituloGrupo, tituloVehiculo } from "./textos.ts";
+import { notaReceptor, textoGrupoVacio, tituloGrupo, tituloVehiculo } from "./textos.ts";
 import type { Vehiculo } from "./types.ts";
 
 const COROLLA: Vehiculo = {
@@ -43,4 +43,12 @@ test("textoGrupoVacio: nombra la medida solo si es una", () => {
     textoGrupoVacio({ medidas: ['5x7"', '6x8"'] }),
     "No hay bocinas de esas medidas en el catálogo.",
   );
+});
+
+test("notaReceptor: la DMH-A5650BT lleva su anotación; los demás, ninguna", () => {
+  assert.equal(
+    notaReceptor("DMH-A5650BT"),
+    "Utiliza un chasis trasero de 1-DIN, pero cuenta con una pantalla frontal de 2-DIN.",
+  );
+  assert.equal(notaReceptor("DMH-G225BT"), null);
 });

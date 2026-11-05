@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 import { PANTALLAS_ESPECIALES } from "./especiales.ts";
+import { NOTAS_RECEPTOR } from "./textos.ts";
 import { PIEZAS_NOMBRADAS } from "./types.ts";
 
 // Contra el catálogo real, como el test de logos de marcas: si alguien
@@ -14,6 +15,14 @@ const catalogo: { sku: string; categoria: string }[] = JSON.parse(
 
 test("las pantallas especiales existen en el catálogo y son receptores", () => {
   for (const sku of Object.keys(PANTALLAS_ESPECIALES)) {
+    const p = catalogo.find((x) => x.sku === sku);
+    assert.ok(p, `falta ${sku} en el catálogo`);
+    assert.equal(p.categoria, "Receptores");
+  }
+});
+
+test("los receptores con anotación existen en el catálogo y son receptores", () => {
+  for (const sku of Object.keys(NOTAS_RECEPTOR)) {
     const p = catalogo.find((x) => x.sku === sku);
     assert.ok(p, `falta ${sku} en el catálogo`);
     assert.equal(p.categoria, "Receptores");
