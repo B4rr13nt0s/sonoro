@@ -50,6 +50,7 @@ import { serializarCsv } from "./catalogo/csv.ts";
 import { normalizarFila } from "./catalogo/filas.ts";
 import { defHoja } from "./catalogo/hojas.ts";
 import { construirSpecs, type Advertencia } from "./catalogo/specs.ts";
+import { slugificar } from "./slug.ts";
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const RUTA_LIBRO = path.join(RAIZ, "data", "source", "catalogo.xlsx");
@@ -326,16 +327,6 @@ function calcularDiffPrecios(anteriores: Producto[], nuevos: Producto[]): DiffPr
     }
   }
   return diffs;
-}
-
-function slugificar(texto: string): string {
-  return texto
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
 }
 
 function agruparPor(productos: Producto[], selector: (p: Producto) => string): Grupo[] {
