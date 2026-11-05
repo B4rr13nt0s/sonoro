@@ -9,6 +9,7 @@
 // Lógica pura. Un valor que no existe —un enlace compartido que quedó viejo
 // porque el libro cambió— no rompe nada: el selector se queda en el primer
 // nivel inválido, con lo anterior ya elegido.
+import { hrefPestana } from "../busqueda/pestana.ts";
 import { compararTexto } from "../catalog/orden.ts";
 import type { Vehiculo } from "./types.ts";
 
@@ -65,6 +66,14 @@ export function escribirSeleccion(sel: Seleccion): string {
     }
   }
   return params.toString();
+}
+
+// La dirección de /buscar para una selección. Sin nada elegido —el cliente
+// volvió Marca a «Marca»— sigue en la pestaña «Por vehículo»: `/buscar` a
+// secas lo pasaría a «Por producto».
+export function hrefVehiculo(sel: Seleccion): string {
+  const query = escribirSeleccion(sel);
+  return query ? `/buscar?${query}` : hrefPestana("vehiculo");
 }
 
 function opcionesDe(
