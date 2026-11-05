@@ -55,7 +55,7 @@ dato.
 | 5 | La DMH-AP6650BT y la DMH-ZS9350BT pasan al formato `especifico` en el libro del catálogo. |
 | 6 | La DMH-AP6650BT sale en todos los vehículos con una nota: necesita un marco que depende del año, marca y modelo, y hay que contactar a Sonoro. |
 | 7 | La DMH-ZS9350BT cabe donde la guía da una solución de 1 DIN o de 2 DIN. |
-| 8 | Una bocina cabe solo en una ubicación de su misma medida. No hay equivalencias: 5x7" no es 6x8", 6.5" no es 6.75". |
+| 8 | Una bocina cabe solo en una ubicación de su misma medida. No hay equivalencias: 5x7" no es 6x8", 6.5" no es 6.75". Esto es entre bocinas y ubicaciones; al leer las fuentes del libro, el hueco que Crutchfield llama 6-3/4" y la guía y autofiles llaman 6.5" se anota como 6.5" (decisión del 5 de noviembre de 2026). |
 | 9 | Los datos de vehículos viven en un libro de Google Sheets aparte, con su propio comando de importación. |
 | 10 | El selector vive en `/buscar`, debajo del campo, cuando no hay nada escrito. No tiene página propia. |
 | 11 | El nav no cambia: «Vehículos» no entró a 1280 px. |
@@ -100,7 +100,7 @@ que se versiona igual que `catalogo.xlsx`, y se importa con
 |---|---|---|
 | `marca` | «Toyota» | sí |
 | `modelo` | «Corolla» | sí |
-| `version` | Vacía, o algo como «Tablero gris». Solo cuando esos años tienen más de un tablero de fábrica. | no (ver validaciones) |
+| `version` | Vacía, o algo como «Tablero gris». Solo cuando esos años tienen más de un tablero de fábrica, o cuando la fila vale solo para algunos carros («LX o Sport»). | no (ver validaciones) |
 | `desde`, `hasta` | Años, números enteros | sí |
 | `radio_1din`, `radio_2din` | `directo`, `con marco`, `no cabe`, o vacía si no hay dato | no |
 | `ubicacion_1` … `ubicacion_4` | Un valor de LISTAS: «Puertas delanteras» | no |
@@ -322,7 +322,7 @@ el selector dice «No se pudo cargar la lista de vehículos.» con un botón
   introducción. El `h1` de la página sigue siendo el de `/buscar`.
 - **Tres listas nativas: Marca, Modelo y Año.** Cada una se habilita al elegir la
   anterior. Los años van del más nuevo al más viejo.
-- **«Versión»** aparece solo si ese año tiene más de una versión.
+- **«Versión»** aparece si ese año tiene más de una versión, o una sola fila que trae versión: esa no se elige sola, porque la versión dice para qué carros es (Civic 2016–2018 «LX o Sport»; decisión del 5 de noviembre de 2026).
 - **Layout:** el de `/buscar`, con el mismo ancho, márgenes y rejilla. Las listas
   van apiladas a todo el ancho en móvil y en fila desde `sm`.
 - Debajo del selector: «¿No está tu vehículo? Escríbenos por WhatsApp.» El
@@ -456,7 +456,7 @@ Lógica pura con `node --test`; la página con Playwright.
    - un valor inexistente deja el selector en ese nivel con lo anterior
      elegido;
    - años del más nuevo al más viejo;
-   - «Versión» solo con más de una.
+   - «Versión» con más de una, o con una sola fila que trae versión.
 7. **Página** (`e2e/vehiculos.spec.ts`): la prueba reemplaza
    `/buscar/vehiculos.json` con `page.route` por datos de prueba, así no depende
    de qué filas haya revisado el negocio. Además de los casos de abajo, comprueba

@@ -96,12 +96,37 @@ test("resolverSeleccion: un valor que no existe deja el selector en ese nivel", 
   assert.equal(anioFuera.anio, null);
 });
 
-test("resolverSeleccion: «Versión» solo con más de una", () => {
+test("resolverSeleccion: una sola fila con versión no se elige sola; hay que elegir la versión", () => {
+  // Civic 2016–2018 «LX o Sport»: el dueño de un EX tiene que ver que esa
+  // fila no es la suya antes de ver resultados.
   const unaSola = resolverSeleccion(VEHICULOS, { marca: "toyota", modelo: "corolla", anio: 2012 });
-  assert.deepEqual(unaSola.opciones.versiones, []);
-  assert.equal(unaSola.vehiculo, COROLLA_GRIS);
-  assert.equal(unaSola.version?.nombre, "Tablero gris");
+  assert.deepEqual(
+    unaSola.opciones.versiones.map((o) => o.nombre),
+    ["Tablero gris"],
+  );
+  assert.equal(unaSola.vehiculo, null);
+  assert.equal(unaSola.version, null);
 
+  const elegida = resolverSeleccion(VEHICULOS, {
+    marca: "toyota",
+    modelo: "corolla",
+    anio: 2012,
+    version: "tablero-gris",
+  });
+  assert.equal(elegida.vehiculo, COROLLA_GRIS);
+  assert.equal(elegida.version?.nombre, "Tablero gris");
+
+  const vieja = resolverSeleccion(VEHICULOS, {
+    marca: "toyota",
+    modelo: "corolla",
+    anio: 2012,
+    version: "tablero-negro",
+  });
+  assert.equal(vieja.vehiculo, null);
+  assert.equal(vieja.anio, 2012);
+});
+
+test("resolverSeleccion: «Versión» con más de una", () => {
   const dos = resolverSeleccion(VEHICULOS, { marca: "toyota", modelo: "corolla", anio: 2010 });
   assert.deepEqual(
     dos.opciones.versiones.map((o) => o.nombre),

@@ -1,6 +1,7 @@
 // El vehículo elegido vive en la dirección de /buscar, como el resto de la
 // búsqueda: /buscar?vehiculo=toyota&modelo=corolla&anio=2010, más
-// &version=tablero-gris cuando ese año tiene más de un tablero de fábrica.
+// &version=tablero-gris cuando ese año tiene más de un tablero de fábrica, o
+// una sola fila con versión («LX o Sport»).
 //
 // La marca del vehículo va en `vehiculo` y no en `marca` porque /buscar ya
 // usa `marca` para filtrar por marca de PRODUCTO (Memphis, Pioneer…).
@@ -123,15 +124,13 @@ export function resolverSeleccion(
   resuelta.anio = anio;
   const delAnio = deModelo.filter((v) => v.desde <= anio && anio <= v.hasta);
 
-  // Un solo vehículo en ese año: queda elegido, aunque la dirección traiga
-  // otra versión, y el título lleva la versión de esa fila si la tiene.
-  if (delAnio.length === 1) {
-    const [unico] = delAnio;
-    resuelta.vehiculo = unico;
-    resuelta.version =
-      unico.version !== null && unico.versionSlug !== null
-        ? { slug: unico.versionSlug, nombre: unico.version }
-        : null;
+  // Un solo vehículo SIN versión en ese año: queda elegido, aunque la
+  // dirección traiga una versión. Si la fila trae versión, se elige como
+  // cuando hay varias: la versión dice para qué carros es (Civic 2016–2018
+  // «LX o Sport»), y el dueño de otro tiene que verlo antes de los
+  // resultados (decisión del negocio, noviembre de 2026).
+  if (delAnio.length === 1 && delAnio[0].versionSlug === null) {
+    resuelta.vehiculo = delAnio[0];
     return resuelta;
   }
 

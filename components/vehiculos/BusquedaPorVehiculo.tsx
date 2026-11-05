@@ -22,7 +22,8 @@ import {
 } from "@/lib/whatsapp/index.ts";
 
 // El selector de vehículos de /buscar: marca, modelo y año (y versión cuando
-// ese año tiene más de un tablero), y lo que cabe en ese vehículo. Vive en el
+// ese año tiene más de un tablero, o una sola fila que no es de todos los
+// carros), y lo que cabe en ese vehículo. Vive en el
 // estado vacío de la búsqueda —sin nada escrito—, porque el enlace propio no
 // entraba en el nav a 1280 px (docs/superpowers/specs/2026-11-04-selector-vehiculos-design.md).
 //
