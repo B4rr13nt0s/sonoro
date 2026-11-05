@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { CLASES_GRID } from "@/components/catalog/ProductGrid";
 import { INSTALACION } from "@/lib/politicas.ts";
@@ -11,37 +9,19 @@ import {
 import {
   notaReceptor,
   SIN_RESULTADOS,
-  TEXTOS_ESTADO,
   textoGrupoVacio,
   tituloGrupo,
 } from "@/lib/vehiculos/textos.ts";
 
 // Lo que cabe en el vehículo elegido en /buscar: receptores y, por cada
-// ubicación, las bocinas de su medida. Debajo de cada tarjeta —fuera de ella
-// y de su enlace estirado— va el estado, en el gris de la línea de
-// especificación, solo cuando el estado tiene texto («Cabe», «Cabe con…»).
+// ubicación, las bocinas de su medida. Las tarjetas no dicen si cabe ni con
+// qué pieza (decisión del negocio, noviembre de 2026): eso se le pregunta al
+// chat. Debajo solo va la anotación de un receptor que la tiene (NOTAS_RECEPTOR).
 // Sin paginar: en 6.5" son unas 35.
 //
 // Regla 2: no hay ganador ni «mejor opción». El orden ya viene dado por
 // estado y relevancia (lib/vehiculos/compatibilidad.ts).
 const CLASE_SECCION = "text-22 sm:text-26 font-semibold tracking-[-0.02em]";
-const CLASE_ENLACE = "text-negro underline underline-offset-2";
-
-function Estado({ item }: { item: ProductoCompatible }) {
-  const { estado } = item;
-  if (estado.tipo === "con_pieza") {
-    return (
-      <p className="text-texto-secundario text-[13px]">
-        {TEXTOS_ESTADO.con_pieza}{" "}
-        <Link href={`/producto/${estado.pieza.slug}`} className={CLASE_ENLACE}>
-          {estado.pieza.nombre}
-        </Link>
-      </p>
-    );
-  }
-  const texto = TEXTOS_ESTADO[estado.tipo];
-  return texto ? <p className="text-texto-secundario text-[13px]">{texto}</p> : null;
-}
 
 function Rejilla({ items }: { items: ProductoCompatible[] }) {
   return (
@@ -51,7 +31,6 @@ function Rejilla({ items }: { items: ProductoCompatible[] }) {
         return (
           <div key={item.producto.sku} className="flex flex-col gap-2">
             <ProductCard producto={item.producto} />
-            <Estado item={item} />
             {nota ? <p className="text-texto-secundario text-[13px]">{nota}</p> : null}
           </div>
         );

@@ -181,7 +181,9 @@ export function BusquedaPorVehiculo({
         </div>
       )}
 
-      <p className="text-texto-secundario mt-5 text-[14px]">
+      {/* pl-6: el texto arranca donde arranca el de las listas: su px-5 más los
+          ~4 px que el navegador deja adentro de un <select>. */}
+      <p className="text-texto-secundario mt-5 pl-6 text-[14px]">
         ¿No está tu vehículo?{" "}
         <a
           href={buildWhatsAppUrl(WHATSAPP_NUMBER, buildVehicleInquiryMessage())}

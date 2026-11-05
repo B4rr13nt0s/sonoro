@@ -12,7 +12,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { INSTALACION } from "../lib/politicas.ts";
 import type { Producto } from "../lib/catalog/types.ts";
 import { armarDatosVehiculos } from "../lib/vehiculos/datos.ts";
-import { notaReceptor, TEXTOS_ESTADO, tituloVehiculo } from "../lib/vehiculos/textos.ts";
+import { notaReceptor, tituloVehiculo } from "../lib/vehiculos/textos.ts";
 import type { Vehiculo } from "../lib/vehiculos/types.ts";
 
 const CATALOGO = JSON.parse(readFileSync("data/catalog.json", "utf-8")) as Producto[];
@@ -72,7 +72,6 @@ function itemDe(page: Page, nombre: string) {
 
 test("elige marca, modelo y año en /buscar y muestra lo que cabe", async ({ page }) => {
   expect(DOS_DIN, "el catálogo no trae un receptor 2 DIN").toBeTruthy();
-  expect(KSM8, "el catálogo no trae la pieza KSM-8").toBeTruthy();
   expect(CON_NOTA, "ningún receptor con anotación llegó a los datos").toBeTruthy();
   await servirDatos(page);
   await page.goto("/buscar");
@@ -85,20 +84,18 @@ test("elige marca, modelo y año en /buscar y muestra lo que cabe", async ({ pag
   await expect(page).toHaveURL(new RegExp(`${RUTA_ELEGIDA.replaceAll("?", "\\?")}$`));
 
   await expect(page.getByRole("heading", { name: TITULO })).toBeVisible();
-  await expect(itemDe(page, DOS_DIN!.nombre).locator(":scope > p").first()).toHaveText(
-    TEXTOS_ESTADO.cabe!,
-  );
+  await expect(itemDe(page, DOS_DIN!.nombre)).toBeVisible();
 
   await expect(page.getByRole("heading", { name: 'Puertas delanteras · 6.5"' })).toBeVisible();
-  const enlacePieza = page.getByRole("link", { name: KSM8!.nombre }).first();
-  await expect(enlacePieza).toBeVisible();
   await expect(page.getByText('No hay bocinas de 6x8" en el catálogo.')).toBeVisible();
   await expect(page.getByText(INSTALACION)).toBeVisible();
 
-  // «Cabe con accesorios» y el aviso de la AP6650BT no se muestran
-  // (decisión del negocio, noviembre de 2026): la tarjeta va sola.
-  await expect(page.getByText("Cabe con accesorios")).toHaveCount(0);
+  // Ninguna tarjeta dice si cabe ni con qué (decisión del negocio,
+  // noviembre de 2026): eso se pregunta en el chat. La pieza no se nombra.
+  await expect(page.getByText(/^Cabe/)).toHaveCount(0);
   await expect(page.getByText(/Requiere un marco/)).toHaveCount(0);
+  await expect(page.getByRole("link", { name: KSM8!.nombre })).toHaveCount(0);
+  await expect(itemDe(page, DOS_DIN!.nombre).locator(":scope > p")).toHaveCount(0);
   if (AP6650) {
     await expect(itemDe(page, AP6650.nombre).locator(":scope > p")).toHaveCount(0);
   }
@@ -112,9 +109,27 @@ test("elige marca, modelo y año en /buscar y muestra lo que cabe", async ({ pag
   await expect(page.getByLabel("Marca", { exact: true })).toHaveValue("prueba");
   await expect(page.getByLabel("Modelo", { exact: true })).toHaveValue("uno");
   await expect(page.getByLabel("Año", { exact: true })).toHaveValue("2010");
+});
 
-  await page.getByRole("link", { name: KSM8!.nombre }).first().click();
-  await expect(page).toHaveURL(new RegExp(`/producto/${KSM8!.slug}$`));
+test("«¿No está tu vehículo?» empieza donde empieza el texto de las listas", async ({ page }) => {
+  await servirDatos(page);
+  await page.goto("/buscar?por=vehiculo");
+  const marca = page.getByLabel("Marca", { exact: true });
+  await expect(marca).toBeEnabled();
+  const [inicioLista, inicioLinea] = await Promise.all([
+    marca.evaluate(
+      (l) => l.getBoundingClientRect().left + parseFloat(getComputedStyle(l).paddingLeft),
+    ),
+    page
+      .getByText("¿No está tu vehículo?")
+      .evaluate(
+        (p) => p.getBoundingClientRect().left + parseFloat(getComputedStyle(p).paddingLeft),
+      ),
+  ]);
+  // El navegador dibuja el texto de un <select> unos 4 px más adentro que su
+  // relleno: la línea va entre el relleno y esos 4 px de más.
+  expect(inicioLinea - inicioLista).toBeGreaterThanOrEqual(0);
+  expect(inicioLinea - inicioLista).toBeLessThanOrEqual(6);
 });
 
 test("cambiar de pestaña limpia la dirección", async ({ page }) => {
