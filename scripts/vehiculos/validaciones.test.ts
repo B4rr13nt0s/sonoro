@@ -102,3 +102,14 @@ test("grafías distintas, con una sin revisar: solo la sin revisar", () => {
   ]);
   assert.deepEqual([...p.keys()], [3]);
 });
+
+test("dos grafías revisadas chocan aunque una tercera, sin revisar, comparta el slug", () => {
+  const p = problemasEntreFilas([
+    fila(2, true, { marca: "Mazda", modelo: "3" }),
+    fila(3, true, { marca: "MAZDA", modelo: "CX-5" }),
+    fila(4, false, { marca: "mazda", modelo: "Protegé" }),
+  ]);
+  assert.deepEqual([...p.keys()].sort(), [2, 3, 4]);
+  assert.match(p.get(2)?.join() ?? "", /«Mazda» y «MAZDA»/);
+  assert.doesNotMatch(p.get(2)?.join() ?? "", /«mazda»/);
+});

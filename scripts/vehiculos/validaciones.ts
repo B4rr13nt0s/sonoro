@@ -50,14 +50,22 @@ function colisiones(
     porGrafia.set(g, [...(porGrafia.get(g) ?? []), fila]);
     grupos.set(k, porGrafia);
   }
+  // De a pares de grafías, como los cruces de años: con el grupo entero, una
+  // sola fila sin revisar hacía que la regla de anotación saltara a las
+  // revisadas, y dos grafías revisadas distintas se publicaban juntas.
   for (const porGrafia of grupos.values()) {
-    if (porGrafia.size < 2) continue;
-    const grafias = [...porGrafia.keys()].map((g) => `«${g}»`).join(" y ");
-    anotar(
-      problemas,
-      [...porGrafia.values()].flat(),
-      () => `${campo}: ${grafias} dan el mismo slug; unificá la grafía en el libro.`,
-    );
+    const grafias = [...porGrafia.entries()];
+    for (let i = 0; i < grafias.length; i += 1) {
+      for (let j = i + 1; j < grafias.length; j += 1) {
+        const [ga, filasA] = grafias[i];
+        const [gb, filasB] = grafias[j];
+        anotar(
+          problemas,
+          [...filasA, ...filasB],
+          () => `${campo}: «${ga}» y «${gb}» dan el mismo slug; unificá la grafía en el libro.`,
+        );
+      }
+    }
   }
 }
 
