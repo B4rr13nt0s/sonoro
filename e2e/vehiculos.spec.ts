@@ -76,6 +76,8 @@ test("elige marca, modelo y año en /buscar y muestra lo que cabe", async ({ pag
   expect(CON_NOTA, "ningún receptor con anotación llegó a los datos").toBeTruthy();
   await servirDatos(page);
   await page.goto("/buscar");
+  await page.getByRole("tab", { name: "Por vehículo" }).click();
+  await expect(page).toHaveURL(/\/buscar\?por=vehiculo$/);
 
   await page.getByLabel("Marca", { exact: true }).selectOption({ label: "Prueba" });
   await page.getByLabel("Modelo", { exact: true }).selectOption({ label: "Uno" });
@@ -118,25 +120,85 @@ test("elige marca, modelo y año en /buscar y muestra lo que cabe", async ({ pag
   await expect(page).toHaveURL(new RegExp(`/producto/${KSM8!.slug}$`));
 });
 
-test("escribir una búsqueda oculta el selector y saca el vehículo de la dirección", async ({
-  page,
-}) => {
+test("cambiar de pestaña limpia la dirección", async ({ page }) => {
   await servirDatos(page);
   await page.goto(RUTA_ELEGIDA);
   await expect(page.getByRole("heading", { name: TITULO })).toBeVisible();
+
+  await page.getByRole("tab", { name: "Por producto" }).click();
+  await expect(page).toHaveURL(/\/buscar$/);
+  await expect(page.getByRole("tab", { name: "Por producto" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await expect(page.getByLabel("Marca", { exact: true })).toHaveCount(0);
 
   const campo = page.getByRole("combobox", { name: "Buscar en el catálogo" });
   await campo.fill("memphis");
   await campo.press("Enter");
   await expect(page).toHaveURL(/\/buscar\?q=memphis$/);
-  await expect(
-    page.getByRole("heading", { name: "Receptores y bocinas por vehículo" }),
-  ).toHaveCount(0);
+});
+
+test("las flechas mueven entre pestañas", async ({ page }) => {
+  await servirDatos(page);
+  await page.goto("/buscar");
+  const producto = page.getByRole("tab", { name: "Por producto" });
+  const vehiculo = page.getByRole("tab", { name: "Por vehículo" });
+  await producto.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(vehiculo).toHaveAttribute("aria-selected", "true");
+  await expect(vehiculo).toBeFocused();
+  await expect(page).toHaveURL(/\/buscar\?por=vehiculo$/);
+
+  await page.keyboard.press("Home");
+  await expect(producto).toHaveAttribute("aria-selected", "true");
+  await expect(producto).toBeFocused();
+  await expect(page).toHaveURL(/\/buscar$/);
+});
+
+test("vaciar la marca deja la pestaña de vehículo", async ({ page }) => {
+  await servirDatos(page);
+  await page.goto(RUTA_ELEGIDA);
+  await expect(page.getByRole("heading", { name: TITULO })).toBeVisible();
+
+  await page.getByLabel("Marca", { exact: true }).selectOption({ value: "" });
+  await expect(page).toHaveURL(/\/buscar\?por=vehiculo$/);
+  await expect(page.getByLabel("Marca", { exact: true })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Por vehículo" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+});
+
+test("«Buscar» del header vuelve a «Por producto»", async ({ page }) => {
+  await servirDatos(page);
+  await page.goto(RUTA_ELEGIDA);
+  await expect(page.getByRole("heading", { name: TITULO })).toBeVisible();
+
+  await page.getByRole("banner").getByRole("link", { name: "Buscar", exact: true }).click();
+  await expect(page).toHaveURL(/\/buscar$/);
+  await expect(page.getByRole("combobox", { name: "Buscar en el catálogo" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Por producto" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+});
+
+test("Esc en el campo vacío no cambia de pestaña", async ({ page }) => {
+  await page.goto("/buscar");
+  const campo = page.getByRole("combobox", { name: "Buscar en el catálogo" });
+  await campo.focus();
+  await campo.press("Escape");
+  await expect(page).toHaveURL(/\/buscar$/);
+  await expect(page.getByRole("tab", { name: "Por producto" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
 });
 
 test("si la descarga falla, ofrece reintentar", async ({ page }) => {
   await page.route("**/buscar/vehiculos.json", (ruta) => ruta.fulfill({ status: 500, body: "" }));
-  await page.goto("/buscar");
+  await page.goto("/buscar?por=vehiculo");
   await expect(page.getByText("No se pudo cargar la lista de vehículos.")).toBeVisible();
 
   await page.unroute("**/buscar/vehiculos.json");

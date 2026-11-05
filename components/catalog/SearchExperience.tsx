@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useId, useMemo, useState } from "react";
 
+import { PestanasBuscar } from "@/components/catalog/PestanasBuscar";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { SinResultadosBusqueda } from "@/components/catalog/SinResultadosBusqueda";
 import { SugerenciasBusqueda, type ItemSugerencia } from "@/components/catalog/SugerenciasBusqueda";
@@ -23,6 +24,7 @@ import {
 import { formatQ } from "@/lib/format/precio.ts";
 
 import { canalesDe, etiquetaCanales, medidasDe } from "@/lib/busqueda/acotar.ts";
+import { hrefPestana, leerPestana, type Pestana } from "@/lib/busqueda/pestana.ts";
 import {
   DISPONIBILIDADES,
   SIN_FILTROS,
@@ -155,6 +157,7 @@ export function Busqueda({
 }) {
   const router = useRouter();
   const idLista = useId();
+  const pestana = leerPestana(busqueda);
   const params = useMemo(() => new URLSearchParams(busqueda), [busqueda]);
   const consulta = (params.get("q") ?? "").trim();
   const categoriaPedida = params.get("categoria");
@@ -439,306 +442,320 @@ export function Busqueda({
   );
   const usosEscritos = resultado?.usos ?? [];
 
+  // Cambiar de pestaña empieza la otra de cero (hrefPestana): lo escrito o el
+  // vehículo elegido se pierden, igual que cuando escribir borraba el vehículo.
+  function irAPestana(destino: Pestana) {
+    window.history.replaceState(null, "", hrefPestana(destino));
+  }
+
   return (
     <div className="flex flex-col">
-      <section className="px-6 pt-10 sm:px-12 sm:pt-14">
-        {/* La página no tenía NINGÚN encabezado: el diseño abre directo con el
-            campo. El h1 le dice a Google y al lector de pantalla de qué trata
-            sin agregar un titular que el diseño no tiene — mismo patrón que
-            /marcas/[marca]. */}
-        <h1 className="sr-only">Buscar en el catálogo</h1>
-        <div className="relative">
-          {/* El foco se marca en el RECUADRO, no en el input: el campo es
+      {/* La página no tenía NINGÚN encabezado: el diseño abre directo con las
+          pestañas. El h1 le dice a Google y al lector de pantalla de qué trata
+          sin agregar un titular que el diseño no tiene — mismo patrón que
+          /marcas/[marca]. */}
+      <h1 className="sr-only">Buscar en el catálogo</h1>
+      <PestanasBuscar
+        pestana={pestana}
+        alCambiar={irAPestana}
+        vehiculo={<BusquedaPorVehiculo busqueda={busqueda} urlBuscar={urlBuscar} />}
+        producto={
+          <>
+            <section className="px-6 pt-6 sm:px-12 sm:pt-8">
+              <div className="relative">
+                {/* El foco se marca en el RECUADRO, no en el input: el campo es
               transparente y ocupa solo su renglón, así que un anillo en él se
               vería partido. `outline` y no `ring`, que en Tailwind es una
               sombra (CLAUDE.md § Sistema visual: sin sombras), y outline no
               empuja el layout. */}
-          <div className="border-negro rounded-card focus-within:outline-negro flex items-center gap-4 border px-5 py-4 focus-within:outline-2 focus-within:outline-offset-2 sm:px-6 sm:py-5">
-            <span className="text-texto-terciario text-[20px]" aria-hidden="true">
-              ⌕
-            </span>
-            <input
-              type="text"
-              name="q"
-              role="combobox"
-              aria-expanded={mostrarSugerencias}
-              aria-controls={mostrarSugerencias ? idLista : undefined}
-              aria-activedescendant={
-                mostrarSugerencias && activo >= 0 ? `${idLista}-${activo}` : undefined
-              }
-              aria-autocomplete="list"
-              autoComplete="off"
-              value={borrador}
-              onChange={(evento) => {
-                setBorrador(evento.target.value);
-                setAbierto(true);
-                setActivo(-1);
-              }}
-              onKeyDown={alTecleo}
-              onBlur={() => setAbierto(false)}
-              placeholder="Buscar por nombre, marca o código…"
-              aria-label="Buscar en el catálogo"
-              className="min-w-0 flex-1 bg-transparent text-[19px] tracking-[-0.02em] outline-none sm:text-[24px]"
-            />
-            <span className="text-texto-terciario hidden font-mono text-[11px] sm:ml-auto sm:block">
-              Enter para buscar · Esc para limpiar
-            </span>
-          </div>
-          {mostrarSugerencias ? (
-            <SugerenciasBusqueda id={idLista} items={items} activo={activo} alElegir={elegir} />
-          ) : null}
-        </div>
-      </section>
+                <div className="border-negro rounded-card focus-within:outline-negro flex items-center gap-4 border px-5 py-4 focus-within:outline-2 focus-within:outline-offset-2 sm:px-6 sm:py-5">
+                  <span className="text-texto-terciario text-[20px]" aria-hidden="true">
+                    ⌕
+                  </span>
+                  <input
+                    type="text"
+                    name="q"
+                    role="combobox"
+                    aria-expanded={mostrarSugerencias}
+                    aria-controls={mostrarSugerencias ? idLista : undefined}
+                    aria-activedescendant={
+                      mostrarSugerencias && activo >= 0 ? `${idLista}-${activo}` : undefined
+                    }
+                    aria-autocomplete="list"
+                    autoComplete="off"
+                    value={borrador}
+                    onChange={(evento) => {
+                      setBorrador(evento.target.value);
+                      setAbierto(true);
+                      setActivo(-1);
+                    }}
+                    onKeyDown={alTecleo}
+                    onBlur={() => setAbierto(false)}
+                    placeholder="Buscar por nombre, marca o código…"
+                    aria-label="Buscar en el catálogo"
+                    className="min-w-0 flex-1 bg-transparent text-[19px] tracking-[-0.02em] outline-none sm:text-[24px]"
+                  />
+                  <span className="text-texto-terciario hidden font-mono text-[11px] sm:ml-auto sm:block">
+                    Enter para buscar · Esc para limpiar
+                  </span>
+                </div>
+                {mostrarSugerencias ? (
+                  <SugerenciasBusqueda
+                    id={idLista}
+                    items={items}
+                    activo={activo}
+                    alElegir={elegir}
+                  />
+                ) : null}
+              </div>
+            </section>
 
-      {!consulta ? (
-        <>
-          <section className="px-6 pt-6 sm:px-12">
-            <p className="text-texto-terciario text-[15px]">Escribe para buscar en el catálogo.</p>
-          </section>
-          {/* Sin nada escrito, la otra forma de buscar: por vehículo. Con una
-              consulta no se dibuja (ni baja sus datos), y `irA` arma la
-              dirección desde cero, así que escribir borra el vehículo. */}
-          <BusquedaPorVehiculo busqueda={busqueda} urlBuscar={urlBuscar} />
-        </>
-      ) : (
-        <>
-          <section className="flex flex-col items-start gap-4 px-6 pt-8 pb-3 sm:px-12">
-            <div className="flex flex-col gap-2.5">
-              {/* h2, no h1: el h1 de la página es el «Buscar en el catálogo»
+            {consulta ? (
+              <>
+                <section className="flex flex-col items-start gap-4 px-6 pt-8 pb-3 sm:px-12">
+                  <div className="flex flex-col gap-2.5">
+                    {/* h2, no h1: el h1 de la página es el «Buscar en el catálogo»
                   de arriba, y un lector de pantalla anunciaba dos títulos de
                   primer nivel. Se ve igual. */}
-              <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.03em]">
-                {resultadosFiltrados.length}{" "}
-                {resultadosFiltrados.length === 1 ? "resultado" : "resultados"}
-              </h2>
-              <div className="text-texto-secundario text-[15px]">para «{consulta}»</div>
-            </div>
+                    <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.03em]">
+                      {resultadosFiltrados.length}{" "}
+                      {resultadosFiltrados.length === 1 ? "resultado" : "resultados"}
+                    </h2>
+                    <div className="text-texto-secundario text-[15px]">para «{consulta}»</div>
+                  </div>
 
-            {/* Lo que salió de la consulta como FILTRO («marino», «menos de
+                  {/* Lo que salió de la consulta como FILTRO («marino», «menos de
                 Q 1,000», «más de 500 W»): se dice, para que se vea por qué
                 faltan productos. */}
-            {resultado && resultado.aplicados.length > 0 ? (
-              <p className="text-texto-secundario text-[15px]">
-                Filtros de tu búsqueda: {resultado.aplicados.join(" · ")}
-              </p>
-            ) : null}
+                  {resultado && resultado.aplicados.length > 0 ? (
+                    <p className="text-texto-secundario text-[15px]">
+                      Filtros de tu búsqueda: {resultado.aplicados.join(" · ")}
+                    </p>
+                  ) : null}
 
-            {/* Lo que la búsqueda hizo por su cuenta, dicho: nunca se
+                  {/* Lo que la búsqueda hizo por su cuenta, dicho: nunca se
                 cambian los resultados sin avisar. */}
-            {resultado && resultado.modo !== "exacta" && base.length > 0 ? (
-              <p role="status" className="text-texto-secundario text-[15px]">
-                {resultado.modo === "cercana"
-                  ? resultado.cercania
-                  : resultado.modo === "parcial"
-                    ? "Ningún producto coincide con todo lo que escribiste; estos coinciden con alguna palabra."
-                    : "No hay coincidencias exactas; estos se le parecen."}
-                {resultado.correccion ? (
-                  <>
-                    {" "}
-                    Quizá quisiste decir{" "}
-                    <button
-                      type="button"
-                      onClick={() => ejecutarBusqueda(resultado.correccion ?? "")}
-                      className="text-negro underline"
-                    >
-                      «{resultado.correccion}»
-                    </button>
-                    .
-                  </>
-                ) : null}
-              </p>
-            ) : null}
+                  {resultado && resultado.modo !== "exacta" && base.length > 0 ? (
+                    <p role="status" className="text-texto-secundario text-[15px]">
+                      {resultado.modo === "cercana"
+                        ? resultado.cercania
+                        : resultado.modo === "parcial"
+                          ? "Ningún producto coincide con todo lo que escribiste; estos coinciden con alguna palabra."
+                          : "No hay coincidencias exactas; estos se le parecen."}
+                      {resultado.correccion ? (
+                        <>
+                          {" "}
+                          Quizá quisiste decir{" "}
+                          <button
+                            type="button"
+                            onClick={() => ejecutarBusqueda(resultado.correccion ?? "")}
+                            className="text-negro underline"
+                          >
+                            «{resultado.correccion}»
+                          </button>
+                          .
+                        </>
+                      ) : null}
+                    </p>
+                  ) : null}
 
-            {base.length > 0 ? (
-              <div className="flex flex-col gap-3 text-[13px]">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <button
-                    type="button"
-                    onClick={() => cambiar({ categoria: null })}
-                    className={`${CLASE_PILDORA} ${
-                      !filtros.categoria
-                        ? "border-negro bg-negro text-white"
-                        : "border-borde-pildora text-texto-nav"
-                    }`}
-                  >
-                    Todo
-                  </button>
-                  {[...conteoPorCategoria.entries()].map(([categoria, cantidad]) => (
-                    <button
-                      key={categoria}
-                      type="button"
-                      onClick={() => cambiar({ categoria })}
-                      className={`${CLASE_PILDORA} ${
-                        filtros.categoria === categoria
-                          ? "border-negro bg-negro text-white"
-                          : "border-borde-pildora text-texto-nav"
-                      }`}
-                    >
-                      {categoria}{" "}
-                      <span
-                        className={
-                          filtros.categoria === categoria
-                            ? "text-texto-sobre-negro"
-                            : "text-texto-terciario"
-                        }
-                      >
-                        {cantidad}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+                  {base.length > 0 ? (
+                    <div className="flex flex-col gap-3 text-[13px]">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => cambiar({ categoria: null })}
+                          className={`${CLASE_PILDORA} ${
+                            !filtros.categoria
+                              ? "border-negro bg-negro text-white"
+                              : "border-borde-pildora text-texto-nav"
+                          }`}
+                        >
+                          Todo
+                        </button>
+                        {[...conteoPorCategoria.entries()].map(([categoria, cantidad]) => (
+                          <button
+                            key={categoria}
+                            type="button"
+                            onClick={() => cambiar({ categoria })}
+                            className={`${CLASE_PILDORA} ${
+                              filtros.categoria === categoria
+                                ? "border-negro bg-negro text-white"
+                                : "border-borde-pildora text-texto-nav"
+                            }`}
+                          >
+                            {categoria}{" "}
+                            <span
+                              className={
+                                filtros.categoria === categoria
+                                  ? "text-texto-sobre-negro"
+                                  : "text-texto-terciario"
+                              }
+                            >
+                              {cantidad}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
 
-                <div className="flex flex-wrap items-center gap-2.5">
-                  {/* Categoría (carro, marino, motorsports). Si la consulta ya
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        {/* Categoría (carro, marino, motorsports). Si la consulta ya
                       la nombra («bocinas marino»), el filtro viene de lo
                       escrito y el campo lo muestra, fijo. */}
-                  {usosEscritos.length > 0 ? (
-                    <select
-                      aria-label="Categoría (viene de lo que escribiste)"
-                      value="escrita"
-                      disabled
-                      className={CLASE_SELECT}
-                    >
-                      <option value="escrita">
-                        Categoría: {usosEscritos.map((u) => USOS_ETIQUETA[u]).join(" o ")}
-                      </option>
-                    </select>
-                  ) : opcionesUso.length > 1 || filtros.uso ? (
-                    <select
-                      aria-label="Filtrar por categoría"
-                      value={filtros.uso ?? ""}
-                      onChange={(e) => cambiar({ uso: leerUso(e.target.value) })}
-                      className={CLASE_SELECT}
-                    >
-                      <option value="">Categoría: todas</option>
-                      {opcionesUso.map(([u, cantidad]) => (
-                        <option key={u} value={u}>
-                          Categoría: {USOS_ETIQUETA[u]} ({cantidad})
-                        </option>
-                      ))}
-                    </select>
+                        {usosEscritos.length > 0 ? (
+                          <select
+                            aria-label="Categoría (viene de lo que escribiste)"
+                            value="escrita"
+                            disabled
+                            className={CLASE_SELECT}
+                          >
+                            <option value="escrita">
+                              Categoría: {usosEscritos.map((u) => USOS_ETIQUETA[u]).join(" o ")}
+                            </option>
+                          </select>
+                        ) : opcionesUso.length > 1 || filtros.uso ? (
+                          <select
+                            aria-label="Filtrar por categoría"
+                            value={filtros.uso ?? ""}
+                            onChange={(e) => cambiar({ uso: leerUso(e.target.value) })}
+                            className={CLASE_SELECT}
+                          >
+                            <option value="">Categoría: todas</option>
+                            {opcionesUso.map(([u, cantidad]) => (
+                              <option key={u} value={u}>
+                                Categoría: {USOS_ETIQUETA[u]} ({cantidad})
+                              </option>
+                            ))}
+                          </select>
+                        ) : null}
+                        {opcionesMedida.length > 1 || filtros.medida ? (
+                          <select
+                            aria-label="Filtrar por medida"
+                            value={filtros.medida ?? ""}
+                            onChange={(e) => cambiar({ medida: leerNumero(e.target.value) })}
+                            className={CLASE_SELECT}
+                          >
+                            <option value="">Medida: todas</option>
+                            {opcionesMedida.map(([pulgadas, cantidad]) => (
+                              <option key={pulgadas} value={pulgadas}>
+                                Medida: {pulgadas}&quot; ({cantidad})
+                              </option>
+                            ))}
+                          </select>
+                        ) : null}
+                        {opcionesCanales.length > 1 || filtros.canales ? (
+                          <select
+                            aria-label="Filtrar por canales"
+                            value={filtros.canales ?? ""}
+                            onChange={(e) => cambiar({ canales: leerNumero(e.target.value) })}
+                            className={CLASE_SELECT}
+                          >
+                            <option value="">Canales: todos</option>
+                            {opcionesCanales.map(([canales, cantidad]) => (
+                              <option key={canales} value={canales}>
+                                {etiquetaCanales(canales)} ({cantidad})
+                              </option>
+                            ))}
+                          </select>
+                        ) : null}
+                        {opcionesMarca.length > 1 || filtros.marca ? (
+                          <select
+                            aria-label="Filtrar por marca"
+                            value={filtros.marca ?? ""}
+                            onChange={(e) => cambiar({ marca: e.target.value || null })}
+                            className={CLASE_SELECT}
+                          >
+                            <option value="">Todas las marcas</option>
+                            {opcionesMarca.map(([marca, cantidad]) => (
+                              <option key={marca} value={marca}>
+                                {marca} ({cantidad})
+                              </option>
+                            ))}
+                          </select>
+                        ) : null}
+                        <select
+                          aria-label="Filtrar por disponibilidad"
+                          value={filtros.disp ?? ""}
+                          onChange={(e) => cambiar({ disp: leerDisponibilidad(e.target.value) })}
+                          className={CLASE_SELECT}
+                        >
+                          <option value="">Cualquier disponibilidad</option>
+                          {(Object.keys(DISPONIBILIDADES) as Disponibilidad[]).map((d) => {
+                            const cantidad = conteoPorDisp.get(d) ?? 0;
+                            return (
+                              <option
+                                key={d}
+                                value={d}
+                                disabled={cantidad === 0 && filtros.disp !== d}
+                              >
+                                {DISPONIBILIDADES[d]} ({cantidad})
+                              </option>
+                            );
+                          })}
+                        </select>
+                        <select
+                          aria-label="Ordenar resultados"
+                          value={ordenActivo}
+                          onChange={(e) => cambiar({ orden: leerOrden(e.target.value) })}
+                          className={`${CLASE_SELECT} border-negro`}
+                        >
+                          {(Object.keys(ORDENES) as Orden[]).map((o) => (
+                            <option key={o} value={o}>
+                              {ORDENES[o]}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                   ) : null}
-                  {opcionesMedida.length > 1 || filtros.medida ? (
-                    <select
-                      aria-label="Filtrar por medida"
-                      value={filtros.medida ?? ""}
-                      onChange={(e) => cambiar({ medida: leerNumero(e.target.value) })}
-                      className={CLASE_SELECT}
-                    >
-                      <option value="">Medida: todas</option>
-                      {opcionesMedida.map(([pulgadas, cantidad]) => (
-                        <option key={pulgadas} value={pulgadas}>
-                          Medida: {pulgadas}&quot; ({cantidad})
-                        </option>
-                      ))}
-                    </select>
-                  ) : null}
-                  {opcionesCanales.length > 1 || filtros.canales ? (
-                    <select
-                      aria-label="Filtrar por canales"
-                      value={filtros.canales ?? ""}
-                      onChange={(e) => cambiar({ canales: leerNumero(e.target.value) })}
-                      className={CLASE_SELECT}
-                    >
-                      <option value="">Canales: todos</option>
-                      {opcionesCanales.map(([canales, cantidad]) => (
-                        <option key={canales} value={canales}>
-                          {etiquetaCanales(canales)} ({cantidad})
-                        </option>
-                      ))}
-                    </select>
-                  ) : null}
-                  {opcionesMarca.length > 1 || filtros.marca ? (
-                    <select
-                      aria-label="Filtrar por marca"
-                      value={filtros.marca ?? ""}
-                      onChange={(e) => cambiar({ marca: e.target.value || null })}
-                      className={CLASE_SELECT}
-                    >
-                      <option value="">Todas las marcas</option>
-                      {opcionesMarca.map(([marca, cantidad]) => (
-                        <option key={marca} value={marca}>
-                          {marca} ({cantidad})
-                        </option>
-                      ))}
-                    </select>
-                  ) : null}
-                  <select
-                    aria-label="Filtrar por disponibilidad"
-                    value={filtros.disp ?? ""}
-                    onChange={(e) => cambiar({ disp: leerDisponibilidad(e.target.value) })}
-                    className={CLASE_SELECT}
-                  >
-                    <option value="">Cualquier disponibilidad</option>
-                    {(Object.keys(DISPONIBILIDADES) as Disponibilidad[]).map((d) => {
-                      const cantidad = conteoPorDisp.get(d) ?? 0;
-                      return (
-                        <option key={d} value={d} disabled={cantidad === 0 && filtros.disp !== d}>
-                          {DISPONIBILIDADES[d]} ({cantidad})
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <select
-                    aria-label="Ordenar resultados"
-                    value={ordenActivo}
-                    onChange={(e) => cambiar({ orden: leerOrden(e.target.value) })}
-                    className={`${CLASE_SELECT} border-negro`}
-                  >
-                    {(Object.keys(ORDENES) as Orden[]).map((o) => (
-                      <option key={o} value={o}>
-                        {ORDENES[o]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            ) : null}
-          </section>
+                </section>
 
-          <section className="px-6 pt-7 pb-16 sm:px-12 sm:pb-22">
-            {base.length === 0 ? (
-              <SinResultadosBusqueda
-                consulta={consulta}
-                correccion={resultado?.correccion ?? null}
-                marcas={relacionadas.marcas}
-                categorias={relacionadas.categorias}
-                alCorregir={ejecutarBusqueda}
-              />
-            ) : (
-              <>
-                <ProductGrid
-                  productos={resultadosVisibles}
-                  destacadas={destacadas}
-                  emptyMessage="Ningún resultado con estos filtros."
-                />
-                {resultadosFiltrados.length === 0 && hayFiltros ? (
-                  <div className="flex justify-center pt-6">
-                    <button
-                      type="button"
-                      onClick={() => cambiar(SIN_FILTROS)}
-                      className="border-borde-boton rounded-full border px-7 py-3.5 text-[15px]"
-                    >
-                      Quitar filtros
-                    </button>
-                  </div>
-                ) : null}
-                {restantes > 0 ? (
-                  <div className="flex justify-center pt-10">
-                    <button
-                      type="button"
-                      onClick={() => cambiar({ ver: visibles + INCREMENTO })}
-                      className="border-borde-boton rounded-full border px-7 py-3.5 text-[15px]"
-                    >
-                      Ver {Math.min(restantes, INCREMENTO)} resultados más
-                    </button>
-                  </div>
-                ) : null}
+                <section className="px-6 pt-7 pb-16 sm:px-12 sm:pb-22">
+                  {base.length === 0 ? (
+                    <SinResultadosBusqueda
+                      consulta={consulta}
+                      correccion={resultado?.correccion ?? null}
+                      marcas={relacionadas.marcas}
+                      categorias={relacionadas.categorias}
+                      alCorregir={ejecutarBusqueda}
+                    />
+                  ) : (
+                    <>
+                      <ProductGrid
+                        productos={resultadosVisibles}
+                        destacadas={destacadas}
+                        emptyMessage="Ningún resultado con estos filtros."
+                      />
+                      {resultadosFiltrados.length === 0 && hayFiltros ? (
+                        <div className="flex justify-center pt-6">
+                          <button
+                            type="button"
+                            onClick={() => cambiar(SIN_FILTROS)}
+                            className="border-borde-boton rounded-full border px-7 py-3.5 text-[15px]"
+                          >
+                            Quitar filtros
+                          </button>
+                        </div>
+                      ) : null}
+                      {restantes > 0 ? (
+                        <div className="flex justify-center pt-10">
+                          <button
+                            type="button"
+                            onClick={() => cambiar({ ver: visibles + INCREMENTO })}
+                            className="border-borde-boton rounded-full border px-7 py-3.5 text-[15px]"
+                          >
+                            Ver {Math.min(restantes, INCREMENTO)} resultados más
+                          </button>
+                        </div>
+                      ) : null}
+                    </>
+                  )}
+                </section>
               </>
-            )}
-          </section>
-        </>
-      )}
+            ) : null}
+          </>
+        }
+      />
     </div>
   );
 }

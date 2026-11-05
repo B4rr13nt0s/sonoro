@@ -113,7 +113,7 @@ export function ResultadosVehiculo({
 }) {
   return (
     <div className="pt-10 pb-16 sm:pb-22">
-      <h3 className="text-26 sm:text-38 font-semibold tracking-[-0.03em]">{titulo}</h3>
+      <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.03em]">{titulo}</h2>
 
       {!hayResultados(compat) ? (
         <p className="text-texto-secundario mt-4 text-[15px]">{SIN_RESULTADOS}</p>
@@ -121,17 +121,17 @@ export function ResultadosVehiculo({
         <>
           {compat.receptores.length > 0 ? (
             <section className="mt-8 flex flex-col gap-4">
-              <h4 className={CLASE_ETIQUETA}>Receptores</h4>
+              <h3 className={CLASE_ETIQUETA}>Receptores</h3>
               <Rejilla items={compat.receptores} titulo={titulo} urlConsulta={urlConsulta} />
             </section>
           ) : null}
 
           {compat.grupos.length > 0 ? (
             <section className="mt-12 flex flex-col gap-8">
-              <h4 className={CLASE_ETIQUETA}>Bocinas</h4>
+              <h3 className={CLASE_ETIQUETA}>Bocinas</h3>
               {compat.grupos.map((grupo) => (
                 <div key={grupo.ubicacion} className="flex flex-col gap-4">
-                  <h5 className="text-[15px] font-semibold">{tituloGrupo(grupo)}</h5>
+                  <h4 className="text-[15px] font-semibold">{tituloGrupo(grupo)}</h4>
                   {grupo.bocinas.length > 0 ? (
                     <Rejilla items={grupo.bocinas} titulo={titulo} urlConsulta={urlConsulta} />
                   ) : (

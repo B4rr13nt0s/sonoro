@@ -11,6 +11,7 @@ import { ERROR_CARGA, tituloVehiculo } from "@/lib/vehiculos/textos.ts";
 import type { DatosVehiculos } from "@/lib/vehiculos/types.ts";
 import {
   escribirSeleccion,
+  hrefVehiculo,
   leerSeleccion,
   resolverSeleccion,
   type Seleccion,
@@ -23,9 +24,10 @@ import {
 
 // El selector de vehículos de /buscar: marca, modelo y año (y versión cuando
 // ese año tiene más de un tablero, o una sola fila que no es de todos los
-// carros), y lo que cabe en ese vehículo. Vive en el
-// estado vacío de la búsqueda —sin nada escrito—, porque el enlace propio no
-// entraba en el nav a 1280 px (docs/superpowers/specs/2026-11-04-selector-vehiculos-design.md).
+// carros), y lo que cabe en ese vehículo. Es el panel de la pestaña «Por
+// vehículo» de /buscar: el enlace propio no entraba en el nav a 1280 px
+// (docs/superpowers/specs/2026-11-04-selector-vehiculos-design.md y
+// 2026-11-05-buscar-interfaz-design.md).
 //
 // Como el resto de /buscar, lo elegido vive en la dirección
 // (/buscar?vehiculo=toyota&modelo=corolla&anio=2010) y cada cambio la
@@ -83,9 +85,10 @@ export function BusquedaPorVehiculo({
     [datos, resuelta],
   );
 
+  // Sin nada elegido, hrefVehiculo deja `?por=vehiculo`: `/buscar` a secas
+  // pasaría a la pestaña «Por producto».
   function cambiar(sel: Seleccion) {
-    const q = escribirSeleccion(sel);
-    window.history.replaceState(null, "", q ? `/buscar?${q}` : "/buscar");
+    window.history.replaceState(null, "", hrefVehiculo(sel));
   }
 
   function reintentar() {
@@ -100,13 +103,9 @@ export function BusquedaPorVehiculo({
   const conVersiones = (opciones?.versiones.length ?? 0) > 0;
 
   return (
-    <section className="px-6 pt-10 sm:px-12">
-      <h2 className="text-22 font-semibold tracking-[-0.02em]">
-        Receptores y bocinas por vehículo
-      </h2>
-
+    <section className="px-6 pt-6 sm:px-12 sm:pt-8">
       {carga.estado === "error" ? (
-        <div className="mt-4 flex flex-col items-start gap-3">
+        <div className="flex flex-col items-start gap-3">
           <p className="text-texto-secundario text-[15px]">{ERROR_CARGA}</p>
           <div>
             <button
@@ -119,7 +118,7 @@ export function BusquedaPorVehiculo({
           </div>
         </div>
       ) : (
-        <div className="mt-4 flex flex-col gap-2.5 sm:flex-row">
+        <div className="flex flex-col gap-2.5 sm:flex-row">
           <select
             aria-label="Marca"
             value={marca ?? ""}
