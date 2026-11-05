@@ -77,3 +77,20 @@ test("a 768 px Ordenar queda en la barra, a la derecha", async ({ page }) => {
   expect(caja).not.toBeNull();
   expect(ancho - (caja!.x + caja!.width)).toBeLessThanOrEqual(48);
 });
+
+test("al quitar un filtro el foco pasa al siguiente, y «Quitar filtros» lo deja en «Todo»", async ({
+  page,
+}) => {
+  await page.goto(`/buscar?q=bocina&marca=${encodeURIComponent(MARCA)}&disp=disponible`);
+  const quitarMarca = page.getByRole("button", { name: `Quitar filtro: ${MARCA}` });
+  await expect(quitarMarca).toBeVisible();
+  await quitarMarca.focus();
+  await page.keyboard.press("Enter");
+  await expect(page).not.toHaveURL(/[?&]marca=/);
+  await expect(page.getByRole("button", { name: "Quitar filtro: Disponible" })).toBeFocused();
+
+  await page.getByRole("button", { name: "Quitar filtros" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/buscar\?q=bocina$/);
+  await expect(page.getByRole("button", { name: "Todo", exact: true })).toBeFocused();
+});

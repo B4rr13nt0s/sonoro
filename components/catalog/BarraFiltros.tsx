@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef } from "react";
+
 import { CLASE_SELECT } from "@/components/ui/campos.ts";
 import { etiquetaCanales } from "@/lib/busqueda/acotar.ts";
 import {
@@ -76,13 +78,41 @@ export function BarraFiltros({
 }) {
   const activos = filtrosActivos(filtros, usosEscritos.length > 0);
   const hayFiltros = Object.values(filtros).some((valor) => valor !== null);
+  const raiz = useRef<HTMLDivElement>(null);
+
+  // El botón que se toca desaparece con su filtro, y el foco del teclado caía
+  // en <body>. Se mueve ANTES del cambio a algo que sigue estando: la píldora
+  // siguiente (o la anterior), «Quitar filtros», la lista de ese filtro o
+  // «Todo». Si igual se pierde —la lista deja de tener opciones—, va a «Todo».
+  function enfocar(destino: string) {
+    const buscar = (d: string) => raiz.current?.querySelector<HTMLElement>(`[data-foco="${d}"]`);
+    buscar(destino)?.focus();
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        if (document.activeElement === document.body) buscar("todo")?.focus();
+      }),
+    );
+  }
+
+  function quitarActivo(indice: number) {
+    const { campo } = activos[indice];
+    const vecino = activos[indice + 1] ?? activos[indice - 1];
+    enfocar(vecino ? `quitar-${vecino.campo}` : `lista-${campo}`);
+    cambiar({ [campo]: null });
+  }
+
+  function quitarTodos() {
+    enfocar("todo");
+    cambiar(SIN_FILTROS);
+  }
 
   return (
-    <div className="flex flex-col gap-3 self-stretch text-[13px]">
+    <div ref={raiz} className="flex flex-col gap-3 self-stretch text-[13px]">
       <div className="sm:border-borde-tarjeta flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:border-y sm:py-3">
         <div className="-mr-6 flex [scrollbar-width:none] gap-2.5 overflow-x-auto pr-6 sm:mr-0 sm:flex-wrap sm:overflow-visible sm:pr-0 [&::-webkit-scrollbar]:hidden">
           <button
             type="button"
+            data-foco="todo"
             onClick={() => cambiar({ categoria: null })}
             className={`${CLASE_PILDORA} ${
               !filtros.categoria
@@ -123,6 +153,7 @@ export function BarraFiltros({
           {opcionesMarca.length > 1 || filtros.marca ? (
             <select
               aria-label="Filtrar por marca"
+              data-foco="lista-marca"
               value={filtros.marca ?? ""}
               onChange={(e) => cambiar({ marca: e.target.value || null })}
               className={CLASE_LISTA}
@@ -138,6 +169,7 @@ export function BarraFiltros({
           {opcionesMedida.length > 1 || filtros.medida ? (
             <select
               aria-label="Filtrar por medida"
+              data-foco="lista-medida"
               value={filtros.medida ?? ""}
               onChange={(e) => cambiar({ medida: leerNumero(e.target.value) })}
               className={CLASE_LISTA}
@@ -153,6 +185,7 @@ export function BarraFiltros({
           {opcionesCanales.length > 1 || filtros.canales ? (
             <select
               aria-label="Filtrar por canales"
+              data-foco="lista-canales"
               value={filtros.canales ?? ""}
               onChange={(e) => cambiar({ canales: leerNumero(e.target.value) })}
               className={CLASE_LISTA}
@@ -167,6 +200,7 @@ export function BarraFiltros({
           ) : null}
           <select
             aria-label="Filtrar por disponibilidad"
+            data-foco="lista-disp"
             value={filtros.disp ?? ""}
             onChange={(e) => cambiar({ disp: leerDisponibilidad(e.target.value) })}
             className={CLASE_LISTA}
@@ -198,6 +232,7 @@ export function BarraFiltros({
           ) : opcionesUso.length > 1 || filtros.uso ? (
             <select
               aria-label="Filtrar por categoría"
+              data-foco="lista-uso"
               value={filtros.uso ?? ""}
               onChange={(e) => cambiar({ uso: leerUso(e.target.value) })}
               className={CLASE_LISTA}
@@ -230,19 +265,20 @@ export function BarraFiltros({
           escrito tampoco (se quita borrándolo del texto). */}
       {activos.length > 0 ? (
         <div className="hidden flex-wrap items-center gap-2.5 sm:flex">
-          {activos.map((activo) => (
+          {activos.map((activo, indice) => (
             <button
               key={activo.campo}
               type="button"
+              data-foco={`quitar-${activo.campo}`}
               aria-label={`Quitar filtro: ${activo.etiqueta}`}
-              onClick={() => cambiar({ [activo.campo]: null })}
+              onClick={() => quitarActivo(indice)}
               className="bg-fondo-alt border-borde-pildora text-texto-nav inline-flex items-center gap-2 rounded-full border px-4 py-2"
             >
               {activo.etiqueta}
               <IconoQuitar />
             </button>
           ))}
-          <button type="button" onClick={() => cambiar(SIN_FILTROS)} className={CLASE_ENLACE}>
+          <button type="button" onClick={quitarTodos} className={CLASE_ENLACE}>
             Quitar filtros
           </button>
         </div>
@@ -253,7 +289,7 @@ export function BarraFiltros({
       {hayFiltros ? (
         <button
           type="button"
-          onClick={() => cambiar(SIN_FILTROS)}
+          onClick={quitarTodos}
           className={`${CLASE_ENLACE} self-start sm:hidden`}
         >
           Quitar filtros
