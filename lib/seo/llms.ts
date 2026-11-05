@@ -46,7 +46,11 @@ export function buildLlmsTxt({
       `los ${productos(totalProductos)} a la venta, de todas las categorías.`,
     ),
     enlace("Productos destacados", "/productos", "una selección del catálogo."),
-    enlace("Buscar", "/buscar", "búsqueda por nombre, marca o código."),
+    enlace(
+      "Buscar",
+      "/buscar",
+      "búsqueda por nombre, marca o código, y qué receptores y bocinas caben en cada vehículo.",
+    ),
     "",
     "## Categorías",
     "",
