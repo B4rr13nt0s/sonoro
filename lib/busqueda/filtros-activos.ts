@@ -28,6 +28,34 @@ export const USOS_ETIQUETA: Record<Uso, string> = {
   motorsports: "Motorsports",
 };
 
+export const ORDENES = {
+  relevancia: "Ordenar: relevancia",
+  precio_asc: "Ordenar: precio de menor a mayor",
+  precio_desc: "Ordenar: precio de mayor a menor",
+} as const;
+export type Orden = keyof typeof ORDENES;
+
+// Los valores de la dirección: lo que no se reconoce no filtra.
+export function leerOrden(valor: string | null): Orden {
+  return valor !== null && Object.hasOwn(ORDENES, valor) ? (valor as Orden) : "relevancia";
+}
+
+export function leerUso(valor: string | null): Uso | null {
+  return valor !== null && Object.hasOwn(USOS_ETIQUETA, valor) ? (valor as Uso) : null;
+}
+
+export function leerDisponibilidad(valor: string | null): Disponibilidad | null {
+  return valor !== null && Object.hasOwn(DISPONIBILIDADES, valor)
+    ? (valor as Disponibilidad)
+    : null;
+}
+
+/** Una medida o un número de canales de la URL: un número positivo, o nada. */
+export function leerNumero(valor: string | null): number | null {
+  const numero = Number(valor);
+  return valor !== null && Number.isFinite(numero) && numero > 0 ? numero : null;
+}
+
 export type CampoActivo = "marca" | "medida" | "canales" | "disp" | "uso";
 
 /**

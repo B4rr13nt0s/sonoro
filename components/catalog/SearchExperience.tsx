@@ -3,11 +3,11 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useId, useMemo, useState } from "react";
 
+import { BarraFiltros } from "@/components/catalog/BarraFiltros";
 import { PestanasBuscar } from "@/components/catalog/PestanasBuscar";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { SinResultadosBusqueda } from "@/components/catalog/SinResultadosBusqueda";
 import { SugerenciasBusqueda, type ItemSugerencia } from "@/components/catalog/SugerenciasBusqueda";
-import { CLASE_SELECT } from "@/components/ui/campos.ts";
 import { BusquedaPorVehiculo } from "@/components/vehiculos/BusquedaPorVehiculo";
 import type { Disponibilidad, Uso } from "@/lib/catalog/index.ts";
 import {
@@ -23,13 +23,17 @@ import {
 } from "@/lib/catalog/orden.ts";
 import { formatQ } from "@/lib/format/precio.ts";
 
-import { canalesDe, etiquetaCanales, medidasDe } from "@/lib/busqueda/acotar.ts";
+import { canalesDe, medidasDe } from "@/lib/busqueda/acotar.ts";
 import { hrefPestana, leerPestana, type Pestana } from "@/lib/busqueda/pestana.ts";
 import {
-  DISPONIBILIDADES,
   SIN_FILTROS,
   USOS_ETIQUETA,
+  leerDisponibilidad,
+  leerNumero,
+  leerOrden,
+  leerUso,
   type Filtros,
+  type Orden,
 } from "@/lib/busqueda/filtros-activos.ts";
 import {
   buscar,
@@ -45,16 +49,7 @@ const INCREMENTO = 12;
 
 type Marca = { nombre: string; slug: string };
 
-const ORDENES = {
-  relevancia: "Ordenar: relevancia",
-  precio_asc: "Ordenar: precio de menor a mayor",
-  precio_desc: "Ordenar: precio de mayor a menor",
-} as const;
-type Orden = keyof typeof ORDENES;
-
 const ORDEN_USOS = Object.keys(USOS_ETIQUETA) as Uso[];
-
-const CLASE_PILDORA = "rounded-full border px-4.5 py-3 lg:py-2";
 
 /**
  * Lee la búsqueda de la URL. Aparte de `Busqueda` para que app/buscar/page.tsx
@@ -84,26 +79,6 @@ export function SearchExperience({
 function leerVisibles(valor: string | null): number {
   const numero = Number(valor);
   return Number.isInteger(numero) && numero > INCREMENTO ? numero : INCREMENTO;
-}
-
-function leerOrden(valor: string | null): Orden {
-  return valor !== null && Object.hasOwn(ORDENES, valor) ? (valor as Orden) : "relevancia";
-}
-
-function leerUso(valor: string | null): Uso | null {
-  return valor !== null && Object.hasOwn(USOS_ETIQUETA, valor) ? (valor as Uso) : null;
-}
-
-function leerDisponibilidad(valor: string | null): Disponibilidad | null {
-  return valor !== null && Object.hasOwn(DISPONIBILIDADES, valor)
-    ? (valor as Disponibilidad)
-    : null;
-}
-
-/** Una medida o un número de canales de la URL: un número positivo, o nada. */
-function leerNumero(valor: string | null): number | null {
-  const numero = Number(valor);
-  return valor !== null && Number.isFinite(numero) && numero > 0 ? numero : null;
 }
 
 interface Estado {
@@ -560,153 +535,18 @@ export function Busqueda({
                   ) : null}
 
                   {base.length > 0 ? (
-                    <div className="flex flex-col gap-3 text-[13px]">
-                      <div className="flex flex-wrap items-center gap-2.5">
-                        <button
-                          type="button"
-                          onClick={() => cambiar({ categoria: null })}
-                          className={`${CLASE_PILDORA} ${
-                            !filtros.categoria
-                              ? "border-negro bg-negro text-white"
-                              : "border-borde-pildora text-texto-nav"
-                          }`}
-                        >
-                          Todo
-                        </button>
-                        {[...conteoPorCategoria.entries()].map(([categoria, cantidad]) => (
-                          <button
-                            key={categoria}
-                            type="button"
-                            onClick={() => cambiar({ categoria })}
-                            className={`${CLASE_PILDORA} ${
-                              filtros.categoria === categoria
-                                ? "border-negro bg-negro text-white"
-                                : "border-borde-pildora text-texto-nav"
-                            }`}
-                          >
-                            {categoria}{" "}
-                            <span
-                              className={
-                                filtros.categoria === categoria
-                                  ? "text-texto-sobre-negro"
-                                  : "text-texto-terciario"
-                              }
-                            >
-                              {cantidad}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-2.5">
-                        {/* Categoría (carro, marino, motorsports). Si la consulta ya
-                      la nombra («bocinas marino»), el filtro viene de lo
-                      escrito y el campo lo muestra, fijo. */}
-                        {usosEscritos.length > 0 ? (
-                          <select
-                            aria-label="Categoría (viene de lo que escribiste)"
-                            value="escrita"
-                            disabled
-                            className={CLASE_SELECT}
-                          >
-                            <option value="escrita">
-                              Categoría: {usosEscritos.map((u) => USOS_ETIQUETA[u]).join(" o ")}
-                            </option>
-                          </select>
-                        ) : opcionesUso.length > 1 || filtros.uso ? (
-                          <select
-                            aria-label="Filtrar por categoría"
-                            value={filtros.uso ?? ""}
-                            onChange={(e) => cambiar({ uso: leerUso(e.target.value) })}
-                            className={CLASE_SELECT}
-                          >
-                            <option value="">Categoría: todas</option>
-                            {opcionesUso.map(([u, cantidad]) => (
-                              <option key={u} value={u}>
-                                Categoría: {USOS_ETIQUETA[u]} ({cantidad})
-                              </option>
-                            ))}
-                          </select>
-                        ) : null}
-                        {opcionesMedida.length > 1 || filtros.medida ? (
-                          <select
-                            aria-label="Filtrar por medida"
-                            value={filtros.medida ?? ""}
-                            onChange={(e) => cambiar({ medida: leerNumero(e.target.value) })}
-                            className={CLASE_SELECT}
-                          >
-                            <option value="">Medida: todas</option>
-                            {opcionesMedida.map(([pulgadas, cantidad]) => (
-                              <option key={pulgadas} value={pulgadas}>
-                                Medida: {pulgadas}&quot; ({cantidad})
-                              </option>
-                            ))}
-                          </select>
-                        ) : null}
-                        {opcionesCanales.length > 1 || filtros.canales ? (
-                          <select
-                            aria-label="Filtrar por canales"
-                            value={filtros.canales ?? ""}
-                            onChange={(e) => cambiar({ canales: leerNumero(e.target.value) })}
-                            className={CLASE_SELECT}
-                          >
-                            <option value="">Canales: todos</option>
-                            {opcionesCanales.map(([canales, cantidad]) => (
-                              <option key={canales} value={canales}>
-                                {etiquetaCanales(canales)} ({cantidad})
-                              </option>
-                            ))}
-                          </select>
-                        ) : null}
-                        {opcionesMarca.length > 1 || filtros.marca ? (
-                          <select
-                            aria-label="Filtrar por marca"
-                            value={filtros.marca ?? ""}
-                            onChange={(e) => cambiar({ marca: e.target.value || null })}
-                            className={CLASE_SELECT}
-                          >
-                            <option value="">Todas las marcas</option>
-                            {opcionesMarca.map(([marca, cantidad]) => (
-                              <option key={marca} value={marca}>
-                                {marca} ({cantidad})
-                              </option>
-                            ))}
-                          </select>
-                        ) : null}
-                        <select
-                          aria-label="Filtrar por disponibilidad"
-                          value={filtros.disp ?? ""}
-                          onChange={(e) => cambiar({ disp: leerDisponibilidad(e.target.value) })}
-                          className={CLASE_SELECT}
-                        >
-                          <option value="">Cualquier disponibilidad</option>
-                          {(Object.keys(DISPONIBILIDADES) as Disponibilidad[]).map((d) => {
-                            const cantidad = conteoPorDisp.get(d) ?? 0;
-                            return (
-                              <option
-                                key={d}
-                                value={d}
-                                disabled={cantidad === 0 && filtros.disp !== d}
-                              >
-                                {DISPONIBILIDADES[d]} ({cantidad})
-                              </option>
-                            );
-                          })}
-                        </select>
-                        <select
-                          aria-label="Ordenar resultados"
-                          value={ordenActivo}
-                          onChange={(e) => cambiar({ orden: leerOrden(e.target.value) })}
-                          className={`${CLASE_SELECT} border-negro`}
-                        >
-                          {(Object.keys(ORDENES) as Orden[]).map((o) => (
-                            <option key={o} value={o}>
-                              {ORDENES[o]}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
+                    <BarraFiltros
+                      filtros={filtros}
+                      conteoPorCategoria={conteoPorCategoria}
+                      opcionesUso={opcionesUso}
+                      usosEscritos={usosEscritos}
+                      opcionesMedida={opcionesMedida}
+                      opcionesCanales={opcionesCanales}
+                      opcionesMarca={opcionesMarca}
+                      conteoPorDisp={conteoPorDisp}
+                      ordenActivo={ordenActivo}
+                      cambiar={cambiar}
+                    />
                   ) : null}
                 </section>
 
