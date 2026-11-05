@@ -5,6 +5,7 @@ import { Busqueda, SearchExperience } from "@/components/catalog/SearchExperienc
 import { tarjetasBuscables } from "@/lib/catalog/buscables.ts";
 import { listAllProducts, listBrands } from "@/lib/catalog/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
+import { absoluteUrl } from "@/lib/seo/site.ts";
 import { TEXTOS_BUSCAR } from "@/lib/seo/textos.ts";
 
 export const metadata: Metadata = metadataPagina({ ...TEXTOS_BUSCAR, ruta: "/buscar" });
@@ -23,6 +24,9 @@ export default async function BuscarPage() {
   const productos = await listAllProducts({ activo: true });
   const tarjetas = tarjetasBuscables(productos);
   const marcas = (await listBrands()).map((marca) => ({ nombre: marca.nombre, slug: marca.slug }));
+  // Resuelta acá porque SITE_URL no existe en el cliente: la usa el mensaje
+  // de WhatsApp del selector de vehículos, que lleva la dirección de /buscar.
+  const urlBuscar = absoluteUrl("/buscar");
 
   // Prerenderizada: la búsqueda lee `?q=` con useSearchParams, que no existe
   // al prerenderizar, así que SOLO ese bloque va en un <Suspense>. El HTML
@@ -31,8 +35,10 @@ export default async function BuscarPage() {
   // tendría que armarse en cada visita, y es la más visitada después del
   // inicio: la ruta principal de navegación.
   return (
-    <Suspense fallback={<Busqueda productos={tarjetas} marcas={marcas} busqueda="" />}>
-      <SearchExperience productos={tarjetas} marcas={marcas} />
+    <Suspense
+      fallback={<Busqueda productos={tarjetas} marcas={marcas} busqueda="" urlBuscar={urlBuscar} />}
+    >
+      <SearchExperience productos={tarjetas} marcas={marcas} urlBuscar={urlBuscar} />
     </Suspense>
   );
 }

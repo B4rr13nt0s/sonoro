@@ -6,6 +6,8 @@ import { useId, useMemo, useState } from "react";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { SinResultadosBusqueda } from "@/components/catalog/SinResultadosBusqueda";
 import { SugerenciasBusqueda, type ItemSugerencia } from "@/components/catalog/SugerenciasBusqueda";
+import { CLASE_SELECT } from "@/components/ui/campos.ts";
+import { BusquedaPorVehiculo } from "@/components/vehiculos/BusquedaPorVehiculo";
 import type { Disponibilidad, Uso } from "@/lib/catalog/index.ts";
 import {
   CATEGORIA_SISTEMAS,
@@ -58,8 +60,6 @@ const USOS: Record<Uso, string> = {
 const ORDEN_USOS = Object.keys(USOS) as Uso[];
 
 const CLASE_PILDORA = "rounded-full border px-4.5 py-3 lg:py-2";
-const CLASE_SELECT =
-  "border-borde-pildora text-texto-nav rounded-full border bg-white px-4.5 py-3 text-[13px] lg:py-2";
 
 /**
  * Lee la búsqueda de la URL. Aparte de `Busqueda` para que app/buscar/page.tsx
@@ -69,11 +69,20 @@ const CLASE_SELECT =
 export function SearchExperience({
   productos,
   marcas,
+  urlBuscar,
 }: {
   productos: ProductoBuscable[];
   marcas: Marca[];
+  urlBuscar: string;
 }) {
-  return <Busqueda productos={productos} marcas={marcas} busqueda={useSearchParams().toString()} />;
+  return (
+    <Busqueda
+      productos={productos}
+      marcas={marcas}
+      busqueda={useSearchParams().toString()}
+      urlBuscar={urlBuscar}
+    />
+  );
 }
 
 /** «Ver más» empieza en INCREMENTO; lo que no sea un entero mayor, también. */
@@ -151,11 +160,14 @@ export function Busqueda({
   productos,
   marcas,
   busqueda,
+  urlBuscar,
 }: {
   productos: ProductoBuscable[];
   marcas: Marca[];
   /** Los query params actuales, como texto (`q=memphis&ver=16`). */
   busqueda: string;
+  /** La URL absoluta de /buscar (para el mensaje de WhatsApp del selector de vehículos). */
+  urlBuscar: string;
 }) {
   const router = useRouter();
   const idLista = useId();
@@ -495,9 +507,15 @@ export function Busqueda({
       </section>
 
       {!consulta ? (
-        <section className="px-6 pt-6 sm:px-12">
-          <p className="text-texto-terciario text-[15px]">Escribe para buscar en el catálogo.</p>
-        </section>
+        <>
+          <section className="px-6 pt-6 sm:px-12">
+            <p className="text-texto-terciario text-[15px]">Escribe para buscar en el catálogo.</p>
+          </section>
+          {/* Sin nada escrito, la otra forma de buscar: por vehículo. Con una
+              consulta no se dibuja (ni baja sus datos), y `irA` arma la
+              dirección desde cero, así que escribir borra el vehículo. */}
+          <BusquedaPorVehiculo busqueda={busqueda} urlBuscar={urlBuscar} />
+        </>
       ) : (
         <>
           <section className="flex flex-col items-start gap-4 px-6 pt-8 pb-3 sm:px-12">
