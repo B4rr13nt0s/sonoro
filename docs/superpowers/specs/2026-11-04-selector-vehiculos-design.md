@@ -2,7 +2,9 @@
 
 Fecha: 4 de noviembre de 2026 · Estado: aprobado. Cambio del 4 de noviembre:
 el selector vive en `/buscar`, no en una página propia (ver «Por qué en
-`/buscar`»).
+`/buscar`»). Cambio del 5 de noviembre: dentro de `/buscar` vive en la
+pestaña «Por vehículo», no en la página sin nada escrito
+(`2026-11-05-buscar-interfaz-design.md`).
 
 El cliente elige marca, modelo y año de su carro, y `/buscar` le muestra qué
 receptores y bocinas del catálogo caben, directo o con accesorios. La idea viene
@@ -460,8 +462,8 @@ Lógica pura con `node --test`; la página con Playwright.
 7. **Página** (`e2e/vehiculos.spec.ts`): la prueba reemplaza
    `/buscar/vehiculos.json` con `page.route` por datos de prueba, así no depende
    de qué filas haya revisado el negocio. Además de los casos de abajo, comprueba
-   que escribir una búsqueda oculta el selector y saca el vehículo de la
-   dirección.
+   que cambiar de pestaña limpia la dirección y que vaciar la marca deja la
+   pestaña «Por vehículo».
    - **Caso completo:**
      - elegir marca, modelo y año;
      - comprobar la dirección, los resultados por sección y la frase de
