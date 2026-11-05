@@ -34,9 +34,17 @@ test("null con un JSON ajeno", async () => {
 });
 
 test("null si la descarga se traba más que el plazo", async () => {
+  // Una descarga de verdad tiene el socket abierto, y eso mantiene vivo el
+  // proceso; el temporizador de AbortSignal.timeout no (va con unref). Sin
+  // esto, en Node 22 el proceso del test terminaba antes de que venciera el
+  // plazo y la prueba salía cancelada («Promise resolution is still pending»).
   const trabado: typeof fetch = (_url, init) =>
     new Promise((_resolve, reject) => {
-      init?.signal?.addEventListener("abort", () => reject(init.signal?.reason));
+      const socketAbierto = setTimeout(() => {}, 60_000);
+      init?.signal?.addEventListener("abort", () => {
+        clearTimeout(socketAbierto);
+        reject(init.signal?.reason);
+      });
     });
   assert.equal(await descargarDatosVehiculos(trabado, 20), null);
 });
