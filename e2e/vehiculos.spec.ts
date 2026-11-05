@@ -55,6 +55,16 @@ async function servirDatos(page: Page) {
   );
 }
 
+// Sin fotos optimizadas, como en chat.spec.ts: un vehículo trae unas 45
+// tarjetas, y en el runner de CI (pocos núcleos, caché de imágenes vacía) el
+// optimizador de Next se quedaba con el procesador del servidor. La recarga,
+// que espera a «load», pasaba los 30 s, y el clic en la pieza no llegaba a
+// navegar en 5 s. Lo que se prueba acá son los datos y los enlaces, no las
+// fotos.
+test.beforeEach(async ({ page }) => {
+  await page.route(/\/_next\/image/, (ruta) => ruta.abort());
+});
+
 // La tarjeta y, debajo, fuera de ella, las líneas de estado y de nota.
 function itemDe(page: Page, nombre: string) {
   return page.locator("div.flex.flex-col.gap-2").filter({ hasText: nombre }).first();
