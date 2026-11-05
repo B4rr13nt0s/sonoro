@@ -1,10 +1,22 @@
 # Selector de vehículos — diseño
 
-Fecha: 4 de noviembre de 2026 · Estado: aprobado en conversación, pendiente de revisión escrita
+Fecha: 4 de noviembre de 2026 · Estado: aprobado. Cambio del 4 de noviembre:
+el selector vive en `/buscar`, no en una página propia (ver «Por qué en
+`/buscar`»).
 
-El cliente elige marca, modelo y año de su carro, y la página le muestra qué
+El cliente elige marca, modelo y año de su carro, y `/buscar` le muestra qué
 receptores y bocinas del catálogo caben, directo o con accesorios. La idea viene
 de «Outfit my car» de Crutchfield, en versión mucho más chica.
+
+### Por qué en `/buscar`
+
+La primera versión de esta spec le daba al selector su propia página,
+`/vehiculos`, con un enlace en el nav. Al medir, el enlace no entró: a 1280 px,
+«Vehículos» (56 px más los 22 px de separación) empujaba el grupo de la derecha
+21 px dentro del margen de 48 px. El negocio decidió poner el selector en
+`/buscar`, que ya se alcanza en un toque desde cualquier página y que, sin nada
+escrito, solo mostraba «Escribe para buscar en el catálogo.». Buscar por
+vehículo es otra forma de buscar.
 
 ---
 
@@ -25,7 +37,10 @@ dato.
 - Los choques con ventilas, controles o la consola: no se toman en cuenta.
 - El chat: no contesta preguntas de compatibilidad.
 - La ficha de producto: no dice en qué vehículos cabe cada producto.
-- Páginas indexables por vehículo: Google indexa solo `/vehiculos`.
+- Páginas indexables por vehículo: no hay página propia, y el canonical de
+  `/buscar` no lleva parámetros.
+- Combinar la búsqueda escrita con el vehículo («bocinas» para un Corolla): o se
+  escribe, o se elige el vehículo.
 
 ---
 
@@ -42,10 +57,10 @@ dato.
 | 7 | La DMH-ZS9350BT cabe donde la guía da una solución de 1 DIN o de 2 DIN. |
 | 8 | Una bocina cabe solo en una ubicación de su misma medida. No hay equivalencias: 5x7" no es 6x8", 6.5" no es 6.75". |
 | 9 | Los datos de vehículos viven en un libro de Google Sheets aparte, con su propio comando de importación. |
-| 10 | El selector tiene su propia página, `/vehiculos`. |
-| 11 | «Vehículos» va en el nav, en el grupo de la derecha, junto a Marcas y Nosotros. |
-| 12 | La frase de instalación nueva va en la página y en los términos. |
-| 13 | Una sola página, calculada en el navegador como `/buscar`. Google indexa solo `/vehiculos`. |
+| 10 | El selector vive en `/buscar`, debajo del campo, cuando no hay nada escrito. No tiene página propia. |
+| 11 | El nav no cambia: «Vehículos» no entró a 1280 px. |
+| 12 | La frase de instalación nueva va al final de los resultados del selector y en los términos. |
+| 13 | Se calcula en el navegador, como el resto de `/buscar`. El canonical sigue siendo `/buscar`, sin parámetros. |
 
 ---
 
@@ -114,7 +129,7 @@ escribir.
 - falta o sobra una hoja;
 - falta o sobra una columna, o vienen en otro orden;
 - **no queda ninguna fila publicable.** La primera carga entra entera con
-  `revisado = no`. Sin esta regla, el enlace del nav llevaría a una página sin
+  `revisado = no`. Sin esta regla, `/buscar` mostraría un selector sin
   vehículos. Mientras el negocio no marque las primeras filas con `sí`, el build
   no pasa.
 
@@ -189,9 +204,10 @@ igual antes y después de que el negocio cambie el libro del catálogo.
 
 ### Lo que baja el navegador
 
-`app/vehiculos/datos.json/route.ts`, igual que `/chat/catalogo.json`: se genera
+`app/buscar/vehiculos.json/route.ts`, igual que `/chat/catalogo.json`: se genera
 en el build (`force-static`), lleva `X-Robots-Tag: noindex` y no entra al sitemap
-ni al `Disallow`. Lo arma una función pura, `armarDatosVehiculos()` en
+ni al `Disallow`. `/buscar` lo baja solo cuando no hay nada escrito, que es
+cuando se ve el selector. Lo arma una función pura, `armarDatosVehiculos()` en
 `lib/vehiculos/datos.ts`, con su prueba, a partir de lo que devuelve
 `lib/catalog/` (nunca de `catalog.json` directo). Contiene:
 
@@ -269,31 +285,41 @@ Por estado: Cabe, Con pieza, Con accesorios y Consultar. Dentro de cada estado,
 
 ---
 
-## 3. La página `/vehiculos`
+## 3. El selector en `/buscar`
+
+### Dónde va
+
+En `/buscar`, cuando no hay nada escrito: debajo del campo y de «Escribe para
+buscar en el catálogo.». Si el cliente escribe algo, manda la búsqueda y el
+selector se oculta; al borrar lo escrito, vuelve.
 
 ### Estado en la dirección
 
-Igual que `/buscar`, el vehículo elegido vive en la dirección:
-`/vehiculos?marca=toyota&modelo=corolla&anio=2010`, más `&version=tablero-gris`
-cuando hace falta.
+Como el resto de `/buscar`, el vehículo elegido vive en la dirección:
+`/buscar?vehiculo=toyota&modelo=corolla&anio=2010`, más `&version=tablero-gris`
+cuando hace falta. La marca del vehículo va en `vehiculo` y no en `marca`,
+porque `/buscar` ya usa `marca` para filtrar por marca de producto.
 
 - Cada cambio usa `replaceState`, así que «Atrás» sale de la página.
-- La página se prerenderiza. Solo el bloque que lee la dirección va en un
-  `<Suspense>`, con el selector vacío como fallback.
-- El canonical es `/vehiculos`, sin parámetros. Título y descripción salen de
-  `lib/seo/textos.ts` (ver parte 4).
+- Escribir una búsqueda borra el vehículo de la dirección, y elegir un vehículo
+  la deja sin `q`: las dos cosas no van juntas.
+- La página sigue prerenderizada, con el mismo `<Suspense>` de hoy. En el
+  fallback, el selector sale vacío y deshabilitado.
+- El canonical sigue siendo `/buscar`, sin parámetros.
 - La lectura y escritura de la dirección es lógica pura en `lib/vehiculos/url.ts`.
   Un valor que no existe no rompe nada: el selector se queda en el primer nivel
   inválido, con lo anterior ya elegido.
 
 ### Carga
 
-Al abrir la página se baja `/vehiculos/datos.json`. Si falla, la página dice «No
-se pudo cargar la lista de vehículos.» con un botón «Reintentar».
+Cuando `/buscar` muestra el selector, se baja `/buscar/vehiculos.json`. Si falla,
+el selector dice «No se pudo cargar la lista de vehículos.» con un botón
+«Reintentar».
 
 ### Encabezado y selector
 
-- El `h1` es «Receptores y bocinas por vehículo», sin párrafo de introducción.
+- El bloque abre con un `h2`, «Receptores y bocinas por vehículo», sin párrafo de
+  introducción. El `h1` de la página sigue siendo el de `/buscar`.
 - **Tres listas nativas: Marca, Modelo y Año.** Cada una se habilita al elegir la
   anterior. Los años van del más nuevo al más viejo.
 - **«Versión»** aparece solo si ese año tiene más de una versión.
@@ -339,26 +365,19 @@ Los arma `lib/whatsapp/message.ts`, como los demás, y se abren con
   Hola Sonoro, quiero consultar sobre:
   Pantalla de 9" DMH-AP6650BT (DMH-AP6650BT)
   Vehículo: Toyota Corolla 2010 · Tablero gris
-  https://…/vehiculos?marca=toyota&modelo=corolla&anio=2010&version=tablero-gris
+  https://…/buscar?vehiculo=toyota&modelo=corolla&anio=2010&version=tablero-gris
   ```
 
-  La URL es la absoluta de la página con el vehículo, para que el vendedor vea
-  lo mismo que el cliente.
+  La URL es la absoluta de `/buscar` con el vehículo, para que el vendedor vea lo
+  mismo que el cliente.
 
 ---
 
 ## 4. Cambios en el resto del sitio
 
-1. **Nav** (`components/layout/SiteHeader.tsx`): `{ href: "/vehiculos", nombre:
-   "Vehículos" }` en `ENLACES_SECUNDARIOS`, después de Marcas. El grupo queda
-   **Marcas · Vehículos · Nosotros · Buscar · Carrito**. La misma lista arma el
-   menú de pantallas chicas y la marca de página actual.
-   - **Hay que medir antes:** a 1280 sobran 97 px y el enlace ocupa unos 80, así
-     que quedarían unos 17. Es el primer paso de la implementación: sin scroll
-     horizontal y con la barra en una línea. En Windows el navegador dibuja
-     Arial; Helvetica Neue, en Mac, es algo más ancha.
-   - **Si no entra, se para y se pregunta.** No se mueve el breakpoint sin
-     consultar.
+1. **Nav:** no cambia. Medido el 4 de noviembre: a 1280 px quedan 57 px libres
+   en la barra, sin contar los 40 px de separación fija (los 97 de CLAUDE.md los
+   incluyen), y un enlace más del largo de «Vehículos» ocupa 78.
 2. **Instalación** (`lib/politicas.ts`): `INSTALACION` pasa a ser, palabra por
    palabra:
 
@@ -368,31 +387,30 @@ Los arma `lib/whatsapp/message.ts`, como los demás, y se abren con
    > adicional.
 
    La leen el párrafo «Instalación» de `/legal/terminos`, la respuesta de
-   instalación del chat y el final de `/vehiculos`. `/legal/garantias`,
+   instalación del chat y el final de los resultados del selector. `/legal/garantias`,
    `/nosotros`, `TEXTOS_NOSOTROS` y `llms.txt` conservan su redacción.
 3. **Las dos pantallas de 9":** el negocio cambia su formato a `especifico` en el
    libro del catálogo y se vuelve a importar. `labels.ts` no cambia.
    - En la ficha de las dos, «Formato» pasa de «Pantalla flotante» a «Específico
      por vehículo».
    - Una búsqueda de «pantalla flotante» deja de traerlas por ese dato.
-4. **Textos** (`lib/seo/textos.ts`): `TEXTOS_VEHICULOS`, con el título
-   «Receptores y bocinas por vehículo» y la descripción «Elige marca, modelo y
-   año de tu carro y mira qué receptores y bocinas del catálogo de Sonoro caben,
-   directo o con accesorios.» No cambian con el vehículo elegido.
-5. **`llms.txt`** (`lib/seo/llms.ts`): una línea con `/vehiculos`, como las de
-   Buscar y Marcas.
-6. **Sitemap:** `/vehiculos` con prioridad 0.6 y actualización mensual.
-   `/vehiculos/datos.json` no entra.
+4. **Textos** (`lib/seo/textos.ts`): `TEXTOS_BUSCAR` no cambia, y no hace falta
+   un texto nuevo: no hay página nueva.
+5. **`llms.txt`** (`lib/seo/llms.ts`): la línea de Buscar pasa a «búsqueda por
+   nombre, marca o código, y qué receptores y bocinas caben en cada vehículo.»
+6. **Sitemap:** no cambia. `/buscar/vehiculos.json` no entra.
 7. **Build:** `"build": "npm run import:catalog && npm run import:vehiculos && next build"`.
 8. **CLAUDE.md:**
-   - § Rutas suma `/vehiculos` y `/vehiculos/datos.json`.
+   - § Rutas suma `/buscar/vehiculos.json`.
    - Una sección nueva, «Selector de vehículos», con el libro y su importador,
-     las reglas de compatibilidad, las dos pantallas especiales y por qué el
-     estado vive en la dirección.
-   - La nota del nav pasa de 97 px a lo que dé la medición.
+     las reglas de compatibilidad, las dos pantallas especiales, por qué vive en
+     `/buscar` y por qué el estado está en la dirección.
+   - La nota del nav suma la medición: un enlace más en el grupo de la derecha no
+     entra a 1280 px.
    - La regla 1 apunta a `INSTALACION` como el único lugar de la frase.
 
-**No cambian:** el chat, el pie, la portada (regla 10) y la ficha de producto.
+**No cambian:** el nav, el chat, el pie, la portada (regla 10) y la ficha de
+producto.
 
 ---
 
@@ -440,8 +458,10 @@ Lógica pura con `node --test`; la página con Playwright.
    - años del más nuevo al más viejo;
    - «Versión» solo con más de una.
 7. **Página** (`e2e/vehiculos.spec.ts`): la prueba reemplaza
-   `/vehiculos/datos.json` con `page.route` por datos de prueba, así no depende
-   de qué filas haya revisado el negocio.
+   `/buscar/vehiculos.json` con `page.route` por datos de prueba, así no depende
+   de qué filas haya revisado el negocio. Además de los casos de abajo, comprueba
+   que escribir una búsqueda oculta el selector y saca el vehículo de la
+   dirección.
    - **Caso completo:**
      - elegir marca, modelo y año;
      - comprobar la dirección, los resultados por sección y la frase de
@@ -450,9 +470,8 @@ Lógica pura con `node --test`; la página con Playwright.
      - comprobar que el enlace de la pieza lleva a su ficha.
    - **Otro caso:** la descarga falla, y se comprueban «No se pudo cargar la
      lista de vehículos.» y «Reintentar».
-8. **En el navegador** (no es automática, va en el plan):
-   - la medida del nav a 1280;
-   - capturas de `/vehiculos` a 1280, 1024 y 375 px.
+8. **En el navegador** (no es automática, va en el plan): capturas de `/buscar`
+   con un vehículo elegido, a 1280, 1024 y 375 px.
 
 ---
 

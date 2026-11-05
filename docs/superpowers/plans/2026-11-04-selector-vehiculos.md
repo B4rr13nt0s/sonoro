@@ -2,9 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** La página `/vehiculos`: el cliente elige marca, modelo y año de su carro y ve qué receptores y bocinas del catálogo caben, directo o con accesorios.
+**Goal:** Un selector de vehículos dentro de `/buscar`: el cliente elige marca, modelo y año de su carro y ve qué receptores y bocinas del catálogo caben, directo o con accesorios.
 
-**Architecture:** Un libro aparte, `data/source/vehiculos.xlsx`, se importa con `npm run import:vehiculos` (lógica pura en `scripts/vehiculos/`) a `data/vehiculos.json`. En el build, `app/vehiculos/datos.json/route.ts` junta esos vehículos con los receptores, bocinas y piezas del catálogo (`armarDatosVehiculos`). La página está prerenderizada, baja ese archivo en el navegador y calcula todo con funciones puras de `lib/vehiculos/` (compatibilidad, selección en la dirección, textos), igual que `/buscar`.
+**Architecture:** Un libro aparte, `data/source/vehiculos.xlsx`, se importa con `npm run import:vehiculos` (lógica pura en `scripts/vehiculos/`) a `data/vehiculos.json`. En el build, `app/buscar/vehiculos.json/route.ts` junta esos vehículos con los receptores, bocinas y piezas del catálogo (`armarDatosVehiculos`). `/buscar`, sin nada escrito, muestra el selector, baja ese archivo y calcula todo en el navegador con funciones puras de `lib/vehiculos/` (compatibilidad, selección en la dirección, textos).
+
+> **Cambio del 4 de noviembre:** la primera versión de este plan armaba una página propia, `/vehiculos`, con enlace en el nav. El Task 1 midió que el enlace no entra a 1280 px, y el negocio decidió poner el selector en `/buscar`. La spec ya está actualizada.
 
 **Tech Stack:** Next.js 16.3.8 (App Router), React 19, TypeScript, Tailwind 4, `xlsx` (SheetJS), `zod` 4, `node:test` (Node 24), Playwright.
 
@@ -24,8 +26,7 @@
 - Commits en español, `feat(vehiculos): …` o `fix(…): …`, terminando con `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. Rama `feat/selector-vehiculos`. Sin push.
 - **Por diseño, `npm run build` falla desde el Task 8 hasta que el negocio marque al menos una fila con `sí` (Task 13).** Los tasks 1–12 no necesitan el build.
 - Textos exactos, copiados de la spec:
-  - h1 y título SEO: «Receptores y bocinas por vehículo»
-  - descripción SEO: «Elige marca, modelo y año de tu carro y mira qué receptores y bocinas del catálogo de Sonoro caben, directo o con accesorios.»
+  - título del bloque (un h2 dentro de `/buscar`): «Receptores y bocinas por vehículo»
   - estados: «Cabe» · «Cabe con» + el nombre de la pieza en el catálogo, con enlace · «Cabe con accesorios» · «Requiere un marco que depende del año, marca y modelo del vehículo. Contacta a Sonoro para más información.»
   - bajo el selector: «¿No está tu vehículo? Escríbenos por WhatsApp.», que abre «Hola Sonoro, quiero consultar qué receptores y bocinas caben en mi vehículo.»
   - grupo vacío: «No hay bocinas de 6x8" en el catálogo.» / con varias medidas, «No hay bocinas de esas medidas en el catálogo.»
@@ -36,7 +37,7 @@
 ## Review Focus
 
 1. **Un enlace compartido que quedó viejo** (el libro cambió y ya no existe ese modelo, ese año o esa versión, o trae `anio=abc`): el selector se queda en el último nivel válido, con lo anterior elegido, sin romperse. → Task 4, `resolverSeleccion`.
-2. **Una conexión que se traba** al bajar `/vehiculos/datos.json`: la página no se queda cargando para siempre; a los 8 s muestra el error con «Reintentar». → Task 9, `descargarDatosVehiculos`.
+2. **Una conexión que se traba** al bajar `/buscar/vehiculos.json`: el selector no se queda cargando para siempre; a los 8 s muestra el error con «Reintentar». → Task 9, `descargarDatosVehiculos`.
 3. **Medidas con barra adentro, `7/8"` y `3/4"`** (tweeters, están en `MEDIDAS`): partir las medidas por `/` las rompería. Se parten solo por ` / `, con espacios. → Task 7, `normalizarFilaVehiculo`.
 4. **Una fila del borrador que se cruza con una revisada** (mismo modelo, años que se tocan): no frena el build ni despublica la revisada; el problema se anota solo en la del borrador. → Task 7, `problemasEntreFilas`.
 5. **Filas en blanco al final de la hoja**, que Google Sheets exporta con formato o con textos vacíos: se ignoran, no se rechazan como «fila sin ningún dato». → Task 6, `validarLibroVehiculos`.
@@ -56,20 +57,23 @@ La spec dejó estos puntos abiertos; el plan los fija así:
 - **Si no hay receptores, esa sección no se dibuja.** Los grupos de bocinas salen siempre, vacíos o no, salvo cuando no sale nada en todo el vehículo: ahí solo va «No hay receptores ni bocinas…».
 - `slugificar` sale de `scripts/import-catalog.ts` a `scripts/slug.ts`, para usar la misma en los dos importadores.
 - `CLASE_SELECT` sale de `SearchExperience.tsx` a `components/ui/campos.ts`, y `ProductGrid.tsx` exporta `CLASES_GRID`.
-- La línea de `llms.txt`: `- [Receptores y bocinas por vehículo](…/vehiculos): qué receptores y bocinas del catálogo caben en cada marca, modelo y año de carro.`
 - La descarga usa `fetch` con `AbortSignal.timeout(8000)`.
+- **Parámetros del vehículo en `/buscar`:** `vehiculo` (la marca del vehículo), `modelo`, `anio` y `version`. Ninguno choca con los de la búsqueda (`q`, `categoria`, `medida`, `canales`, `marca`, `disp`, `uso`, `orden`, `ver`).
+- **Encabezados del bloque:** h2 «Receptores y bocinas por vehículo»; h3 el vehículo («Toyota Corolla 2010»); h4 en mono, «Receptores» y «Bocinas»; h5 cada ubicación.
+- **La URL absoluta para el mensaje de la AP6650BT** sale de `absoluteUrl("/buscar")` en `app/buscar/page.tsx`, y baja como prop (`urlBuscar`) por `SearchExperience` y `Busqueda`: `SITE_URL` no existe en el cliente.
 
 ---
 
-### Task 1: Nav — medir y agregar «Vehículos»
+### Task 1: Nav — medir (hecho) y pasar el selector a `/buscar`
 
-La spec lo pide como primer paso: si el enlace no entra a 1280 px, todo lo demás espera.
+**Resultado:** a 1280 px, «Vehículos» (56 px más 22 de separación) empujaba el grupo de la derecha 21 px dentro del margen de 48. Se revirtió, se preguntó, y el negocio decidió poner el selector en `/buscar`. El nav no cambia. Lo que queda de este task es commitear la spec y el plan actualizados:
 
-**Files:**
-- Modify: `components/layout/SiteHeader.tsx:16-20` (`ENLACES_SECUNDARIOS`)
+```bash
+git add docs/superpowers/specs/2026-11-04-selector-vehiculos-design.md docs/superpowers/plans/2026-11-04-selector-vehiculos.md
+git commit -m "docs(vehiculos): el selector vive en /buscar; el enlace no entraba en el nav"
+```
 
-**Interfaces:**
-- Produces: el enlace `{ href: "/vehiculos", nombre: "Vehículos" }`. Lleva a un 404 hasta el Task 10.
+Los pasos de abajo son el registro de la medición.
 
 - [ ] **Step 1: Medir antes del cambio.** `preview_start` con `sonoro-dev`, `resize_window` a 1280 × 900, abrir `/` y correr en la página:
 
@@ -94,12 +98,7 @@ Pasa si: `scroll === 0`, `alto === 60`, `holgura >= 0` y todos los valores de `a
 
 - [ ] **Step 4: Si no pasa, revertir el cambio, parar y preguntarle al usuario.** No se mueve el breakpoint sin consultar.
 
-- [ ] **Step 5: Commit.** El mensaje anota la holgura, antes y después: el Task 15 la pasa a CLAUDE.md.
-
-```bash
-git add components/layout/SiteHeader.tsx
-git commit -m "feat(vehiculos): enlace «Vehículos» en el nav (holgura a 1280: 97 → N px)"
-```
+- [x] **Step 5: No aplica.** El enlace no entró y se revirtió. Medido: 57 px libres antes del cambio, sin contar los 40 de separación (los 97 de CLAUDE.md los incluyen); con «Vehículos», el grupo se salía 21 px del margen. El Task 15 lo pasa a CLAUDE.md.
 
 ---
 
@@ -349,7 +348,7 @@ git commit -m "feat(vehiculos): reglas de compatibilidad de receptores y bocinas
 - Produces, en `url.ts`:
 
 ```ts
-export interface Seleccion { marca?: string; modelo?: string; anio?: number; version?: string } // slugs
+export interface Seleccion { marca?: string; modelo?: string; anio?: number; version?: string } // slugs; en la dirección la marca va en `vehiculo`
 export interface Opcion { slug: string; nombre: string }
 export interface SeleccionResuelta {
   marca: Opcion | null; modelo: Opcion | null; anio: number | null; version: Opcion | null;
@@ -357,7 +356,7 @@ export interface SeleccionResuelta {
   opciones: { marcas: Opcion[]; modelos: Opcion[]; anios: number[]; versiones: Opcion[] };
 }
 export function leerSeleccion(busqueda: string): Seleccion;
-export function escribirSeleccion(sel: Seleccion): string; // "" o "marca=…&modelo=…&anio=…&version=…"
+export function escribirSeleccion(sel: Seleccion): string; // "" o "vehiculo=…&modelo=…&anio=…&version=…"
 export function resolverSeleccion(vehiculos: readonly Vehiculo[], sel: Seleccion): SeleccionResuelta;
 ```
 
@@ -384,14 +383,14 @@ export function textoGrupoVacio(grupo: Pick<GrupoBocinas, "medidas">): string;
 
 ```ts
 test("leerSeleccion: lee los cuatro parámetros; un año que no es número no cuenta", () => {
-  assert.deepEqual(leerSeleccion("marca=toyota&modelo=corolla&anio=2010&version=tablero-gris"),
+  assert.deepEqual(leerSeleccion("vehiculo=toyota&modelo=corolla&anio=2010&version=tablero-gris"),
     { marca: "toyota", modelo: "corolla", anio: 2010, version: "tablero-gris" });
-  assert.equal(leerSeleccion("marca=toyota&anio=abc").anio, undefined);
+  assert.equal(leerSeleccion("vehiculo=toyota&anio=abc").anio, undefined);
 });
 test("escribirSeleccion: orden fijo, y sin un nivel al que le falta el anterior", () => {
   assert.equal(escribirSeleccion({ marca: "toyota", modelo: "corolla", anio: 2010, version: "tablero-gris" }),
-    "marca=toyota&modelo=corolla&anio=2010&version=tablero-gris");
-  assert.equal(escribirSeleccion({ marca: "toyota", anio: 2010 }), "marca=toyota");
+    "vehiculo=toyota&modelo=corolla&anio=2010&version=tablero-gris");
+  assert.equal(escribirSeleccion({ marca: "toyota", anio: 2010 }), "vehiculo=toyota");
   assert.equal(escribirSeleccion({}), "");
 });
 test("resolverSeleccion: marcas y modelos por nombre, años del más nuevo al más viejo", () => {
@@ -475,12 +474,12 @@ test("buildVehicleProductInquiryMessage: producto, vehículo con versión y URL"
   assert.equal(buildVehicleProductInquiryMessage({
     nombre: 'Pantalla de 9" DMH-AP6650BT', sku: "DMH-AP6650BT",
     vehiculo: "Toyota Corolla 2010 · Tablero gris",
-    url: "https://sonoro.gt/vehiculos?marca=toyota&modelo=corolla&anio=2010&version=tablero-gris",
+    url: "https://sonoro.gt/buscar?vehiculo=toyota&modelo=corolla&anio=2010&version=tablero-gris",
   }), [
     "Hola Sonoro, quiero consultar sobre:",
     'Pantalla de 9" DMH-AP6650BT (DMH-AP6650BT)',
     "Vehículo: Toyota Corolla 2010 · Tablero gris",
-    "https://sonoro.gt/vehiculos?marca=toyota&modelo=corolla&anio=2010&version=tablero-gris",
+    "https://sonoro.gt/buscar?vehiculo=toyota&modelo=corolla&anio=2010&version=tablero-gris",
   ].join("\n"));
 });
 test("buildVehicleProductInquiryMessage: vehículo sin versión", () => {
@@ -827,12 +826,12 @@ git commit -m "feat(vehiculos): importador del libro de vehículos"
 ### Task 9: Ruta de datos y descarga en el navegador
 
 **Files:**
-- Create: `app/vehiculos/datos.json/route.ts`, `lib/vehiculos/carga.ts`
+- Create: `app/buscar/vehiculos.json/route.ts`, `lib/vehiculos/carga.ts`
 - Test: `lib/vehiculos/carga.test.ts`
 
 **Interfaces:**
 - Consumes: `leerVehiculos`, `armarDatosVehiculos`, `listAllProducts`, `DatosVehiculos`.
-- Produces: `RUTA_DATOS_VEHICULOS = "/vehiculos/datos.json"`, `PLAZO_DATOS_MS = 8000` y `descargarDatosVehiculos(fetchImpl?: typeof fetch, plazoMs?: number): Promise<DatosVehiculos | null>`, que nunca rechaza.
+- Produces: `RUTA_DATOS_VEHICULOS = "/buscar/vehiculos.json"`, `PLAZO_DATOS_MS = 8000` y `descargarDatosVehiculos(fetchImpl?: typeof fetch, plazoMs?: number): Promise<DatosVehiculos | null>`, que nunca rechaza.
 
 - [ ] **Step 1: Escribir las pruebas que fallan**
 
@@ -872,20 +871,20 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/vehiculos/datos.json lib/vehiculos/carga.ts lib/vehiculos/carga.test.ts
-git commit -m "feat(vehiculos): datos.json estático y su descarga"
+git add app/buscar/vehiculos.json lib/vehiculos/carga.ts lib/vehiculos/carga.test.ts
+git commit -m "feat(vehiculos): vehiculos.json estático y su descarga"
 ```
 
 ---
 
-### Task 10: La página `/vehiculos`
+### Task 10: El selector en `/buscar`
 
 **Files:**
-- Create: `app/vehiculos/page.tsx`, `components/vehiculos/SelectorVehiculos.tsx` (`"use client"`), `components/vehiculos/ResultadosVehiculo.tsx`, `components/ui/campos.ts`
+- Create: `components/vehiculos/BusquedaPorVehiculo.tsx` (`"use client"`), `components/vehiculos/ResultadosVehiculo.tsx`, `components/ui/campos.ts`
 - Modify:
-  - `components/catalog/SearchExperience.tsx:61-62`: `CLASE_SELECT` pasa a importarse de `components/ui/campos.ts`;
-  - `components/catalog/ProductGrid.tsx:13`: `export const CLASES_GRID`;
-  - `lib/seo/textos.ts`: `TEXTOS_VEHICULOS`, junto a `TEXTOS_BUSCAR`.
+  - `components/catalog/SearchExperience.tsx`: `CLASE_SELECT` pasa a importarse de `components/ui/campos.ts` (líneas 61-62); `SearchExperience` y `Busqueda` reciben `urlBuscar`; el estado vacío (`!consulta`, hoy «Escribe para buscar en el catálogo.») dibuja también `<BusquedaPorVehiculo>`;
+  - `app/buscar/page.tsx`: `urlBuscar = absoluteUrl("/buscar")`, pasado a los dos `Busqueda` (el del fallback y el de adentro);
+  - `components/catalog/ProductGrid.tsx:13`: `export const CLASES_GRID`.
 
 **Interfaces:**
 - Consumes:
@@ -895,45 +894,43 @@ git commit -m "feat(vehiculos): datos.json estático y su descarga"
   - de `lib/vehiculos/carga.ts`: `descargarDatosVehiculos`;
   - de `lib/whatsapp/index.ts`: `buildVehicleInquiryMessage`, `buildVehicleProductInquiryMessage`, `buildWhatsAppUrl`, `WHATSAPP_NUMBER`;
   - de `lib/politicas.ts`: `INSTALACION`;
-  - `ProductCard`, `CLASES_GRID`, `CLASE_SELECT`, `claseBoton`, `absoluteUrl`, `metadataPagina`.
+  - `ProductCard`, `CLASES_GRID`, `CLASE_SELECT`, `claseBoton`, `absoluteUrl`.
 - Produces:
-  - `TEXTOS_VEHICULOS: Textos`, con el título y la descripción de Global Constraints.
-  - `SelectorVehiculos({ urlPagina }: { urlPagina: string })`: lee `useSearchParams()`.
-  - `Vehiculos({ busqueda, urlPagina }: { busqueda: string; urlPagina: string })`: es lo que dibuja.
+  - `BusquedaPorVehiculo({ busqueda, urlBuscar }: { busqueda: string; urlBuscar: string })`: `busqueda` es la misma cadena de parámetros que ya recibe `Busqueda`.
   - `ResultadosVehiculo({ titulo, compat, urlConsulta }: { titulo: string; compat: Compatibilidad; urlConsulta: string })`.
 
-- [ ] **Step 1: Leer la documentación de Next** en `node_modules/next/dist/docs/`: `useSearchParams` en páginas prerenderizadas, `<Suspense>` y metadata.
+- [ ] **Step 1: Leer la documentación de Next** en `node_modules/next/dist/docs/`: `useSearchParams` en páginas prerenderizadas y `<Suspense>`.
 
-- [ ] **Step 2: Implementar la página**
+- [ ] **Step 2: Implementar el selector**
 
-- `page.tsx`: `metadata` con `metadataPagina({ ...TEXTOS_VEHICULOS, ruta: "/vehiculos" })`, que da el canonical sin parámetros.
-  - `urlPagina = absoluteUrl("/vehiculos")`, resuelta en el servidor: `SITE_URL` no existe en el cliente.
-  - Devuelve `<Suspense fallback={<Vehiculos busqueda="" urlPagina={urlPagina} />}><SelectorVehiculos urlPagina={urlPagina} /></Suspense>`.
-- `Vehiculos`:
-  - El estado de carga es `cargando`, `error` o `listo`, y la descarga se lanza al montar.
-  - Mientras carga, las listas se ven deshabilitadas, con sus textos de muestra.
+- `app/buscar/page.tsx`: `urlBuscar = absoluteUrl("/buscar")`, resuelta en el servidor porque `SITE_URL` no existe en el cliente. La metadata no cambia.
+- `SearchExperience.tsx`: en la rama `!consulta`, debajo del párrafo de hoy, `<BusquedaPorVehiculo busqueda={busqueda} urlBuscar={urlBuscar} />`. Con una consulta escrita, el bloque no se dibuja.
+  - `irA` no cambia: arma la dirección desde cero, así que escribir una búsqueda ya borra los parámetros del vehículo.
+- `BusquedaPorVehiculo`:
+  - El estado de carga es `cargando`, `error` o `listo`, y la descarga se lanza al montar. Como solo se monta sin consulta, una búsqueda escrita no paga la descarga.
+  - Mientras carga, las listas se ven deshabilitadas, con sus textos de muestra. Así se ve también en el HTML prerenderizado.
   - Si falla: `ERROR_CARGA` y un `<button>` «Reintentar» con `claseBoton("secundario", "compacto")`, que vuelve a descargar.
-  - `cambiar(sel)` escribe `escribirSeleccion(sel)` con `window.history.replaceState(null, "", q ? `/vehiculos?${q}` : "/vehiculos")`.
+  - `cambiar(sel)` escribe `escribirSeleccion(sel)` con `window.history.replaceState(null, "", q ? `/buscar?${q}` : "/buscar")`.
   - Elegir una marca borra modelo, año y versión; elegir un modelo borra año y versión; elegir un año borra la versión.
-- Layout, con las clases de `/buscar` y `/catalogo`:
-  - Envoltorio `flex flex-col`. Encabezado `px-6 pt-10 sm:px-12 sm:pt-14`, con el h1 en `text-34 sm:text-40 lg:text-48 font-semibold tracking-[-0.03em]`.
-  - Listas en `mt-6 flex flex-col gap-2.5 sm:flex-row`, cada una con `CLASE_SELECT` y `w-full sm:w-auto`.
+- Layout, con las clases de `/buscar`:
+  - Una sección `px-6 pt-10 sm:px-12`, con el h2 «Receptores y bocinas por vehículo» en `text-22 font-semibold tracking-[-0.02em]`.
+  - Listas en `mt-4 flex flex-col gap-2.5 sm:flex-row`, cada una con `CLASE_SELECT` y `w-full sm:w-auto`.
     - La primera opción, con valor vacío, dice «Marca», «Modelo», «Año» o «Versión», y el `aria-label` es el mismo texto.
     - Cada lista se habilita cuando la anterior está elegida. «Versión» solo se dibuja si `opciones.versiones.length > 0`.
   - Debajo, en `mt-4 text-[13px] text-texto-secundario`: «¿No está tu vehículo? », y «Escríbenos por WhatsApp» como enlace a `buildWhatsAppUrl(WHATSAPP_NUMBER, buildVehicleInquiryMessage())`, cerrado con «.».
     - El enlace lleva los mismos atributos que el de `SinResultadosBusqueda.tsx`.
   - Con `vehiculo` y `anio` elegidos: `ResultadosVehiculo`.
     - `titulo` = `tituloVehiculo(vehiculo, anio)`.
-    - `urlConsulta` = `urlPagina` + `?` + la selección escrita.
-- `ResultadosVehiculo`: una sección `px-6 pt-10 pb-16 sm:px-12 sm:pb-22`.
-  - El h2 con `titulo`, en `text-26 sm:text-38 font-semibold tracking-[-0.03em]`.
+    - `urlConsulta` = `urlBuscar` + `?` + la selección escrita.
+- `ResultadosVehiculo`: un bloque `pt-10 pb-16 sm:pb-22` dentro de la sección.
+  - El h3 con `titulo`, en `text-26 sm:text-38 font-semibold tracking-[-0.03em]`.
   - Si `!hayResultados(compat)`: un `<p>` con `SIN_RESULTADOS`, y nada más que la frase de instalación.
   - Si no:
-    - «Receptores» como h3 mono (`font-mono text-[11px] tracking-[0.14em] uppercase text-texto-terciario`), solo si hay receptores. Después, una rejilla `CLASES_GRID`.
+    - «Receptores» como h4 mono (`font-mono text-[11px] tracking-[0.14em] uppercase text-texto-terciario`), solo si hay receptores. Después, una rejilla `CLASES_GRID`.
     - Cada celda es `flex flex-col gap-2`, con `<ProductCard producto={…} />` y, abajo y fuera de la tarjeta, `<p className="text-texto-secundario text-[13px]">` con el estado:
       - `con_pieza`: `TEXTOS_ESTADO.con_pieza`, un espacio y un `<Link href={`/producto/${pieza.slug}`}>` con `pieza.nombre`, en `text-negro underline`;
       - `consultar`: el texto, un espacio y el enlace «Escríbenos por WhatsApp» con `buildVehicleProductInquiryMessage({ nombre, sku, vehiculo: titulo, url: urlConsulta })`.
-    - «Bocinas» como h3 mono. Cada grupo lleva un h4 `text-[15px] font-semibold` con `tituloGrupo(grupo)` y la rejilla, con todas las bocinas y sin paginar. Si el grupo está vacío, en lugar de la rejilla va `<p className="text-texto-secundario text-[15px]">` con `textoGrupoVacio(grupo)`.
+    - «Bocinas» como h4 mono. Cada grupo lleva un h5 `text-[15px] font-semibold` con `tituloGrupo(grupo)` y la rejilla, con todas las bocinas y sin paginar. Si el grupo está vacío, en lugar de la rejilla va `<p className="text-texto-secundario text-[15px]">` con `textoGrupoVacio(grupo)`.
   - Al final, `<p className="text-texto-secundario mt-12 max-w-[640px] text-[13px]">` con `INSTALACION`.
 
 - [ ] **Step 3: Typecheck, lint y pruebas**
@@ -942,28 +939,28 @@ Run: `npm run typecheck && npm run lint && npm test`
 Expected: PASS.
 
 - [ ] **Step 4: Ver el estado de error en el navegador.**
-`preview_start sonoro-dev`, abrir `/vehiculos`. Como `data/vehiculos.json` todavía no existe, la ruta de datos falla, y la página tiene que mostrar «No se pudo cargar la lista de vehículos.» con «Reintentar». `read_console_messages` no debe mostrar errores de React.
+`preview_start sonoro-dev`, abrir `/buscar`. Como `data/vehiculos.json` todavía no existe, la ruta de datos falla, y el bloque tiene que mostrar «No se pudo cargar la lista de vehículos.» con «Reintentar». Al escribir una búsqueda, el bloque desaparece. `read_console_messages` no debe mostrar errores de React.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/vehiculos/page.tsx components/vehiculos components/ui/campos.ts components/catalog/SearchExperience.tsx components/catalog/ProductGrid.tsx lib/seo/textos.ts
-git commit -m "feat(vehiculos): página /vehiculos"
+git add app/buscar/page.tsx components/vehiculos components/ui/campos.ts components/catalog/SearchExperience.tsx components/catalog/ProductGrid.tsx
+git commit -m "feat(vehiculos): selector de vehículos en /buscar"
 ```
 
 ---
 
-### Task 11: El resto del sitio — instalación, llms.txt y sitemap
+### Task 11: El resto del sitio — instalación y llms.txt
 
 **Files:**
-- Modify: `lib/politicas.ts:30-31`, `lib/seo/llms.ts:49`, `app/sitemap.ts:24`
+- Modify: `lib/politicas.ts:30-31`, `lib/seo/llms.ts:49`
 - Test: `lib/seo/llms.test.ts`
 
 - [ ] **Step 1: Escribir la prueba que falla**
 
 ```ts
-test("buildLlmsTxt: enlaza /vehiculos", () => {
-  assert.ok(texto.includes(`(${absoluteUrl("/vehiculos")})`));
+test("buildLlmsTxt: la línea de Buscar nombra la búsqueda por vehículo", () => {
+  assert.ok(texto.includes("y qué receptores y bocinas caben en cada vehículo."));
 });
 ```
 
@@ -977,8 +974,8 @@ Expected: FAIL.
 - [ ] **Step 3: Implementar**
 
 - `INSTALACION` pasa a decir, palabra por palabra, el texto de Global Constraints. No se toca `/legal/garantias`, `/nosotros`, `TEXTOS_NOSOTROS` ni la línea de instalación de `llms.ts`.
-- En `llms.ts`, después de Buscar: `enlace("Receptores y bocinas por vehículo", "/vehiculos", "qué receptores y bocinas del catálogo caben en cada marca, modelo y año de carro.")`.
-- En `app/sitemap.ts`, después de `/marcas`: `{ url: absoluteUrl("/vehiculos"), changeFrequency: "monthly", priority: 0.6 }`. `/vehiculos/datos.json` no entra.
+- En `llms.ts`, la línea de Buscar pasa a `enlace("Buscar", "/buscar", "búsqueda por nombre, marca o código, y qué receptores y bocinas caben en cada vehículo.")`.
+- El sitemap no cambia: no hay página nueva, y `/buscar/vehiculos.json` no entra.
 
 - [ ] **Step 4: Correr todo**
 
@@ -988,8 +985,8 @@ Expected: PASS, incluida la prueba de `textos.test.ts` sobre «gratis».
 - [ ] **Step 5: Commit**
 
 ```bash
-git add lib/politicas.ts lib/seo/llms.ts lib/seo/llms.test.ts app/sitemap.ts
-git commit -m "feat(vehiculos): frase de instalación nueva, llms.txt y sitemap"
+git add lib/politicas.ts lib/seo/llms.ts lib/seo/llms.test.ts
+git commit -m "feat(vehiculos): frase de instalación nueva y llms.txt"
 ```
 
 ---
@@ -1080,34 +1077,34 @@ Los datos de prueba salen de `armarDatosVehiculos([PRUEBA], catalogoReal)`, con 
 - Puertas delanteras `['6.5"']` con accesorio KSM-8;
 - Bandeja trasera `['6x8"']`, sin accesorio.
 
-Se sirven con `page.route("**/vehiculos/datos.json", …)`. Los nombres del receptor 2 DIN, de KSM-8 y de la AP6650BT salen del catálogo, no se escriben a mano.
+Se sirven con `page.route("**/buscar/vehiculos.json", …)`. Los nombres del receptor 2 DIN, de KSM-8 y de la AP6650BT salen del catálogo, no se escriben a mano.
 
 ```ts
-test("elige marca, modelo y año y muestra lo que cabe", async ({ page }) => {
-  // goto /vehiculos; elegir «Prueba», «Uno» y «2010» en las listas Marca, Modelo y Año.
-  // La dirección termina en "/vehiculos?marca=prueba&modelo=uno&anio=2010".
+test("elige marca, modelo y año en /buscar y muestra lo que cabe", async ({ page }) => {
+  // goto /buscar; elegir «Prueba», «Uno» y «2010» en las listas Marca, Modelo y Año.
+  // La dirección termina en "/buscar?vehiculo=prueba&modelo=uno&anio=2010".
   // Se ven el heading «Prueba Uno 2010» y la tarjeta de un 2 DIN, con «Cabe» debajo.
   // Se ve el grupo 'Puertas delanteras · 6.5"', con «Cabe con» y un enlace con el nombre
   // de KSM-8.
   // Se ven 'No hay bocinas de 6x8" en el catálogo.' y el texto de INSTALACION.
   // Si la AP6650BT viene en los datos: lleva el texto de consultar y su enlace de WhatsApp,
   // que una vez decodificado incluye "Vehículo: Prueba Uno 2010" y
-  // "/vehiculos?marca=prueba&modelo=uno&anio=2010".
+  // "/buscar?vehiculo=prueba&modelo=uno&anio=2010".
   // Al recargar, el mismo heading y las listas con los mismos valores.
   // El clic en el enlace de la pieza lleva a /producto/kbt-ksm-8.
+});
+test("escribir una búsqueda oculta el selector y saca el vehículo de la dirección", async ({ page }) => {
+  // goto /buscar?vehiculo=prueba&modelo=uno&anio=2010 → se ve «Prueba Uno 2010».
+  // Escribir «memphis» y Enter → la dirección es "/buscar?q=memphis", sin vehiculo, y el
+  // h2 «Receptores y bocinas por vehículo» ya no está.
 });
 test("si la descarga falla, ofrece reintentar", async ({ page }) => {
   // La ruta responde 500 → se ven «No se pudo cargar la lista de vehículos.» y «Reintentar».
   // Se cambia la ruta a los datos de prueba, clic en «Reintentar» → la lista Marca trae «Prueba».
 });
-test("a 1280 px el nav entra en una línea, con «Vehículos»", async ({ page }) => {
-  // viewport 1280×900, goto "/": el header tiene un enlace visible «Vehículos», y
-  // scrollWidth - clientWidth === 0.
-});
-test("datos.json no se indexa, el canonical va sin parámetros y el sitemap trae la página", async ({ page }) => {
-  // (await page.request.get("/vehiculos/datos.json")).headers()["x-robots-tag"] === "noindex".
-  // En /vehiculos?marca=prueba, link[rel="canonical"] termina en "/vehiculos".
-  // /sitemap.xml incluye "/vehiculos</loc>" y no incluye "datos.json".
+test("vehiculos.json no se indexa y el canonical de /buscar va sin parámetros", async ({ page }) => {
+  // (await page.request.get("/buscar/vehiculos.json")).headers()["x-robots-tag"] === "noindex".
+  // En /buscar?vehiculo=prueba, link[rel="canonical"] termina en "/buscar".
 });
 ```
 
@@ -1122,7 +1119,7 @@ Run: `npm run test:e2e`
 Expected: PASS.
 
 - [ ] **Step 4: Verificar en el navegador**, con `preview_start sonoro-dev` y un vehículo revisado de verdad.
-  - Capturas de `/vehiculos` con resultados a 1280, 1024 y 375 px.
+  - Capturas de `/buscar` con un vehículo elegido, a 1280, 1024 y 375 px.
   - Las tres se revisan sin scroll horizontal, con las listas apiladas a 375, y con la línea de estado debajo de cada tarjeta, no dentro.
   - Cerrar con `resize_window` en `desktop` y mostrarle las capturas al usuario.
 
@@ -1130,7 +1127,7 @@ Expected: PASS.
 
 ```bash
 git add e2e/vehiculos.spec.ts
-git commit -m "test(vehiculos): e2e del selector, del error de carga, del nav a 1280 y del SEO"
+git commit -m "test(vehiculos): e2e del selector en /buscar, del error de carga y del SEO"
 ```
 
 ---
@@ -1141,14 +1138,15 @@ git commit -m "test(vehiculos): e2e del selector, del error de carga, del nav a 
 - Modify: `CLAUDE.md`
 
 - [ ] **Step 1: Editar**
-  - **Regla 1:** la frase de instalación vive en `INSTALACION` (`lib/politicas.ts`) y la leen `/legal/terminos`, el chat y `/vehiculos`.
-  - **§ Rutas:** agregar `/vehiculos` (Selector de vehículos) y `/vehiculos/datos.json` (datos del selector, estático, noindex).
-  - **§ Patrones, nota del nav:** la holgura a 1280 pasa de 97 px a la medida del Task 1, y el grupo derecho queda Marcas · Vehículos · Nosotros · Buscar · Carrito.
+  - **Regla 1:** la frase de instalación vive en `INSTALACION` (`lib/politicas.ts`) y la leen `/legal/terminos`, el chat y los resultados del selector de vehículos.
+  - **§ Rutas:** agregar `/buscar/vehiculos.json` (datos del selector de vehículos, estático, noindex).
+  - **§ Patrones, nota del nav:** los 97 px incluyen los 40 de separación fija, así que lo libre de verdad son 57. Un enlace más en el grupo de la derecha no entra: «Vehículos» lo desbordaba 21 px (noviembre de 2026), y por eso el selector vive en `/buscar`.
+  - **§ Patrones, búsqueda:** sin nada escrito, `/buscar` muestra el selector de vehículos, con sus parámetros propios (`vehiculo`, `modelo`, `anio`, `version`). Escribir borra el vehículo, y elegir un vehículo deja la dirección sin `q`.
   - **Sección nueva, «Selector de vehículos»,** después de «Chatbot». Lleva:
-    - qué es: compatibilidad, no asesoría;
+    - qué es: compatibilidad, no asesoría; por qué vive en `/buscar`;
     - el libro: hojas, el orden de las columnas, `revisado`, el comando y que corre después de `import:catalog`;
     - aborto contra rechazo, «Filas sin revisar», y que el build no pasa sin filas publicables;
-    - qué entra en `datos.json`;
+    - qué entra en `/buscar/vehiculos.json`, y que solo se baja sin consulta escrita;
     - los cuatro estados y que solo se nombran OEMBKT60, OEMBKT69 y KSM-8;
     - las dos pantallas, reconocidas por sku en `lib/vehiculos/especiales.ts`;
     - la medida exacta, sin equivalencias;
