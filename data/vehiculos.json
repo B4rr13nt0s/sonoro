@@ -28,12 +28,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6x8\""],
+          "medidas": [
+            "6x8\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Costados traseros",
-          "medidas": ["6x8\""],
+          "medidas": [
+            "6x8\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -52,7 +56,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -71,12 +77,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -95,12 +105,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -119,12 +133,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -143,12 +161,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -167,7 +189,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -186,12 +210,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Compuerta trasera",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -210,12 +238,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -234,12 +266,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -258,12 +294,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Adelante",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -282,12 +322,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Adelante",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -306,12 +350,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["5.25\""],
+          "medidas": [
+            "5.25\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -330,7 +378,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -349,12 +399,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Puertas traseras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -373,7 +427,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["5.25\""],
+          "medidas": [
+            "5.25\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -392,12 +448,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -416,12 +476,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Adelante",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -440,12 +504,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Adelante",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -464,12 +532,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Adelante",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -488,12 +560,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Adelante",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -512,12 +588,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Paneles laterales traseros",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -536,7 +616,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -555,7 +637,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -574,7 +658,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -593,12 +679,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -617,12 +707,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Puertas traseras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -641,12 +735,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["4\""],
+          "medidas": [
+            "4\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -665,12 +763,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["4\""],
+          "medidas": [
+            "4\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -689,12 +791,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Adelante",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -713,12 +819,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Puertas traseras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -750,7 +860,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -769,17 +881,23 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6x8\""],
+          "medidas": [
+            "6x8\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Puertas traseras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -798,12 +916,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -822,12 +944,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -846,12 +972,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Adelante",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -870,12 +1000,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -894,7 +1028,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -913,12 +1049,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": null
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -937,7 +1077,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -956,12 +1098,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -980,12 +1126,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1004,12 +1154,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": null
         }
       ]
@@ -1028,12 +1182,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1052,17 +1210,23 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Puertas traseras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1081,12 +1245,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1105,7 +1273,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Tablero frontal",
-          "medidas": ["4\""],
+          "medidas": [
+            "4\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1124,12 +1294,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1148,12 +1322,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1172,12 +1350,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1196,12 +1378,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Tablero frontal",
-          "medidas": ["4\""],
+          "medidas": [
+            "4\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Costados traseros",
-          "medidas": ["5.25\""],
+          "medidas": [
+            "5.25\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1220,12 +1406,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["4\""],
+          "medidas": [
+            "4\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1244,12 +1434,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1268,12 +1462,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1292,7 +1490,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1311,12 +1511,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Paneles laterales traseros",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1335,12 +1539,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1372,12 +1580,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Paneles laterales traseros",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1396,12 +1608,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Atrás",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1433,7 +1649,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1452,7 +1670,9 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         }
       ]
@@ -1471,12 +1691,16 @@
       "ubicaciones": [
         {
           "ubicacion": "Puertas delanteras",
-          "medidas": ["6.5\""],
+          "medidas": [
+            "6.5\""
+          ],
           "accesorio": "otro"
         },
         {
           "ubicacion": "Bandeja trasera",
-          "medidas": ["6x9\""],
+          "medidas": [
+            "6x9\""
+          ],
           "accesorio": "otro"
         }
       ]
