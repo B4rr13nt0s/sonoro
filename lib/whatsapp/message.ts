@@ -103,3 +103,27 @@ export function buildProductInquiryMessage(params: {
     params.url,
   ].join("\n");
 }
+
+// «¿No está tu vehículo? Escríbenos por WhatsApp.», desde el selector de
+// vehículos de /buscar.
+export function buildVehicleInquiryMessage(): string {
+  return "Hola Sonoro, quiero consultar qué receptores y bocinas caben en mi vehículo.";
+}
+
+// La consulta por un producto que, para ese vehículo, depende de un marco que
+// el selector no conoce (la DMH-AP6650BT). Como buildProductInquiryMessage,
+// más el vehículo; la URL es la de /buscar con el vehículo elegido, para que
+// el vendedor vea lo mismo que el cliente.
+export function buildVehicleProductInquiryMessage(params: {
+  nombre: string;
+  sku: string;
+  vehiculo: string;
+  url: string;
+}): string {
+  return [
+    "Hola Sonoro, quiero consultar sobre:",
+    `${params.nombre} (${params.sku})`,
+    `Vehículo: ${params.vehiculo}`,
+    params.url,
+  ].join("\n");
+}
