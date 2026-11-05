@@ -22,9 +22,10 @@ import type { Disponibilidad, Uso } from "@/lib/catalog/types.ts";
 // Los filtros de /buscar (docs/superpowers/specs/2026-11-05-buscar-interfaz-design.md,
 // decisiones 8–13). Desde 640 px, una barra entre dos líneas finas: píldoras
 // de tipo de producto, un separador, las listas y Ordenar a la derecha; si no
-// cabe, se parte en dos líneas. Debajo de 640 px, las píldoras en una línea
+// cabe, se parte en las que haga falta. Debajo de 640 px, las píldoras en una línea
 // que se desliza —llega hasta el borde de la pantalla y la última queda
-// cortada: sin degradado (CLAUDE.md)— y las listas en dos columnas.
+// cortada: sin degradado (CLAUDE.md)— y las listas una debajo de otra, a todo el
+// ancho: en dos columnas su texto se cortaba (decisión del negocio).
 //
 // Las listas son <select> nativos: teclado, lector de pantalla y selector del
 // teléfono funcionan sin menús propios. La barra no guarda estado: recibe los
@@ -48,8 +49,6 @@ function IconoQuitar() {
   );
 }
 
-// Ordenar va última en la rejilla de móvil: si queda sola en su fila
-// (`odd:`), ocupa las dos columnas en vez de cortar su texto a media.
 export type CambioFiltros = Partial<Filtros> & { orden?: Orden };
 
 export function BarraFiltros({
@@ -149,7 +148,7 @@ export function BarraFiltros({
 
         <span aria-hidden="true" className="bg-borde-pildora hidden h-6 w-px sm:block" />
 
-        <div className="grid grid-cols-2 gap-2.5 sm:contents">
+        <div className="flex flex-col gap-2.5 sm:contents">
           {opcionesMarca.length > 1 || filtros.marca ? (
             <select
               aria-label="Filtrar por marca"
@@ -249,7 +248,7 @@ export function BarraFiltros({
             aria-label="Ordenar resultados"
             value={ordenActivo}
             onChange={(e) => cambiar({ orden: leerOrden(e.target.value) })}
-            className={`${CLASE_LISTA} border-negro odd:col-span-2 sm:ml-auto`}
+            className={`${CLASE_LISTA} border-negro sm:ml-auto`}
           >
             {(Object.keys(ORDENES) as Orden[]).map((o) => (
               <option key={o} value={o}>

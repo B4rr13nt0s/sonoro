@@ -94,3 +94,25 @@ test("al quitar un filtro el foco pasa al siguiente, y «Quitar filtros» lo dej
   await expect(page).toHaveURL(/\/buscar\?q=bocina$/);
   await expect(page.getByRole("button", { name: "Todo", exact: true })).toBeFocused();
 });
+
+test("a 375 px cada lista va a todo el ancho y su texto se lee entero", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/buscar?q=bocina");
+  await expect(page.getByLabel("Filtrar por marca")).toBeVisible();
+  const anchos = await page
+    .locator('select[aria-label^="Filtrar por"], select[aria-label="Ordenar resultados"]')
+    .evaluateAll((listas) => listas.map((l) => Math.round(l.getBoundingClientRect().width)));
+  expect(anchos.length).toBeGreaterThan(2);
+  for (const ancho of anchos) expect(ancho).toBeGreaterThanOrEqual(375 - 48);
+});
+
+test("a 1280 px, con tres listas, la barra entra en una línea", async ({ page }) => {
+  await page.goto("/buscar?q=subwoofer%2012");
+  const ordenar = page.getByLabel("Ordenar resultados");
+  await expect(ordenar).toBeVisible();
+  const listas = await page.locator('select[aria-label^="Filtrar por"]').count();
+  expect(listas, "«subwoofer 12» ya no trae tres listas de filtros").toBeLessThanOrEqual(3);
+  const todo = await page.getByRole("button", { name: "Todo", exact: true }).boundingBox();
+  const caja = await ordenar.boundingBox();
+  expect(Math.abs(caja!.y + caja!.height / 2 - (todo!.y + todo!.height / 2))).toBeLessThan(8);
+});

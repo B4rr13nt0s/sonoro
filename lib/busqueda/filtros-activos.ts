@@ -30,8 +30,8 @@ export const USOS_ETIQUETA: Record<Uso, string> = {
 
 export const ORDENES = {
   relevancia: "Ordenar: relevancia",
-  precio_asc: "Ordenar: precio de menor a mayor",
-  precio_desc: "Ordenar: precio de mayor a menor",
+  precio_asc: "Ordenar: menor precio",
+  precio_desc: "Ordenar: mayor precio",
 } as const;
 export type Orden = keyof typeof ORDENES;
 

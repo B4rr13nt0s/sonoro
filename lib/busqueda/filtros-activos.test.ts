@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { SIN_FILTROS, filtrosActivos, type Filtros } from "./filtros-activos.ts";
+import { ORDENES, SIN_FILTROS, filtrosActivos, type Filtros } from "./filtros-activos.ts";
 
 const NINGUNO: Filtros = {
   categoria: null,
@@ -36,4 +36,12 @@ test("filtrosActivos: el tipo de producto no se repite, y lo escrito no lleva âœ
 
 test("SIN_FILTROS: todos los filtros a null, sin tocar q ni orden", () => {
   assert.deepEqual(SIN_FILTROS, NINGUNO);
+});
+
+test("ORDENES: textos cortos, para que la barra entre en una lÃ­nea a 1280 px", () => {
+  assert.deepEqual(ORDENES, {
+    relevancia: "Ordenar: relevancia",
+    precio_asc: "Ordenar: menor precio",
+    precio_desc: "Ordenar: mayor precio",
+  });
 });
