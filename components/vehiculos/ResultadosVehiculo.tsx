@@ -15,75 +15,35 @@ import {
   textoGrupoVacio,
   tituloGrupo,
 } from "@/lib/vehiculos/textos.ts";
-import {
-  buildVehicleProductInquiryMessage,
-  buildWhatsAppUrl,
-  WHATSAPP_NUMBER,
-} from "@/lib/whatsapp/index.ts";
 
 // Lo que cabe en el vehículo elegido en /buscar: receptores y, por cada
 // ubicación, las bocinas de su medida. Debajo de cada tarjeta —fuera de ella
 // y de su enlace estirado— va el estado, en el gris de la línea de
-// especificación. Sin paginar: en 6.5" son unas 35.
+// especificación, solo cuando el estado tiene texto («Cabe», «Cabe con…»).
+// Sin paginar: en 6.5" son unas 35.
 //
 // Regla 2: no hay ganador ni «mejor opción». El orden ya viene dado por
 // estado y relevancia (lib/vehiculos/compatibilidad.ts).
-const CLASE_ETIQUETA = "text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase";
+const CLASE_SECCION = "text-22 sm:text-26 font-semibold tracking-[-0.02em]";
 const CLASE_ENLACE = "text-negro underline underline-offset-2";
 
-function Estado({
-  item,
-  titulo,
-  urlConsulta,
-}: {
-  item: ProductoCompatible;
-  titulo: string;
-  urlConsulta: string;
-}) {
-  const { estado, producto } = item;
+function Estado({ item }: { item: ProductoCompatible }) {
+  const { estado } = item;
   if (estado.tipo === "con_pieza") {
     return (
-      <>
+      <p className="text-texto-secundario text-[13px]">
         {TEXTOS_ESTADO.con_pieza}{" "}
         <Link href={`/producto/${estado.pieza.slug}`} className={CLASE_ENLACE}>
           {estado.pieza.nombre}
         </Link>
-      </>
+      </p>
     );
   }
-  if (estado.tipo === "consultar") {
-    const mensaje = buildVehicleProductInquiryMessage({
-      nombre: producto.nombre,
-      sku: producto.sku,
-      vehiculo: titulo,
-      url: urlConsulta,
-    });
-    return (
-      <>
-        {TEXTOS_ESTADO.consultar}{" "}
-        <a
-          href={buildWhatsAppUrl(WHATSAPP_NUMBER, mensaje)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={CLASE_ENLACE}
-        >
-          Escríbenos por WhatsApp
-        </a>
-      </>
-    );
-  }
-  return <>{TEXTOS_ESTADO[estado.tipo]}</>;
+  const texto = TEXTOS_ESTADO[estado.tipo];
+  return texto ? <p className="text-texto-secundario text-[13px]">{texto}</p> : null;
 }
 
-function Rejilla({
-  items,
-  titulo,
-  urlConsulta,
-}: {
-  items: ProductoCompatible[];
-  titulo: string;
-  urlConsulta: string;
-}) {
+function Rejilla({ items }: { items: ProductoCompatible[] }) {
   return (
     <div className={CLASES_GRID}>
       {items.map((item) => {
@@ -91,9 +51,7 @@ function Rejilla({
         return (
           <div key={item.producto.sku} className="flex flex-col gap-2">
             <ProductCard producto={item.producto} />
-            <p className="text-texto-secundario text-[13px]">
-              <Estado item={item} titulo={titulo} urlConsulta={urlConsulta} />
-            </p>
+            <Estado item={item} />
             {nota ? <p className="text-texto-secundario text-[13px]">{nota}</p> : null}
           </div>
         );
@@ -102,15 +60,7 @@ function Rejilla({
   );
 }
 
-export function ResultadosVehiculo({
-  titulo,
-  compat,
-  urlConsulta,
-}: {
-  titulo: string;
-  compat: Compatibilidad;
-  urlConsulta: string;
-}) {
+export function ResultadosVehiculo({ titulo, compat }: { titulo: string; compat: Compatibilidad }) {
   return (
     <div className="pt-10 pb-16 sm:pb-22">
       <h2 className="text-26 sm:text-38 font-semibold tracking-[-0.03em]">{titulo}</h2>
@@ -120,20 +70,20 @@ export function ResultadosVehiculo({
       ) : (
         <>
           {compat.receptores.length > 0 ? (
-            <section className="mt-8 flex flex-col gap-4">
-              <h3 className={CLASE_ETIQUETA}>Receptores</h3>
-              <Rejilla items={compat.receptores} titulo={titulo} urlConsulta={urlConsulta} />
+            <section className="mt-10 flex flex-col gap-5">
+              <h3 className={CLASE_SECCION}>Receptores</h3>
+              <Rejilla items={compat.receptores} />
             </section>
           ) : null}
 
           {compat.grupos.length > 0 ? (
-            <section className="mt-12 flex flex-col gap-8">
-              <h3 className={CLASE_ETIQUETA}>Bocinas</h3>
+            <section className="mt-14 flex flex-col gap-8">
+              <h3 className={CLASE_SECCION}>Bocinas</h3>
               {compat.grupos.map((grupo) => (
                 <div key={grupo.ubicacion} className="flex flex-col gap-4">
-                  <h4 className="text-[15px] font-semibold">{tituloGrupo(grupo)}</h4>
+                  <h4 className="text-[17px] font-semibold">{tituloGrupo(grupo)}</h4>
                   {grupo.bocinas.length > 0 ? (
-                    <Rejilla items={grupo.bocinas} titulo={titulo} urlConsulta={urlConsulta} />
+                    <Rejilla items={grupo.bocinas} />
                   ) : (
                     <p className="text-texto-secundario text-[15px]">{textoGrupoVacio(grupo)}</p>
                   )}

@@ -59,20 +59,11 @@ const ORDEN_USOS = Object.keys(USOS_ETIQUETA) as Uso[];
 export function SearchExperience({
   productos,
   marcas,
-  urlBuscar,
 }: {
   productos: ProductoBuscable[];
   marcas: Marca[];
-  urlBuscar: string;
 }) {
-  return (
-    <Busqueda
-      productos={productos}
-      marcas={marcas}
-      busqueda={useSearchParams().toString()}
-      urlBuscar={urlBuscar}
-    />
-  );
+  return <Busqueda productos={productos} marcas={marcas} busqueda={useSearchParams().toString()} />;
 }
 
 /** «Ver más» empieza en INCREMENTO; lo que no sea un entero mayor, también. */
@@ -121,14 +112,11 @@ export function Busqueda({
   productos,
   marcas,
   busqueda,
-  urlBuscar,
 }: {
   productos: ProductoBuscable[];
   marcas: Marca[];
   /** Los query params actuales, como texto (`q=memphis&ver=16`). */
   busqueda: string;
-  /** La URL absoluta de /buscar (para el mensaje de WhatsApp del selector de vehículos). */
-  urlBuscar: string;
 }) {
   const router = useRouter();
   const idLista = useId();
@@ -433,7 +421,7 @@ export function Busqueda({
       <PestanasBuscar
         pestana={pestana}
         alCambiar={irAPestana}
-        vehiculo={<BusquedaPorVehiculo busqueda={busqueda} urlBuscar={urlBuscar} />}
+        vehiculo={<BusquedaPorVehiculo busqueda={busqueda} />}
         producto={
           <>
             <section className="px-6 pt-6 sm:px-12 sm:pt-8">
@@ -443,8 +431,8 @@ export function Busqueda({
               vería partido. `outline` y no `ring`, que en Tailwind es una
               sombra (CLAUDE.md § Sistema visual: sin sombras), y outline no
               empuja el layout. */}
-                <div className="border-negro rounded-card focus-within:outline-negro flex items-center gap-4 border px-5 py-4 focus-within:outline-2 focus-within:outline-offset-2 sm:px-6 sm:py-5">
-                  <span className="text-texto-terciario text-[20px]" aria-hidden="true">
+                <div className="border-negro rounded-card focus-within:outline-negro flex items-center gap-4 border px-5 py-3 focus-within:outline-2 focus-within:outline-offset-2 sm:px-6 sm:py-3.5">
+                  <span className="text-texto-terciario text-[18px]" aria-hidden="true">
                     ⌕
                   </span>
                   <input
@@ -468,7 +456,7 @@ export function Busqueda({
                     onBlur={() => setAbierto(false)}
                     placeholder="Buscar por nombre, marca o código…"
                     aria-label="Buscar en el catálogo"
-                    className="min-w-0 flex-1 bg-transparent text-[19px] tracking-[-0.02em] outline-none sm:text-[24px]"
+                    className="min-w-0 flex-1 bg-transparent text-[17px] tracking-[-0.02em] outline-none sm:text-[19px]"
                   />
                   <span className="text-texto-terciario hidden font-mono text-[11px] sm:ml-auto sm:block">
                     Enter para buscar · Esc para limpiar

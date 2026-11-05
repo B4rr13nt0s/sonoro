@@ -7,7 +7,6 @@ import {
   buildOrderMessage,
   buildProductInquiryMessage,
   buildVehicleInquiryMessage,
-  buildVehicleProductInquiryMessage,
 } from "./message.ts";
 import { formatQ } from "../format/precio.ts";
 import type { CartItem } from "../cart/index.ts";
@@ -209,39 +208,5 @@ test("buildVehicleInquiryMessage: el texto de «¿No está tu vehículo?»", () 
   assert.equal(
     buildVehicleInquiryMessage(),
     "Hola Sonoro, quiero consultar qué receptores y bocinas caben en mi vehículo.",
-  );
-});
-
-test("buildVehicleProductInquiryMessage: producto, vehículo con versión y URL", () => {
-  assert.equal(
-    buildVehicleProductInquiryMessage({
-      nombre: 'Pantalla de 9" DMH-AP6650BT',
-      sku: "DMH-AP6650BT",
-      vehiculo: "Toyota Corolla 2010 · Tablero gris",
-      url: "https://sonoro.gt/buscar?vehiculo=toyota&modelo=corolla&anio=2010&version=tablero-gris",
-    }),
-    [
-      "Hola Sonoro, quiero consultar sobre:",
-      'Pantalla de 9" DMH-AP6650BT (DMH-AP6650BT)',
-      "Vehículo: Toyota Corolla 2010 · Tablero gris",
-      "https://sonoro.gt/buscar?vehiculo=toyota&modelo=corolla&anio=2010&version=tablero-gris",
-    ].join("\n"),
-  );
-});
-
-test("buildVehicleProductInquiryMessage: vehículo sin versión", () => {
-  assert.equal(
-    buildVehicleProductInquiryMessage({
-      nombre: 'Pantalla de 9" DMH-AP6650BT',
-      sku: "DMH-AP6650BT",
-      vehiculo: "Toyota Corolla 2010",
-      url: "https://sonoro.gt/buscar?vehiculo=toyota&modelo=corolla&anio=2010",
-    }),
-    [
-      "Hola Sonoro, quiero consultar sobre:",
-      'Pantalla de 9" DMH-AP6650BT (DMH-AP6650BT)',
-      "Vehículo: Toyota Corolla 2010",
-      "https://sonoro.gt/buscar?vehiculo=toyota&modelo=corolla&anio=2010",
-    ].join("\n"),
   );
 });

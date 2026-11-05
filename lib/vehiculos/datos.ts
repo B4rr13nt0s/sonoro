@@ -10,7 +10,7 @@
 //   - Activos, para carro (sin `uso` cuenta como carro, igual que en /buscar)
 //     y que se puedan pedir: lo agotado no sale, lo bajo pedido sí.
 //   - Las piezas que el selector nombra, si están activas y no agotadas: una
-//     pieza que no viaja no se ofrece, y la bocina baja a «Cabe con accesorios».
+//     pieza que no viaja no se ofrece, y la bocina baja al estado «con accesorios».
 import type { Producto, ProductoTarjeta } from "../catalog/types.ts";
 import {
   PIEZAS_NOMBRADAS,

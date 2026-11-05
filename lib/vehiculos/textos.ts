@@ -5,12 +5,14 @@ import type { Vehiculo } from "./types.ts";
 
 // «con_pieza» es solo el comienzo: el componente agrega el nombre de la pieza
 // con un enlace a su ficha («Cabe con Alza para bocinas de 6.5"»).
-export const TEXTOS_ESTADO: Record<EstadoCompat["tipo"], string> = {
+// «Cabe con accesorios» y el aviso de la DMH-AP6650BT no se muestran
+// (decisión del negocio, noviembre de 2026): esas tarjetas van sin línea de
+// estado. Los estados siguen existiendo en compatibilidad.ts, que ordena por ellos.
+export const TEXTOS_ESTADO: Record<EstadoCompat["tipo"], string | null> = {
   cabe: "Cabe",
   con_pieza: "Cabe con",
-  con_accesorios: "Cabe con accesorios",
-  consultar:
-    "Requiere un marco que depende del año, marca y modelo del vehículo. Contacta a Sonoro para más información.",
+  con_accesorios: null,
+  consultar: null,
 };
 
 // Una línea más bajo el estado de un receptor que la necesita, por su código.

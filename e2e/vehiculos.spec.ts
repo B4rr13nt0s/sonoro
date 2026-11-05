@@ -86,7 +86,7 @@ test("elige marca, modelo y año en /buscar y muestra lo que cabe", async ({ pag
 
   await expect(page.getByRole("heading", { name: TITULO })).toBeVisible();
   await expect(itemDe(page, DOS_DIN!.nombre).locator(":scope > p").first()).toHaveText(
-    TEXTOS_ESTADO.cabe,
+    TEXTOS_ESTADO.cabe!,
   );
 
   await expect(page.getByRole("heading", { name: 'Puertas delanteras · 6.5"' })).toBeVisible();
@@ -95,20 +95,17 @@ test("elige marca, modelo y año en /buscar y muestra lo que cabe", async ({ pag
   await expect(page.getByText('No hay bocinas de 6x8" en el catálogo.')).toBeVisible();
   await expect(page.getByText(INSTALACION)).toBeVisible();
 
+  // «Cabe con accesorios» y el aviso de la AP6650BT no se muestran
+  // (decisión del negocio, noviembre de 2026): la tarjeta va sola.
+  await expect(page.getByText("Cabe con accesorios")).toHaveCount(0);
+  await expect(page.getByText(/Requiere un marco/)).toHaveCount(0);
   if (AP6650) {
-    const item = itemDe(page, AP6650.nombre);
-    await expect(item).toContainText(TEXTOS_ESTADO.consultar);
-    const href = await item
-      .getByRole("link", { name: "Escríbenos por WhatsApp" })
-      .getAttribute("href");
-    const mensaje = decodeURIComponent(href ?? "");
-    expect(mensaje).toContain(`Vehículo: ${TITULO}`);
-    expect(mensaje).toContain(RUTA_ELEGIDA);
+    await expect(itemDe(page, AP6650.nombre).locator(":scope > p")).toHaveCount(0);
   }
 
-  await expect(itemDe(page, CON_NOTA!.nombre).locator(":scope > p").nth(1)).toHaveText(
+  await expect(itemDe(page, CON_NOTA!.nombre).locator(":scope > p")).toHaveText([
     notaReceptor(CON_NOTA!.sku)!,
-  );
+  ]);
 
   await page.reload();
   await expect(page.getByRole("heading", { name: TITULO })).toBeVisible();

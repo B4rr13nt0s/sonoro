@@ -33,7 +33,7 @@ export const CUOTAS_CONDICIONES =
  * negocio, palabra por palabra (noviembre de 2026).
  */
 export const INSTALACION =
-  "Incluye instalación básica. En caso de que la instalación requiera una instalación más compleja, el uso de accesorios o componentes adicionales, dichos artículos se cobrarán por aparte y la instalación tendrá un costo adicional.";
+  "Incluye instalación básica. En caso de que se requiera una instalación más compleja, accesorios o componentes para llevar a cabo el trabajo, dicha instalación y artículos adicionales se cobran por aparte y tienen un costo añadido.";
 
 /** CLAUDE.md regla 4. */
 export const GARANTIA_ALCANCE = "La garantía de Sonoro cubre únicamente desperfectos de fábrica.";

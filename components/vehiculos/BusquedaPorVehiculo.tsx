@@ -3,14 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { claseBoton } from "@/components/ui/boton.ts";
-import { CLASE_SELECT } from "@/components/ui/campos.ts";
 import { ResultadosVehiculo } from "@/components/vehiculos/ResultadosVehiculo";
 import { descargarDatosVehiculos } from "@/lib/vehiculos/carga.ts";
 import { compatibilidad } from "@/lib/vehiculos/compatibilidad.ts";
 import { ERROR_CARGA, tituloVehiculo } from "@/lib/vehiculos/textos.ts";
 import type { DatosVehiculos } from "@/lib/vehiculos/types.ts";
 import {
-  escribirSeleccion,
   hrefVehiculo,
   leerSeleccion,
   resolverSeleccion,
@@ -50,17 +48,17 @@ function obtenerDatos(): Promise<DatosVehiculos | null> {
 type Carga =
   { estado: "cargando" } | { estado: "error" } | { estado: "listo"; datos: DatosVehiculos };
 
-const CLASE_LISTA = `${CLASE_SELECT} w-full sm:w-auto`;
+// Las listas del vehículo van más grandes que las de los filtros (texto de
+// 15 px): son lo único de la pestaña y quedaban chicas al lado del campo.
+const CLASE_LISTA =
+  "border-borde-pildora text-texto-nav w-full rounded-full border bg-white px-5 py-3.5 text-[15px] sm:w-auto sm:min-w-40";
 const CLASE_ENLACE = "text-negro underline underline-offset-2";
 
 export function BusquedaPorVehiculo({
   busqueda,
-  urlBuscar,
 }: {
   /** Los query params actuales, como texto: los mismos que lee la búsqueda. */
   busqueda: string;
-  /** La URL absoluta de /buscar, resuelta en el servidor. */
-  urlBuscar: string;
 }) {
   const [carga, setCarga] = useState<Carga>({ estado: "cargando" });
   const [intento, setIntento] = useState(0);
@@ -118,7 +116,7 @@ export function BusquedaPorVehiculo({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-2.5 sm:flex-row">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <select
             aria-label="Marca"
             value={marca ?? ""}
@@ -183,7 +181,7 @@ export function BusquedaPorVehiculo({
         </div>
       )}
 
-      <p className="text-texto-secundario mt-4 text-[13px]">
+      <p className="text-texto-secundario mt-5 text-[14px]">
         ¿No está tu vehículo?{" "}
         <a
           href={buildWhatsAppUrl(WHATSAPP_NUMBER, buildVehicleInquiryMessage())}
@@ -200,12 +198,6 @@ export function BusquedaPorVehiculo({
         <ResultadosVehiculo
           titulo={tituloVehiculo(resuelta.vehiculo, resuelta.anio)}
           compat={compat}
-          urlConsulta={`${urlBuscar}?${escribirSeleccion({
-            marca,
-            modelo,
-            anio,
-            version: conVersiones ? resuelta.version?.slug : undefined,
-          })}`}
         />
       ) : null}
     </section>
