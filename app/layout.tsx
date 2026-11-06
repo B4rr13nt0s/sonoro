@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bakbak_One, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { LanzadorChat } from "@/components/chat/LanzadorChat";
@@ -20,16 +20,24 @@ import "@/lib/whatsapp/config.ts";
 
 import "./globals.css";
 
-const bakbakOne = Bakbak_One({
+// Las dos fuentes se sirven desde el repositorio (app/fonts/, licencia OFL en
+// assets/fonts/), no con next/font/google: esa baja los archivos de Google en
+// cada build, y cuando la red del runner de CI fallaba el build se caía
+// («Can't resolve '@vercel/turbopack-next/internal/font/google/font'»). Son los
+// mismos archivos que servía Google, subconjunto latino; JetBrains Mono es la
+// fuente variable, así que un archivo cubre los pesos 400 y 500 que usa el
+// sitio. Los caracteres fuera del latino (Ω, ≈) solo aparecen en las specs,
+// que van en Helvetica.
+const bakbakOne = localFont({
+  src: "./fonts/BakbakOne-Regular-latin.woff2",
   variable: "--font-bakbak-one",
   weight: "400",
-  subsets: ["latin"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const jetbrainsMono = localFont({
+  src: "./fonts/JetBrainsMono-latin.woff2",
   variable: "--font-jetbrains-mono",
-  weight: ["400", "500"],
-  subsets: ["latin"],
+  weight: "100 800",
 });
 
 // Solo lo que TODA ruta puede heredar sin mentir. El canonical y el og:url
