@@ -64,9 +64,16 @@ test("recomendación: pide criterio", () => {
     "¿Qué me recomiendan para mi carro?",
     "cuál es mejor",
     "¿cuál me conviene?",
-    "¿qué le queda a mi carro?",
   ]) {
     assert.deepEqual(detectarIntencion(texto), { tipo: "recomendacion" }, texto);
+  }
+});
+
+// «¿Qué le queda a mi carro?» ya no es criterio: el motor la contesta con el
+// selector de vehículos (2026-11-06-chat-compatibilidad-design.md).
+test("«qué le queda» deja de ser recomendación", () => {
+  for (const texto of ["¿qué le queda a mi carro?", "¿cuál le queda a mi corolla?"]) {
+    assert.equal(detectarIntencion(texto).tipo, "busqueda", texto);
   }
 });
 

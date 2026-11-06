@@ -594,6 +594,8 @@ test("necesitaCatalogo: solo lo que muestra productos espera al catálogo", () =
     texto("hola, tienen subwoofers memphis?"),
     opcion("categoria:kits"),
     opcion("marca:memphis"),
+    // Puede nombrar un carro: espera también a los vehículos (motor-vehiculo.test.ts).
+    texto("¿qué me recomiendan?"),
   ];
   for (const entrada of quiere)
     assert.equal(necesitaCatalogo(entrada), true, JSON.stringify(entrada));
@@ -602,7 +604,6 @@ test("necesitaCatalogo: solo lo que muestra productos espera al catálogo", () =
     texto("hola"),
     texto("   "),
     texto("¿hacen envíos a Xela?"),
-    texto("¿qué me recomiendan?"),
     opcion("buscar"),
     opcion("hablar"),
     opcion("envios"),

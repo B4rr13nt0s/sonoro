@@ -33,6 +33,13 @@ import {
 } from "./datos.ts";
 import { consultaVisible, detectarIntencion } from "./intencion.ts";
 import {
+  bloquesSinVehiculos,
+  leerOpcionVehiculo,
+  responderVehiculo,
+  type PedidoVehiculo,
+} from "./respuestaVehiculo.ts";
+import { leerVehiculo, tieneFraseVehiculo } from "./vehiculo.ts";
+import {
   TEXTO_DATOS_FABRICANTE,
   TEXTO_PEDIR_BUSQUEDA,
   TEXTO_PEDIR_PRODUCTO,
@@ -492,6 +499,47 @@ function responderTemaAmbiguo(
   return responderTema(tema, contexto);
 }
 
+/**
+ * Un paso de «¿qué le queda a mi carro?». `consulta` es lo que queda como
+ * `ultimaConsulta` si la respuesta todavía no sabe qué vehículo es.
+ */
+function responderPedidoVehiculo(
+  pedido: PedidoVehiculo,
+  consulta: string | null,
+  contexto: Contexto,
+): Respuesta {
+  if (!contexto.vehiculos) {
+    return {
+      estado: { ultimaConsulta: consulta, ultimoTema: null },
+      bloques: bloquesSinVehiculos(),
+      evento: null,
+    };
+  }
+  const { bloques, titulo, resultados } = responderVehiculo(pedido, contexto.vehiculos.datos);
+  return {
+    estado: { ultimaConsulta: titulo ?? consulta, ultimoTema: null },
+    bloques,
+    evento:
+      titulo !== null && resultados !== null
+        ? { evento: "vehiculo", consulta: titulo, resultados }
+        : null,
+  };
+}
+
+/**
+ * Lo escrito, si nombra un carro de la lista o pregunta qué le queda a uno
+ * (spec § Cómo entiende el carro). `null` para seguir como siempre. Sin los
+ * datos de vehículos, solo la frase se contesta (con el error de carga): un
+ * carro escrito sin frase sigue como búsqueda.
+ */
+function intentarVehiculo(texto: string, contexto: Contexto): Respuesta | null {
+  const frase = tieneFraseVehiculo(texto);
+  const vehiculos = contexto.vehiculos;
+  const sel = vehiculos ? leerVehiculo(texto, vehiculos.datos.vehiculos, vehiculos.ambiguos) : null;
+  if (!sel && !frase) return null;
+  return responderPedidoVehiculo({ sel: sel ?? {}, rango: false, ver: null }, texto, contexto);
+}
+
 function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respuesta {
   if (id === "buscar") {
     return { estado, bloques: [{ tipo: "texto", texto: TEXTO_PEDIR_BUSQUEDA }], evento: null };
@@ -507,6 +555,10 @@ function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respue
   if (id.startsWith("acotar:")) {
     const acote = acoteDeId(id);
     if (acote) return responderAcote(estado, acote, contexto);
+  }
+  if (id.startsWith("vehiculo:")) {
+    const pedido = leerOpcionVehiculo(id);
+    if (pedido) return responderPedidoVehiculo(pedido, estado.ultimaConsulta, contexto);
   }
   if (id.startsWith("marca:")) {
     const slug = id.slice("marca:".length);
@@ -536,6 +588,12 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
   if (texto === "") return saludo(estado);
 
   const intencion = detectarIntencion(texto);
+  // El carro se prueba solo en lo que hoy es recomendación o búsqueda: un
+  // tema («¿instalan en un Corolla?») o un dato siguen como antes.
+  if (intencion.tipo === "recomendacion" || intencion.tipo === "busqueda") {
+    const vehiculo = intentarVehiculo(texto, contexto);
+    if (vehiculo) return vehiculo;
+  }
   switch (intencion.tipo) {
     case "saludo":
       return saludo(estado);
@@ -575,15 +633,19 @@ export function necesitaCatalogo(entrada: Entrada): boolean {
     return (
       entrada.id.startsWith("categoria:") ||
       entrada.id.startsWith("marca:") ||
-      entrada.id.startsWith("acotar:")
+      entrada.id.startsWith("acotar:") ||
+      entrada.id.startsWith("vehiculo:")
     );
   }
   const texto = cortar(entrada.texto.trim()).trimEnd();
   if (texto === "") return false;
   const intencion = detectarIntencion(texto);
   // Un tema de palabra ambigua prueba la búsqueda antes de contestar.
+  // La recomendación también: «¿qué me recomiendan para mi Corolla?» puede
+  // nombrar un carro, y los vehículos bajan junto con el catálogo.
   return (
     intencion.tipo === "busqueda" ||
+    intencion.tipo === "recomendacion" ||
     (intencion.tipo === "dato" && intencion.consulta !== "") ||
     (intencion.tipo === "tema" && !!intencion.ambigua)
   );
