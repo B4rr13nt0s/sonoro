@@ -4,6 +4,7 @@ export {
   buildChatHandoffMessage,
   buildOrderMessage,
   buildProductInquiryMessage,
+  buildVehicleInquiryMessage,
   formatearLinea,
 } from "./message.ts";
 export { buildWhatsAppUrl } from "./url.ts";

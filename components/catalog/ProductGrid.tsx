@@ -10,7 +10,9 @@ import type { Spec } from "@/lib/catalog/types.ts";
 // Seis por fila desde 1280px (`xl:`), donde cada tarjeta mide ~184px: a 1024px
 // seis tarjetas bajarían de 140px y el nombre se partiría en cinco o seis
 // líneas, así que ahí siguen siendo cuatro.
-const CLASES_GRID = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6";
+// Exportada para el selector de vehículos de /buscar, que necesita la misma
+// rejilla con una línea de estado debajo de cada tarjeta.
+export const CLASES_GRID = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6";
 
 type ProductGridProps = {
   productos: ProductoTarjeta[];

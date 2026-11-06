@@ -13054,7 +13054,7 @@
       },
       {
         "etiqueta": "Profundidad de montaje",
-        "valor": "80 mm"
+        "valor": "81 mm"
       },
       {
         "etiqueta": "Sensibilidad",
@@ -13109,7 +13109,7 @@
       "potencia_rms_w": 150,
       "impedancia_ohm": 4,
       "configuracion": "medio-rango",
-      "profundidad_mm": 80,
+      "profundidad_mm": 81,
       "sensibilidad_db": 94
     }
   },
@@ -18497,7 +18497,7 @@
     "specsDestacadas": [
       {
         "etiqueta": "Formato",
-        "valor": "Pantalla flotante"
+        "valor": "Específico por vehículo"
       },
       {
         "etiqueta": "Pantalla",
@@ -18511,7 +18511,7 @@
     "specsFicha": [
       {
         "etiqueta": "Formato",
-        "valor": "Pantalla flotante"
+        "valor": "Específico por vehículo"
       },
       {
         "etiqueta": "Pantalla",
@@ -18566,7 +18566,7 @@
     "destacado": true,
     "activo": true,
     "atributos": {
-      "formato": "flotante",
+      "formato": "especifico",
       "pantalla_pulg": 9,
       "carplay": true,
       "android_auto": true,
@@ -18759,7 +18759,7 @@
     "specsDestacadas": [
       {
         "etiqueta": "Formato",
-        "valor": "Pantalla flotante"
+        "valor": "Específico por vehículo"
       },
       {
         "etiqueta": "Pantalla",
@@ -18773,7 +18773,7 @@
     "specsFicha": [
       {
         "etiqueta": "Formato",
-        "valor": "Pantalla flotante"
+        "valor": "Específico por vehículo"
       },
       {
         "etiqueta": "Pantalla",
@@ -18832,7 +18832,7 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "formato": "flotante",
+      "formato": "especifico",
       "pantalla_pulg": 9,
       "carplay": true,
       "android_auto": true,
@@ -20609,7 +20609,7 @@
   {
     "sku": "CLASSIC LITE BLACK",
     "slug": "soundskins-classic-lite-black",
-    "nombre": "Classic Lite - Negro",
+    "nombre": "Classic Lite - Láminas insonorizantes",
     "marca": "SoundSkins",
     "categoria": "Insonorización",
     "descripcionCorta": "Láminas insonorizantes de perfil ultradelgado con 4.7 metros cuadrados de cobertura",
@@ -20670,7 +20670,7 @@
     "imagenes": [
       {
         "url": "/productos/CLASSIC LITE BLACK_frontal.jpg",
-        "alt": "Classic Lite - Negro — frontal"
+        "alt": "Classic Lite - Láminas insonorizantes — frontal"
       }
     ],
     "destacado": true,
@@ -20767,10 +20767,10 @@
   {
     "sku": "PRO DOOR KIT",
     "slug": "soundskins-pro-door-kit",
-    "nombre": "Pro Door Kit - Lámina de tres capas para dos puertas",
+    "nombre": "Pro Door Kit - Lámina de tres capas para puertas",
     "marca": "SoundSkins",
     "categoria": "Insonorización",
-    "descripcionCorta": "Rollo insonorizante de caucho butílico, lámina metálica y espuma acústica con 1 metro cuadrado de cobertura",
+    "descripcionCorta": "Rollo insonorizante de caucho butílico, lámina metálica y espuma acústica con 1 metro cuadrado de cobertura para puertas",
     "uso": [
       "carro"
     ],
@@ -20832,7 +20832,7 @@
     "imagenes": [
       {
         "url": "/productos/PRO DOOR KIT_frontal.jpg",
-        "alt": "Pro Door Kit - Lámina de tres capas para dos puertas — frontal"
+        "alt": "Pro Door Kit - Lámina de tres capas para puertas — frontal"
       }
     ],
     "destacado": false,
@@ -20846,7 +20846,7 @@
   {
     "sku": "WAVY FOAM",
     "slug": "soundskins-wavy-foam",
-    "nombre": "Wavy - Espuma acústica de 8 mm",
+    "nombre": "Wavy - Espuma acústica",
     "marca": "SoundSkins",
     "categoria": "Insonorización",
     "descripcionCorta": "Manta de espuma de celda cerrada de 8 mm para absorción acústica",
@@ -20915,7 +20915,7 @@
     "imagenes": [
       {
         "url": "/productos/WAVY FOAM_frontal.jpg",
-        "alt": "Wavy - Espuma acústica de 8 mm — frontal"
+        "alt": "Wavy - Espuma acústica — frontal"
       }
     ],
     "destacado": true,

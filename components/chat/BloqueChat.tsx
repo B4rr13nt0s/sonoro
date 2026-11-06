@@ -41,7 +41,8 @@ export function BloqueChat({
           {bloque.texto}
           {bloque.enlace ? (
             <>
-              {" "}
+              {/* Un texto vacío es solo el enlace («Ver todo en Buscar»): sin espacio delante. */}
+              {bloque.texto === "" ? null : " "}
               <Link href={bloque.enlace.href} onNavigate={alNavegar} className="underline">
                 {bloque.enlace.etiqueta}
               </Link>
@@ -89,6 +90,7 @@ export function BloqueChat({
               key={producto.sku}
               producto={producto}
               datos={bloque.datos?.[producto.sku]}
+              nota={bloque.notas?.[producto.sku]}
               alAgregar={alAgregar}
               alNavegar={alNavegar}
             />

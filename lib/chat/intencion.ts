@@ -83,8 +83,8 @@ const RECOMENDACION = [
   "cual es el mejor",
   "cual me conviene",
   "que me conviene",
-  "que le queda",
-  "cual le queda",
+  // «qué le queda» y «cuál le queda» no están: preguntan por un carro, y el
+  // motor las contesta con el selector de vehículos (lib/chat/vehiculo.ts).
   "que me sirve",
 ];
 

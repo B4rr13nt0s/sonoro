@@ -48,6 +48,13 @@ import { consultaVisible, detectarIntencion } from "./intencion.ts";
 import { accionDe } from "./referencia.ts";
 import { aplicarCambios, fraseCambios, type Cambio } from "./seguimiento.ts";
 import {
+  bloquesSinVehiculos,
+  leerOpcionVehiculo,
+  responderVehiculo,
+  type PedidoVehiculo,
+} from "./respuestaVehiculo.ts";
+import { excluyeVehiculo, leerVehiculo, tieneFraseVehiculo } from "./vehiculo.ts";
+import {
   TEXTO_DATOS_FABRICANTE,
   TEXTO_PEDIR_BUSQUEDA,
   TEXTO_PEDIR_PRODUCTO,
@@ -62,6 +69,7 @@ import {
 } from "./respuestas.ts";
 import {
   MAX_CONSULTA,
+  MAX_PRODUCTOS_CHAT,
   type Bloque,
   type BusquedaAcotable,
   type Contexto,
@@ -73,7 +81,7 @@ import {
 
 export { bloquesDeInicio };
 
-export const MAX_PRODUCTOS_CHAT = 5;
+export { MAX_PRODUCTOS_CHAT };
 
 export const ESTADO_INICIAL: Estado = { ultimaConsulta: null, ultimoTema: null };
 
@@ -828,6 +836,55 @@ function responderTemaAmbiguo(
   return responderTema(tema, contexto);
 }
 
+/**
+ * Un paso de «¿qué le queda a mi carro?». `consulta` es lo que queda como
+ * `ultimaConsulta` si la respuesta todavía no sabe qué vehículo es.
+ */
+function responderPedidoVehiculo(
+  pedido: PedidoVehiculo,
+  consulta: string | null,
+  contexto: Contexto,
+): Respuesta {
+  if (!contexto.vehiculos) {
+    return {
+      estado: { ultimaConsulta: consulta, ultimoTema: null },
+      bloques: bloquesSinVehiculos(),
+      evento: null,
+    };
+  }
+  const { bloques, titulo, resultados } = responderVehiculo(pedido, contexto.vehiculos.datos);
+  return {
+    estado: { ultimaConsulta: titulo ?? consulta, ultimoTema: null },
+    bloques,
+    evento:
+      titulo !== null && resultados !== null
+        ? { evento: "vehiculo", consulta: titulo, resultados }
+        : null,
+  };
+}
+
+/**
+ * Lo escrito, si nombra un carro de la lista o pregunta qué le queda a uno
+ * (spec § Cómo entiende el carro). `null` para seguir como siempre. Sin los
+ * datos de vehículos, solo la frase se contesta (con el error de carga): un
+ * carro escrito sin frase sigue como búsqueda.
+ */
+function intentarVehiculo(texto: string, contexto: Contexto, esDato: boolean): Respuesta | null {
+  if (excluyeVehiculo(texto)) return null;
+  const frase = tieneFraseVehiculo(texto);
+  const vehiculos = contexto.vehiculos;
+  const sel = vehiculos ? leerVehiculo(texto, vehiculos.datos.vehiculos, vehiculos.ambiguos) : null;
+  // Una pregunta de dato («qué tamaño de bocina le cabe a mi Civic 2010») solo
+  // es de compatibilidad con la frase Y un modelo: «cuántos watts tiene el
+  // corolla» sigue siendo un dato.
+  if (esDato) {
+    if (!frase || !sel?.modelo) return null;
+  } else if (!sel && !frase) {
+    return null;
+  }
+  return responderPedidoVehiculo({ sel: sel ?? {}, rango: false, ver: null }, texto, contexto);
+}
+
 function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respuesta {
   if (id === "buscar") {
     return { estado, bloques: [{ tipo: "texto", texto: TEXTO_PEDIR_BUSQUEDA }], evento: null };
@@ -843,6 +900,10 @@ function responderOpcion(estado: Estado, id: string, contexto: Contexto): Respue
   if (id.startsWith("acotar:")) {
     const acote = acoteDeId(id);
     if (acote) return responderSeguimiento(estado, [{ tipo: "acote", acote }], contexto);
+  }
+  if (id.startsWith("vehiculo:")) {
+    const pedido = leerOpcionVehiculo(id);
+    if (pedido) return responderPedidoVehiculo(pedido, estado.ultimaConsulta, contexto);
   }
   if (id.startsWith("marca:")) {
     const slug = id.slice("marca:".length);
@@ -901,6 +962,19 @@ function responderSinMemoria(estado: Estado, entrada: Entrada, contexto: Context
     marcas: contexto.marcas,
     numeroSuelto: numeroSueltoDe(estado, contexto),
   });
+  // El carro se prueba en lo que sería recomendación, búsqueda o una
+  // pregunta vaga; en un dato, solo con frase de vehículo y modelo
+  // (intentarVehiculo). Un tema («¿instalan en un Corolla?»), un seguimiento
+  // o una referencia siguen como antes.
+  if (
+    intencion.tipo === "recomendacion" ||
+    intencion.tipo === "busqueda" ||
+    intencion.tipo === "vago" ||
+    intencion.tipo === "dato"
+  ) {
+    const vehiculo = intentarVehiculo(texto, contexto, intencion.tipo === "dato");
+    if (vehiculo) return vehiculo;
+  }
   switch (intencion.tipo) {
     case "saludo":
       return saludo(estado);
@@ -968,15 +1042,21 @@ export function necesitaCatalogo(entrada: Entrada, estado?: Estado): boolean {
     return (
       entrada.id.startsWith("categoria:") ||
       entrada.id.startsWith("marca:") ||
-      entrada.id.startsWith("acotar:")
+      entrada.id.startsWith("acotar:") ||
+      entrada.id.startsWith("vehiculo:")
     );
   }
   const texto = cortar(entrada.texto.trim()).trimEnd();
   if (texto === "") return false;
   const intencion = detectarIntencion(texto, estado);
   // Un tema de palabra ambigua prueba la búsqueda antes de contestar.
+  // La recomendación también: «¿qué me recomiendan para mi Corolla?» puede
+  // nombrar un carro, y los vehículos bajan junto con el catálogo.
   return (
     intencion.tipo === "busqueda" ||
+    intencion.tipo === "recomendacion" ||
+    intencion.tipo === "vago" ||
+    (intencion.tipo === "dato" && tieneFraseVehiculo(texto)) ||
     intencion.tipo === "referencia" ||
     intencion.tipo === "seguimiento" ||
     intencion.tipo === "respuesta_pendiente" ||

@@ -73,3 +73,6 @@ scripts/models3d/
 
 # Salida de /brag (video de lanzamiento): no es parte del sitio.
 brag-output/
+
+# Bocetos y registros de los planes (skills de superpowers): borrador, no se versiona.
+.superpowers/

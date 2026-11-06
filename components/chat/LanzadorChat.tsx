@@ -16,7 +16,7 @@ import { useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { crearPanelDiferido } from "@/components/chat/PanelDiferido.ts";
-import { crearCargadorCatalogo } from "@/lib/chat/catalogo.ts";
+import { crearCargadorCatalogo, crearCargadorVehiculos } from "@/lib/chat/catalogo.ts";
 import type { Contexto, Conversacion } from "@/lib/chat/tipos.ts";
 
 // El panel se baja con import() al primer clic y, si eso falla, el siguiente
@@ -25,6 +25,8 @@ const PanelDiferido = crearPanelDiferido(() => import("./PanelChat"));
 
 // Uno por carga de página: reabrir el panel no vuelve a pedir el catálogo.
 const cargarCatalogo = crearCargadorCatalogo();
+// Igual, pero no se pide al abrir: solo cuando una pregunta lo necesita.
+const cargarVehiculos = crearCargadorVehiculos();
 
 function IconoPreguntar() {
   return (
@@ -95,6 +97,7 @@ export function LanzadorChat({ contacto }: { contacto: Contexto["contacto"] }) {
           setConversacion={setConversacion}
           contacto={contacto}
           cargarCatalogo={cargarCatalogo}
+          cargarVehiculos={cargarVehiculos}
           alCerrar={() => setAbierto(false)}
           alFallar={() => setAbierto(false)}
           lanzadorRef={lanzadorRef}

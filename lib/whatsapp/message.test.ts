@@ -6,6 +6,7 @@ import {
   buildChatHandoffMessage,
   buildOrderMessage,
   buildProductInquiryMessage,
+  buildVehicleInquiryMessage,
 } from "./message.ts";
 import { formatQ } from "../format/precio.ts";
 import type { CartItem } from "../cart/index.ts";
@@ -200,5 +201,12 @@ test("buildChatHandoffMessage: con consulta y tema a la vez, nombra los dos", ()
   assert.equal(
     buildChatHandoffMessage({ consulta: "radio con carplay", tema: "contacto" }),
     "Hola Sonoro, tengo una consulta: radio con carplay. También sobre contacto",
+  );
+});
+
+test("buildVehicleInquiryMessage: el texto de «¿No está tu vehículo?»", () => {
+  assert.equal(
+    buildVehicleInquiryMessage(),
+    "Hola Sonoro, quiero consultar qué receptores y bocinas caben en mi vehículo.",
   );
 });

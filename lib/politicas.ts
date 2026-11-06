@@ -26,9 +26,14 @@ export const CUOTAS = "Hasta 6 pagos precio contado.";
 export const CUOTAS_CONDICIONES =
   "Las condiciones de pago se acuerdan directamente con Sonoro al confirmar el pedido por WhatsApp.";
 
-/** Párrafo de «Instalación» de /legal/terminos. */
+/**
+ * La frase de instalación, en un solo lugar (CLAUDE.md regla 1): el párrafo
+ * «Instalación» de /legal/terminos, la respuesta de instalación del chat y el
+ * final de los resultados del selector de vehículos de /buscar. Texto del
+ * negocio, palabra por palabra (noviembre de 2026).
+ */
 export const INSTALACION =
-  "Cada producto incluye la instalación básica. Una instalación más compleja tiene un costo adicional, y al cerrar el pedido se te informa cuál requiere lo que llevas.";
+  "Incluye instalación básica. En caso de que se requiera una instalación más compleja, accesorios o componentes para llevar a cabo el trabajo, dicha instalación y artículos adicionales se cobran por aparte y tienen un costo añadido.";
 
 /** CLAUDE.md regla 4. */
 export const GARANTIA_ALCANCE = "La garantía de Sonoro cubre únicamente desperfectos de fábrica.";

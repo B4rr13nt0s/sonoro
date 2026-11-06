@@ -103,3 +103,9 @@ export function buildProductInquiryMessage(params: {
     params.url,
   ].join("\n");
 }
+
+// «¿No está tu vehículo? Escríbenos por WhatsApp.», desde el selector de
+// vehículos de /buscar.
+export function buildVehicleInquiryMessage(): string {
+  return "Hola Sonoro, quiero consultar qué receptores y bocinas caben en mi vehículo.";
+}

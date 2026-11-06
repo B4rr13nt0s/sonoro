@@ -9,7 +9,13 @@ import { readFileSync } from "node:fs";
 
 import { test, expect, type Page } from "@playwright/test";
 
+import type { Producto } from "../lib/catalog/types.ts";
+import { etiquetaVerTodos } from "../lib/chat/panel.ts";
 import { formatQ } from "../lib/format/precio.ts";
+import { INSTALACION } from "../lib/politicas.ts";
+import { compatibilidad } from "../lib/vehiculos/compatibilidad.ts";
+import { armarDatosVehiculos } from "../lib/vehiculos/datos.ts";
+import type { Vehiculo } from "../lib/vehiculos/types.ts";
 
 const CATALOGO = (
   JSON.parse(readFileSync("data/catalog.json", "utf-8")) as {
@@ -178,4 +184,52 @@ test("en móvil el panel es modal", async ({ page }) => {
   const panel = await abrirChat(page);
 
   await expect(panel).toHaveAttribute("aria-modal", "true");
+});
+
+// «¿Qué le queda a mi carro?» (2026-11-06-chat-compatibilidad-design.md). Como
+// en vehiculos.spec.ts, /buscar/vehiculos.json se sirve con un vehículo de
+// prueba armado con el catálogo real: la prueba no depende de qué filas del
+// libro estén revisadas.
+const PRUEBA: Vehiculo = {
+  marca: "Prueba",
+  marcaSlug: "prueba",
+  modelo: "Uno",
+  modeloSlug: "uno",
+  version: null,
+  versionSlug: null,
+  desde: 2008,
+  hasta: 2012,
+  radio1din: "con_marco",
+  radio2din: "directo",
+  ubicaciones: [{ ubicacion: "Puertas delanteras", medidas: ['6.5"'], accesorio: "otro" }],
+};
+const DATOS_VEHICULOS = armarDatosVehiculos(
+  [PRUEBA],
+  JSON.parse(readFileSync("data/catalog.json", "utf-8")) as Producto[],
+);
+const RECEPTORES = compatibilidad(PRUEBA, DATOS_VEHICULOS).receptores;
+
+test("contesta qué le queda a un carro", async ({ page }) => {
+  expect(
+    RECEPTORES.length,
+    "ningún receptor del catálogo cabe en el vehículo de prueba",
+  ).toBeGreaterThan(0);
+  await page.route("**/buscar/vehiculos.json", (ruta) =>
+    ruta.fulfill({ json: DATOS_VEHICULOS, headers: { "content-type": "application/json" } }),
+  );
+  const panel = await abrirChat(page);
+  const conversacion = panel.getByRole("region", { name: "Conversación" });
+
+  await preguntar(page, "¿Qué le queda a mi Prueba Uno 2010?");
+  await expect(conversacion.getByText("Prueba Uno 2010", { exact: true })).toBeVisible();
+  await expect(conversacion.getByText(INSTALACION)).toBeVisible();
+
+  await conversacion.getByRole("button", { name: "Receptores", exact: true }).click();
+  await expect(conversacion.getByText("Receptores · Prueba Uno 2010")).toBeVisible();
+  await expect(
+    conversacion.getByRole("link", { name: RECEPTORES[0].producto.nombre }).first(),
+  ).toBeVisible();
+
+  await conversacion.getByRole("link", { name: etiquetaVerTodos(RECEPTORES.length) }).click();
+  await expect(page).toHaveURL(/\/buscar\?vehiculo=prueba&modelo=uno&anio=2010$/);
 });

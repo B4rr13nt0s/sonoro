@@ -21,6 +21,13 @@ test("buildLlmsTxt: categorías y marcas salen del catálogo, con URL absoluta",
   assert.match(texto, /los 320 productos a la venta/);
 });
 
+test("buildLlmsTxt: la línea de Buscar nombra la búsqueda por vehículo", () => {
+  assert.match(
+    texto,
+    /- \[Buscar\]\(https?:\/\/[^)]+\/buscar\): búsqueda por nombre, marca o código, y qué receptores y bocinas caben en cada vehículo\./,
+  );
+});
+
 test("buildLlmsTxt: la frase de envíos va siempre con sus restricciones", () => {
   assert.match(
     texto,

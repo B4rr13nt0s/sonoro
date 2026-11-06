@@ -4,6 +4,7 @@ data/catalog.json
 data/brands.json
 data/taxonomy.json
 data/inactive-slugs.json
+data/vehiculos.json
 reports
 public/logos
 design

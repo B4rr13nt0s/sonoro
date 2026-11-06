@@ -1,0 +1,1709 @@
+{
+  "schemaVersion": 1,
+  "vehiculos": [
+    {
+      "marca": "Chevrolet",
+      "marcaSlug": "chevrolet",
+      "modelo": "Spark",
+      "modeloSlug": "spark",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2013,
+      "hasta": 2015,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": []
+    },
+    {
+      "marca": "Ford",
+      "marcaSlug": "ford",
+      "modelo": "Ranger",
+      "modeloSlug": "ranger",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1995,
+      "hasta": 2011,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6x8\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Costados traseros",
+          "medidas": [
+            "6x8\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Honda",
+      "marcaSlug": "honda",
+      "modelo": "Civic",
+      "modeloSlug": "civic",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1986,
+      "hasta": 1995,
+      "radio1din": "directo",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Honda",
+      "marcaSlug": "honda",
+      "modelo": "Civic",
+      "modeloSlug": "civic",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1996,
+      "hasta": 1998,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Honda",
+      "marcaSlug": "honda",
+      "modelo": "Civic",
+      "modeloSlug": "civic",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1999,
+      "hasta": 2005,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Honda",
+      "marcaSlug": "honda",
+      "modelo": "Civic",
+      "modeloSlug": "civic",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2006,
+      "hasta": 2015,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Honda",
+      "marcaSlug": "honda",
+      "modelo": "Civic",
+      "modeloSlug": "civic",
+      "version": "LX o Sport",
+      "versionSlug": "lx-o-sport",
+      "desde": 2016,
+      "hasta": 2018,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Honda",
+      "marcaSlug": "honda",
+      "modelo": "Civic Si",
+      "modeloSlug": "civic-si",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2002,
+      "hasta": 2005,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Honda",
+      "marcaSlug": "honda",
+      "modelo": "CR-V",
+      "modeloSlug": "cr-v",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1997,
+      "hasta": 1998,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Compuerta trasera",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Honda",
+      "marcaSlug": "honda",
+      "modelo": "CR-V",
+      "modeloSlug": "cr-v",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1999,
+      "hasta": 2016,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Honda",
+      "marcaSlug": "honda",
+      "modelo": "Fit",
+      "modeloSlug": "fit",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2007,
+      "hasta": 2008,
+      "radio1din": "no_cabe",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Honda",
+      "marcaSlug": "honda",
+      "modelo": "Fit",
+      "modeloSlug": "fit",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2009,
+      "hasta": 2013,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Adelante",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Honda",
+      "marcaSlug": "honda",
+      "modelo": "Fit",
+      "modeloSlug": "fit",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2015,
+      "hasta": 2018,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Adelante",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Accent",
+      "modeloSlug": "accent",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2000,
+      "hasta": 2005,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "5.25\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Accent",
+      "modeloSlug": "accent",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2006,
+      "hasta": 2011,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Accent",
+      "modeloSlug": "accent",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2012,
+      "hasta": 2016,
+      "radio1din": "no_cabe",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Puertas traseras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Elantra",
+      "modeloSlug": "elantra",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1996,
+      "hasta": 2000,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "5.25\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Elantra",
+      "modeloSlug": "elantra",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2001,
+      "hasta": 2006,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Elantra",
+      "modeloSlug": "elantra",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2011,
+      "hasta": 2013,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Adelante",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Elantra",
+      "modeloSlug": "elantra",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2014,
+      "hasta": 2016,
+      "radio1din": "no_cabe",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Adelante",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Elantra",
+      "modeloSlug": "elantra",
+      "version": "Con radio de fábrica",
+      "versionSlug": "con-radio-de-fabrica",
+      "desde": 2007,
+      "hasta": 2010,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Adelante",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Elantra",
+      "modeloSlug": "elantra",
+      "version": "Sin radio de fábrica",
+      "versionSlug": "sin-radio-de-fabrica",
+      "desde": 2007,
+      "hasta": 2010,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Adelante",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Santa Fe",
+      "modeloSlug": "santa-fe",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2001,
+      "hasta": 2006,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Paneles laterales traseros",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Santa Fe",
+      "modeloSlug": "santa-fe",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2007,
+      "hasta": 2008,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Santa Fe",
+      "modeloSlug": "santa-fe",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2013,
+      "hasta": 2016,
+      "radio1din": "no_cabe",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Santa Fe",
+      "modeloSlug": "santa-fe",
+      "version": "Sin navegación de fábrica",
+      "versionSlug": "sin-navegacion-de-fabrica",
+      "desde": 2009,
+      "hasta": 2012,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Tucson",
+      "modeloSlug": "tucson",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2005,
+      "hasta": 2009,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Hyundai",
+      "marcaSlug": "hyundai",
+      "modelo": "Tucson",
+      "modeloSlug": "tucson",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2010,
+      "hasta": 2015,
+      "radio1din": "no_cabe",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Puertas traseras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Kia",
+      "marcaSlug": "kia",
+      "modelo": "Sportage",
+      "modeloSlug": "sportage",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1996,
+      "hasta": 1997,
+      "radio1din": "no_cabe",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "4\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Kia",
+      "marcaSlug": "kia",
+      "modelo": "Sportage",
+      "modeloSlug": "sportage",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1998,
+      "hasta": 2002,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "4\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Kia",
+      "marcaSlug": "kia",
+      "modelo": "Sportage",
+      "modeloSlug": "sportage",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2005,
+      "hasta": 2010,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Adelante",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Kia",
+      "marcaSlug": "kia",
+      "modelo": "Sportage",
+      "modeloSlug": "sportage",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2011,
+      "hasta": 2015,
+      "radio1din": "no_cabe",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Puertas traseras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Mazda",
+      "marcaSlug": "mazda",
+      "modelo": "CX-5",
+      "modeloSlug": "cx-5",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2013,
+      "hasta": 2016,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": []
+    },
+    {
+      "marca": "Mazda",
+      "marcaSlug": "mazda",
+      "modelo": "Protegé",
+      "modeloSlug": "protege",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1995,
+      "hasta": 2000,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Mazda",
+      "marcaSlug": "mazda",
+      "modelo": "Protegé",
+      "modeloSlug": "protege",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2001,
+      "hasta": 2003,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6x8\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Puertas traseras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Mitsubishi",
+      "marcaSlug": "mitsubishi",
+      "modelo": "Lancer",
+      "modeloSlug": "lancer",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2002,
+      "hasta": 2007,
+      "radio1din": "directo",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Mitsubishi",
+      "marcaSlug": "mitsubishi",
+      "modelo": "Lancer",
+      "modeloSlug": "lancer",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2008,
+      "hasta": 2017,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Mitsubishi",
+      "marcaSlug": "mitsubishi",
+      "modelo": "Outlander",
+      "modeloSlug": "outlander",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2003,
+      "hasta": 2006,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Adelante",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Mitsubishi",
+      "marcaSlug": "mitsubishi",
+      "modelo": "Outlander",
+      "modeloSlug": "outlander",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2007,
+      "hasta": 2013,
+      "radio1din": "no_cabe",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Nissan",
+      "marcaSlug": "nissan",
+      "modelo": "Frontier",
+      "modeloSlug": "frontier",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1998,
+      "hasta": 2004,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Nissan",
+      "marcaSlug": "nissan",
+      "modelo": "Frontier",
+      "modeloSlug": "frontier",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2005,
+      "hasta": 2018,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": null
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Nissan",
+      "marcaSlug": "nissan",
+      "modelo": "Sentra",
+      "modeloSlug": "sentra",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1987,
+      "hasta": 1990,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Nissan",
+      "marcaSlug": "nissan",
+      "modelo": "Sentra",
+      "modeloSlug": "sentra",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1991,
+      "hasta": 1994,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Nissan",
+      "marcaSlug": "nissan",
+      "modelo": "Sentra",
+      "modeloSlug": "sentra",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1995,
+      "hasta": 1999,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Nissan",
+      "marcaSlug": "nissan",
+      "modelo": "Sentra",
+      "modeloSlug": "sentra",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2000,
+      "hasta": 2006,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": null
+        }
+      ]
+    },
+    {
+      "marca": "Nissan",
+      "marcaSlug": "nissan",
+      "modelo": "Sentra",
+      "modeloSlug": "sentra",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2007,
+      "hasta": 2012,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Nissan",
+      "marcaSlug": "nissan",
+      "modelo": "Sentra",
+      "modeloSlug": "sentra",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2013,
+      "hasta": 2018,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Puertas traseras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Nissan",
+      "marcaSlug": "nissan",
+      "modelo": "Versa",
+      "modeloSlug": "versa",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2007,
+      "hasta": 2017,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "4Runner",
+      "modeloSlug": "4runner",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1989,
+      "hasta": 1995,
+      "radio1din": "con_marco",
+      "radio2din": "directo",
+      "ubicaciones": [
+        {
+          "ubicacion": "Tablero frontal",
+          "medidas": [
+            "4\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "4Runner",
+      "modeloSlug": "4runner",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1996,
+      "hasta": 2002,
+      "radio1din": "con_marco",
+      "radio2din": "directo",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "4Runner",
+      "modeloSlug": "4runner",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2003,
+      "hasta": 2009,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "4Runner",
+      "modeloSlug": "4runner",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2010,
+      "hasta": 2016,
+      "radio1din": "no_cabe",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "Corolla",
+      "modeloSlug": "corolla",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1987,
+      "hasta": 1992,
+      "radio1din": "con_marco",
+      "radio2din": "directo",
+      "ubicaciones": [
+        {
+          "ubicacion": "Tablero frontal",
+          "medidas": [
+            "4\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Costados traseros",
+          "medidas": [
+            "5.25\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "Corolla",
+      "modeloSlug": "corolla",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1993,
+      "hasta": 1997,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "4\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "Corolla",
+      "modeloSlug": "corolla",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1998,
+      "hasta": 2002,
+      "radio1din": "con_marco",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "Corolla",
+      "modeloSlug": "corolla",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2003,
+      "hasta": 2018,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "Corolla iM",
+      "modeloSlug": "corolla-im",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2017,
+      "hasta": 2018,
+      "radio1din": "no_cabe",
+      "radio2din": null,
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "RAV4",
+      "modeloSlug": "rav4",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1996,
+      "hasta": 2000,
+      "radio1din": "con_marco",
+      "radio2din": "directo",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Paneles laterales traseros",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "RAV4",
+      "modeloSlug": "rav4",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2001,
+      "hasta": 2012,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "RAV4",
+      "modeloSlug": "rav4",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2013,
+      "hasta": 2018,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": []
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "Tacoma",
+      "modeloSlug": "tacoma",
+      "version": null,
+      "versionSlug": null,
+      "desde": 1995,
+      "hasta": 2004,
+      "radio1din": "con_marco",
+      "radio2din": "directo",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Paneles laterales traseros",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "Tacoma",
+      "modeloSlug": "tacoma",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2005,
+      "hasta": 2015,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Atrás",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "Tacoma",
+      "modeloSlug": "tacoma",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2016,
+      "hasta": 2018,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": []
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "Yaris",
+      "modeloSlug": "yaris",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2012,
+      "hasta": 2017,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "Yaris",
+      "modeloSlug": "yaris",
+      "version": null,
+      "versionSlug": null,
+      "desde": 2018,
+      "hasta": 2018,
+      "radio1din": "no_cabe",
+      "radio2din": "no_cabe",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    },
+    {
+      "marca": "Toyota",
+      "marcaSlug": "toyota",
+      "modelo": "Yaris",
+      "modeloSlug": "yaris",
+      "version": "Con radio estándar",
+      "versionSlug": "con-radio-estandar",
+      "desde": 2007,
+      "hasta": 2011,
+      "radio1din": "con_marco",
+      "radio2din": "con_marco",
+      "ubicaciones": [
+        {
+          "ubicacion": "Puertas delanteras",
+          "medidas": [
+            "6.5\""
+          ],
+          "accesorio": "otro"
+        },
+        {
+          "ubicacion": "Bandeja trasera",
+          "medidas": [
+            "6x9\""
+          ],
+          "accesorio": "otro"
+        }
+      ]
+    }
+  ]
+}

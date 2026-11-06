@@ -1,12 +1,16 @@
 // Conversaciones típicas contra el catálogo REAL (data/catalog.json), como
 // lib/busqueda/consultas.test.ts: se comprueban cualidades de lo que sale
 // —categoría, medida, marca, orden— y no skus, que cambian con el libro.
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import assert from "node:assert/strict";
 
 import type { ProductoBuscable } from "../busqueda/busqueda.ts";
 import { tarjetasBuscables } from "../catalog/buscables.ts";
 import { perteneceACategoria } from "../catalog/categorias.ts";
+import type { Producto } from "../catalog/types.ts";
+import { armarDatosVehiculos } from "../vehiculos/datos.ts";
+import type { Vehiculo } from "../vehiculos/types.ts";
 import { listAllProducts, listBrands } from "../catalog/index.ts";
 import { ESTADO_INICIAL, responder } from "./motor.ts";
 import { crearContexto } from "./panel.ts";
@@ -20,6 +24,13 @@ const contexto = crearContexto(
     marcas,
     fichas: Object.fromEntries(todos.map((p) => [p.sku, p.specsFicha])),
   },
+  // Los vehículos reales también, como en el panel: ninguna de estas
+  // conversaciones debe caer en «¿qué le queda a mi carro?» sin pedirlo.
+  armarDatosVehiculos(
+    (JSON.parse(readFileSync("data/vehiculos.json", "utf-8")) as { vehiculos: Vehiculo[] })
+      .vehiculos,
+    JSON.parse(readFileSync("data/catalog.json", "utf-8")) as Producto[],
+  ),
   {},
 );
 const porSku = new Map((contexto.productos ?? []).map((p) => [p.sku, p]));
