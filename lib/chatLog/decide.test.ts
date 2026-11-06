@@ -121,6 +121,7 @@ test("ChatLogRequestSchema: los eventos con pocos campos son válidos", () => {
     { evento: "whatsapp", motivo: "hablar" },
     { evento: "sin_resultados", consulta: "xyz" },
     { evento: "recomendacion", consulta: "cual me conviene" },
+    { evento: "vehiculo", consulta: "Toyota Corolla 2010", resultados: 58 },
   ];
   for (const caso of casos) {
     const r = ChatLogRequestSchema.safeParse({ tipo: "chat", conversacion: "a1b2c3d4", ...caso });

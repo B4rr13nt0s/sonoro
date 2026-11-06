@@ -3,14 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { claseBoton } from "@/components/ui/boton.ts";
-import { CLASE_SELECT } from "@/components/ui/campos.ts";
 import { ResultadosVehiculo } from "@/components/vehiculos/ResultadosVehiculo";
 import { descargarDatosVehiculos } from "@/lib/vehiculos/carga.ts";
 import { compatibilidad } from "@/lib/vehiculos/compatibilidad.ts";
 import { ERROR_CARGA, tituloVehiculo } from "@/lib/vehiculos/textos.ts";
 import type { DatosVehiculos } from "@/lib/vehiculos/types.ts";
 import {
-  escribirSeleccion,
+  hrefVehiculo,
   leerSeleccion,
   resolverSeleccion,
   type Seleccion,
@@ -23,9 +22,10 @@ import {
 
 // El selector de vehículos de /buscar: marca, modelo y año (y versión cuando
 // ese año tiene más de un tablero, o una sola fila que no es de todos los
-// carros), y lo que cabe en ese vehículo. Vive en el
-// estado vacío de la búsqueda —sin nada escrito—, porque el enlace propio no
-// entraba en el nav a 1280 px (docs/superpowers/specs/2026-11-04-selector-vehiculos-design.md).
+// carros), y lo que cabe en ese vehículo. Es el panel de la pestaña «Por
+// vehículo» de /buscar: el enlace propio no entraba en el nav a 1280 px
+// (docs/superpowers/specs/2026-11-04-selector-vehiculos-design.md y
+// 2026-11-05-buscar-interfaz-design.md).
 //
 // Como el resto de /buscar, lo elegido vive en la dirección
 // (/buscar?vehiculo=toyota&modelo=corolla&anio=2010) y cada cambio la
@@ -48,17 +48,17 @@ function obtenerDatos(): Promise<DatosVehiculos | null> {
 type Carga =
   { estado: "cargando" } | { estado: "error" } | { estado: "listo"; datos: DatosVehiculos };
 
-const CLASE_LISTA = `${CLASE_SELECT} w-full sm:w-auto`;
+// Las listas del vehículo van más grandes que las de los filtros (texto de
+// 15 px): son lo único de la pestaña y quedaban chicas al lado del campo.
+const CLASE_LISTA =
+  "border-borde-pildora text-texto-nav w-full rounded-full border bg-white px-5 py-3.5 text-[15px] sm:w-auto sm:min-w-40";
 const CLASE_ENLACE = "text-negro underline underline-offset-2";
 
 export function BusquedaPorVehiculo({
   busqueda,
-  urlBuscar,
 }: {
   /** Los query params actuales, como texto: los mismos que lee la búsqueda. */
   busqueda: string;
-  /** La URL absoluta de /buscar, resuelta en el servidor. */
-  urlBuscar: string;
 }) {
   const [carga, setCarga] = useState<Carga>({ estado: "cargando" });
   const [intento, setIntento] = useState(0);
@@ -83,9 +83,10 @@ export function BusquedaPorVehiculo({
     [datos, resuelta],
   );
 
+  // Sin nada elegido, hrefVehiculo deja `?por=vehiculo`: `/buscar` a secas
+  // pasaría a la pestaña «Por producto».
   function cambiar(sel: Seleccion) {
-    const q = escribirSeleccion(sel);
-    window.history.replaceState(null, "", q ? `/buscar?${q}` : "/buscar");
+    window.history.replaceState(null, "", hrefVehiculo(sel));
   }
 
   function reintentar() {
@@ -100,13 +101,9 @@ export function BusquedaPorVehiculo({
   const conVersiones = (opciones?.versiones.length ?? 0) > 0;
 
   return (
-    <section className="px-6 pt-10 sm:px-12">
-      <h2 className="text-22 font-semibold tracking-[-0.02em]">
-        Receptores y bocinas por vehículo
-      </h2>
-
+    <section className="px-6 pt-6 sm:px-12 sm:pt-8">
       {carga.estado === "error" ? (
-        <div className="mt-4 flex flex-col items-start gap-3">
+        <div className="flex flex-col items-start gap-3">
           <p className="text-texto-secundario text-[15px]">{ERROR_CARGA}</p>
           <div>
             <button
@@ -119,7 +116,7 @@ export function BusquedaPorVehiculo({
           </div>
         </div>
       ) : (
-        <div className="mt-4 flex flex-col gap-2.5 sm:flex-row">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <select
             aria-label="Marca"
             value={marca ?? ""}
@@ -184,7 +181,9 @@ export function BusquedaPorVehiculo({
         </div>
       )}
 
-      <p className="text-texto-secundario mt-4 text-[13px]">
+      {/* pl-6: el texto arranca donde arranca el de las listas: su px-5 más los
+          ~4 px que el navegador deja adentro de un <select>. */}
+      <p className="text-texto-secundario mt-5 pl-6 text-[14px]">
         ¿No está tu vehículo?{" "}
         <a
           href={buildWhatsAppUrl(WHATSAPP_NUMBER, buildVehicleInquiryMessage())}
@@ -201,12 +200,6 @@ export function BusquedaPorVehiculo({
         <ResultadosVehiculo
           titulo={tituloVehiculo(resuelta.vehiculo, resuelta.anio)}
           compat={compat}
-          urlConsulta={`${urlBuscar}?${escribirSeleccion({
-            marca,
-            modelo,
-            anio,
-            version: conVersiones ? resuelta.version?.slug : undefined,
-          })}`}
         />
       ) : null}
     </section>

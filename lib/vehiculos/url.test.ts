@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import type { Vehiculo } from "./types.ts";
-import { escribirSeleccion, leerSeleccion, resolverSeleccion } from "./url.ts";
+import { escribirSeleccion, hrefVehiculo, leerSeleccion, resolverSeleccion } from "./url.ts";
 
 function v(
   marca: string,
@@ -153,4 +153,12 @@ test("resolverSeleccion: con un solo vehículo en el año, una versión de más 
   });
   assert.equal(r.vehiculo, COROLLA_VIEJO);
   assert.equal(r.version, null);
+});
+
+test("hrefVehiculo: sin nada elegido se queda en la pestaña de vehículo", () => {
+  assert.equal(hrefVehiculo({}), "/buscar?por=vehiculo");
+  assert.equal(
+    hrefVehiculo({ marca: "toyota", modelo: "corolla", anio: 2010 }),
+    "/buscar?vehiculo=toyota&modelo=corolla&anio=2010",
+  );
 });

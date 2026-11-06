@@ -12,7 +12,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { INSTALACION } from "../lib/politicas.ts";
 import type { Producto } from "../lib/catalog/types.ts";
 import { armarDatosVehiculos } from "../lib/vehiculos/datos.ts";
-import { notaReceptor, TEXTOS_ESTADO, tituloVehiculo } from "../lib/vehiculos/textos.ts";
+import { notaReceptor, tituloVehiculo } from "../lib/vehiculos/textos.ts";
 import type { Vehiculo } from "../lib/vehiculos/types.ts";
 
 const CATALOGO = JSON.parse(readFileSync("data/catalog.json", "utf-8")) as Producto[];
@@ -72,10 +72,11 @@ function itemDe(page: Page, nombre: string) {
 
 test("elige marca, modelo y año en /buscar y muestra lo que cabe", async ({ page }) => {
   expect(DOS_DIN, "el catálogo no trae un receptor 2 DIN").toBeTruthy();
-  expect(KSM8, "el catálogo no trae la pieza KSM-8").toBeTruthy();
   expect(CON_NOTA, "ningún receptor con anotación llegó a los datos").toBeTruthy();
   await servirDatos(page);
   await page.goto("/buscar");
+  await page.getByRole("tab", { name: "Por vehículo" }).click();
+  await expect(page).toHaveURL(/\/buscar\?por=vehiculo$/);
 
   await page.getByLabel("Marca", { exact: true }).selectOption({ label: "Prueba" });
   await page.getByLabel("Modelo", { exact: true }).selectOption({ label: "Uno" });
@@ -83,60 +84,133 @@ test("elige marca, modelo y año en /buscar y muestra lo que cabe", async ({ pag
   await expect(page).toHaveURL(new RegExp(`${RUTA_ELEGIDA.replaceAll("?", "\\?")}$`));
 
   await expect(page.getByRole("heading", { name: TITULO })).toBeVisible();
-  await expect(itemDe(page, DOS_DIN!.nombre).locator(":scope > p").first()).toHaveText(
-    TEXTOS_ESTADO.cabe,
-  );
+  await expect(itemDe(page, DOS_DIN!.nombre)).toBeVisible();
 
   await expect(page.getByRole("heading", { name: 'Puertas delanteras · 6.5"' })).toBeVisible();
-  const enlacePieza = page.getByRole("link", { name: KSM8!.nombre }).first();
-  await expect(enlacePieza).toBeVisible();
   await expect(page.getByText('No hay bocinas de 6x8" en el catálogo.')).toBeVisible();
   await expect(page.getByText(INSTALACION)).toBeVisible();
 
+  // Ninguna tarjeta dice si cabe ni con qué (decisión del negocio,
+  // noviembre de 2026): eso se pregunta en el chat. La pieza no se nombra.
+  await expect(page.getByText(/^Cabe/)).toHaveCount(0);
+  await expect(page.getByText(/Requiere un marco/)).toHaveCount(0);
+  await expect(page.getByRole("link", { name: KSM8!.nombre })).toHaveCount(0);
+  await expect(itemDe(page, DOS_DIN!.nombre).locator(":scope > p")).toHaveCount(0);
   if (AP6650) {
-    const item = itemDe(page, AP6650.nombre);
-    await expect(item).toContainText(TEXTOS_ESTADO.consultar);
-    const href = await item
-      .getByRole("link", { name: "Escríbenos por WhatsApp" })
-      .getAttribute("href");
-    const mensaje = decodeURIComponent(href ?? "");
-    expect(mensaje).toContain(`Vehículo: ${TITULO}`);
-    expect(mensaje).toContain(RUTA_ELEGIDA);
+    await expect(itemDe(page, AP6650.nombre).locator(":scope > p")).toHaveCount(0);
   }
 
-  await expect(itemDe(page, CON_NOTA!.nombre).locator(":scope > p").nth(1)).toHaveText(
+  await expect(itemDe(page, CON_NOTA!.nombre).locator(":scope > p")).toHaveText([
     notaReceptor(CON_NOTA!.sku)!,
-  );
+  ]);
 
   await page.reload();
   await expect(page.getByRole("heading", { name: TITULO })).toBeVisible();
   await expect(page.getByLabel("Marca", { exact: true })).toHaveValue("prueba");
   await expect(page.getByLabel("Modelo", { exact: true })).toHaveValue("uno");
   await expect(page.getByLabel("Año", { exact: true })).toHaveValue("2010");
-
-  await page.getByRole("link", { name: KSM8!.nombre }).first().click();
-  await expect(page).toHaveURL(new RegExp(`/producto/${KSM8!.slug}$`));
 });
 
-test("escribir una búsqueda oculta el selector y saca el vehículo de la dirección", async ({
-  page,
-}) => {
+test("«¿No está tu vehículo?» empieza donde empieza el texto de las listas", async ({ page }) => {
+  await servirDatos(page);
+  await page.goto("/buscar?por=vehiculo");
+  const marca = page.getByLabel("Marca", { exact: true });
+  await expect(marca).toBeEnabled();
+  const [inicioLista, inicioLinea] = await Promise.all([
+    marca.evaluate(
+      (l) => l.getBoundingClientRect().left + parseFloat(getComputedStyle(l).paddingLeft),
+    ),
+    page
+      .getByText("¿No está tu vehículo?")
+      .evaluate(
+        (p) => p.getBoundingClientRect().left + parseFloat(getComputedStyle(p).paddingLeft),
+      ),
+  ]);
+  // El navegador dibuja el texto de un <select> unos 4 px más adentro que su
+  // relleno: la línea va entre el relleno y esos 4 px de más.
+  expect(inicioLinea - inicioLista).toBeGreaterThanOrEqual(0);
+  expect(inicioLinea - inicioLista).toBeLessThanOrEqual(6);
+});
+
+test("cambiar de pestaña limpia la dirección", async ({ page }) => {
   await servirDatos(page);
   await page.goto(RUTA_ELEGIDA);
   await expect(page.getByRole("heading", { name: TITULO })).toBeVisible();
+
+  await page.getByRole("tab", { name: "Por producto" }).click();
+  await expect(page).toHaveURL(/\/buscar$/);
+  await expect(page.getByRole("tab", { name: "Por producto" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await expect(page.getByLabel("Marca", { exact: true })).toHaveCount(0);
 
   const campo = page.getByRole("combobox", { name: "Buscar en el catálogo" });
   await campo.fill("memphis");
   await campo.press("Enter");
   await expect(page).toHaveURL(/\/buscar\?q=memphis$/);
-  await expect(
-    page.getByRole("heading", { name: "Receptores y bocinas por vehículo" }),
-  ).toHaveCount(0);
+});
+
+test("las flechas mueven entre pestañas", async ({ page }) => {
+  await servirDatos(page);
+  await page.goto("/buscar");
+  const producto = page.getByRole("tab", { name: "Por producto" });
+  const vehiculo = page.getByRole("tab", { name: "Por vehículo" });
+  await producto.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(vehiculo).toHaveAttribute("aria-selected", "true");
+  await expect(vehiculo).toBeFocused();
+  await expect(page).toHaveURL(/\/buscar\?por=vehiculo$/);
+
+  await page.keyboard.press("Home");
+  await expect(producto).toHaveAttribute("aria-selected", "true");
+  await expect(producto).toBeFocused();
+  await expect(page).toHaveURL(/\/buscar$/);
+});
+
+test("vaciar la marca deja la pestaña de vehículo", async ({ page }) => {
+  await servirDatos(page);
+  await page.goto(RUTA_ELEGIDA);
+  await expect(page.getByRole("heading", { name: TITULO })).toBeVisible();
+
+  await page.getByLabel("Marca", { exact: true }).selectOption({ value: "" });
+  await expect(page).toHaveURL(/\/buscar\?por=vehiculo$/);
+  await expect(page.getByLabel("Marca", { exact: true })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Por vehículo" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+});
+
+test("«Buscar» del header vuelve a «Por producto»", async ({ page }) => {
+  await servirDatos(page);
+  await page.goto(RUTA_ELEGIDA);
+  await expect(page.getByRole("heading", { name: TITULO })).toBeVisible();
+
+  await page.getByRole("banner").getByRole("link", { name: "Buscar", exact: true }).click();
+  await expect(page).toHaveURL(/\/buscar$/);
+  await expect(page.getByRole("combobox", { name: "Buscar en el catálogo" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Por producto" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+});
+
+test("Esc en el campo vacío no cambia de pestaña", async ({ page }) => {
+  await page.goto("/buscar");
+  const campo = page.getByRole("combobox", { name: "Buscar en el catálogo" });
+  await campo.focus();
+  await campo.press("Escape");
+  await expect(page).toHaveURL(/\/buscar$/);
+  await expect(page.getByRole("tab", { name: "Por producto" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
 });
 
 test("si la descarga falla, ofrece reintentar", async ({ page }) => {
   await page.route("**/buscar/vehiculos.json", (ruta) => ruta.fulfill({ status: 500, body: "" }));
-  await page.goto("/buscar");
+  await page.goto("/buscar?por=vehiculo");
   await expect(page.getByText("No se pudo cargar la lista de vehículos.")).toBeVisible();
 
   await page.unroute("**/buscar/vehiculos.json");

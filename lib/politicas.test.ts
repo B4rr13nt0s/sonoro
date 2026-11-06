@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 
 import { UMBRAL_ENVIO_GRATIS_CENTS } from "./cart/envio.ts";
 import { formatQ } from "./format/precio.ts";
-import { ENVIO_SALVEDAD, ENVIOS } from "./politicas.ts";
+import { ENVIO_SALVEDAD, ENVIOS, INSTALACION } from "./politicas.ts";
 
 test("ENVIOS nombra el umbral con formatQ", () => {
   assert.ok(ENVIOS.includes(formatQ(UMBRAL_ENVIO_GRATIS_CENTS)));
@@ -25,4 +25,11 @@ test("las páginas legales y llms.ts leen de politicas", () => {
       `${ruta} repite GARANTIA_ALCANCE`,
     );
   }
+});
+
+test("INSTALACION: la frase del negocio, palabra por palabra (noviembre de 2026)", () => {
+  assert.equal(
+    INSTALACION,
+    "Incluye instalación básica. En caso de que se requiera una instalación más compleja, accesorios o componentes para llevar a cabo el trabajo, dicha instalación y artículos adicionales se cobran por aparte y tienen un costo añadido.",
+  );
 });

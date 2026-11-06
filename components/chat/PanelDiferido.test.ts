@@ -54,6 +54,7 @@ async function conLanzador(
             setConversacion: () => {},
             contacto: {},
             cargarCatalogo: async () => null,
+            cargarVehiculos: async () => null,
             alCerrar: () => setAbierto(false),
             alFallar: () => {
               alFallo();

@@ -36,8 +36,8 @@ pero los tipos ya lo contemplan (ver § Canal WhatsApp).
 ### Fuera de alcance
 
 - El bot de WhatsApp en sí.
-- Memoria de contexto entre mensajes («¿y más barato?» no refina la búsqueda
-  anterior): sin LLM, adivinar a qué se refiere sería decidir por el cliente.
+- Memoria de contexto entre mensajes: ver
+  `2026-11-03-chat-conversacion-design.md`.
 - Persistir la conversación entre recargas.
 - Cualquier respuesta sobre lo que está en «Decisiones abiertas» de CLAUDE.md
   (plazo de garantía, qué es una instalación compleja, precios de
@@ -190,10 +190,14 @@ vive en el mismo archivo, como `sinonimos.ts`, y se compara sobre
 | # | Si el texto… | Intención | Ejemplos |
 |---|---|---|---|
 | 1 | es un saludo o agradecimiento, solo | `saludo` | «hola», «buenas», «gracias» |
-| 2 | pide criterio | `recomendacion` | «qué me recomiendan», «cuál es mejor», «cuál me conviene», «qué le queda a mi carro» |
+| 2 | pide criterio | `recomendacion` | «qué me recomiendan», «cuál es mejor», «cuál me conviene» |
 | 3 | nombra un tema de política | `tema:<id>` | envío/envían/entregan/flete → `envios`; garantía/se arruinó/defecto → `garantia`; instalan/instalación/colocan → `instalacion`; cuotas/financiamiento/visacuotas → `cuotas`; cómo compro/cómo pido/cómo pago/pagar en línea → `como_pedir`; dónde están/ubicados → contacto (ver abajo). Más las palabras ambiguas de abajo, que solo ganan si van solas |
 | 4 | pregunta por un dato del producto (ver § Datos de un producto) | `dato` | «cuántos watts tiene el MJP1244», «¿está disponible el SQ12-D2?» |
 | 5 | cualquier otra cosa | `busqueda` | «sub 12 2 ohm», «tienen memphis?», «cuánto cuesta el SQ12» |
+
+«Qué le queda a mi carro» ya no es una recomendación: desde noviembre de 2026 el
+chat contesta qué cabe en un carro escrito (`2026-11-06-chat-compatibilidad-design.md`),
+probándolo en lo que esta tabla clasifica como `recomendacion` o `busqueda`.
 
 Si un texto nombra un tema y un producto a la vez («¿el SQ12 trae
 garantía?»), gana el tema: la garantía no cambia por producto. **Salvo las

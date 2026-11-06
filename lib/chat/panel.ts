@@ -5,9 +5,11 @@
 
 import type { ModoBusqueda } from "../busqueda/busqueda.ts";
 import { textoAgregado } from "../cart/confirmacion.ts";
+import type { DatosVehiculos } from "../vehiculos/types.ts";
 import type { CatalogoChat } from "./catalogo.ts";
 import { ESTADO_INICIAL, bloquesDeInicio, cortar, responder } from "./motor.ts";
 import type { Bloque, Contexto, Conversacion, Entrada, EventoChat, Mensaje } from "./tipos.ts";
+import { nombresAmbiguos } from "./vehiculo.ts";
 
 export const PLACEHOLDER_CAMPO = "Escribe tu pregunta";
 /** El placeholder después de «Buscar un producto»: un ejemplo de lo que entiende la búsqueda. */
@@ -53,8 +55,23 @@ export function conversacionInicial(id: string): Conversacion {
   };
 }
 
+// Los modelos ambiguos dependen del catálogo y de los vehículos: se calculan
+// una vez por catálogo cargado (corren una búsqueda por modelo), no en cada
+// mensaje.
+const AMBIGUOS = new WeakMap<CatalogoChat, { datos: DatosVehiculos; ambiguos: Set<string> }>();
+
+function ambiguosDe(catalogo: CatalogoChat | null, datos: DatosVehiculos): Set<string> {
+  if (!catalogo) return new Set();
+  const guardado = AMBIGUOS.get(catalogo);
+  if (guardado && guardado.datos === datos) return guardado.ambiguos;
+  const ambiguos = nombresAmbiguos(datos.vehiculos, catalogo.productos);
+  AMBIGUOS.set(catalogo, { datos, ambiguos });
+  return ambiguos;
+}
+
 export function crearContexto(
   catalogo: CatalogoChat | null,
+  vehiculos: DatosVehiculos | null,
   contacto: Contexto["contacto"],
 ): Contexto {
   return {
@@ -62,6 +79,7 @@ export function crearContexto(
     marcas: catalogo?.marcas ?? [],
     fichas: catalogo?.fichas ?? {},
     contacto,
+    vehiculos: vehiculos ? { datos: vehiculos, ambiguos: ambiguosDe(catalogo, vehiculos) } : null,
   };
 }
 

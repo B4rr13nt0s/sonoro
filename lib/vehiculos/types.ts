@@ -12,7 +12,7 @@ export const ESTADOS_RADIO = ["directo", "con_marco", "no_cabe"] as const;
 export type EstadoRadio = (typeof ESTADOS_RADIO)[number];
 
 // Las únicas piezas que el selector nombra, con enlace a su ficha. Cualquier
-// otro accesorio es «otro» y se muestra como «Cabe con accesorios», sin nombre.
+// otro accesorio es «otro» y queda en estado «con accesorios», que en pantalla va sin texto.
 export const PIEZAS_NOMBRADAS = ["OEMBKT60", "OEMBKT69", "KSM-8"] as const;
 export type PiezaNombrada = (typeof PIEZAS_NOMBRADAS)[number];
 export type Accesorio = PiezaNombrada | "otro";

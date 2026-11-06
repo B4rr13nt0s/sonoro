@@ -47,6 +47,7 @@ import {
   type OpcionId,
 } from "@/lib/chat/tipos.ts";
 import { nuevaConversacion, sendChatLog } from "@/lib/chatLog/index.ts";
+import type { DatosVehiculos } from "@/lib/vehiculos/types.ts";
 
 export interface PanelChatProps {
   conversacion: Conversacion | null;
@@ -55,6 +56,8 @@ export interface PanelChatProps {
   // los datos de contacto (variables de servidor).
   contacto: Contexto["contacto"];
   cargarCatalogo: () => Promise<CatalogoChat | null>;
+  // «¿Qué le queda a mi carro?»: baja junto con el catálogo, no al abrir.
+  cargarVehiculos: () => Promise<DatosVehiculos | null>;
   alCerrar: () => void;
   lanzadorRef: RefObject<HTMLButtonElement | null>;
 }
@@ -82,6 +85,7 @@ export default function PanelChat({
   setConversacion,
   contacto,
   cargarCatalogo,
+  cargarVehiculos,
   alCerrar,
   lanzadorRef,
 }: PanelChatProps) {
@@ -140,6 +144,9 @@ export default function PanelChat({
   useEffect(() => {
     catalogoRef.current = catalogo;
   }, [catalogo]);
+  // Los vehículos, con el mismo trato: solo lo que cargó bien se guarda, y se
+  // leen al enviar. No hace falta un estado: ninguna fila del historial los usa.
+  const vehiculosRef = useRef<DatosVehiculos | null>(null);
   const porSku = useMemo(
     () => (catalogo ? new Map(catalogo.productos.map((p) => [p.sku, p])) : SIN_PRODUCTOS),
     [catalogo],
@@ -196,15 +203,18 @@ export default function PanelChat({
     // con su plazo). Un tema o «Hablar con Sonoro» no lo espera: sale con lo
     // que haya cargado, o sin catálogo, en cuanto no quede una respuesta
     // anterior pendiente.
-    const catalogoListo = necesitaCatalogo(entrada)
-      ? cargarCatalogo()
-      : Promise.resolve(catalogoRef.current);
-    await cola.encolar(catalogoListo, (cargado) => {
+    // Los vehículos bajan junto con el catálogo, en paralelo: ninguno espera
+    // al otro, y un fallo de uno no tumba al otro (los dos resuelven null).
+    const listos = necesitaCatalogo(entrada, leer().estado)
+      ? Promise.all([cargarCatalogo(), cargarVehiculos()])
+      : Promise.resolve([catalogoRef.current, vehiculosRef.current] as const);
+    await cola.encolar(listos, ([cargado, vehiculos]) => {
       if (cargado) setCatalogo(cargado);
+      if (vehiculos) vehiculosRef.current = vehiculos;
       const { conversacion: nueva, evento } = responderEnConversacion(
         leer(),
         entrada,
-        crearContexto(cargado, contacto),
+        crearContexto(cargado, vehiculos ?? vehiculosRef.current, contacto),
       );
       guardar(nueva);
       if (evento) sendChatLog(nueva.id, evento);

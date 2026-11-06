@@ -7,6 +7,7 @@
 // con la potencia en puente es donde se equivocaría—.
 
 import type { Disponibilidad, Spec } from "../catalog/types.ts";
+import { formatQ, lineaCuota } from "../format/precio.ts";
 
 /** Un dato de la ficha técnica, con las etiquetas que lo publican. */
 export interface CampoSpec {
@@ -19,7 +20,7 @@ export interface CampoSpec {
   etiquetas: readonly string[];
 }
 
-export type Campo = CampoSpec | { tipo: "disponibilidad" };
+export type Campo = CampoSpec | { tipo: "disponibilidad" } | { tipo: "precio" };
 
 interface Vocabulario {
   campo: Campo;
@@ -166,6 +167,14 @@ export const VOCABULARIO_DATOS: readonly Vocabulario[] = [
     palabras: ["contenido", "que incluye", "que contiene"],
   },
   {
+    // El precio y la cuota, como en la ficha. «cuánto cuesta» también es un
+    // arranque de búsqueda (`intencion.ts`): se busca antes de quitarlo.
+    campo: { tipo: "precio" },
+    // Sin «vale» ni «sale» sueltos: «vale» es un «ok» y «¿sale en negro?» no
+    // pregunta un precio.
+    palabras: ["cuanto cuesta", "cuanto vale", "cuanto sale", "precio", "cuesta"],
+  },
+  {
     campo: { tipo: "disponibilidad" },
     palabras: [
       "disponible",
@@ -214,6 +223,11 @@ export const PALABRAS_DE_PREGUNTA: ReadonlySet<string> = new Set([
 /** Los valores que publica la ficha para un dato, en el orden de la ficha. */
 export function valoresDeCampo(ficha: readonly Spec[], campo: CampoSpec): Spec[] {
   return ficha.filter((spec) => campo.etiquetas.includes(spec.etiqueta));
+}
+
+/** «X cuesta Q 2,450.00, o Q 408.34 al mes × 6.» */
+export function frasePrecio(nombre: string, precioCents: number): string {
+  return `${nombre} cuesta ${formatQ(precioCents)}, ${lineaCuota(precioCents)}.`;
 }
 
 /** La frase de disponibilidad para un solo producto. */
