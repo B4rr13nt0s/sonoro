@@ -132,9 +132,11 @@ test("idOpcionVehiculo y leerOpcionVehiculo: ida y vuelta", () => {
   assert.equal(leerOpcionVehiculo("marca:memphis"), null);
 });
 
-test("sin nada: pide el carro y ofrece las marcas", () => {
+test("sin nada: pide el carro, ofrece las marcas y la salida por WhatsApp", () => {
   const { bloques, titulo, resultados } = responderVehiculo(pedido({}), DATOS);
-  assert.deepEqual(textos(bloques), [TEXTO_PEDIR_VEHICULO]);
+  // Una lancha o un UTV no están en la lista: «¿No está tu vehículo?» es la salida.
+  assert.deepEqual(textos(bloques), [TEXTO_PEDIR_VEHICULO, NO_ESTA_VEHICULO]);
+  assert.equal(bloques.at(-1)?.tipo, "whatsapp");
   assert.deepEqual(opciones(bloques), [
     { id: idOpcionVehiculo(pedido({ marca: "prueba" })), etiqueta: "Prueba" },
   ]);

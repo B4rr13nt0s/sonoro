@@ -4,16 +4,23 @@
 // entiende el carro). Lógica pura: no decide qué falta preguntar —eso lo hace
 // resolverSeleccion en respuestaVehiculo.ts—, solo qué nombró.
 import { buscar, normalizar, type ProductoBuscable } from "../busqueda/busqueda.ts";
+import { SINONIMOS, USO_PALABRAS } from "../busqueda/sinonimos.ts";
+import { CATEGORIAS_SITIO } from "../catalog/categorias.ts";
 import { compararRelevancia } from "../catalog/orden.ts";
 import type { Vehiculo } from "../vehiculos/types.ts";
 import type { Seleccion } from "../vehiculos/url.ts";
 
-/** Frases que preguntan por el carro aunque no lo nombren. Normalizadas. */
+/**
+ * Frases que preguntan por el carro aunque no lo nombren. Normalizadas, y
+ * sin el «qué» o el «cuál»: «qué tamaño de bocina LE CABE a mi Civic».
+ */
 export const FRASES_VEHICULO: readonly string[] = [
-  "que le queda",
-  "cual le queda",
-  "que le cabe",
-  "que cabe en",
+  "le queda",
+  "le quedan",
+  "le cabe",
+  "le caben",
+  "cabe en",
+  "caben en",
 ];
 
 const ANIO_MINIMO = 1940;
@@ -73,9 +80,13 @@ function modelosDe(vehiculos: readonly Vehiculo[]): Modelo[] {
   return [...vistos.values()];
 }
 
+/** Lo que sigue a un número que es potencia, no año: «2000 w», «1200 rms». */
+const UNIDADES_POTENCIA = new Set(["w", "watt", "watts", "vatios", "rms", "wrms"]);
+
 function leerAnio(texto: readonly string[], anioActual: number): number | undefined {
-  for (const p of texto) {
+  for (const [i, p] of texto.entries()) {
     if (!/^\d{4}$/.test(p)) continue;
+    if (UNIDADES_POTENCIA.has(texto[i + 1] ?? "")) continue;
     const anio = Number(p);
     if (anio >= ANIO_MINIMO && anio <= anioActual + 1) return anio;
   }
@@ -114,6 +125,34 @@ export function leerVehiculo(
 
   const marca = modelos.find((m) => contiene(escrito, m.palabrasMarca));
   return marca ? conAnio({ marca: marca.marcaSlug }) : null;
+}
+
+// Las categorías que la compatibilidad no cubre: solo hay datos de receptores
+// y bocinas. «Amplificador para mi Corolla» busca amplificadores.
+const RAICES_OTRAS = new Set(
+  CATEGORIAS_SITIO.filter((c) => c.nombre !== "Receptores" && c.nombre !== "Bocinas").map((c) =>
+    clave(c.nombre).replace(/(es|s)$/, ""),
+  ),
+);
+
+function nombraOtraCategoria(palabra: string): boolean {
+  const raiz = palabra.replace(/(es|s)$/, "");
+  if (RAICES_OTRAS.has(raiz) || RAICES_OTRAS.has(palabra)) return true;
+  const sinonimos = Object.hasOwn(SINONIMOS, palabra) ? SINONIMOS[palabra] : [];
+  return sinonimos.some((s) => RAICES_OTRAS.has(clave(s)));
+}
+
+/**
+ * ¿El texto no es de compatibilidad aunque nombre un carro? Si nombra otra
+ * categoría del sitio («amplificador», «sub») o un uso que no es carro
+ * («lancha», «utv»): la lista de vehículos solo trae carros, y sus datos solo
+ * receptores y bocinas. Esos textos siguen como búsqueda.
+ */
+export function excluyeVehiculo(texto: string): boolean {
+  return palabras(texto).some((p) => {
+    const uso = Object.hasOwn(USO_PALABRAS, p) ? USO_PALABRAS[p] : undefined;
+    return (uso !== undefined && uso !== "carro") || nombraOtraCategoria(p);
+  });
 }
 
 /** ¿Pregunta qué le queda a un carro, lo nombre o no? */

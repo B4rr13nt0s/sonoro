@@ -3,9 +3,12 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
 import type { ProductoBuscable } from "../busqueda/busqueda.ts";
+import { tarjetasBuscables } from "../catalog/buscables.ts";
+import type { Producto } from "../catalog/types.ts";
 import type { Vehiculo } from "../vehiculos/types.ts";
 import {
   etiquetaGeneracion,
+  excluyeVehiculo,
   generaciones,
   leerVehiculo,
   nombresAmbiguos,
@@ -97,6 +100,8 @@ test("tieneFraseVehiculo", () => {
   assert.equal(tieneFraseVehiculo("cual le queda"), true);
   assert.equal(tieneFraseVehiculo("qué le cabe"), true);
   assert.equal(tieneFraseVehiculo("qué cabe en mi carro"), true);
+  assert.equal(tieneFraseVehiculo("qué tamaño de bocina le cabe a mi civic"), true);
+  assert.equal(tieneFraseVehiculo("qué medida de bocina le queda a mi corolla"), true);
   assert.equal(tieneFraseVehiculo("radio para mi carro"), false);
   assert.equal(tieneFraseVehiculo("cuál es mejor"), false);
 });
@@ -122,5 +127,41 @@ test("nombresAmbiguos: los modelos que la búsqueda encuentra como producto", ()
     producto("SQ12", "Subwoofer Serie SQ"),
   ]);
   assert.ok(ambiguos.has("fit"));
+  assert.ok(!ambiguos.has("corolla"));
+});
+
+test("leerVehiculo: un número con unidad de potencia no es el año", () => {
+  assert.equal(leer("subwoofer de 2000 w para civic 2008")?.anio, 2008);
+  assert.equal(leer("2000 watts para civic 2008")?.anio, 2008);
+  assert.equal(leer("1200 rms civic")?.anio, undefined);
+});
+
+test("excluyeVehiculo: otra categoría o un uso marino o de motorsports", () => {
+  for (const texto of [
+    "amplificador para mi corolla",
+    "subwoofer para civic",
+    "sub 12 para civic 2010",
+    "kit de instalación para corolla",
+    "qué le queda a mi lancha",
+    "qué le queda a mi utv can-am x3",
+  ]) {
+    assert.equal(excluyeVehiculo(texto), true, texto);
+  }
+  for (const texto of [
+    "qué le queda a mi corolla",
+    "bocinas para corolla 2010",
+    "radio para civic",
+    "qué tamaño de bocina le cabe a mi civic 2010",
+  ]) {
+    assert.equal(excluyeVehiculo(texto), false, texto);
+  }
+});
+
+test("nombresAmbiguos con el catálogo real del chat", () => {
+  const catalogo = JSON.parse(readFileSync("data/catalog.json", "utf-8")) as Producto[];
+  const ambiguos = nombresAmbiguos(VEHICULOS, tarjetasBuscables(catalogo.filter((p) => p.activo)));
+  // «protege» es el verbo de varias descripciones; el conjunto sale de la
+  // búsqueda, no de una lista: si cambia el catálogo, cambia esto.
+  assert.ok(ambiguos.has("protege"), [...ambiguos].join(", "));
   assert.ok(!ambiguos.has("corolla"));
 });

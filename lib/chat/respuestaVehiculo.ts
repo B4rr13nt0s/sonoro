@@ -242,6 +242,9 @@ export function responderVehiculo(
           etiqueta: m.nombre,
         })),
       ),
+      // Una lancha, un UTV o un carro que la lista no trae: la salida de /buscar.
+      texto(NO_ESTA_VEHICULO),
+      whatsapp(),
     ]);
   }
   const marca = r.marca;

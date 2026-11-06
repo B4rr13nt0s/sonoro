@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import type { DatosVehiculos, Vehiculo } from "../vehiculos/types.ts";
-import { ERROR_CARGA, TEXTO_PEDIR_VEHICULO } from "../vehiculos/textos.ts";
+import { ERROR_CARGA, NO_ESTA_VEHICULO, TEXTO_PEDIR_VEHICULO } from "../vehiculos/textos.ts";
 import { ESTADO_INICIAL, necesitaCatalogo, responder } from "./motor.ts";
 import { idOpcionVehiculo } from "./respuestaVehiculo.ts";
 import type { Bloque, Contexto, Entrada, Estado, OpcionId } from "./tipos.ts";
@@ -89,7 +89,7 @@ test("el carro escrito da el resumen, con su evento y su consulta", () => {
 
 test("la frase sola pide el carro, sin evento", () => {
   const r = responder(ESTADO_INICIAL, escrito("¿qué le queda a mi carro?"), CON_VEHICULOS);
-  assert.deepEqual(textos(r.bloques), [TEXTO_PEDIR_VEHICULO]);
+  assert.deepEqual(textos(r.bloques), [TEXTO_PEDIR_VEHICULO, NO_ESTA_VEHICULO]);
   assert.equal(r.evento, null);
   assert.equal(r.estado.ultimaConsulta, "¿qué le queda a mi carro?");
 });
@@ -158,4 +158,25 @@ test("necesitaCatalogo: los botones de vehículo y la recomendación también", 
   assert.equal(necesitaCatalogo(escrito("¿qué me recomiendan?")), true);
   assert.equal(necesitaCatalogo(escrito("¿qué le queda a mi carro?")), true);
   assert.equal(necesitaCatalogo(escrito("envíos")), false);
+});
+
+test("una pregunta de carro con una palabra de dato da el resumen", () => {
+  const r = responder(
+    ESTADO_INICIAL,
+    escrito("¿qué tamaño de bocina le cabe a mi prueba uno 2010?"),
+    CON_VEHICULOS,
+  );
+  assert.equal(textos(r.bloques)[0], "Prueba Uno 2010");
+  assert.equal(r.evento?.evento, "vehiculo");
+  assert.equal(
+    necesitaCatalogo(escrito("¿qué tamaño de bocina le cabe a mi prueba uno 2010?")),
+    true,
+  );
+});
+
+test("otra categoría o un vehículo que no es carro siguen como búsqueda", () => {
+  for (const texto of ["amplificador para mi prueba uno 2010", "¿qué le queda a mi lancha?"]) {
+    const r = responder(ESTADO_INICIAL, escrito(texto), CON_VEHICULOS);
+    assert.ok(["busqueda", "sin_resultados"].includes(r.evento?.evento ?? ""), texto);
+  }
 });

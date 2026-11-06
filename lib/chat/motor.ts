@@ -38,7 +38,7 @@ import {
   responderVehiculo,
   type PedidoVehiculo,
 } from "./respuestaVehiculo.ts";
-import { leerVehiculo, tieneFraseVehiculo } from "./vehiculo.ts";
+import { excluyeVehiculo, leerVehiculo, tieneFraseVehiculo } from "./vehiculo.ts";
 import {
   TEXTO_DATOS_FABRICANTE,
   TEXTO_PEDIR_BUSQUEDA,
@@ -532,11 +532,19 @@ function responderPedidoVehiculo(
  * datos de vehículos, solo la frase se contesta (con el error de carga): un
  * carro escrito sin frase sigue como búsqueda.
  */
-function intentarVehiculo(texto: string, contexto: Contexto): Respuesta | null {
+function intentarVehiculo(texto: string, contexto: Contexto, esDato: boolean): Respuesta | null {
+  if (excluyeVehiculo(texto)) return null;
   const frase = tieneFraseVehiculo(texto);
   const vehiculos = contexto.vehiculos;
   const sel = vehiculos ? leerVehiculo(texto, vehiculos.datos.vehiculos, vehiculos.ambiguos) : null;
-  if (!sel && !frase) return null;
+  // Una pregunta de dato («qué tamaño de bocina le cabe a mi Civic 2010») solo
+  // es de compatibilidad con la frase Y un modelo: «cuántos watts tiene el
+  // corolla» sigue siendo un dato.
+  if (esDato) {
+    if (!frase || !sel?.modelo) return null;
+  } else if (!sel && !frase) {
+    return null;
+  }
   return responderPedidoVehiculo({ sel: sel ?? {}, rango: false, ver: null }, texto, contexto);
 }
 
@@ -590,8 +598,13 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
   const intencion = detectarIntencion(texto);
   // El carro se prueba solo en lo que hoy es recomendación o búsqueda: un
   // tema («¿instalan en un Corolla?») o un dato siguen como antes.
-  if (intencion.tipo === "recomendacion" || intencion.tipo === "busqueda") {
-    const vehiculo = intentarVehiculo(texto, contexto);
+  if (
+    intencion.tipo === "recomendacion" ||
+    (intencion.tipo === "dato" && tieneFraseVehiculo(texto)) ||
+    intencion.tipo === "busqueda" ||
+    intencion.tipo === "dato"
+  ) {
+    const vehiculo = intentarVehiculo(texto, contexto, intencion.tipo === "dato");
     if (vehiculo) return vehiculo;
   }
   switch (intencion.tipo) {

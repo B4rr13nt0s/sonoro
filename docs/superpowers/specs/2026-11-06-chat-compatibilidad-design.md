@@ -65,12 +65,13 @@ Lógica pura con test: `leerVehiculo(texto, vehiculos, ambiguos)` sobre
 | 1 | **Modelo.** Un modelo de la lista, como palabras enteras, con o sin la marca. También sin sus separadores: «crv», «cx5» y «rav 4» son CR-V, CX-5 y RAV4. Si calzan dos, gana el más largo: «civic si» es Civic Si, «corolla im» es Corolla iM. |
 | 2 | **Nombres ambiguos.** Un modelo cuyo nombre, buscado solo en el catálogo del chat (`buscar`), trae resultados exactos solo cuenta con su marca o con un año: escrito solo, el cliente puede estar buscando ese producto. En el libro, «Fit» y «Protegé» (el verbo «protege») aparecen en textos de productos; cuáles de ellos cuentan lo dice la búsqueda del chat, no una lista. El conjunto se calcula una vez por catálogo cargado (`nombresAmbiguos`). |
 | 3 | **Marca.** Una marca de la lista sin modelo cuenta como vehículo: el chat pide el modelo. Ninguna de las 9 aparece en el catálogo. |
-| 4 | **Año.** El primer número de cuatro cifras entre 1940 y el año actual + 1. |
-| 5 | **Frase de vehículo sin vehículo.** «qué le queda», «cuál le queda», «qué le cabe» y «qué cabe en», sin marca ni modelo: el chat pide el carro. Estas frases salen de la lista de recomendación (`RECOMENDACION`). |
-| 6 | El resto del texto se ignora: «pantalla para corolla 2010» da el mismo resumen que «corolla 2010». |
+| 4 | **Año.** El primer número de cuatro cifras entre 1940 y el año actual + 1 que no lleve detrás una unidad de potencia («2000 w», «1200 rms»). |
+| 5 | **Frase de vehículo.** «le queda», «le quedan», «le cabe», «le caben», «cabe en», «caben en» (así «qué tamaño de bocina le cabe…» también cuenta). Sin marca ni modelo, el chat pide el carro. «qué le queda» y «cuál le queda» salen de la lista de recomendación (`RECOMENDACION`). |
+| 6 | **No es compatibilidad** (`excluyeVehiculo`) si el texto nombra otra categoría del sitio que no sea Receptores ni Bocinas («amplificador para mi corolla», «sub 12 para civic») o un uso que no es carro («lancha», «utv»; `USO_PALABRAS`): sigue como búsqueda. Lo demás del texto se ignora: «pantalla para corolla 2010» da el mismo resumen que «corolla 2010». |
 
 **Cuándo se prueba.** El orden de `detectarIntencion` no cambia. El vehículo
-se prueba solo sobre lo que hoy sale como `recomendacion` o `busqueda`. Así:
+se prueba sobre lo que hoy sale como `recomendacion` o `busqueda`, y sobre un
+`dato` solo si trae frase de vehículo y un modelo. Así:
 
 - «¿Instalan en un Corolla?» sigue siendo el tema instalación.
 - «¿Cuántos watts tiene el MJP1244?» sigue siendo un dato.
@@ -89,7 +90,7 @@ Si los vehículos no cargaron (`null`), un texto con frase de vehículo responde
 
 | Lo que se sabe | Respuesta |
 |---|---|
-| Nada (frase de vehículo sola) | «Escribe la marca, el modelo y el año de tu carro, por ejemplo «Toyota Corolla 2010».» y las marcas como botones, en orden alfabético. |
+| Nada (frase de vehículo sola) | «Escribe la marca, el modelo y el año de tu carro, por ejemplo «Toyota Corolla 2010».», las marcas como botones, en orden alfabético, y la línea de WhatsApp. |
 | Marca | «¿Qué modelo de <marca>?» y sus modelos como botones. |
 | Modelo sin año | «¿De qué año es tu <marca> <modelo>?» y un botón por **generación** del libro (rango `desde`–`hasta` distinto), de la más nueva a la más vieja: «2003–2018», «1998–2002»… Un rango de un solo año se escribe «2018». Si el modelo tiene una sola generación, no se pregunta. |
 | Año fuera de la lista | «No tengo el <marca> <modelo> <año> en la lista.», los botones de generación y la línea de WhatsApp de abajo. |
