@@ -108,7 +108,8 @@ test("tieneFraseVehiculo", () => {
 
 test("generaciones: rangos distintos, del más nuevo al más viejo", () => {
   const corolla = generaciones(VEHICULOS, "toyota", "corolla");
-  assert.deepEqual(corolla[0], { desde: 2003, hasta: 2018 });
+  // Del libro real: sin fijar cuál es la más nueva, que cambia con cada carga.
+  assert.ok(corolla.some((g) => g.desde === 2003 && g.hasta === 2018));
   for (let i = 1; i < corolla.length; i += 1) assert.ok(corolla[i - 1].desde > corolla[i].desde);
   // Elantra 2007–2010 tiene dos versiones: un solo rango.
   const elantra = generaciones(VEHICULOS, "hyundai", "elantra");
