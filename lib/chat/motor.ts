@@ -47,6 +47,7 @@ import {
 } from "./respuestas.ts";
 import {
   MAX_CONSULTA,
+  MAX_PRODUCTOS_CHAT,
   type Bloque,
   type BusquedaAcotable,
   type Contexto,
@@ -58,7 +59,7 @@ import {
 
 export { bloquesDeInicio };
 
-export const MAX_PRODUCTOS_CHAT = 5;
+export { MAX_PRODUCTOS_CHAT };
 
 export const ESTADO_INICIAL: Estado = { ultimaConsulta: null, ultimoTema: null };
 

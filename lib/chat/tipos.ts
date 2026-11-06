@@ -10,6 +10,9 @@ import type { DatosVehiculos } from "../vehiculos/types.ts";
 /** Largo máximo de lo que el cliente escribe en el chat. */
 export const MAX_CONSULTA = 200;
 
+/** Filas de producto por respuesta; el resto, en «Ver los N». */
+export const MAX_PRODUCTOS_CHAT = 5;
+
 /** Los temas de política que el bot responde con texto fijo. */
 export type Tema = "envios" | "garantia" | "instalacion" | "cuotas" | "como_pedir" | "contacto";
 
