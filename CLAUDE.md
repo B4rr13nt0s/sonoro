@@ -222,6 +222,7 @@ El **texto terciario se oscureció de `#9C9C97` a `#6E6E6E`** (app/globals.css, 
 - Cuerpo e interfaz: `'Helvetica Neue', Helvetica, Arial, sans-serif`
 - Logotipo únicamente: **Bakbak One**
 - Etiquetas en versalitas, códigos, datos: **JetBrains Mono** (11 px, `letter-spacing: 0.14em`, mayúsculas)
+- Bakbak One y JetBrains Mono se sirven desde `app/fonts/` con `next/font/local` (subconjunto latino; licencias OFL en `assets/fonts/`), **no con `next/font/google`**: esa baja los archivos de Google en cada build, y cuando la red del runner de CI fallaba el build se caía. No volver a `next/font/google`.
 - Titulares: peso 600, `letter-spacing` de −0.02em a −0.035em según tamaño
 - Escala: 82 / 64 / 48 / 44 / 40 / 38 / 34 / 26 / 22 px
 

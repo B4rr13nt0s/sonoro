@@ -3,7 +3,7 @@
 // nombre y precio, la tipografía es la mayor parte del diseño.
 //
 // JetBrains Mono ya es parte del sistema visual (CLAUDE.md § Sistema
-// visual, cargada vía next/font/google en app/layout.tsx) — se usa para
+// visual, servida desde app/fonts/ con next/font/local) — se usa para
 // precio, marca y etiquetas. Inter no es Helvetica Neue, pero de las
 // alternativas de licencia abierta es la que tiene proporciones más
 // cercanas y más precedente en ImageResponse/satori — se usa para el
