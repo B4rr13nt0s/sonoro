@@ -63,7 +63,7 @@ Lógica pura con test: `leerVehiculo(texto, vehiculos, ambiguos)` sobre
 | # | Regla |
 |---|---|
 | 1 | **Modelo.** Un modelo de la lista, como palabras enteras, con o sin la marca. También sin sus separadores: «crv», «cx5» y «rav 4» son CR-V, CX-5 y RAV4. Si calzan dos, gana el más largo: «civic si» es Civic Si, «corolla im» es Corolla iM. |
-| 2 | **Nombres ambiguos.** Un modelo cuyo nombre también aparece en el catálogo (nombre, descripción o ficha de un producto) solo cuenta con su marca o con un año. Hoy son «Fit» (1 producto) y «Protegé» (6: el verbo «protege»). El conjunto se calcula con los productos ya cargados (`nombresAmbiguos`), no se escribe a mano. |
+| 2 | **Nombres ambiguos.** Un modelo cuyo nombre, buscado solo en el catálogo del chat (`buscar`), trae resultados exactos solo cuenta con su marca o con un año: escrito solo, el cliente puede estar buscando ese producto. En el libro, «Fit» y «Protegé» (el verbo «protege») aparecen en textos de productos; cuáles de ellos cuentan lo dice la búsqueda del chat, no una lista. El conjunto se calcula una vez por catálogo cargado (`nombresAmbiguos`). |
 | 3 | **Marca.** Una marca de la lista sin modelo cuenta como vehículo: el chat pide el modelo. Ninguna de las 9 aparece en el catálogo. |
 | 4 | **Año.** El primer número de cuatro cifras entre 1940 y el año actual + 1. |
 | 5 | **Frase de vehículo sin vehículo.** «qué le queda», «cuál le queda», «qué le cabe» y «qué cabe en», sin marca ni modelo: el chat pide el carro. Estas frases salen de la lista de recomendación (`RECOMENDACION`). |
@@ -95,9 +95,9 @@ Si los vehículos no cargaron (`null`), un texto con frase de vehículo responde
 | Año fuera de la lista | «No tengo el <marca> <modelo> <año> en la lista.», los botones de generación y la línea de WhatsApp de abajo. |
 | Año con varias versiones, o con una sola fila que trae versión | «¿Cuál es tu <título>?» y las versiones como botones («Con radio de fábrica», «Sin radio de fábrica»). Igual que en `/buscar`, la del Civic 2016–2018 «LX o Sport» se elige aunque sea la única (`resolverSeleccion`). |
 
-La línea de WhatsApp es el texto de `/buscar`: «¿No está tu vehículo?
-Escríbenos por WhatsApp.», con el bloque `whatsapp` (motivo `hablar`) y la
-consulta del cliente en el mensaje.
+La línea de WhatsApp es la de `/buscar`: el texto «¿No está tu vehículo?» y el
+bloque `whatsapp` «Escríbenos por WhatsApp» (motivo `hablar`) con el mismo
+mensaje del selector, `buildVehicleInquiryMessage()`.
 
 **Los botones** son `OpcionId` `vehiculo:<consulta>`, donde `<consulta>` es la
 dirección de `/buscar` sin el `?`: `escribirSeleccion(sel)` más, para mostrar
