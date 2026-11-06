@@ -5,6 +5,7 @@ import type { ProductoTarjeta } from "../catalog/types.ts";
 import {
   acoteDeId,
   aplicarAcotes,
+  cercanosEnLista,
   describirAcote,
   gruposDeAcote,
   hrefAcotado,
@@ -157,4 +158,30 @@ test("describir y enlace a /buscar con lo mismo acotado", () => {
     ),
     "/buscar?q=subwoofer+mas+de+800+hasta+1500&medida=12&marca=Memphis",
   );
+});
+
+test("disponibilidad: filtra lo disponible y viaja como disp=disponible", () => {
+  const lista = [producto("A"), producto("B", { disponibilidad: "bajo_pedido" })];
+  assert.deepEqual(
+    aplicarAcotes(lista, [{ campo: "disponibilidad" }], MARCAS).map((p) => p.sku),
+    ["A"],
+  );
+  assert.equal(describirAcote({ campo: "disponibilidad" }, MARCAS), "Disponibles");
+  assert.deepEqual(acoteDeId(idDeAcote({ campo: "disponibilidad" })), { campo: "disponibilidad" });
+  assert.equal(
+    hrefAcotado("sub", [{ campo: "disponibilidad" }], MARCAS, "precio_asc"),
+    "/buscar?q=sub&disp=disponible&orden=precio_asc",
+  );
+  assert.ok(!gruposDeAcote(lista, MARCAS).some((g) => g.campo === "disponibilidad"));
+});
+
+test("cercanosEnLista: el de abajo y el de arriba, primero el más cercano", () => {
+  const r = cercanosEnLista(SUBS, "medida", 13);
+  assert.deepEqual(r?.valores, [12, 15]);
+  assert.deepEqual(
+    r?.productos.map((p) => p.sku),
+    ["C", "D", "E", "F"],
+  );
+  assert.equal(cercanosEnLista(SUBS, "medida", 12), null);
+  assert.equal(cercanosEnLista(SUBS, "canales", 4), null);
 });

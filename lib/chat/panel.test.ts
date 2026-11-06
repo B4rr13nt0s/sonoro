@@ -19,6 +19,11 @@ import {
 } from "./panel.ts";
 import { MAX_CONSULTA, type Conversacion, type Mensaje } from "./tipos.ts";
 
+/** Lo que el estado tenía antes de la memoria: la consulta y el tema para «Hablar con Sonoro». */
+function sinMemoria(estado: { ultimaConsulta: string | null; ultimoTema: unknown }) {
+  return { ultimaConsulta: estado.ultimaConsulta, ultimoTema: estado.ultimoTema };
+}
+
 const CATALOGO: CatalogoChat = {
   productos: [
     {
@@ -59,26 +64,37 @@ test("prepararTexto: recorta y corta a MAX_CONSULTA sin dejar medio emoji", () =
 test("conversacionInicial: el saludo y el menú, con el estado inicial", () => {
   const c = conversacionInicial("abc12345");
   assert.equal(c.id, "abc12345");
-  assert.deepEqual(c.estado, ESTADO_INICIAL);
+  assert.deepEqual(sinMemoria(c.estado), sinMemoria(ESTADO_INICIAL));
   assert.deepEqual(c.mensajes, [{ id: 0, autor: "bot", bloques: bloquesDeInicio() }]);
 });
 
 test("crearContexto: sin catálogo, productos null y sin marcas", () => {
   const contacto = { telefono: "+502 5295 5555" };
-  assert.deepEqual(crearContexto(null, contacto), {
+  assert.deepEqual(crearContexto(null, null, contacto), {
     productos: null,
     marcas: [],
     fichas: {},
     contacto,
+    vehiculos: null,
   });
-  assert.deepEqual(crearContexto(CATALOGO, contacto), {
+  assert.deepEqual(crearContexto(CATALOGO, null, contacto), {
     productos: CATALOGO.productos,
     marcas: CATALOGO.marcas,
     fichas: {},
     contacto,
+    vehiculos: null,
   });
   const fichas = { SQ12: [{ etiqueta: "Potencia RMS", valor: "500 W" }] };
-  assert.deepEqual(crearContexto({ ...CATALOGO, fichas }, contacto).fichas, fichas);
+  assert.deepEqual(crearContexto({ ...CATALOGO, fichas }, null, contacto).fichas, fichas);
+});
+
+test("crearContexto: con los vehículos, y los ambiguos una vez por catálogo", () => {
+  const datos = { vehiculos: [], receptores: [], bocinas: [], piezas: [] };
+  const uno = crearContexto(CATALOGO, datos, {});
+  assert.equal(uno.vehiculos?.datos, datos);
+  const otro = crearContexto(CATALOGO, datos, {});
+  assert.equal(otro.vehiculos?.ambiguos, uno.vehiculos?.ambiguos);
+  assert.equal(crearContexto(null, datos, {}).vehiculos?.ambiguos.size, 0);
 });
 
 test("resumenDeMensaje: lo preguntado de un solo producto se anuncia", () => {
@@ -132,7 +148,7 @@ test("responderEnConversacion: agrega la respuesta, avanza el estado y devuelve 
   const { conversacion, evento } = responderEnConversacion(
     inicial,
     { tipo: "texto", texto: "sq12" },
-    crearContexto(CATALOGO, {}),
+    crearContexto(CATALOGO, null, {}),
   );
   assert.equal(conversacion.mensajes.length, 3);
   const ultimo = conversacion.mensajes.at(-1);
@@ -149,7 +165,7 @@ test("responderEnConversacion: sin catálogo responde la falla, sin evento", () 
   const { conversacion, evento } = responderEnConversacion(
     conversacionInicial("x"),
     { tipo: "texto", texto: "sub 12" },
-    crearContexto(null, {}),
+    crearContexto(null, null, {}),
   );
   const ultimo = conversacion.mensajes.at(-1);
   assert.ok(ultimo?.autor === "bot" && ultimo.bloques[0]?.tipo === "texto");
@@ -258,7 +274,7 @@ test("colaDeRespuestas: una respuesta rápida espera a la anterior lenta y el hi
       conversacion = responderEnConversacion(
         conversacion,
         entrada,
-        crearContexto(catalogo, {}),
+        crearContexto(catalogo, null, {}),
       ).conversacion;
     };
 
@@ -297,7 +313,7 @@ test("colaDeRespuestas: una respuesta rápida espera a la anterior lenta y el hi
     "después la del tema",
   );
   // El estado es el de la ÚLTIMA respuesta: «Hablar con Sonoro» nombra el tema.
-  assert.deepEqual(conversacion.estado, { ultimaConsulta: null, ultimoTema: "envios" });
+  assert.deepEqual(sinMemoria(conversacion.estado), { ultimaConsulta: null, ultimoTema: "envios" });
 });
 
 test("colaDeRespuestas: si una respuesta falla, las siguientes siguen saliendo", async () => {

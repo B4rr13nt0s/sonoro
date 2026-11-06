@@ -5,6 +5,9 @@
 
 import type { ProductoBuscable } from "../busqueda/busqueda.ts";
 import type { Spec } from "../catalog/types.ts";
+// Solo `fetch` también: carga.ts no trae zod ni las reglas del selector.
+import { PLAZO_DATOS_MS, descargarDatosVehiculos } from "../vehiculos/carga.ts";
+import type { DatosVehiculos } from "../vehiculos/types.ts";
 
 export interface CatalogoChat {
   productos: ProductoBuscable[];
@@ -41,10 +44,7 @@ async function descargar(fetchImpl: typeof fetch): Promise<CatalogoChat | null> 
  * Una conexión detenida no rechaza ni responde: sin plazo, el cliente se
  * quedaba esperando el catálogo para siempre.
  */
-async function conPlazo(
-  bajada: Promise<CatalogoChat | null>,
-  plazoMs: number,
-): Promise<CatalogoChat | null> {
+async function conPlazo<T>(bajada: Promise<T | null>, plazoMs: number): Promise<T | null> {
   let temporizador: ReturnType<typeof setTimeout> | undefined;
   const vencido = new Promise<null>((resolve) => {
     temporizador = setTimeout(() => resolve(null), plazoMs);
@@ -69,14 +69,34 @@ export function crearCargadorCatalogo(
   fetchImpl: typeof fetch = (...args) => fetch(...args),
   plazoMs: number = PLAZO_CATALOGO_MS,
 ): () => Promise<CatalogoChat | null> {
-  let bajada: Promise<CatalogoChat | null> | null = null;
+  return crearCargador(() => descargar(fetchImpl), plazoMs);
+}
+
+/**
+ * Los datos del selector de vehículos (/buscar/vehiculos.json), para «¿qué le
+ * queda a mi carro?». Mismo trato que el catálogo: el panel los pide junto con
+ * él y un fallo se reintenta en la pregunta siguiente.
+ */
+export function crearCargadorVehiculos(
+  fetchImpl: typeof fetch = (...args) => fetch(...args),
+  plazoMs: number = PLAZO_DATOS_MS,
+): () => Promise<DatosVehiculos | null> {
+  return crearCargador(() => descargarDatosVehiculos(fetchImpl, plazoMs), plazoMs);
+}
+
+/** La memoización y el plazo de los dos cargadores (ver crearCargadorCatalogo). */
+export function crearCargador<T>(
+  descargarUna: () => Promise<T | null>,
+  plazoMs: number,
+): () => Promise<T | null> {
+  let bajada: Promise<T | null> | null = null;
 
   return () => {
     if (!bajada) {
-      const esta: Promise<CatalogoChat | null> = descargar(fetchImpl).then((catalogo) => {
+      const esta: Promise<T | null> = descargarUna().then((valor) => {
         // Solo el fallo se olvida; y solo si nadie lo reemplazó mientras tanto.
-        if (catalogo === null && bajada === esta) bajada = null;
-        return catalogo;
+        if (valor === null && bajada === esta) bajada = null;
+        return valor;
       });
       bajada = esta;
     }
