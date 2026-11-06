@@ -205,7 +205,7 @@ export default function PanelChat({
     // anterior pendiente.
     // Los vehículos bajan junto con el catálogo, en paralelo: ninguno espera
     // al otro, y un fallo de uno no tumba al otro (los dos resuelven null).
-    const listos = necesitaCatalogo(entrada)
+    const listos = necesitaCatalogo(entrada, leer().estado)
       ? Promise.all([cargarCatalogo(), cargarVehiculos()])
       : Promise.resolve([catalogoRef.current, vehiculosRef.current] as const);
     await cola.encolar(listos, ([cargado, vehiculos]) => {

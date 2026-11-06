@@ -84,7 +84,8 @@ test("el carro escrito da el resumen, con su evento y su consulta", () => {
   assert.equal(textos(r.bloques)[0], "Prueba Uno 2010");
   assert.equal(textos(r.bloques)[1], "Receptores: 1 cabe.");
   assert.deepEqual(r.evento, { evento: "vehiculo", consulta: "Prueba Uno 2010", resultados: 1 });
-  assert.deepEqual(r.estado, { ultimaConsulta: "Prueba Uno 2010", ultimoTema: null });
+  assert.equal(r.estado.ultimaConsulta, "Prueba Uno 2010");
+  assert.equal(r.estado.ultimoTema, null);
 });
 
 test("la frase sola pide el carro, sin evento", () => {

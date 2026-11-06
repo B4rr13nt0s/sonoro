@@ -3,10 +3,21 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 import { consultaVisible, detectarIntencion } from "./intencion.ts";
+import { ESTADO_INICIAL } from "./motor.ts";
+import type { Estado } from "./tipos.ts";
 
-test("saludo: el texto entero es un saludo o agradecimiento", () => {
-  for (const texto of ["Hola", "¡gracias!", "Buenos días", "muchas gracias", "OK", "adiós"]) {
+test("saludo: el texto entero es un saludo", () => {
+  for (const texto of ["Hola", "Buenos días", "buenas"]) {
     assert.deepEqual(detectarIntencion(texto), { tipo: "saludo" }, texto);
+  }
+  // Agradecer, confirmar o despedirse es charla, no saludo (spec 2026-11-03).
+  for (const [texto, clase] of [
+    ["¡gracias!", "gracias"],
+    ["muchas gracias", "gracias"],
+    ["OK", "confirmacion"],
+    ["adiós", "adios"],
+  ]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "charla", clase }, texto);
   }
 });
 
@@ -21,10 +32,9 @@ test("saludo antes de la pregunta: se quita, con coma o signos, y se busca lo de
   assert.deepEqual(esperada, { tipo: "busqueda", consulta: "subwoofers memphis" });
   assert.deepEqual(detectarIntencion("hola, tienen subwoofers memphis?"), esperada);
   assert.deepEqual(detectarIntencion("Buenas tardes, ¿tienen subwoofers memphis?"), esperada);
-  assert.deepEqual(detectarIntencion("buenas, cuánto cuesta el MJP800.4"), {
-    tipo: "busqueda",
-    consulta: "mjp800.4",
-  });
+  // Con un precio que preguntar, el saludo también se quita: es un dato.
+  const precio = detectarIntencion("buenas, cuánto cuesta el MJP800.4");
+  assert.equal(precio.tipo === "dato" && precio.consulta, "mjp800.4");
   assert.deepEqual(detectarIntencion("Hola! busco un amplificador"), {
     tipo: "busqueda",
     consulta: "amplificador",
@@ -159,14 +169,11 @@ test("búsqueda: quita el arranque conversacional", () => {
     tipo: "busqueda",
     consulta: "subwoofers de 12",
   });
-  assert.deepEqual(detectarIntencion("cuánto cuesta el SQ12"), {
-    tipo: "busqueda",
-    consulta: "sq12",
-  });
-  assert.deepEqual(detectarIntencion("precio del SQ12-D2"), {
-    tipo: "busqueda",
-    consulta: "sq12-d2",
-  });
+  // «cuánto cuesta» y «precio de» se quitan, y lo que preguntan es el precio.
+  const cuesta = detectarIntencion("cuánto cuesta el SQ12");
+  assert.equal(cuesta.tipo === "dato" && cuesta.consulta, "sq12");
+  const precio = detectarIntencion("precio del SQ12-D2");
+  assert.equal(precio.tipo === "dato" && precio.consulta, "sq12-d2");
   assert.deepEqual(detectarIntencion("quiero un amplificador 4 canales"), {
     tipo: "busqueda",
     consulta: "amplificador 4 canales",
@@ -174,10 +181,8 @@ test("búsqueda: quita el arranque conversacional", () => {
 });
 
 test("búsqueda: los arranques se quitan repetidos y solo al inicio", () => {
-  assert.deepEqual(detectarIntencion("busco tienen precio de las bocinas"), {
-    tipo: "busqueda",
-    consulta: "bocinas",
-  });
+  const bocinas = detectarIntencion("busco tienen precio de las bocinas");
+  assert.equal(bocinas.tipo === "dato" && bocinas.consulta, "bocinas");
   assert.deepEqual(detectarIntencion("memphis hay"), { tipo: "busqueda", consulta: "memphis hay" });
 });
 
@@ -193,9 +198,12 @@ test("búsqueda: un texto sin arranque pasa tal cual, normalizado", () => {
 });
 
 test("sin nada que buscar tras el arranque es un saludo", () => {
-  for (const texto of ["¿tienen?", "hay", "quiero", "  ", "", "¿cuánto cuesta?", "tienen un"]) {
+  for (const texto of ["¿tienen?", "hay", "quiero", "  ", "", "tienen un"]) {
     assert.deepEqual(detectarIntencion(texto), { tipo: "saludo" }, JSON.stringify(texto));
   }
+  // «¿cuánto cuesta?» pregunta un precio sin decir de qué: el motor lo pide.
+  const sinProducto = detectarIntencion("¿cuánto cuesta?");
+  assert.equal(sinProducto.tipo === "dato" && sinProducto.consulta, "");
 });
 
 test("palabra ambigua sola: sigue siendo el tema, sin pedir contexto", () => {
@@ -258,15 +266,12 @@ test("palabra fuerte: el tema gana aunque haya más contenido y no pide contexto
 });
 
 test("saludo + cortesía es un saludo, no una búsqueda", () => {
-  for (const texto of [
-    "hola gracias",
-    "hola ok",
-    "buenas, adiós",
-    "Hola, muchas gracias",
-    "vale",
-  ]) {
+  for (const texto of ["vale"]) {
     assert.deepEqual(detectarIntencion(texto), { tipo: "saludo" }, texto);
   }
+  // Tras un saludo, la cortesía se contesta como charla.
+  assert.equal(detectarIntencion("hola gracias").tipo, "charla");
+  assert.equal(detectarIntencion("buenas, adiós").tipo, "charla");
   // Una cortesía dentro de una búsqueda real no la vuelve saludo.
   assert.equal(detectarIntencion("hola, busco un ok 12").tipo, "busqueda");
 });
@@ -375,4 +380,73 @@ test("arranques de pregunta: «tendrán», «ando buscando», «me gustaría ver
     tipo: "busqueda",
     consulta: "subwoofers de 10",
   });
+});
+
+test("dato: precio de un código", () => {
+  const i = detectarIntencion("¿cuánto cuesta el MJP1244?");
+  assert.equal(i.tipo, "dato");
+  assert.deepEqual(i.tipo === "dato" && i.campos.map((c) => c.tipo), ["precio"]);
+  assert.equal(i.tipo === "dato" && i.consulta, "mjp1244");
+});
+
+test("dato: «cuánto cuesta» de una búsqueda amplia sigue siendo dato de precio", () => {
+  assert.equal(detectarIntencion("cuanto cuesta el subwoofer de 12 memphis").tipo, "dato");
+});
+
+const CONVERSANDO: Estado = {
+  ...ESTADO_INICIAL,
+  busqueda: { base: { tipo: "texto", consulta: "subwoofer", visible: "subwoofer" }, acotes: [] },
+  mostrados: ["A", "B"],
+};
+const CTX = { marcas: [{ nombre: "Memphis", slug: "memphis" }], numeroSuelto: "medida" as const };
+
+test("con memoria: seguimiento y referencia", () => {
+  assert.equal(detectarIntencion("y de 10?", CONVERSANDO, CTX).tipo, "seguimiento");
+  assert.equal(detectarIntencion("solo memphis", CONVERSANDO, CTX).tipo, "seguimiento");
+  const ref = detectarIntencion("¿cuánto cuesta el primero?", CONVERSANDO, CTX);
+  assert.deepEqual(ref, { tipo: "referencia", sku: "A", resto: "cuanto cuesta" });
+});
+
+test("sin memoria, lo mismo es búsqueda como hoy", () => {
+  assert.equal(detectarIntencion("12", ESTADO_INICIAL, CTX).tipo, "busqueda");
+  assert.equal(detectarIntencion("solo memphis").tipo, "busqueda");
+  assert.equal(detectarIntencion("el primero").tipo, "busqueda");
+});
+
+test("con memoria, algo que nombra otra cosa es búsqueda nueva", () => {
+  assert.equal(detectarIntencion("y bocinas?", CONVERSANDO, CTX).tipo, "busqueda");
+});
+
+test("el tema gana a un seguimiento", () => {
+  assert.equal(detectarIntencion("y el envío?", CONVERSANDO, CTX).tipo, "tema");
+});
+
+test("charla antes que saludo; hola sigue siendo saludo", () => {
+  assert.deepEqual(detectarIntencion("gracias"), { tipo: "charla", clase: "gracias" });
+  assert.deepEqual(detectarIntencion("¿eres un bot?"), { tipo: "charla", clase: "quien_eres" });
+  assert.equal(detectarIntencion("hola").tipo, "saludo");
+});
+
+test("respuesta pendiente de categoría, por nombre o sinónimo", () => {
+  const preguntando: Estado = { ...ESTADO_INICIAL, pendiente: "categoria" };
+  assert.deepEqual(detectarIntencion("subwoofers", preguntando, CTX), {
+    tipo: "respuesta_pendiente",
+    categoria: "subwoofers",
+  });
+  assert.deepEqual(detectarIntencion("un radio", preguntando, CTX), {
+    tipo: "respuesta_pendiente",
+    categoria: "receptores",
+  });
+  // Sin la pregunta, es una búsqueda.
+  assert.equal(detectarIntencion("subwoofers", ESTADO_INICIAL, CTX).tipo, "busqueda");
+});
+
+test("vago", () => {
+  assert.deepEqual(detectarIntencion("algo para mi carro"), { tipo: "vago" });
+  assert.equal(detectarIntencion("bajo de 12").tipo, "busqueda");
+});
+
+test("vago: también tras un arranque («busco algo para mi carro»)", () => {
+  assert.deepEqual(detectarIntencion("busco algo para mi carro"), { tipo: "vago" });
+  assert.deepEqual(detectarIntencion("quiero mejorar el sonido de mi carro"), { tipo: "vago" });
 });

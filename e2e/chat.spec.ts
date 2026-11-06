@@ -141,6 +141,22 @@ test("contesta un dato de la ficha técnica", async ({ page }) => {
   await expect(conversacion.getByText("Datos publicados por el fabricante.")).toBeVisible();
 });
 
+test("conversa: búsqueda, seguimiento y el precio del primero", async ({ page }) => {
+  const panel = await abrirChat(page);
+  const conversacion = panel.getByRole("region", { name: "Conversación" });
+
+  await preguntar(page, "subwoofers");
+  await expect(conversacion.getByText(/¿Qué medida buscas\?$/)).toBeVisible();
+  await preguntar(page, "12");
+  await expect(conversacion.getByText(/^Ahora de 12"\. Quedan \d+\.$/)).toBeVisible();
+  await preguntar(page, "¿cuánto cuesta el primero?");
+  await expect(conversacion.getByText(/ cuesta Q.+al mes × 6\.$/)).toBeVisible();
+  // La fila del producto del que se habló, con su botón.
+  await expect(
+    conversacion.getByRole("button", { name: "Agregar al carrito" }).last(),
+  ).toBeVisible();
+});
+
 test("un producto agotado no se puede agregar", async ({ page }) => {
   test.skip(!AGOTADO, "data/catalog.json no trae productos agotados y activos");
   const panel = await abrirChat(page);
