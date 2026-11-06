@@ -16,12 +16,15 @@ import { formatQ, lineaCuota } from "@/lib/format/precio.ts";
 export function ProductoChat({
   producto,
   datos,
+  nota,
   alAgregar,
   alNavegar,
 }: {
   producto: ProductoBuscable;
   /** Lo que preguntó el cliente («Potencia RMS: 750 W»), bajo el nombre. */
   datos?: readonly Spec[];
+  /** Una anotación del producto (NOTAS_RECEPTOR), bajo el nombre. */
+  nota?: string;
   alAgregar: (agregadas: number, sku: string) => void;
   alNavegar?: () => void;
 }) {
@@ -46,6 +49,7 @@ export function ProductoChat({
         >
           {producto.nombre}
         </Link>
+        {nota ? <p className="text-texto-secundario text-[13px] leading-snug">{nota}</p> : null}
         {datos && datos.length > 0 ? (
           <dl className="text-[13px] leading-snug">
             {datos.map(({ etiqueta, valor }) => (

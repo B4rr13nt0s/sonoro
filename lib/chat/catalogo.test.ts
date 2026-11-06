@@ -2,7 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import type { ProductoBuscable } from "../busqueda/busqueda.ts";
-import { RUTA_CATALOGO_CHAT, crearCargadorCatalogo, productosDeSkus } from "./catalogo.ts";
+import { RUTA_DATOS_VEHICULOS } from "../vehiculos/carga.ts";
+import {
+  RUTA_CATALOGO_CHAT,
+  crearCargadorCatalogo,
+  crearCargadorVehiculos,
+  productosDeSkus,
+} from "./catalogo.ts";
 
 function producto(sku: string): ProductoBuscable {
   return {
@@ -139,4 +145,32 @@ test("productosDeSkus descarta los que no están y conserva el orden pedido", ()
     productosDeSkus(["B", "X", "A"], porSku).map((p) => p.sku),
     ["B", "A"],
   );
+});
+
+const VEHICULOS = { vehiculos: [], receptores: [], bocinas: [], piezas: [] };
+
+test("crearCargadorVehiculos: un solo fetch a los datos del selector", async () => {
+  const urls: string[] = [];
+  const cargar = crearCargadorVehiculos((async (url: string) => {
+    urls.push(url);
+    return respuesta(VEHICULOS);
+  }) as unknown as typeof fetch);
+
+  const [a, b] = await Promise.all([cargar(), cargar()]);
+  assert.deepEqual(urls, [RUTA_DATOS_VEHICULOS]);
+  assert.ok(a);
+  assert.equal(a, b);
+  assert.deepEqual(a, VEHICULOS);
+});
+
+test("crearCargadorVehiculos: un 500 da null y la llamada siguiente vuelve a pedir", async () => {
+  let llamadas = 0;
+  const cargar = crearCargadorVehiculos((async () => {
+    llamadas += 1;
+    return llamadas === 1 ? respuesta({ error: true }, 500) : respuesta(VEHICULOS);
+  }) as unknown as typeof fetch);
+
+  assert.equal(await cargar(), null);
+  assert.deepEqual(await cargar(), VEHICULOS);
+  assert.equal(llamadas, 2);
 });
