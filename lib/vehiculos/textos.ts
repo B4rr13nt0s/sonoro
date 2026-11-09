@@ -35,6 +35,12 @@ export function textoGrupoVacio(grupo: Pick<GrupoBocinas, "medidas">): string {
     : "No hay bocinas de esas medidas en el catálogo.";
 }
 
+/** En el chat no hay título de grupo encima: la línea vacía lleva su ubicación. */
+export function lineaUbicacionVacia(grupo: Pick<GrupoBocinas, "ubicacion" | "medidas">): string {
+  const cual = grupo.medidas.length === 1 ? "esa medida" : "esas medidas";
+  return `${tituloGrupo(grupo)}: no hay bocinas de ${cual} en el catálogo.`;
+}
+
 // --- El chat: «¿qué le queda a mi carro?» --------------------------------
 // (docs/superpowers/specs/2026-11-06-chat-compatibilidad-design.md)
 
