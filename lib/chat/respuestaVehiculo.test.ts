@@ -236,7 +236,7 @@ test("el resumen: receptores por estado, una línea por ubicación, instalación
     'Puertas delanteras · 6.5": 6 bocinas, caben con',
     'Puertas traseras · 6.5": 6 bocinas, caben con accesorios.',
     'Bandeja trasera · 6x9": 1 bocina, cabe.',
-    'No hay bocinas de 6x8" en el catálogo.',
+    'Tablero · 6x8": no hay bocinas de esa medida en el catálogo.',
     INSTALACION,
     "",
   ]);

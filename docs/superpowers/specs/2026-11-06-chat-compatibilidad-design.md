@@ -150,8 +150,11 @@ va en la línea:
   bocinas de 6.5"»), con el nombre como enlace a la ficha de la pieza
   (`enlace` del bloque de texto, `despues: "."`). Sin artículo: los nombres
   del catálogo mezclan singular y plural («Adaptadores de bocina…»).
-- Sin bocinas de esa medida: `textoGrupoVacio` («No hay bocinas de 6x8" en el
-  catálogo.»), sin botón.
+- Sin bocinas de esa medida: `lineaUbicacionVacia` («Tablero · 6x8": no hay
+  bocinas de esa medida en el catálogo.»), sin botón. Lleva la ubicación porque
+  en el chat no hay título de grupo encima: dos ubicaciones sin producto
+  decían la misma frase dos veces (noviembre de 2026, con la guía AAMP
+  cargada). En `/buscar` sigue `textoGrupoVacio`, bajo el título del grupo.
 
 Después: la frase de `INSTALACION` (`lib/politicas.ts`), un botón por grupo con
 productos («Receptores» y `tituloGrupo` de cada ubicación) y «Ver todo en

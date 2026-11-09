@@ -5,6 +5,7 @@ import {
   lineaConsultar,
   lineaReceptores,
   lineaUbicacion,
+  lineaUbicacionVacia,
   notaReceptor,
   TEXTO_PEDIR_VEHICULO,
   textoFueraDeLista,
@@ -56,6 +57,17 @@ test("textoGrupoVacio: nombra la medida solo si es una", () => {
   assert.equal(
     textoGrupoVacio({ medidas: ['5x7"', '6x8"'] }),
     "No hay bocinas de esas medidas en el catálogo.",
+  );
+});
+
+test("lineaUbicacionVacia: la ubicación y la medida, para el chat", () => {
+  assert.equal(
+    lineaUbicacionVacia({ ubicacion: "Tablero", medidas: ['6x8"'] }),
+    'Tablero · 6x8": no hay bocinas de esa medida en el catálogo.',
+  );
+  assert.equal(
+    lineaUbicacionVacia({ ubicacion: "Atrás", medidas: ['5x7"', '6x8"'] }),
+    'Atrás · 5x7" o 6x8": no hay bocinas de esas medidas en el catálogo.',
   );
 });
 

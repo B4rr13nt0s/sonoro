@@ -18,9 +18,9 @@ import {
   lineaConsultar,
   lineaReceptores,
   lineaUbicacion,
+  lineaUbicacionVacia,
   notaReceptor,
   textoFueraDeLista,
-  textoGrupoVacio,
   textoPedirAnio,
   textoPedirModelo,
   textoPedirVersion,
@@ -166,7 +166,7 @@ function resumen(
 
   for (const grupo of compat.grupos) {
     if (grupo.bocinas.length === 0) {
-      bloques.push(texto(textoGrupoVacio(grupo)));
+      bloques.push(texto(lineaUbicacionVacia(grupo)));
       continue;
     }
     const linea = lineaUbicacion(grupo, grupo.bocinas.length, grupo.bocinas[0].estado);
