@@ -952,14 +952,20 @@ export function responder(estado: Estado, entrada: Entrada, contexto: Contexto):
   const productos = r.bloques.find((b) => b.tipo === "productos");
   const mostrados =
     r.estado.mostrados ?? (productos?.tipo === "productos" ? productos.skus : undefined);
-  return {
-    ...r,
-    estado: {
-      ...r.estado,
-      ...(mostrados ? { mostrados } : {}),
-      turno: (estado.turno ?? 0) + 1,
-    },
+  const siguiente: Estado = {
+    ...r.estado,
+    ...(mostrados ? { mostrados } : {}),
+    turno: (estado.turno ?? 0) + 1,
   };
+  // «¿De qué año es tu Toyota Corolla?» solo espera la respuesta que sigue: si
+  // esta no lo volvió a preguntar (la respuesta trae el MISMO objeto, no uno
+  // nuevo), cualquier otra cosa —«hola», «gracias», «Buscar un producto»— lo
+  // olvida, como dice tipos.ts. Si no, un «2010» tres mensajes después se
+  // contestaba como el año de ese carro.
+  if (estado.vehiculoPendiente && siguiente.vehiculoPendiente === estado.vehiculoPendiente) {
+    delete siguiente.vehiculoPendiente;
+  }
+  return { ...r, estado: siguiente };
 }
 
 function responderSinMemoria(estado: Estado, entrada: Entrada, contexto: Contexto): Respuesta {

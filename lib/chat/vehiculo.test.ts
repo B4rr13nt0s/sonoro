@@ -180,3 +180,36 @@ test("una marca que es parte de un producto necesita año: «Mini» no abre el f
   assert.equal(leerCon("mini 2012")?.marca, "mini");
   assert.equal(leerCon("toyota")?.marca, "toyota");
 });
+
+test("leerVehiculo: la marca escrita manda cuando el modelo está en varias marcas", () => {
+  assert.deepEqual(leer("mitsubishi lancer 2010"), {
+    marca: "mitsubishi",
+    modelo: "lancer",
+    anio: 2010,
+  });
+  assert.deepEqual(leer("mercedes sprinter 2010"), {
+    marca: "mercedes-benz",
+    modelo: "sprinter",
+    anio: 2010,
+  });
+  assert.deepEqual(leer("toyota pickup 1990"), { marca: "toyota", modelo: "pickup", anio: 1990 });
+  assert.equal(leer("volkswagen fox 2008")?.marca, "volkswagen");
+});
+
+test("leerVehiculo: sin marca, el año decide entre marcas que comparten el modelo", () => {
+  // El Lancer de Dodge es de 1985–1989; el de Mitsubishi llega a 2010.
+  assert.deepEqual(leer("lancer 2010"), { marca: "mitsubishi", modelo: "lancer", anio: 2010 });
+});
+
+test("leerVehiculo: un nombre compartido que ni marca ni año deciden no es un carro", () => {
+  // «pickup» existe en seis marcas: sin marca ni año no se elige ninguna.
+  assert.equal(leer("radio para pickup"), null);
+  assert.equal(leer("bocinas para mi pickup"), null);
+});
+
+test("leerVehiculo: un modelo que es solo un número necesita su marca", () => {
+  assert.equal(leer("bocinas de 80 watts"), null);
+  assert.equal(leer("bocinas 90 db"), null);
+  assert.equal(leer("bocinas 911"), null);
+  assert.deepEqual(leer("audi 80 1990"), { marca: "audi", modelo: "80", anio: 1990 });
+});

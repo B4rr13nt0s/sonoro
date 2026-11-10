@@ -211,3 +211,22 @@ test("un año fuera de la lista tras la pregunta lo dice, no lo ignora", () => {
   const r = responder(p.estado, escrito("1999"), CON_VEHICULOS);
   assert.match(textos(r.bloques)[0], /1999/);
 });
+
+test("la pregunta «¿de qué año es?» solo espera el mensaje que sigue: «hola», «gracias» y las opciones la olvidan", () => {
+  const preguntado = responder(ESTADO_INICIAL, escrito("¿qué le queda a mi uno?"), CON_VEHICULOS);
+  assert.ok(preguntado.estado.vehiculoPendiente);
+
+  const entradas: Entrada[] = [
+    escrito("hola"),
+    escrito("gracias"),
+    { tipo: "opcion", id: "buscar" },
+    { tipo: "opcion", id: "hablar" },
+  ];
+  for (const entrada of entradas) {
+    const r = responder(preguntado.estado, entrada, CON_VEHICULOS);
+    assert.equal(r.estado.vehiculoPendiente, undefined, JSON.stringify(entrada));
+    // Y un año suelto después ya no es el año de ese carro.
+    const despues = responder(r.estado, escrito("2010"), CON_VEHICULOS);
+    assert.notEqual(textos(despues.bloques)[0], "Prueba Uno 2010", JSON.stringify(entrada));
+  }
+});

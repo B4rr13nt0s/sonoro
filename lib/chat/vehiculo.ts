@@ -111,6 +111,50 @@ export function anioSolo(
 }
 
 /**
+ * ¿Escribió la marca de este modelo? Entera, o con una de sus palabras largas:
+ * «mercedes» por «Mercedes-Benz».
+ */
+function nombraMarca(escrito: readonly string[], m: Modelo): boolean {
+  return (
+    contiene(escrito, m.palabrasMarca) ||
+    m.palabrasMarca.some((p) => p.length >= 5 && escrito.includes(p))
+  );
+}
+
+/**
+ * De los modelos cuyo nombre aparece en lo escrito, el que el cliente quiso
+ * decir: el de la marca que escribió, y entre esos el de nombre más largo
+ * («cr v» antes que «v»). Un mismo nombre en varias marcas («lancer»: Dodge y
+ * Mitsubishi) sin marca escrita lo decide el año —el único que lo tuvo en
+ * producción—; si tampoco, ninguno: elegir el primero del libro respondía la
+ * compatibilidad de OTRO carro («mercedes sprinter» daba el Sprinter de Dodge).
+ */
+function elegirModelo(
+  candidatos: readonly Modelo[],
+  escrito: readonly string[],
+  vehiculos: readonly Vehiculo[],
+  anio: number | undefined,
+): Modelo | null {
+  if (candidatos.length === 0) return null;
+  const conMarca = candidatos.filter((m) => nombraMarca(escrito, m));
+  let grupo = conMarca.length > 0 ? conMarca : candidatos;
+  const largo = Math.max(...grupo.map((m) => m.compacto.length));
+  grupo = grupo.filter((m) => m.compacto.length === largo);
+  if (new Set(grupo.map((m) => m.marcaSlug)).size === 1) return grupo[0];
+  if (anio === undefined) return null;
+  const queLoTuvieron = grupo.filter((m) =>
+    vehiculos.some(
+      (v) =>
+        v.marcaSlug === m.marcaSlug &&
+        v.modeloSlug === m.modeloSlug &&
+        v.desde <= anio &&
+        anio <= v.hasta,
+    ),
+  );
+  return queLoTuvieron.length === 1 ? queLoTuvieron[0] : null;
+}
+
+/**
  * La marca, el modelo y el año que el texto nombra, como slugs del selector.
  * `null` si no nombra ni una marca ni un modelo de la lista. El año es el
  * ESCRITO: si ese modelo no lo tiene, resolverSeleccion lo deja fuera y la
@@ -128,17 +172,24 @@ export function leerVehiculo(
   const modelos = modelosDe(vehiculos);
   const conAnio = (sel: Seleccion): Seleccion => (anio === undefined ? sel : { ...sel, anio });
 
-  let elegido: Modelo | null = null;
+  const candidatos: Modelo[] = [];
   for (const m of modelos) {
     const calza = contiene(escrito, m.palabrasModelo) || contieneCompacto(escrito, m.compacto);
     if (!calza) continue;
+    const marcaEscrita = nombraMarca(escrito, m);
     // Un nombre que también es un producto («fit») necesita marca o año.
-    if (ambiguos.has(m.modeloSlug) && anio === undefined && !contiene(escrito, m.palabrasMarca)) {
-      continue;
-    }
-    if (!elegido || m.compacto.length > elegido.compacto.length) elegido = m;
+    if (ambiguos.has(m.modeloSlug) && anio === undefined && !marcaEscrita) continue;
+    // Un modelo que es solo un número («80», «911», «4000») necesita su marca:
+    // sin ella, «bocinas de 80 watts» o «bocinas 90 db» abrían «Audi 80».
+    if (/^\d+$/.test(m.compacto) && !marcaEscrita) continue;
+    candidatos.push(m);
   }
+  const elegido = elegirModelo(candidatos, escrito, vehiculos, anio);
   if (elegido) return conAnio({ marca: elegido.marcaSlug, modelo: elegido.modeloSlug });
+  // Un nombre compartido por varias marcas («pickup», «lancer») que ni la
+  // marca ni el año deciden no es ningún carro todavía: sin marca, la
+  // respuesta la pregunta o la búsqueda sigue su camino.
+  if (candidatos.length > 0) return null;
 
   const marca = modelos.find((m) => contiene(escrito, m.palabrasMarca));
   if (!marca) return null;
