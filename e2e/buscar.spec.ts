@@ -116,3 +116,21 @@ test("a 1280 px, con tres listas, la barra entra en una línea", async ({ page }
   const caja = await ordenar.boundingBox();
   expect(Math.abs(caja!.y + caja!.height / 2 - (todo!.y + todo!.height / 2))).toBeLessThan(8);
 });
+
+for (const consulta of ["constructor", "__proto__"]) {
+  test(`«${consulta}» no tumba la página: se busca como cualquier palabra`, async ({ page }) => {
+    const errores: string[] = [];
+    page.on("pageerror", (e) => errores.push(e.message));
+    await page.goto(`/buscar?q=${consulta}`);
+    await expect(page.getByLabel("Buscar en el catálogo")).toHaveValue(consulta);
+    expect(errores).toEqual([]);
+  });
+}
+
+test("«subwoofer 8 a 10 pulgadas» filtra por tamaño, no avisa que ninguno es de 8", async ({
+  page,
+}) => {
+  await page.goto("/buscar?q=subwoofer%208%20a%2010%20pulgadas");
+  await expect(page.getByText(/Filtros de tu búsqueda/)).toBeVisible();
+  await expect(page.getByText(/Ninguno es de/)).toHaveCount(0);
+});

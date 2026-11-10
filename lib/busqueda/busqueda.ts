@@ -22,7 +22,7 @@
 // pulgadas») dejan de ser texto y pasan a ser FILTROS sobre el dato.
 import { formatQ } from "../format/precio.ts";
 import type { Atributos, ProductoTarjeta, Spec, Uso } from "../catalog/types.ts";
-import { PALABRAS_VACIAS, SINONIMOS, USO_PALABRAS } from "./sinonimos.ts";
+import { PALABRAS_VACIAS, sinonimosDe, USO_PALABRAS } from "./sinonimos.ts";
 
 /**
  * La tarjeta más `claves`: los atributos normalizados del producto ya
@@ -371,7 +371,7 @@ function terminosDe(textoCanonico: string, conFallback = true): Termino[] {
             String.raw`(?:^|[^a-z0-9.])${texto.replace(".", "\\.")}(?![0-9]|\.[0-9]|x[0-9])`,
           )
         : null,
-      alternativas: SINONIMOS[r] ?? [],
+      alternativas: sinonimosDe(r),
       tolerable: !medida && !numero && !/\d/.test(r) && r.length >= 4,
     };
   });
@@ -509,8 +509,12 @@ const RANGO_CON_PALABRA = new RegExp(
   String.raw`\b(?:entre|de|desde)\s+${patronNumero(1)}\s*(?:y|a|hasta|-)\s*${patronNumero(2)}`,
   "g",
 );
+// Sin «de/entre/desde» al frente: «8-10 pulgadas», «Q500-Q1000» y, con espacios,
+// «subwoofer 8 a 10 pulgadas», «500 a 1000 quetzales». Aquí la unidad (o la Q)
+// es obligatoria: «y» no vale como separador porque «8 y 10 pulgadas» pueden
+// ser dos productos.
 const RANGO_CON_GUION = new RegExp(
-  String.raw`(?<![\w-])${patronNumero(1)}\s*-\s*${patronNumero(2)}`,
+  String.raw`(?<![\w-])${patronNumero(1)}(?:\s*-\s*|\s+a\s+)${patronNumero(2)}`,
   "g",
 );
 
@@ -623,7 +627,7 @@ export function interpretar(consultaNormalizada: string): Interpretacion {
   const rango = (g: Grupos, exigeUnidad: boolean, despues = ""): Restriccion | null => {
     const a = Number(g.n1);
     const b = Number(g.n2);
-    if (exigeUnidad && !g.u1 && !g.u2) return null;
+    if (exigeUnidad && !g.u1 && !g.u2 && !g.q1 && !g.q2) return null;
     // Dos unidades distintas no son un rango: «de 2 canales a 500 w».
     if (g.u1 && g.u2 && unidadDe(g.u1) !== unidadDe(g.u2)) return null;
     // La unidad solo en el primer número y otra palabra después del segundo
@@ -1196,7 +1200,7 @@ export function sugerir(
   // Marcas y categorías se ofrecen por la consulta entera; con varias palabras
   // («memphis 12») la marca ya está en el resultado de productos.
   const unaPalabra = !q.includes(" ");
-  const buscados = unaPalabra ? [raiz(q), ...(SINONIMOS[raiz(q)] ?? [])] : [];
+  const buscados = unaPalabra ? [raiz(q), ...sinonimosDe(raiz(q))] : [];
 
   const resultado = buscar(productos, q, desempate);
   return {

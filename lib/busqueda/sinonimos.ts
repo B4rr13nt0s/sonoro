@@ -83,6 +83,15 @@ export const PALABRAS_VACIAS: ReadonlySet<string> = new Set([
   "mi",
   "vehiculo",
   "vehiculos",
+  // «audio marino», «equipo para lancha», «productos de Memphis»: describen
+  // todo el catálogo, igual que «vehículo». Con un filtro al lado, «audio
+  // marino» daba 0 resultados porque ningún producto marino dice «audio»
+  // (solo, «audio» sigue buscándose: nunca es lo único que se descarta).
+  "audio",
+  "equipo",
+  "equipos",
+  "producto",
+  "productos",
   // «subwoofers marca memphis»: la palabra presenta a la marca, no la busca.
   // Ningún producto la trae en nombre, categoría ni specs.
   "marca",
@@ -105,6 +114,17 @@ export const PALABRAS_VACIAS: ReadonlySet<string> = new Set([
   "estable",
   "estables",
 ]);
+
+/**
+ * Los sinónimos de una palabra, o `[]`. Es la ÚNICA forma de leer SINONIMOS con
+ * lo que escribió el cliente: `SINONIMOS[palabra] ?? []` devuelve la función
+ * heredada de Object.prototype con «constructor» o «__proto__», y quien
+ * recorre el resultado revienta (`/buscar?q=constructor` caía a «This page
+ * couldn't load»).
+ */
+export function sinonimosDe(palabra: string): readonly string[] {
+  return Object.hasOwn(SINONIMOS, palabra) ? SINONIMOS[palabra] : [];
+}
 
 /**
  * Las palabras que nombran una CATEGORÍA de uso (la columna `categoria` del

@@ -672,3 +672,59 @@ test("specsCoincidentes: la spec que muestra el dato pedido", () => {
   assert.deepEqual(etiquetas("subwoofer memphis"), []);
   assert.deepEqual(etiquetas("subwoofer menos de 1000"), []);
 });
+
+test("palabras que son claves de Object.prototype no rompen la búsqueda ni las sugerencias", () => {
+  // `SINONIMOS[palabra] ?? []` devolvía la función heredada de «constructor» y
+  // `/buscar?q=constructor` caía a «This page couldn't load».
+  for (const w of ["constructor", "__proto__", "toString", "hasOwnProperty", "valueOf"]) {
+    assert.doesNotThrow(() => buscar([COR], w), w);
+    assert.doesNotThrow(() => sugerir([COR], [], [], w), w);
+    assert.doesNotThrow(() => buscar([COR], `subwoofer ${w}`), w);
+  }
+});
+
+test("interpretar: rangos con «a» y unidad al final, sin «de/entre» al frente", () => {
+  const rangos: [string, string, number, number][] = [
+    ["subwoofer 8 a 10 pulgadas", "pulgadas", 8, 10],
+    ["bocinas 6.5 a 8 pulgadas", "pulgadas", 6.5, 8],
+    ["amplificador 500 a 1000 watts", "potencia", 500, 1000],
+    ["amplificador 2 a 4 canales", "canales", 2, 4],
+    ["500 a 1000 quetzales", "precio", 500, 1000],
+    ["Q500-Q1000", "precio", 500, 1000],
+    ["q 500 - q 1000", "precio", 500, 1000],
+    ["8-10 pulgadas", "pulgadas", 8, 10],
+  ];
+  for (const [consulta, campo, min, max] of rangos) {
+    const { restricciones } = interpretar(normalizar(consulta));
+    assert.equal(restricciones.length, 1, consulta);
+    assert.deepEqual(
+      [restricciones[0].campo, restricciones[0].min, restricciones[0].max],
+      [campo, min, max],
+      consulta,
+    );
+  }
+});
+
+test("interpretar: «a» y «y» entre números sin unidad no son un rango", () => {
+  for (const consulta of [
+    "kit 4 a 8 awg",
+    "subwoofer 8 y 10 pulgadas",
+    "500-1000",
+    "de 2 canales y 6 pies",
+  ]) {
+    assert.deepEqual(interpretar(normalizar(consulta)).restricciones, [], consulta);
+  }
+});
+
+test("palabras que describen todo el catálogo («audio», «equipo») no vacían un filtro", () => {
+  const MAR = producto('Bocina marina 6.5" MAR65', "KBT", "MAR65", { uso: ["marino"] });
+  for (const q of ["audio marino", "equipo marino", "productos marinos"]) {
+    assert.deepEqual(
+      buscar([COR, MAR], q).productos.map((p) => p.sku),
+      ["MAR65"],
+      q,
+    );
+  }
+  // Solas siguen buscándose: «audio» nunca queda sin nada que buscar.
+  assert.equal(interpretar(normalizar("audio")).resto, "audio");
+});
