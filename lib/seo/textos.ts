@@ -229,7 +229,7 @@ export function textosMarcas(marcas: string[]): Textos {
 
 export const TEXTOS_NOSOTROS: Textos = {
   titulo: `Nosotros: ${LEMA.toLowerCase()}`,
-  descripcion: `Sonoro vende ${LEMA.toLowerCase()} en Guatemala. Cada producto incluye la instalación básica; una compleja tiene costo adicional.`,
+  descripcion: `Sonoro vende ${LEMA.toLowerCase()} en Guatemala. Cada producto incluye la instalación básica; la compleja se cobra por aparte.`,
 };
 
 export const TEXTOS_BUSCAR: Textos = {

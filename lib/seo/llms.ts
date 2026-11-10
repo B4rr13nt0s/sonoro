@@ -5,7 +5,7 @@
 // Solo afirma lo que el sitio ya dice en sus páginas, con las mismas frases
 // de CLAUDE.md § Reglas: nada de «te ayudamos a escoger» (regla 2), y ningún
 // plazo, precio de instalación ni condición que no esté definida.
-import { CUOTAS, ENVIO_PUBLICO, GARANTIA_ALCANCE } from "../politicas.ts";
+import { CUOTAS, ENVIO_PUBLICO, GARANTIA_ALCANCE, INSTALACION } from "../politicas.ts";
 import { absoluteUrl } from "./site.ts";
 import type { Brand, Categoria } from "@/lib/catalog/index.ts";
 
@@ -34,7 +34,7 @@ export function buildLlmsTxt({
     "- El sitio es un catálogo con carrito. No hay pago en línea: el pedido se envía por WhatsApp desde el carrito.",
     `- ${ENVIO_PUBLICO}`,
     `- ${CUOTAS}`,
-    "- Cada producto incluye la instalación básica; una instalación más compleja tiene costo adicional, y se informa al cerrar el pedido.",
+    `- ${INSTALACION} Al cerrar el pedido se informa si lo que se lleva requiere una instalación básica o una más compleja.`,
     `- ${GARANTIA_ALCANCE}`,
     "- Cada ficha de producto muestra el código del fabricante, el precio, la disponibilidad y la ficha técnica publicada por el fabricante.",
     "",

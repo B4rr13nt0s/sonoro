@@ -18,7 +18,7 @@ export default function TerminosPage() {
     <LegalPage
       etiqueta="Legal"
       titulo="Términos y condiciones"
-      actualizado="Última actualización: 15 de octubre de 2026"
+      actualizado="Última actualización: 5 de noviembre de 2026"
       secciones={[
         {
           titulo: "Qué es Sonoro",

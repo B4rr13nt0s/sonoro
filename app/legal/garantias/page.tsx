@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { LegalPage } from "@/components/legal/LegalPage";
-import { GARANTIA_ALCANCE, GARANTIA_ANULA } from "@/lib/politicas.ts";
+import { GARANTIA_ALCANCE, GARANTIA_ANULA, INSTALACION } from "@/lib/politicas.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 
 const TITULO = "Garantías";
@@ -18,7 +18,7 @@ export default function GarantiasPage() {
     <LegalPage
       etiqueta="Legal"
       titulo="Garantías"
-      actualizado="Última actualización: 29 de septiembre de 2026"
+      actualizado="Última actualización: 10 de noviembre de 2026"
       secciones={[
         {
           titulo: "Alcance",
@@ -38,7 +38,7 @@ export default function GarantiasPage() {
         {
           titulo: "Instalación",
           parrafos: [
-            "Cada producto incluye la instalación básica. Si lo que compraste requiere una instalación más compleja, esa instalación tiene un costo adicional.",
+            INSTALACION,
             "Al cerrar el pedido se te informa si el producto o los productos que llevas requieren una instalación básica o una más compleja.",
           ],
         },

@@ -5,6 +5,7 @@ import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { IconoCorreo, IconoInstagram, IconoTelefono } from "@/components/ui/IconosContacto";
 import { listBrands } from "@/lib/catalog/index.ts";
 import { ordenarMarcas } from "@/lib/catalog/marcas.ts";
+import { INSTALACION } from "@/lib/politicas.ts";
 import { buildWhatsAppUrl, WHATSAPP_NUMBER } from "@/lib/whatsapp/index.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
 import { TEXTOS_NOSOTROS } from "@/lib/seo/textos.ts";
@@ -60,9 +61,8 @@ export default async function NosotrosPage() {
               complejo y en cuánto tiempo sigue sin definirse, así que no
               se menciona. */}
           <p className="text-texto-secundario text-[16px] leading-[1.6] sm:text-[17px]">
-            Todos nuestros productos incluyen instalación básica. Si lo que compras requiere una
-            instalación más compleja, tiene un costo adicional y te lo informamos al cerrar el
-            pedido.
+            {INSTALACION} Al cerrar el pedido te informamos si lo que llevas requiere una
+            instalación básica o una más compleja.
           </p>
         </div>
       </section>

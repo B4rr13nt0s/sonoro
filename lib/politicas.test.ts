@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 
 import { UMBRAL_ENVIO_GRATIS_CENTS } from "./cart/envio.ts";
 import { formatQ } from "./format/precio.ts";
@@ -32,4 +32,32 @@ test("INSTALACION: la frase del negocio, palabra por palabra (noviembre de 2026)
     INSTALACION,
     "Incluye instalación básica. En caso de que se requiera una instalación más compleja, accesorios o componentes para llevar a cabo el trabajo, dicha instalación y artículos adicionales se cobran por aparte y tienen un costo añadido.",
   );
+});
+
+// La regla 1 de CLAUDE.md: la frase pública de instalación vive en UN solo
+// lugar. Garantías, Nosotros y llms.txt la repetían con otras palabras (sin
+// «accesorios o componentes») y dos páginas legales se contradecían en alcance.
+test("INSTALACION: ninguna otra fuente repite la frase con sus propias palabras", () => {
+  const carpetas = ["app", "components", "lib"];
+  const fuentes: string[] = [];
+  const recorrer = (ruta: string) => {
+    for (const entrada of readdirSync(ruta, { withFileTypes: true })) {
+      const completa = `${ruta}/${entrada.name}`;
+      if (entrada.isDirectory()) recorrer(completa);
+      else if (/\.tsx?$/.test(entrada.name) && !/\.test\.tsx?$/.test(entrada.name)) {
+        fuentes.push(completa);
+      }
+    }
+  };
+  for (const carpeta of carpetas) recorrer(carpeta);
+  assert.ok(fuentes.length > 50);
+  for (const ruta of fuentes) {
+    if (ruta === "lib/politicas.ts") continue;
+    assert.ok(
+      !/instalación más compleja|instalación compleja|costo adicional/i.test(
+        readFileSync(ruta, "utf8"),
+      ),
+      `${ruta} repite la frase de instalación: usa INSTALACION de lib/politicas.ts`,
+    );
+  }
 });
