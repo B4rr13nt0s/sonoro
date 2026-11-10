@@ -13,7 +13,7 @@ import { CATEGORIAS_SITIO } from "../catalog/categorias.ts";
 // Las fórmulas de saludo que abren un mensaje y se quitan antes de buscar.
 import { SALUDOS_DE_APERTURA, detectarCharla, esVago, type ClaseCharla } from "./charla.ts";
 import { PALABRAS_DE_PREGUNTA, VOCABULARIO_DATOS, type Campo } from "./datos.ts";
-import { accionDe, encontrarReferencia } from "./referencia.ts";
+import { encontrarReferencia, soloPideAccion } from "./referencia.ts";
 import { interpretarSeguimiento, type Cambio } from "./seguimiento.ts";
 import type { Contexto, Estado, Tema } from "./tipos.ts";
 
@@ -371,7 +371,7 @@ function detectarDato(texto: string): Extract<Intencion, { tipo: "dato" }> | nul
 
 /** ¿Lo que queda tras quitar la referencia pregunta por el producto referido, y por nada más? */
 function preguntaPorReferido(resto: string): boolean {
-  if (resto === "" || accionDe(resto) !== null) return true;
+  if (resto === "" || soloPideAccion(resto)) return true;
   return detectarDato(resto)?.consulta === "";
 }
 

@@ -1123,3 +1123,10 @@ test("revisión I4: «sí, de 10» sigue la conversación", () => {
   const [, r2] = conversar(["subwoofers", "sí, de 10"]);
   assert.equal(textos(r2.bloques)[0], 'Ahora de 10". Quedan 2.');
 });
+
+test("«primero quiero ver bocinas» tras una lista busca bocinas, no agrega el primero", () => {
+  const [, r2] = conversar(["subwoofers", "primero quiero ver bocinas"]);
+  assert.ok(!textos(r2.bloques).some((t) => /para agregarlo al carrito/.test(t)));
+  // Fue una búsqueda (el catálogo de estas pruebas no trae bocinas).
+  assert.ok(["busqueda", "sin_resultados"].includes(r2.evento?.evento ?? ""));
+});

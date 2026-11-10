@@ -129,3 +129,43 @@ export function accionDe(textoResto: string): Accion {
   if (PRECIO.some((f) => t.includes(` ${f} `))) return "precio";
   return null;
 }
+
+// Lo que puede acompañar un pedido de carrito o de precio sin ser otra cosa:
+// «agrégalo AL CARRITO», «quiero EL segundo», «me lo llevo POR FAVOR».
+const ACOMPANA_A_LA_ACCION = new Set([
+  "el",
+  "la",
+  "lo",
+  "los",
+  "las",
+  "un",
+  "una",
+  "al",
+  "a",
+  "de",
+  "me",
+  "por",
+  "favor",
+  "porfa",
+  "carrito",
+  "y",
+  "ya",
+  "pues",
+  "gracias",
+]);
+
+/**
+ * ¿Lo que queda tras quitar la referencia es SOLO un pedido de carrito o de
+ * precio? «agrégalo», «lo quiero», «¿cuánto cuesta?», «me lo llevo». Con otra
+ * cosa al lado («primero quiero ver bocinas», «quiero un amplificador para este
+ * carro») el mensaje es una búsqueda: leerlo como «agregar el primero»
+ * descartaba el resto y respondía un producto que nadie pidió.
+ */
+export function soloPideAccion(textoResto: string): boolean {
+  let t = ` ${palabras(textoResto).join(" ")} `;
+  if (accionDe(t) === null) return false;
+  // Las frases más largas primero: «lo quiero» antes que «quiero».
+  const frases = [...CARRITO, ...PRECIO].sort((a, b) => b.length - a.length);
+  for (const frase of frases) t = t.split(` ${frase} `).join(" ");
+  return palabras(t).every((p) => ACOMPANA_A_LA_ACCION.has(p));
+}

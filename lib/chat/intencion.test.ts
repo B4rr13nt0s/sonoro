@@ -472,3 +472,18 @@ test("cómo hacer un pedido y hablar con una persona son temas, no búsquedas", 
     assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema: "contacto" }, texto);
   }
 });
+
+test("una referencia con «quiero» es un pedido de carrito solo si no pide nada más", () => {
+  // Solo el pedido: referencia (agregar / precio del producto referido).
+  for (const t of ["quiero el segundo", "me llevo el primero", "cuánto cuesta el primero"]) {
+    assert.equal(detectarIntencion(t, CONVERSANDO, CTX).tipo, "referencia", t);
+  }
+  // Con otra cosa al lado: es una búsqueda o un seguimiento, no «agregar el primero».
+  for (const t of [
+    "primero quiero ver bocinas",
+    "quiero un amplificador para este carro",
+    "quiero el tercer subwoofer de memphis",
+  ]) {
+    assert.notEqual(detectarIntencion(t, CONVERSANDO, CTX).tipo, "referencia", t);
+  }
+});
