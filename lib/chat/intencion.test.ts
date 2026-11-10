@@ -450,3 +450,25 @@ test("vago: también tras un arranque («busco algo para mi carro»)", () => {
   assert.deepEqual(detectarIntencion("busco algo para mi carro"), { tipo: "vago" });
   assert.deepEqual(detectarIntencion("quiero mejorar el sonido de mi carro"), { tipo: "vago" });
 });
+
+test("«constructor» y «__proto__» no revientan la detección de intención", () => {
+  for (const w of ["constructor", "__proto__", "toString"]) {
+    assert.doesNotThrow(() => detectarIntencion(w), w);
+  }
+});
+
+test("cómo hacer un pedido y hablar con una persona son temas, no búsquedas", () => {
+  for (const texto of ["cómo hago un pedido", "cómo puedo pedir", "cómo hago mi pedido"]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema: "como_pedir" }, texto);
+  }
+  for (const texto of [
+    "quiero hablar con una persona",
+    "necesito hablar con alguien",
+    "pásame con un agente",
+    "me pueden llamar",
+    "dónde está mi pedido",
+    "quiero cancelar mi pedido",
+  ]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema: "contacto" }, texto);
+  }
+});

@@ -85,6 +85,9 @@ export interface Estado {
   ultimosCampos?: Campo[]; // el último dato preguntado
   pendiente?: "medida" | "canales" | "categoria" | null; // la pregunta del bot sin contestar
   turno?: number; // cuántas respuestas lleva: rota las frases sin azar
+  // El carro por el que el chat preguntó «¿de qué año es?»: un año escrito
+  // después («2010») lo completa. Cualquier otra respuesta lo olvida.
+  vehiculoPendiente?: { marca: string; modelo: string } | null;
 }
 
 export interface BusquedaAcotable {
@@ -110,7 +113,7 @@ export interface Contexto {
 /** Lo que el chat necesita para «¿qué le queda a mi carro?». */
 export interface VehiculosChat {
   datos: DatosVehiculos;
-  /** `modeloSlug` de los modelos que, escritos solos, pueden ser un producto (nombresAmbiguos). */
+  /** `modeloSlug` de los modelos, y `marca:<slug>` de las marcas, que escritos solos pueden ser un producto (nombresAmbiguos). */
   ambiguos: ReadonlySet<string>;
 }
 

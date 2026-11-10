@@ -166,3 +166,17 @@ test("nombresAmbiguos con el catálogo real del chat", () => {
   assert.ok(ambiguos.has("protege"), [...ambiguos].join(", "));
   assert.ok(!ambiguos.has("corolla"));
 });
+
+test("una marca que es parte de un producto necesita año: «Mini» no abre el flujo de vehículos", () => {
+  const ambiguos = nombresAmbiguos(VEHICULOS, [
+    producto("SLMLOC2", "Convertidor SYNCLINK Mini LOC de 2 canales"),
+  ]);
+  assert.ok(ambiguos.has("marca:mini"), [...ambiguos].join(", "));
+  assert.ok(!ambiguos.has("marca:toyota"));
+  const leerCon = (texto: string) => leerVehiculo(texto, VEHICULOS, ambiguos, 2026);
+  assert.equal(leerCon("Convertidor SYNCLINK Mini LOC de 2 canales SLMLOC2"), null);
+  assert.equal(leerCon("mini"), null);
+  // Con año, o con un modelo de la lista, sigue siendo un carro.
+  assert.equal(leerCon("mini 2012")?.marca, "mini");
+  assert.equal(leerCon("toyota")?.marca, "toyota");
+});

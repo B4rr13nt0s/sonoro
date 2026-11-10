@@ -53,7 +53,8 @@ import {
   responderVehiculo,
   type PedidoVehiculo,
 } from "./respuestaVehiculo.ts";
-import { excluyeVehiculo, leerVehiculo, tieneFraseVehiculo } from "./vehiculo.ts";
+import { resolverSeleccion } from "../vehiculos/url.ts";
+import { anioSolo, excluyeVehiculo, leerVehiculo, tieneFraseVehiculo } from "./vehiculo.ts";
 import {
   TEXTO_DATOS_FABRICANTE,
   TEXTO_PEDIR_BUSQUEDA,
@@ -852,9 +853,20 @@ function responderPedidoVehiculo(
       evento: null,
     };
   }
-  const { bloques, titulo, resultados } = responderVehiculo(pedido, contexto.vehiculos.datos);
+  const datos = contexto.vehiculos.datos;
+  const { bloques, titulo, resultados } = responderVehiculo(pedido, datos);
+  // Si lo que falta es el año, el próximo «2010» escrito lo contesta.
+  const r = resolverSeleccion(datos.vehiculos, pedido.sel);
+  const vehiculoPendiente =
+    titulo === null && r.marca && r.modelo && r.anio === null && pedido.sel.anio === undefined
+      ? { marca: r.marca.slug, modelo: r.modelo.slug }
+      : null;
   return {
-    estado: { ultimaConsulta: titulo ?? consulta, ultimoTema: null },
+    estado: {
+      ultimaConsulta: titulo ?? consulta,
+      ultimoTema: null,
+      ...(vehiculoPendiente ? { vehiculoPendiente } : {}),
+    },
     bloques,
     evento:
       titulo !== null && resultados !== null
@@ -957,6 +969,19 @@ function responderSinMemoria(estado: Estado, entrada: Entrada, contexto: Context
   // (intención, búsqueda, evento, mensaje de WhatsApp) ve más de MAX_CONSULTA.
   const texto = cortar(entrada.texto.trim()).trimEnd();
   if (texto === "") return saludo(estado);
+
+  // «¿De qué año es tu Toyota Corolla?» → «2010».
+  if (estado.vehiculoPendiente && contexto.vehiculos) {
+    const anio = anioSolo(texto);
+    if (anio !== undefined) {
+      const { marca, modelo } = estado.vehiculoPendiente;
+      return responderPedidoVehiculo(
+        { sel: { marca, modelo, anio }, rango: false, ver: null },
+        estado.ultimaConsulta,
+        contexto,
+      );
+    }
+  }
 
   const intencion = detectarIntencion(texto, estado, {
     marcas: contexto.marcas,

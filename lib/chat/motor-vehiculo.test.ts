@@ -181,3 +181,33 @@ test("otra categoría o un vehículo que no es carro siguen como búsqueda", () 
     assert.ok(["busqueda", "sin_resultados"].includes(r.evento?.evento ?? ""), texto);
   }
 });
+
+test("tras «¿de qué año es?», un año escrito contesta la pregunta", () => {
+  let r = responder(ESTADO_INICIAL, escrito("¿qué le queda a mi uno?"), CON_VEHICULOS);
+  assert.match(textos(r.bloques)[0], /¿De qué año es tu Prueba Uno\?/);
+  assert.deepEqual(r.estado.vehiculoPendiente, { marca: "prueba", modelo: "uno" });
+
+  for (const respuesta of ["2010", "del 2010", "año 2010"]) {
+    const siguiente = responder(r.estado, escrito(respuesta), CON_VEHICULOS);
+    assert.equal(textos(siguiente.bloques)[0], "Prueba Uno 2010", respuesta);
+    // Ya contestó: la pregunta no queda pendiente.
+    assert.equal(siguiente.estado.vehiculoPendiente, undefined, respuesta);
+  }
+
+  // Un año con más de una versión sigue preguntando, y la versión es otra pregunta.
+  r = responder(r.estado, escrito("2016"), CON_VEHICULOS);
+  assert.match(textos(r.bloques)[0], /Prueba Uno 2016/);
+  assert.equal(r.estado.vehiculoPendiente, undefined);
+});
+
+test("sin la pregunta pendiente, un año suelto sigue siendo una búsqueda", () => {
+  const r = responder(ESTADO_INICIAL, escrito("2010"), CON_VEHICULOS);
+  assert.notEqual(textos(r.bloques)[0], "Prueba Uno 2010");
+  assert.equal(r.estado.vehiculoPendiente, undefined);
+});
+
+test("un año fuera de la lista tras la pregunta lo dice, no lo ignora", () => {
+  const p = responder(ESTADO_INICIAL, escrito("¿qué le queda a mi uno?"), CON_VEHICULOS);
+  const r = responder(p.estado, escrito("1999"), CON_VEHICULOS);
+  assert.match(textos(r.bloques)[0], /1999/);
+});

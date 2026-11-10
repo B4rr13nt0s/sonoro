@@ -4,7 +4,7 @@
 // entiende el carro). Lógica pura: no decide qué falta preguntar —eso lo hace
 // resolverSeleccion en respuestaVehiculo.ts—, solo qué nombró.
 import { buscar, normalizar, type ProductoBuscable } from "../busqueda/busqueda.ts";
-import { SINONIMOS, USO_PALABRAS } from "../busqueda/sinonimos.ts";
+import { sinonimosDe, USO_PALABRAS } from "../busqueda/sinonimos.ts";
 import { CATEGORIAS_SITIO } from "../catalog/categorias.ts";
 import { compararRelevancia } from "../catalog/orden.ts";
 import type { Vehiculo } from "../vehiculos/types.ts";
@@ -93,6 +93,23 @@ function leerAnio(texto: readonly string[], anioActual: number): number | undefi
   return undefined;
 }
 
+// Lo que se puede decir además del número al contestar «¿De qué año es?»:
+// «2010», «del 2010», «es 2010», «año 2010», «modelo 2010».
+const RELLENO_DE_ANIO = new Set(["del", "de", "es", "ano", "modelo", "un", "el"]);
+
+/**
+ * El año, si lo escrito es SOLO un año (con o sin «del», «año»…). Es la
+ * respuesta a «¿De qué año es tu Toyota Corolla?»: un número suelto no es
+ * ninguna otra cosa mientras esa pregunta está pendiente.
+ */
+export function anioSolo(
+  texto: string,
+  anioActual: number = new Date().getFullYear(),
+): number | undefined {
+  const escrito = palabras(texto).filter((p) => !RELLENO_DE_ANIO.has(p));
+  return escrito.length === 1 ? leerAnio(escrito, anioActual) : undefined;
+}
+
 /**
  * La marca, el modelo y el año que el texto nombra, como slugs del selector.
  * `null` si no nombra ni una marca ni un modelo de la lista. El año es el
@@ -124,7 +141,12 @@ export function leerVehiculo(
   if (elegido) return conAnio({ marca: elegido.marcaSlug, modelo: elegido.modeloSlug });
 
   const marca = modelos.find((m) => contiene(escrito, m.palabrasMarca));
-  return marca ? conAnio({ marca: marca.marcaSlug }) : null;
+  if (!marca) return null;
+  // Una marca que también es parte de un producto («Mini» en «Convertidor
+  // SYNCLINK Mini LOC») necesita un año, como los modelos ambiguos: sin él, el
+  // nombre completo de un producto abría «¿Qué modelo de Mini?».
+  if (ambiguos.has(llaveMarca(marca.marcaSlug)) && anio === undefined) return null;
+  return conAnio({ marca: marca.marcaSlug });
 }
 
 // Las categorías que la compatibilidad no cubre: solo hay datos de receptores
@@ -138,7 +160,7 @@ const RAICES_OTRAS = new Set(
 function nombraOtraCategoria(palabra: string): boolean {
   const raiz = palabra.replace(/(es|s)$/, "");
   if (RAICES_OTRAS.has(raiz) || RAICES_OTRAS.has(palabra)) return true;
-  const sinonimos = Object.hasOwn(SINONIMOS, palabra) ? SINONIMOS[palabra] : [];
+  const sinonimos = sinonimosDe(palabra);
   return sinonimos.some((s) => RAICES_OTRAS.has(clave(s)));
 }
 
@@ -161,8 +183,13 @@ export function tieneFraseVehiculo(texto: string): boolean {
   return FRASES_VEHICULO.some((frase) => contiene(escrito, frase.split(" ")));
 }
 
+/** La llave de una MARCA en el conjunto de ambiguos: no choca con el slug de un modelo. */
+function llaveMarca(marcaSlug: string): string {
+  return `marca:${marcaSlug}`;
+}
+
 /**
- * Los modelos que, escritos solos, pueden ser un producto: su nombre, buscado
+ * Los modelos y las marcas que, escritos solos, pueden ser un producto: su nombre, buscado
  * en el catálogo del chat, trae resultados exactos («Fit»). Esos piden marca
  * o año para contar como vehículo.
  */
@@ -177,6 +204,13 @@ export function nombresAmbiguos(
     if (!v) continue;
     const resultado = buscar(productos, normalizar(v.modelo), compararRelevancia);
     if (resultado.modo === "exacta" && resultado.productos.length > 0) ambiguos.add(m.modeloSlug);
+  }
+  const marcas = new Map(vehiculos.map((v) => [v.marcaSlug, v.marca]));
+  for (const [slug, nombre] of marcas) {
+    const resultado = buscar(productos, normalizar(nombre), compararRelevancia);
+    if (resultado.modo === "exacta" && resultado.productos.length > 0) {
+      ambiguos.add(llaveMarca(slug));
+    }
   }
   return ambiguos;
 }

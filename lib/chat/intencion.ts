@@ -8,7 +8,7 @@
 // de palabra: «pagos» no coincide dentro de «mapagos».
 
 import { normalizar, raiz } from "../busqueda/busqueda.ts";
-import { SINONIMOS } from "../busqueda/sinonimos.ts";
+import { sinonimosDe } from "../busqueda/sinonimos.ts";
 import { CATEGORIAS_SITIO } from "../catalog/categorias.ts";
 // Las fórmulas de saludo que abren un mensaje y se quitan antes de buscar.
 import { SALUDOS_DE_APERTURA, detectarCharla, esVago, type ClaseCharla } from "./charla.ts";
@@ -101,9 +101,41 @@ const TEMAS: readonly { tema: Tema; palabras: readonly string[]; salvo?: readonl
   { tema: "cuotas", palabras: ["cuotas", "financiamiento", "visacuotas"] },
   {
     tema: "como_pedir",
-    palabras: ["como compro", "como pido", "como pago", "como hago el pedido", "pagar en linea"],
+    palabras: [
+      "como compro",
+      "como pido",
+      "como pago",
+      "como hago el pedido",
+      "como hago un pedido",
+      "como hago mi pedido",
+      "como hacer un pedido",
+      "como hacer mi pedido",
+      "como puedo pedir",
+      "como puedo comprar",
+      "como se compra",
+      "como se pide",
+      "pagar en linea",
+    ],
   },
-  { tema: "contacto", palabras: ["donde estan", "ubicados"] },
+  {
+    tema: "contacto",
+    palabras: [
+      "donde estan",
+      "ubicados",
+      // Hablar con alguien, y lo que solo una persona puede contestar sobre un
+      // pedido que ya se hizo (el chat no los ve): contacto y WhatsApp.
+      "hablar con una persona",
+      "hablar con un asesor",
+      "hablar con un agente",
+      "hablar con alguien",
+      "hablar con ustedes",
+      "con un asesor",
+      "con un agente",
+      "me pueden llamar",
+      "me llaman",
+      "mi pedido",
+    ],
+  },
 ];
 
 /**
@@ -355,7 +387,7 @@ function categoriaNombrada(consulta: string): string | null {
     .filter((p) => p && !["un", "una", "unos", "unas"].includes(p));
   if (palabras.length !== 1) return null;
   const r = raiz(palabras[0]);
-  const buscadas = [r, ...(SINONIMOS[r] ?? [])];
+  const buscadas = [r, ...sinonimosDe(r)];
   const categoria = CATEGORIAS_SITIO.find((c) => buscadas.includes(raiz(normalizar(c.nombre))));
   return categoria?.slug ?? null;
 }
