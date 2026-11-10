@@ -230,3 +230,10 @@ test("amplificador multicanal: la potencia descriptiva se guarda tal cual", () =
   assert.ok(r.ok);
   assert.equal(r.fila.atributos.potencia_rms_w, texto);
 });
+
+test("precio 0 o negativo: se rechaza, no se publica como «Q 0.00»", () => {
+  // Un precio vacío ya se rechazaba; el 0 (un marcador de posición olvidado en
+  // la hoja) se colaba y el sitio y el mensaje de WhatsApp decían «Q 0.00».
+  assert.match(motivo("SUBWOOFERS", { ...SUBWOOFER, precio: 0 }), /precio/i);
+  assert.match(motivo("SUBWOOFERS", { ...SUBWOOFER, precio: -5 }), /precio/i);
+});

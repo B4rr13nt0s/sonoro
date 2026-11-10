@@ -6,6 +6,7 @@ import { ImageResponse } from "next/og";
 
 import { formatQ } from "@/lib/format/precio.ts";
 import { getProduct, listAllProducts } from "@/lib/catalog/index.ts";
+import { RETIRADOS_A_410, retiradoPorSlug } from "@/lib/catalog/retirados.ts";
 import { LOGO_LOCKUP_BLANCO_DATA_URI } from "@/lib/og/assets.ts";
 import { OG_FONTS } from "@/lib/og/fonts.ts";
 
@@ -37,11 +38,15 @@ export const revalidate = 604800;
 export const dynamicParams = false;
 
 // Mismo conjunto que las fichas (app/producto/[slug]/page.tsx): los dados de
-// baja también la llevan, porque un enlace viejo compartido por WhatsApp
-// sigue mostrando su tarjeta aunque la página responda 410.
+// baja también la llevan, y los retirados sin fila (RETIRADOS_A_410) también,
+// porque un enlace viejo compartido por WhatsApp sigue mostrando su tarjeta
+// aunque la página responda 410. Sin ellos, la ficha 410 declaraba un og:image
+// hacia una ruta que respondía 404 (`dynamicParams = false`).
 export async function generateStaticParams() {
   const productos = await listAllProducts();
-  return productos.map((producto) => ({ slug: producto.slug }));
+  return [...productos.map((p) => p.slug), ...RETIRADOS_A_410.map((r) => r.slug)].map((slug) => ({
+    slug,
+  }));
 }
 
 export const alt = "Producto — Sonoro";
@@ -55,7 +60,8 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const { slug } = await params;
   const producto = await getProduct(slug);
 
-  const nombre = producto?.nombre ?? "Sonoro";
+  // Un retirado sin fila no está en el catálogo: su nombre sale del registro.
+  const nombre = producto?.nombre ?? retiradoPorSlug(slug)?.nombre ?? "Sonoro";
   const marca = producto?.marca ?? "";
   // Un producto retirado no lleva precio: su tarjeta sigue saliendo en los
   // enlaces viejos compartidos por WhatsApp, y con el precio parecía que

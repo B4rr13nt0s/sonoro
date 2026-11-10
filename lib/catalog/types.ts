@@ -145,7 +145,7 @@ export const ProductoSchema = z
     // Ordenado. Ficha técnica completa: de 3 filas (las destacadas; un accesorio
     // simple no publica más) a MAX_SPECS_FICHA — contrato de la hoja del catálogo.
     specsFicha: z.array(SpecSchema).min(3).max(MAX_SPECS_FICHA),
-    precioCents: z.number().int().nonnegative(), // entero, centavos, IVA incluido
+    precioCents: z.number().int().positive(), // entero, centavos, IVA incluido; un precio 0 no se publica
     // Referencia del historial de precio para el negocio: NO se muestra en el
     // sitio, a propósito (decisión de septiembre de 2026). Que ningún
     // componente lo lea no es un olvido.

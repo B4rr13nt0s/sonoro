@@ -126,7 +126,7 @@ const ComunSchema = z.object({
   nombre: z.string(),
   marca: z.string(),
   descripcion_corta: z.string(),
-  precio: z.number(),
+  precio: z.number().positive(),
   precio_antes: z.number().optional(),
   disponibilidad: DisponibilidadSchema,
   garantia_meses: z.number().int().positive().optional(),
