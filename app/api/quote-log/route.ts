@@ -2,6 +2,7 @@ import { after } from "next/server";
 
 import { decideQuoteLogForward, forwardQuoteLog } from "@/lib/quoteLog/index.ts";
 import { crearLimitador, ipDePeticion } from "@/lib/quoteLog/limite.ts";
+import { esJson, leerTextoAcotado } from "@/lib/quoteLog/peticion.ts";
 import { MAX_BODY_BYTES } from "@/lib/quoteLog/types.ts";
 
 // docs/PLAN.md § 6.4 — Registro de cotizaciones (reenvía a Sheets/Airtable
@@ -41,6 +42,12 @@ export async function POST(request: Request) {
     return new Response(null, { status: 204 });
   }
 
+  // Solo JSON: los clientes de verdad lo mandan así, y un POST «simple» de otro
+  // sitio (text/plain, no-cors) no puede (ver lib/quoteLog/peticion.ts).
+  if (!esJson(request.headers)) {
+    return new Response(null, { status: 204 });
+  }
+
   // Content-Length es lo que DICE el cliente: sirve para cortar temprano lo
   // que ya se declara enorme, no para confiar. El corte real es el largo del
   // texto ya leído, más abajo.
@@ -51,12 +58,10 @@ export async function POST(request: Request) {
 
   let rawBody: unknown = null;
   try {
-    const texto = await request.text();
-    // Bytes, no caracteres: un cuerpo de puros emoji pesa cuatro veces su
-    // largo en JS.
-    if (Buffer.byteLength(texto, "utf8") <= MAX_BODY_BYTES) {
-      rawBody = JSON.parse(texto);
-    }
+    // Por trozos y en bytes (no en caracteres: un cuerpo de puros emoji pesa
+    // cuatro veces su largo en JS): se corta al pasarse, sin cargarlo entero.
+    const texto = await leerTextoAcotado(request, MAX_BODY_BYTES);
+    if (texto !== null) rawBody = JSON.parse(texto);
   } catch {
     // Cuerpo no es JSON válido, o se cortó la conexión leyéndolo —
     // decideQuoteLogForward también lo rechazaría.

@@ -4,6 +4,7 @@ import { decideChatLogForward } from "@/lib/chatLog/index.ts";
 import { MAX_BODY_BYTES_CHAT } from "@/lib/chatLog/types.ts";
 import { forwardQuoteLog } from "@/lib/quoteLog/index.ts";
 import { crearLimitador, ipDePeticion } from "@/lib/quoteLog/limite.ts";
+import { esJson, leerTextoAcotado } from "@/lib/quoteLog/peticion.ts";
 
 // Registro anónimo del chat (spec docs/superpowers/specs/2026-11-02-chatbot-design.md
 // § Registro). Es una copia de app/api/quote-log/route.ts —léela para el porqué
@@ -34,6 +35,12 @@ export async function POST(request: Request) {
     return new Response(null, { status: 204 });
   }
 
+  // Solo JSON: los clientes de verdad lo mandan así, y un POST «simple» de otro
+  // sitio (text/plain, no-cors) no puede (ver lib/quoteLog/peticion.ts).
+  if (!esJson(request.headers)) {
+    return new Response(null, { status: 204 });
+  }
+
   // Content-Length es lo que DICE el cliente: corta temprano lo que ya se
   // declara enorme. El corte real es el largo del texto ya leído.
   const declarado = Number(request.headers.get("content-length"));
@@ -43,12 +50,10 @@ export async function POST(request: Request) {
 
   let rawBody: unknown = null;
   try {
-    const texto = await request.text();
-    // Bytes, no caracteres: un cuerpo de puros emoji pesa cuatro veces su
-    // largo en JS.
-    if (Buffer.byteLength(texto, "utf8") <= MAX_BODY_BYTES_CHAT) {
-      rawBody = JSON.parse(texto);
-    }
+    // Por trozos y en bytes (no en caracteres: un cuerpo de puros emoji pesa
+    // cuatro veces su largo en JS): se corta al pasarse, sin cargarlo entero.
+    const texto = await leerTextoAcotado(request, MAX_BODY_BYTES_CHAT);
+    if (texto !== null) rawBody = JSON.parse(texto);
   } catch {
     // No es JSON válido, o se cortó la conexión: decideChatLogForward
     // también lo rechazaría.
