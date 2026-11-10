@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { claseBoton } from "@/components/ui/boton.ts";
 import { ResultadosVehiculo } from "@/components/vehiculos/ResultadosVehiculo";
@@ -50,8 +50,33 @@ type Carga =
 
 // Las listas del vehículo van más grandes que las de los filtros (texto de
 // 15 px): son lo único de la pestaña y quedaban chicas al lado del campo.
+// `appearance-none` quita la flecha nativa, que el navegador pega al borde de
+// la píldora; la flecha la dibuja <ListaPildora>, más adentro. El pr-12 le
+// deja sitio.
 const CLASE_LISTA =
-  "border-borde-pildora text-texto-nav w-full rounded-full border bg-white px-5 py-3.5 text-[15px] sm:w-auto sm:min-w-40";
+  "border-borde-pildora text-texto-nav w-full appearance-none rounded-full border bg-white py-3.5 pr-12 pl-5 text-[15px] sm:min-w-40";
+
+function ListaPildora({ children }: { children: ReactNode }) {
+  return (
+    <div className="relative w-full sm:w-auto">
+      {children}
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 12 8"
+        className="text-texto-nav pointer-events-none absolute top-1/2 right-5 h-2 w-3 -translate-y-1/2"
+      >
+        <path
+          d="M1 1.5 6 6.5l5-5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  );
+}
 const CLASE_ENLACE = "text-negro underline underline-offset-2";
 
 export function BusquedaPorVehiculo({
@@ -117,73 +142,85 @@ export function BusquedaPorVehiculo({
         </div>
       ) : (
         <div className="flex flex-col gap-3 sm:flex-row">
-          <select
-            aria-label="Marca"
-            value={marca ?? ""}
-            disabled={!opciones}
-            onChange={(e) => cambiar({ marca: e.target.value || undefined })}
-            className={CLASE_LISTA}
-          >
-            <option value="">Marca</option>
-            {opciones?.marcas.map((o) => (
-              <option key={o.slug} value={o.slug}>
-                {o.nombre}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label="Modelo"
-            value={modelo ?? ""}
-            disabled={!marca}
-            onChange={(e) => cambiar({ marca, modelo: e.target.value || undefined })}
-            className={CLASE_LISTA}
-          >
-            <option value="">Modelo</option>
-            {opciones?.modelos.map((o) => (
-              <option key={o.slug} value={o.slug}>
-                {o.nombre}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label="Año"
-            value={anio ?? ""}
-            disabled={!modelo}
-            onChange={(e) =>
-              cambiar({ marca, modelo, anio: e.target.value ? Number(e.target.value) : undefined })
-            }
-            className={CLASE_LISTA}
-          >
-            <option value="">Año</option>
-            {opciones?.anios.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
-          {conVersiones ? (
+          <ListaPildora>
             <select
-              aria-label="Versión"
-              value={resuelta?.version?.slug ?? ""}
-              onChange={(e) =>
-                cambiar({ marca, modelo, anio, version: e.target.value || undefined })
-              }
+              aria-label="Marca"
+              value={marca ?? ""}
+              disabled={!opciones}
+              onChange={(e) => cambiar({ marca: e.target.value || undefined })}
               className={CLASE_LISTA}
             >
-              <option value="">Versión</option>
-              {opciones?.versiones.map((o) => (
+              <option value="">Marca</option>
+              {opciones?.marcas.map((o) => (
                 <option key={o.slug} value={o.slug}>
                   {o.nombre}
                 </option>
               ))}
             </select>
+          </ListaPildora>
+          <ListaPildora>
+            <select
+              aria-label="Modelo"
+              value={modelo ?? ""}
+              disabled={!marca}
+              onChange={(e) => cambiar({ marca, modelo: e.target.value || undefined })}
+              className={CLASE_LISTA}
+            >
+              <option value="">Modelo</option>
+              {opciones?.modelos.map((o) => (
+                <option key={o.slug} value={o.slug}>
+                  {o.nombre}
+                </option>
+              ))}
+            </select>
+          </ListaPildora>
+          <ListaPildora>
+            <select
+              aria-label="Año"
+              value={anio ?? ""}
+              disabled={!modelo}
+              onChange={(e) =>
+                cambiar({
+                  marca,
+                  modelo,
+                  anio: e.target.value ? Number(e.target.value) : undefined,
+                })
+              }
+              className={CLASE_LISTA}
+            >
+              <option value="">Año</option>
+              {opciones?.anios.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+          </ListaPildora>
+          {conVersiones ? (
+            <ListaPildora>
+              <select
+                aria-label="Versión"
+                value={resuelta?.version?.slug ?? ""}
+                onChange={(e) =>
+                  cambiar({ marca, modelo, anio, version: e.target.value || undefined })
+                }
+                className={CLASE_LISTA}
+              >
+                <option value="">Versión</option>
+                {opciones?.versiones.map((o) => (
+                  <option key={o.slug} value={o.slug}>
+                    {o.nombre}
+                  </option>
+                ))}
+              </select>
+            </ListaPildora>
           ) : null}
         </div>
       )}
 
-      {/* pl-6: el texto arranca donde arranca el de las listas: su px-5 más los
-          ~4 px que el navegador deja adentro de un <select>. */}
-      <p className="text-texto-secundario mt-5 pl-6 text-[14px]">
+      {/* pl-6 y mt-8: el texto se separa de las píldoras, y las pestañas de
+          arriba (PestanasBuscar) arrancan en su mismo borde izquierdo. */}
+      <p className="text-texto-secundario mt-8 pl-6 text-[14px]">
         ¿No está tu vehículo?{" "}
         <a
           href={buildWhatsAppUrl(WHATSAPP_NUMBER, buildVehicleInquiryMessage())}

@@ -57,7 +57,9 @@ export function PestanasBuscar({
     <>
       {/* Sin nombre propio: con el del h1 («Buscar en el catálogo») chocaba
           con el del campo, que se llama igual. */}
-      <div role="tablist" className="flex gap-7 px-6 pt-10 sm:px-12 sm:pt-14">
+      {/* pl-12 / sm:pl-18: el px de la sección más los 24 px (pl-6) con que arranca
+          el texto «¿No está tu vehículo?» de «Por vehículo»: quedan alineados. */}
+      <div role="tablist" className="flex gap-7 px-6 pt-10 pl-12 sm:px-12 sm:pt-14 sm:pl-18">
         {PESTANAS.map((p, indice) => {
           const activa = p.valor === pestana;
           return (
