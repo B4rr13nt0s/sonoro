@@ -119,12 +119,21 @@ class AlmacenCarrito {
   // leído: sin esto, «Has añadido 1» salía y el producto desaparecía al
   // cargar el carrito real.
   #pendientes: CartAction[] = [];
+  // Lo guardado lo escribió OTRA pestaña (evento `storage`) y esta no lo ha
+  // tocado desde entonces. Ese carrito viene corregido contra el catálogo DE
+  // ELLA: si esta pestaña, con otro catálogo (una abierta antes de un deploy),
+  // guardara su propia corrección, la otra la adoptaría, la corregiría de
+  // vuelta y las dos se reescribirían sin fin (190 escrituras en 40 ciclos
+  // con dos /carrito a la vista). Una pestaña no corrige lo que no armó.
+  #deOtraPestaña = false;
 
   constructor(inicial: Cart) {
     this.#estado = { guardado: inicial, hidratado: false };
   }
 
   leer = () => this.#estado;
+
+  deOtraPestaña = () => this.#deOtraPestaña;
 
   suscribir = (oyente: () => void): (() => void) => {
     this.#oyentes.add(oyente);
@@ -141,6 +150,7 @@ class AlmacenCarrito {
     const guardado = this.#pendientes.reduce(cartReducer, cart);
     const cambio = normalizado || this.#pendientes.length > 0;
     this.#pendientes = [];
+    this.#deOtraPestaña = false;
     this.#estado = { guardado, hidratado: true };
     if (cambio) saveCart(guardado);
     this.#avisar();
@@ -156,6 +166,7 @@ class AlmacenCarrito {
     const siguiente = cartReducer(this.#estado.guardado, accion);
     if (siguiente === this.#estado.guardado) return;
     this.#estado = { ...this.#estado, guardado: siguiente };
+    this.#deOtraPestaña = this.#estado.hidratado && !guardar;
     if (!this.#estado.hidratado) this.#pendientes.push(accion);
     else if (guardar) saveCart(siguiente);
     this.#avisar();
@@ -258,6 +269,10 @@ export function CartProvider({
   // Corrige lo guardado AHORA, no el carrito del último render: entre ese
   // render y la llamada pudo entrar un cambio.
   const descartarCambios = useCallback(() => {
+    // Un carrito que escribió otra pestaña ya viene corregido contra el
+    // catálogo de ella: sus diferencias con el de esta se muestran, pero no se
+    // guardan (ver `#deOtraPestaña`). El primer cambio propio lo suelta.
+    if (almacen.deOtraPestaña()) return;
     aplicar({ type: "hydrate", cart: reconcile(almacen.leer().guardado, catalogo).cart }, true);
   }, [almacen, aplicar, catalogo]);
 

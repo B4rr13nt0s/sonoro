@@ -8,7 +8,7 @@
 // transitoria, haya guardado un carrito vacío.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createElement, useLayoutEffect } from "react";
+import { createElement, useEffect, useLayoutEffect } from "react";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { JSDOM } from "jsdom";
@@ -580,6 +580,128 @@ test("CartProvider: lo previo a hidratar se conserva, un solo render hidratado y
       root.unmount();
     });
   } finally {
+    globalAny.window = anteriores.window;
+    globalAny.document = anteriores.document;
+    if (descriptorNavigatorOriginal) {
+      Object.defineProperty(globalThis, "navigator", descriptorNavigatorOriginal);
+    }
+    globalAny.IS_REACT_ACT_ENVIRONMENT = anteriores.IS_REACT_ACT_ENVIRONMENT;
+  }
+});
+
+// Dos pestañas de /carrito a la vista con catálogos distintos (una abierta antes
+// de un deploy que cambió un precio): cada una corrige y guarda lo suyo, la otra
+// lo adopta por `storage` y lo corrige de vuelta. Sin la marca «lo guardado es
+// de otra pestaña», eso escribía sin parar (190 escrituras en 40 ciclos).
+test("CartProvider: dos pestañas con catálogos distintos no se corrigen una a la otra en bucle", async () => {
+  const dom = new JSDOM(
+    "<!doctype html><html><body><div id='a'></div><div id='b'></div></body></html>",
+    { url: "http://localhost/" },
+  );
+  const globalAny = globalThis as Record<string, unknown>;
+  const descriptorNavigatorOriginal = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const anteriores = {
+    window: globalAny.window,
+    document: globalAny.document,
+    IS_REACT_ACT_ENVIRONMENT: globalAny.IS_REACT_ACT_ENVIRONMENT,
+  };
+  globalAny.window = dom.window;
+  globalAny.document = dom.window.document;
+  Object.defineProperty(globalThis, "navigator", {
+    value: dom.window.navigator,
+    configurable: true,
+    writable: true,
+  });
+  globalAny.IS_REACT_ACT_ENVIRONMENT = true;
+
+  const storageProto = Object.getPrototypeOf(dom.window.localStorage) as {
+    setItem: (key: string, value: string) => void;
+  };
+  const setItemOriginal = storageProto.setItem;
+  const escrituras: string[] = [];
+  const hora = "2026-10-01T10:00:00.000Z";
+
+  try {
+    // `storage` solo se dispara en las OTRAS pestañas: acá, en ambas.
+    storageProto.setItem = function (this: Storage, key: string, value: string) {
+      if (key === CART_STORAGE_KEY) {
+        escrituras.push(value);
+        setTimeout(
+          () => dom.window.dispatchEvent(new dom.window.StorageEvent("storage", { key })),
+          0,
+        );
+      }
+      return setItemOriginal.call(this, key, value);
+    };
+    setItemOriginal.call(
+      dom.window.localStorage,
+      CART_STORAGE_KEY,
+      JSON.stringify({
+        schemaVersion: SCHEMA_VERSION,
+        items: [
+          {
+            sku: "X-1",
+            qty: 1,
+            unitPriceCents: 100000,
+            currency: "GTQ",
+            nombreSnapshot: "X",
+            imagenSnapshot: null,
+            addedAt: hora,
+          },
+        ],
+        createdAt: hora,
+        updatedAt: hora,
+      }),
+    );
+    const conPrecio = (precioCents: number): CatalogoSku[] => [
+      { sku: "X-1", activo: true, disponibilidad: "disponible", precioCents },
+    ];
+
+    // Lo que hace /carrito con la pestaña a la vista: guardar lo corregido.
+    function Vista() {
+      const { hydrated, cambios, descartarCambios } = useCart();
+      useEffect(() => {
+        if (hydrated && cambios.length > 0) descartarCambios();
+      }, [hydrated, cambios, descartarCambios]);
+      return null;
+    }
+
+    const a = document.getElementById("a");
+    const b = document.getElementById("b");
+    if (!a || !b) throw new Error("faltan los contenedores del DOM de prueba");
+    const rootA = createRoot(a);
+    const rootB = createRoot(b);
+    await act(async () => {
+      /* eslint-disable react/no-children-prop */
+      rootA.render(
+        createElement(CartProvider, {
+          catalogo: conPrecio(150000),
+          children: createElement(Vista),
+        }),
+      );
+      rootB.render(
+        createElement(CartProvider, {
+          catalogo: conPrecio(100000),
+          children: createElement(Vista),
+        }),
+      );
+      /* eslint-enable react/no-children-prop */
+    });
+    // Tiempo de sobra para que un bucle diera decenas de vueltas.
+    for (let i = 0; i < 40; i++) {
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 0));
+      });
+    }
+
+    assert.ok(escrituras.length <= 2, `escrituras: ${escrituras.length} (un bucle da decenas)`);
+
+    await act(async () => {
+      rootA.unmount();
+      rootB.unmount();
+    });
+  } finally {
+    storageProto.setItem = setItemOriginal;
     globalAny.window = anteriores.window;
     globalAny.document = anteriores.document;
     if (descriptorNavigatorOriginal) {
