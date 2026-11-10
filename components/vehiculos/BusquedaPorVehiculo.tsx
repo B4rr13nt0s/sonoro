@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { claseBoton } from "@/components/ui/boton.ts";
+import { ListaPildora } from "@/components/ui/ListaPildora";
 import { ResultadosVehiculo } from "@/components/vehiculos/ResultadosVehiculo";
 import { descargarDatosVehiculos } from "@/lib/vehiculos/carga.ts";
 import { compatibilidad } from "@/lib/vehiculos/compatibilidad.ts";
@@ -48,35 +49,26 @@ function obtenerDatos(): Promise<DatosVehiculos | null> {
 type Carga =
   { estado: "cargando" } | { estado: "error" } | { estado: "listo"; datos: DatosVehiculos };
 
-// Las listas del vehículo van más grandes que las de los filtros (texto de
-// 15 px): son lo único de la pestaña y quedaban chicas al lado del campo.
-// `appearance-none` quita la flecha nativa, que el navegador pega al borde de
-// la píldora; la flecha la dibuja <ListaPildora>, más adentro. El pr-12 le
-// deja sitio.
-const CLASE_LISTA =
-  "border-borde-pildora text-texto-nav w-full appearance-none rounded-full border bg-white py-3.5 pr-12 pl-5 text-[15px] sm:min-w-40";
-
-function ListaPildora({ children }: { children: ReactNode }) {
+// Las <option> de una lista de {slug, nombre}, con la primera vacía («Marca»).
+function Opciones({
+  vacia,
+  lista,
+}: {
+  vacia: string;
+  lista: readonly { slug: string; nombre: string }[] | undefined;
+}) {
   return (
-    <div className="relative w-full sm:w-auto">
-      {children}
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 12 8"
-        className="text-texto-nav pointer-events-none absolute top-1/2 right-5 h-2 w-3 -translate-y-1/2"
-      >
-        <path
-          d="M1 1.5 6 6.5l5-5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </div>
+    <>
+      <option value="">{vacia}</option>
+      {lista?.map((o) => (
+        <option key={o.slug} value={o.slug}>
+          {o.nombre}
+        </option>
+      ))}
+    </>
   );
 }
+
 const CLASE_ENLACE = "text-negro underline underline-offset-2";
 
 export function BusquedaPorVehiculo({
@@ -141,78 +133,43 @@ export function BusquedaPorVehiculo({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <ListaPildora>
-            <select
-              aria-label="Marca"
-              value={marca ?? ""}
-              disabled={!opciones}
-              onChange={(e) => cambiar({ marca: e.target.value || undefined })}
-              className={CLASE_LISTA}
-            >
-              <option value="">Marca</option>
-              {opciones?.marcas.map((o) => (
-                <option key={o.slug} value={o.slug}>
-                  {o.nombre}
-                </option>
-              ))}
-            </select>
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <ListaPildora
+            etiqueta="Marca"
+            valor={marca ?? ""}
+            deshabilitada={!opciones}
+            alCambiar={(v) => cambiar({ marca: v || undefined })}
+          >
+            <Opciones vacia="Marca" lista={opciones?.marcas} />
           </ListaPildora>
-          <ListaPildora>
-            <select
-              aria-label="Modelo"
-              value={modelo ?? ""}
-              disabled={!marca}
-              onChange={(e) => cambiar({ marca, modelo: e.target.value || undefined })}
-              className={CLASE_LISTA}
-            >
-              <option value="">Modelo</option>
-              {opciones?.modelos.map((o) => (
-                <option key={o.slug} value={o.slug}>
-                  {o.nombre}
-                </option>
-              ))}
-            </select>
+          <ListaPildora
+            etiqueta="Modelo"
+            valor={modelo ?? ""}
+            deshabilitada={!marca}
+            alCambiar={(v) => cambiar({ marca, modelo: v || undefined })}
+          >
+            <Opciones vacia="Modelo" lista={opciones?.modelos} />
           </ListaPildora>
-          <ListaPildora>
-            <select
-              aria-label="Año"
-              value={anio ?? ""}
-              disabled={!modelo}
-              onChange={(e) =>
-                cambiar({
-                  marca,
-                  modelo,
-                  anio: e.target.value ? Number(e.target.value) : undefined,
-                })
-              }
-              className={CLASE_LISTA}
-            >
-              <option value="">Año</option>
-              {opciones?.anios.map((a) => (
-                <option key={a} value={a}>
-                  {a}
-                </option>
-              ))}
-            </select>
+          <ListaPildora
+            etiqueta="Año"
+            valor={anio === undefined ? "" : String(anio)}
+            deshabilitada={!modelo}
+            alCambiar={(v) => cambiar({ marca, modelo, anio: v ? Number(v) : undefined })}
+          >
+            <option value="">Año</option>
+            {opciones?.anios.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
           </ListaPildora>
           {conVersiones ? (
-            <ListaPildora>
-              <select
-                aria-label="Versión"
-                value={resuelta?.version?.slug ?? ""}
-                onChange={(e) =>
-                  cambiar({ marca, modelo, anio, version: e.target.value || undefined })
-                }
-                className={CLASE_LISTA}
-              >
-                <option value="">Versión</option>
-                {opciones?.versiones.map((o) => (
-                  <option key={o.slug} value={o.slug}>
-                    {o.nombre}
-                  </option>
-                ))}
-              </select>
+            <ListaPildora
+              etiqueta="Versión"
+              valor={resuelta?.version?.slug ?? ""}
+              alCambiar={(v) => cambiar({ marca, modelo, anio, version: v || undefined })}
+            >
+              <Opciones vacia="Versión" lista={opciones?.versiones} />
             </ListaPildora>
           ) : null}
         </div>

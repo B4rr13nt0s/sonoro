@@ -41,6 +41,14 @@ const CATALOGO_PRUEBA = CATALOGO.map((p) =>
   notaReceptor(p.sku) ? { ...p, activo: true, disponibilidad: "disponible" as const } : p,
 );
 const DATOS = armarDatosVehiculos([PRUEBA], CATALOGO_PRUEBA);
+
+// Un modelo con dos tableros de fábrica en el mismo año: la cuarta lista,
+// «Versión».
+const CON_VERSIONES: Vehiculo[] = [
+  { ...PRUEBA, modelo: "Dos", modeloSlug: "dos", version: "Tablero A", versionSlug: "tablero-a" },
+  { ...PRUEBA, modelo: "Dos", modeloSlug: "dos", version: "Tablero B", versionSlug: "tablero-b" },
+];
+const DATOS_VERSIONES = armarDatosVehiculos(CON_VERSIONES, CATALOGO_PRUEBA);
 const DOS_DIN = DATOS.receptores.find((r) => r.formato === "2-din");
 const KSM8 = DATOS.piezas.find((p) => p.sku === "KSM-8");
 const AP6650 = DATOS.receptores.find((r) => r.sku === "DMH-AP6650BT");
@@ -49,10 +57,25 @@ const CON_NOTA = DATOS.receptores.find((r) => notaReceptor(r.sku) !== null);
 const TITULO = tituloVehiculo(PRUEBA, 2010);
 const RUTA_ELEGIDA = "/buscar?vehiculo=prueba&modelo=uno&anio=2010";
 
-async function servirDatos(page: Page) {
+async function servirDatos(page: Page, datos: typeof DATOS = DATOS) {
   await page.route("**/buscar/vehiculos.json", (ruta) =>
-    ruta.fulfill({ json: DATOS, headers: { "content-type": "application/json" } }),
+    ruta.fulfill({ json: datos, headers: { "content-type": "application/json" } }),
   );
+}
+
+// Cuánto se sale la página por la derecha: 0 si todo cabe.
+async function sobranteHorizontal(page: Page): Promise<number> {
+  return page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+}
+
+// Dónde arranca el texto de un elemento (su caja más el relleno, o el primer
+// nodo de texto: una pestaña no tiene relleno propio).
+function inicioDelTexto(el: Element): number {
+  const rango = document.createRange();
+  rango.selectNodeContents(el);
+  return rango.getBoundingClientRect().left;
 }
 
 // Sin fotos optimizadas, como en chat.spec.ts: un vehículo trae unas 45
@@ -231,3 +254,70 @@ test("vehiculos.json no se indexa y el canonical de /buscar va sin parámetros",
   await page.goto("/buscar?vehiculo=prueba");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/buscar$/);
 });
+
+// La fila de listas se parte en las líneas que haga falta. Con «Versión» son
+// cuatro listas de 160 px como mínimo: en un teléfono en horizontal o un
+// tablero chico no caben en una línea y sobresalían de la página.
+for (const ancho of [667, 700, 768]) {
+  test(`a ${ancho} px las cuatro listas no desbordan la página`, async ({ page }) => {
+    await page.setViewportSize({ width: ancho, height: 900 });
+    await servirDatos(page, DATOS_VERSIONES);
+    await page.goto("/buscar?vehiculo=prueba&modelo=dos&anio=2010");
+    const version = page.getByLabel("Versión", { exact: true });
+    await expect(version).toBeVisible();
+    expect(await sobranteHorizontal(page)).toBe(0);
+    const caja = await version.boundingBox();
+    expect(caja).not.toBeNull();
+    expect(caja!.x + caja!.width).toBeLessThanOrEqual(ancho);
+  });
+}
+
+test("una lista deshabilitada se ve apagada, con su flecha", async ({ page }) => {
+  await servirDatos(page);
+  await page.goto("/buscar?por=vehiculo");
+  const marca = page.getByLabel("Marca", { exact: true });
+  const modelo = page.getByLabel("Modelo", { exact: true });
+  await expect(marca).toBeEnabled();
+  await expect(modelo).toBeDisabled();
+  await expect(marca).toHaveCSS("opacity", "1");
+  await expect(modelo).toHaveCSS("opacity", "0.5");
+  await expect(marca.locator("xpath=./following-sibling::*[name()='svg']")).toHaveCSS(
+    "opacity",
+    "1",
+  );
+  await expect(modelo.locator("xpath=./following-sibling::*[name()='svg']")).toHaveCSS(
+    "opacity",
+    "0.5",
+  );
+
+  await marca.selectOption({ label: "Prueba" });
+  await expect(modelo).toBeEnabled();
+  await expect(modelo).toHaveCSS("opacity", "1");
+});
+
+// Las pestañas, el texto de las listas y «¿No está tu vehículo?» arrancan en
+// el mismo borde: las pestañas llevan un relleno a mano (PestanasBuscar) que
+// copia el de ese párrafo, y nada más avisaría si uno de los dos cambia.
+for (const ancho of [375, 1280]) {
+  test(`a ${ancho} px las pestañas arrancan donde el texto de «¿No está tu vehículo?»`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: ancho, height: 900 });
+    await servirDatos(page);
+    await page.goto("/buscar?por=vehiculo");
+    await expect(page.getByLabel("Marca", { exact: true })).toBeEnabled();
+    const [pestana, linea, lista] = await Promise.all([
+      page.getByRole("tab", { name: "Por producto" }).evaluate(inicioDelTexto),
+      page.getByText("¿No está tu vehículo?").evaluate(inicioDelTexto),
+      page
+        .getByLabel("Marca", { exact: true })
+        .evaluate(
+          (l) => l.getBoundingClientRect().left + parseFloat(getComputedStyle(l).paddingLeft),
+        ),
+    ]);
+    expect(Math.abs(pestana - linea)).toBeLessThanOrEqual(1);
+    // El texto de un <select> se dibuja unos 4 px más adentro que su relleno.
+    expect(pestana - lista).toBeGreaterThanOrEqual(0);
+    expect(pestana - lista).toBeLessThanOrEqual(6);
+  });
+}
