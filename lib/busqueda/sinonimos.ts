@@ -92,6 +92,21 @@ export const PALABRAS_VACIAS: ReadonlySet<string> = new Set([
   "equipos",
   "producto",
   "productos",
+  // «unas bocinas», «tu bocinas»: el artículo y el posesivo no describen nada.
+  // Sin ellos, «unas» (raíz «una», que traen los accesorios) escondía las 118
+  // bocinas detrás de tres productos.
+  "unos",
+  "unas",
+  "tu",
+  "tus",
+  "su",
+  "sus",
+  "mis",
+  // «precio menos de 1000»: describe el filtro, como «potencia».
+  "precio",
+  "precios",
+  "costo",
+  "costos",
   // «subwoofers marca memphis»: la palabra presenta a la marca, no la busca.
   // Ningún producto la trae en nombre, categoría ni specs.
   "marca",

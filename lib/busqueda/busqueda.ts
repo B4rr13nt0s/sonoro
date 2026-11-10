@@ -258,6 +258,8 @@ interface Entrada {
   sku: string;
   /** Nombre, marca y código. */
   principal: string;
+  /** Lo mismo sin la marca: un sinónimo corto («bt») no debe coincidir con «KBT». */
+  principalSinMarca: string;
   /** Categoría, specs y claves: lo que el nombre no dice. */
   extra: string;
   /** La categoría y las secundarias, en singular: «receptor», «subwoofer». */
@@ -268,6 +270,8 @@ interface Entrada {
   palabras: readonly string[];
 }
 
+// Puntuación pegada al borde de una palabra: «lancha?», «bocinas,», «¿bocinas».
+const PUNTUACION_DE_BORDE = /^[.,?!¿¡;:()@]+|[.,?!¿¡;:()@]+$/g;
 const SEPARADORES = /[\s,()/;:]+/;
 const NO_LETRAS = /[^a-z]+/;
 
@@ -283,7 +287,8 @@ function entradaDe(producto: ProductoBuscable): Entrada {
   // El código también sin separadores: en la factura dice «TS-W312D4» y quien
   // lo teclea de memoria escribe «tsw312d4».
   const skuCompacto = sku.replace(/[\s.-]+/g, "");
-  const principal = `${nombre} ${marca} ${sku}${skuCompacto === sku ? "" : ` ${skuCompacto}`}`;
+  const codigos = `${sku}${skuCompacto === sku ? "" : ` ${skuCompacto}`}`;
+  const principal = `${nombre} ${marca} ${codigos}`;
   const specs = producto.specsDestacadas.map((s) => `${s.etiqueta} ${s.valor}`).join(" ");
   const listaCategorias = [producto.categoria, ...(producto.categoriasSecundarias ?? [])];
   const categorias = listaCategorias.join(" ");
@@ -301,6 +306,7 @@ function entradaDe(producto: ProductoBuscable): Entrada {
     marca,
     sku,
     principal,
+    principalSinMarca: `${nombre} ${codigos}`,
     extra,
     tokensPrincipal: new Set(principal.split(SEPARADORES)),
     tokensExtra: new Set(extra.split(SEPARADORES)),
@@ -418,7 +424,8 @@ function nivelExacto(e: Entrada, t: Termino): number {
     return NIVEL_EXTRA;
   }
   for (const alternativa of t.alternativas) {
-    if (e.principal.includes(alternativa) || e.extra.includes(alternativa)) {
+    // Sin la marca: «bluetooth» → «bt» calzaba con «kbt» y metía 74 productos KBT.
+    if (e.principalSinMarca.includes(alternativa) || e.extra.includes(alternativa)) {
       return NIVEL_APROXIMADO;
     }
   }
@@ -662,7 +669,13 @@ export function interpretar(consultaNormalizada: string): Interpretacion {
   // «Para carro», «lancha», «utv»: categoría, no texto.
   const usos: Uso[] = [];
   const quedan: string[] = [];
-  for (const palabra of texto.split(/\s+/).filter(Boolean)) {
+  for (const token of texto.split(/\s+/).filter(Boolean)) {
+    // «lancha?», «bocinas,»: la puntuación pegada a la palabra no es parte de
+    // ella. Sin quitarla, «bocinas para lancha?» perdía el filtro marino y
+    // «bocinas.» se leía como una errata. El punto o la coma de un número
+    // («6.5», «1,000») van adentro y se quedan.
+    const palabra = token.replace(PUNTUACION_DE_BORDE, "");
+    if (palabra === "") continue;
     const uso = Object.hasOwn(USO_PALABRAS, palabra) ? USO_PALABRAS[palabra] : undefined;
     if (uso) {
       if (!usos.includes(uso)) usos.push(uso);
@@ -683,12 +696,19 @@ export function interpretar(consultaNormalizada: string): Interpretacion {
 interface Consulta extends Interpretacion {
   terminos: Termino[];
   hayFiltros: boolean;
+  /** La consulta como llegó (normalizada), para rearmar la corrección sin perder los filtros. */
+  original: string;
 }
 
 function compilar(consultaNormalizada: string): Consulta {
   const i = interpretar(consultaNormalizada);
   const hayFiltros = i.usos.length > 0 || i.restricciones.length > 0;
-  return { ...i, hayFiltros, terminos: terminosDe(i.resto, !hayFiltros) };
+  return {
+    ...i,
+    hayFiltros,
+    original: consultaNormalizada,
+    terminos: terminosDe(i.resto, !hayFiltros),
+  };
 }
 
 function valorDe(p: ProductoBuscable, campo: Restriccion["campo"]): number | undefined {
@@ -754,19 +774,19 @@ const SIN_RESULTADOS: ResultadoBusqueda = {
 const PUNTAJE_SOLO_FILTROS = 20;
 
 /**
- * La corrección de una consulta: cada palabra que NINGÚN producto trae, ni
- * por sinónimo, se cambia por la palabra del catálogo más parecida (a igual
- * distancia, la que más productos usan). `null` si no hay nada que corregir.
+ * Las palabras de la consulta que NINGÚN producto trae, ni por sinónimo, y la
+ * palabra del catálogo más parecida de cada una (a igual distancia, la que más
+ * productos usan). `null` si no hay nada que corregir.
  */
 function corregir(
   productos: readonly ProductoBuscable[],
   terminos: readonly Termino[],
   enCatalogo: ReadonlySet<Termino>,
-): string | null {
+): ReadonlyMap<string, string> | null {
   const vocabulario = vocabularioDe(productos);
-  let cambio = false;
-  const palabras = terminos.map((t) => {
-    if (!t.tolerable || enCatalogo.has(t)) return t.texto;
+  const cambios = new Map<string, string>();
+  for (const t of terminos) {
+    if (!t.tolerable || enCatalogo.has(t)) continue;
     const maximo = errorMaximo(t.raiz.length);
     let mejor: string | null = null;
     let mejorDistancia = maximo + 1;
@@ -779,11 +799,25 @@ function corregir(
         mejorUso = uso;
       }
     }
-    if (mejor === null || mejorDistancia > maximo) return t.texto;
-    cambio = true;
-    return mejor;
-  });
-  return cambio ? palabras.join(" ") : null;
+    if (mejor !== null && mejorDistancia <= maximo) cambios.set(t.texto, mejor);
+  }
+  return cambios.size > 0 ? cambios : null;
+}
+
+/**
+ * La consulta con las palabras corregidas y TODO lo demás como estaba: los
+ * filtros («menos de 1000», «marino», «de 8 a 12 pulgadas») no pueden perderse
+ * al pulsar «Quizá quisiste decir…», que cambiaría los resultados en silencio.
+ */
+function reescribir(original: string, cambios: ReadonlyMap<string, string>): string {
+  return original
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((token) => {
+      const palabra = token.replace(PUNTUACION_DE_BORDE, "");
+      return cambios.get(palabra) ?? token;
+    })
+    .join(" ");
 }
 
 interface Puntuado {
@@ -845,6 +879,8 @@ function masCercanos(
     valor: number;
     falta: number;
     puntaje: number;
+    /** De qué lado de lo pedido cae: con una cota exclusiva («más de 500 W»), el 500 exacto es «debajo». */
+    debajo: boolean;
   }[] = [];
   for (const e of lista) {
     const nivel = terminos.length > 0 ? nivelDeProducto(e, terminos, nivelExacto) : NIVEL_NOMBRE;
@@ -859,6 +895,7 @@ function masCercanos(
       producto: e.producto,
       valor,
       falta: debajo ? (min ?? 0) - valor : valor - (max ?? 0),
+      debajo,
       puntaje: (PUNTAJE_POR_NIVEL[nivel] ?? 0) + afinidad(e, terminos),
     });
   }
@@ -866,17 +903,13 @@ function masCercanos(
 
   let elegidos = candidatos;
   if (objetivo.campo !== "precio") {
-    const abajo = Math.max(
-      ...candidatos
-        .filter((c) => objetivo.min !== undefined && c.valor < objetivo.min)
-        .map((c) => c.valor),
-    );
-    const arriba = Math.min(
-      ...candidatos
-        .filter((c) => objetivo.max !== undefined && c.valor > objetivo.max)
-        .map((c) => c.valor),
-    );
-    elegidos = candidatos.filter((c) => c.valor === abajo || c.valor === arriba);
+    // El lado lo decide el MISMO predicado que armó `candidatos`: comparar con
+    // `<` y `>` estrictos dejaba fuera el valor igual a una cota exclusiva
+    // («más de 500 W» con un subwoofer de 500 W) y, si todos valían justo la
+    // cota, una lista vacía con el aviso «Los más cercanos son de  canales.».
+    const abajo = Math.max(...candidatos.filter((c) => c.debajo).map((c) => c.valor));
+    const arriba = Math.min(...candidatos.filter((c) => !c.debajo).map((c) => c.valor));
+    elegidos = candidatos.filter((c) => (c.debajo ? c.valor === abajo : c.valor === arriba));
   }
   elegidos.sort(
     (a, b) => a.falta - b.falta || b.puntaje - a.puntaje || desempate(a.producto, b.producto),
@@ -1048,7 +1081,8 @@ export function buscar(
     terminos.filter((t) => productos.some((p) => nivelExacto(entradaDe(p), t) > 0)),
   );
   const conErrores = (e: Entrada, t: Termino) => nivelConErrores(e, t, enCatalogo);
-  const correccion = corregir(productos, terminos, enCatalogo);
+  const cambios = corregir(productos, terminos, enCatalogo);
+  const correccion = cambios ? reescribir(c.original, cambios) : null;
 
   const aproximados: Puntuado[] = [];
   for (const e of lista) {

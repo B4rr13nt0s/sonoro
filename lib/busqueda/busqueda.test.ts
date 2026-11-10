@@ -728,3 +728,79 @@ test("palabras que describen todo el catálogo («audio», «equipo») no vacía
   // Solas siguen buscándose: «audio» nunca queda sin nada que buscar.
   assert.equal(interpretar(normalizar("audio")).resto, "audio");
 });
+
+test("cercana con cota exclusiva: el valor justo en la cota es el más cercano", () => {
+  // «más de 500 W»: el COR de exactamente 500 W no cumple, pero es lo más
+  // cercano. Comparar con `<` estricto lo dejaba fuera y se mostraban los de 40 W.
+  const SUB40 = producto('Subwoofer de 8" S40', "KBT", "S40", {
+    uso: ["carro"],
+    potenciaW: 40,
+    pulgadas: 8,
+  });
+  const r = buscar([COR, SUB40], "subwoofer mas de 500 w");
+  assert.equal(r.modo, "cercana");
+  assert.deepEqual(skus(r), ["COR2-124D"]);
+  assert.match(r.cercania ?? "", /500 W/);
+});
+
+test("cercana con cota exclusiva: si todos valen la cota, no sale una lista vacía con aviso roto", () => {
+  const r = buscar(
+    [PRX, producto("Amplificador mono M1", "Memphis", "M1", { canales: 1 })],
+    "amplificador mas de 1 canales",
+  );
+  assert.equal(r.modo, "cercana");
+  assert.ok(r.productos.length > 0);
+  assert.doesNotMatch(r.cercania ?? "", /de {2}canales/);
+});
+
+test("«Quizá quisiste decir» conserva los filtros de la consulta", () => {
+  const r = buscar([COR, SUB2, BOC], "subwofer menos de 1000");
+  assert.equal(r.modo, "aproximada");
+  assert.equal(r.correccion, "subwoofer menos de 1000");
+  assert.ok(r.aplicados.some((a) => /Precio/.test(a)));
+  // Y la consulta corregida da lo mismo que escribirla bien.
+  const bien = buscar([COR, SUB2, BOC], r.correccion ?? "");
+  assert.equal(bien.modo, "exacta");
+  assert.deepEqual(skus(bien), skus(r));
+});
+
+test("la puntuación pegada a una palabra no rompe el filtro de uso ni se lee como errata", () => {
+  const MAR = producto('Bocina marina 6.5" MAR65', "KBT", "MAR65", { uso: ["marino"] });
+  for (const q of [
+    "bocinas para lancha?",
+    "¿bocinas para lancha?",
+    "bocinas para lancha,",
+    "bocinas para lancha.",
+  ]) {
+    const r = buscar([COR, MAR], q);
+    assert.equal(r.modo, "exacta", q);
+    assert.deepEqual(r.usos, ["marino"], q);
+    assert.deepEqual(skus(r), ["MAR65"], q);
+  }
+  for (const q of ["subwoofer.", "subwoofer,", "subwoofer?"]) {
+    const r = buscar([COR, SUB2], q);
+    assert.equal(r.modo, "exacta", q);
+    assert.equal(r.correccion, null, q);
+  }
+  // Un decimal o un millar adentro de un número no es puntuación de borde.
+  assert.equal(interpretar(normalizar("bocinas 6.5 pulgadas")).resto.includes("6.5"), true);
+});
+
+test("«bluetooth» no trae productos de la marca KBT por el sinónimo «bt»", () => {
+  const RADIOBT = producto("Receptor con Bluetooth MVH-X700BT", "Pioneer", "MVH-X700BT", {
+    categoria: "Receptores",
+  });
+  const r = buscar([COR, RADIOBT], "bluetooth");
+  assert.deepEqual(skus(r), ["MVH-X700BT"]);
+});
+
+test("artículos, posesivos y «precio» no son palabras del producto", () => {
+  const ACC = producto("Soporte KSM-8", "Memphis", "KSM-8", {
+    categoria: "Accesorios",
+    claves: "una pieza",
+  });
+  assert.deepEqual(skus(buscar([BOC, ACC], "unas bocinas")), ["MJP6"]);
+  assert.deepEqual(skus(buscar([BOC, ACC], "tu bocinas")), ["MJP6"]);
+  const caros = buscar([COR, SUB2], "precio menos de 1000");
+  assert.deepEqual(skus(caros), ["COR2-124D"]); // COR vale Q 800.00; MM1024, Q 2,500.00
+});
