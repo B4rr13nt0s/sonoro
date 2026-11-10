@@ -121,6 +121,23 @@ test("decideQuoteLogForward: rechaza lo que se pasa de los topes", () => {
   }
 });
 
+test("decideQuoteLogForward: un carrito de miles de líneas se rechaza sin pasar por el esquema", () => {
+  // Con zod 4.4.3, 20,000 líneas inválidas tardaban ~1.4 s y reservaban cientos
+  // de MB antes de que `.max()` las rechazara. El tope se cuenta primero.
+  const cuerpo = {
+    ...BODY_VALIDO,
+    items: Array.from({ length: 20_000 }, () => ({
+      sku: 1,
+      nombre: 2,
+      qty: "x",
+      unitPriceCents: {},
+    })),
+  };
+  const t = performance.now();
+  assert.equal(decideQuoteLogForward(cuerpo, ENV_COMPLETO).forward, false);
+  assert.ok(performance.now() - t < 100, "debe rechazarse en menos de 100 ms");
+});
+
 test("decideQuoteLogForward: el cliente no puede colar su propio token", () => {
   // forwardQuoteLog arma el body como { token, ...request }: si una clave
   // ajena sobreviviera al esquema, pisaría el token del servidor. Zod las
