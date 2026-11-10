@@ -330,7 +330,7 @@ frecuencia, sensibilidad, peso, calibre y contenido, más la disponibilidad.
 - **Sin producto** («¿cuántos watts?»): «Escribe el nombre o el código del
   producto junto con lo que quieres saber.», sin esperar al catálogo.
 - Las fichas viajan en el mismo `/chat/catalogo.json` (`fichas`, por sku;
-  ~22 KB comprimidos). Un archivo anterior que no las traiga responde la
+  ~39 KB con gzip en noviembre de 2026). Un archivo anterior que no las traiga responde la
   búsqueda de siempre en vez de decir que el fabricante no publica el dato.
 - Se registra como `busqueda`, con la consulta sin las palabras de la
   pregunta.

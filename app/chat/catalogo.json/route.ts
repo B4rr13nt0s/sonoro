@@ -8,8 +8,9 @@ import { listAllProducts, listBrands } from "@/lib/catalog/index.ts";
 //
 // Lleva lo mismo que baja /buscar (tarjetasBuscables), no el Producto entero,
 // más la ficha técnica de cada sku para contestar «¿cuántos watts tiene…?»:
-// ~130 KB (~22 KB comprimidos) que /buscar no paga, porque este archivo solo
-// se baja al abrir el chat.
+// unos 350 KB (~39 KB con gzip, ~29 con brotli; noviembre de 2026) que /buscar
+// no paga, porque este archivo solo se baja al abrir el chat. Crece con las
+// fichas: si hay que recortarlo, el tamaño se mide aquí, no se supone.
 export const dynamic = "force-static";
 
 export async function GET() {
