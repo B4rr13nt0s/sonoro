@@ -441,7 +441,11 @@ blender --background --python-exit-code 1 --python scripts/models3d_v3/subwoofer
 python scripts/models3d_v3/manifest.py   # los números para lib/models3d.ts
 ```
 
-**Blender 4.5 LTS.** Con otra versión el script avisa, y el .glb puede salir distinto. **Siempre con `--python-exit-code 1`**: sin esa opción Blender termina con código 0 aunque el script lance una excepción, y un error de validación pasa inadvertido en una corrida por lotes. También corre con el módulo `bpy` 4.5 de pip (`python scripts/models3d_v3/subwoofer.py`), que es como se generaron los nueve actuales.
+**Blender 4.5 LTS.** Con otra versión el script avisa, y el .glb puede salir distinto. **Siempre con `--python-exit-code 1`**: sin esa opción Blender termina con código 0 aunque el script lance una excepción, y un error de validación pasa inadvertido en una corrida por lotes. También corre con el módulo `bpy` 4.5 de pip (`python scripts/models3d_v3/subwoofer.py`), que es como se generaron ocho de los nueve actuales.
+
+En la computadora de Byron el Blender instalado es el 5.2, que no sirve para esto. El 4.5.14 —la versión exacta de los nueve .glb— está como portable, sin instalar, en `C:\Users\byron\Sonoro\herramientas\blender-4.5.14\blender-4.5.14-windows-x64\blender.exe` (noviembre de 2026; fuera del repo). **En esa máquina ese Blender se cae al cerrarse** (`EXCEPTION_ACCESS_VIOLATION` después de «Blender quit»), con el .glb ya escrito: el código de salida sale distinto de cero aunque todo haya ido bien, así que ahí el resultado se lee en el reporte de `finalize()` —el bloque entre líneas de `=` sin ninguna línea `ERROR`— y no en el código de salida. Desde PowerShell, no desde Git Bash, que no muestra su salida.
+
+Después de regenerar un modelo, además de lo de § Caché, hay que **volver a generar su imagen estática** (ver «Sin WebGL» más abajo).
 
 Un script por modelo, más:
 
@@ -473,7 +477,7 @@ Cada script tiene una constante `ARCHIVO = "<id>-N"`: escribe `public/models/<id
 - **Draco obligatorio** (`KHR_draco_mesh_compression` en `extensionsRequired`), nivel 6, cuantización de posición 14.
 - **Sin cámaras ni luces. Materiales PBR por valores, sin texturas de imagen**, con una excepción: **las pantallas encendidas** (la de `screen` y el LCD de `head-unit`). Lo que muestran lo dibuja `screen_ui.py` en cada export —una interfaz genérica: glifos propios, barras donde iría texto, ningún logo de app ni marca— y va como textura emisiva WebP (`EXT_texture_webp`). No es un archivo del repo. El script lo declara con `finalize(..., texture=True)`; cualquier otro modelo con una imagen hace fallar el export.
 - **Una sola pieza transparente:** la tapa del portafusible del kit (`clear-plastic`, alphaMode BLEND).
-- 5,000–25,000 triángulos y menos de 300 KB por modelo. Los nueve suman ~425 KB, de los que 27 KB son las dos texturas de pantalla.
+- 5,000–25,000 triángulos y menos de 300 KB por modelo. Los nueve suman ~428 KB (438,124 bytes y 114,336 triángulos desde `equalizer-4`), de los que 27 KB son las dos texturas de pantalla. Ninguno está bajo el mínimo: el que menos tiene es `screen`, con 5,412.
 - Nombres de objetos y materiales en inglés, kebab-case.
 
 ### Paleta de materiales compartida
@@ -517,11 +521,11 @@ Los forros de cable llevan brillo a propósito (rugosidad ~0.35): mates, los cab
 
 `lib/models3d.ts` guarda un `displayScale` por modelo, y **lo calcula `scripts/models3d_v3/manifest.py`: no lo calcules a mano ni lo redondees, y no lo sustituyas por auto-fit ni por escala real.**
 
-Entre el más chico (speaker, 165 mm) y el más grande (sound-deadening, 395 mm) hay una relación de 1 a 3. A escala real el speaker ocuparía un tercio del cuadro. Con auto-fit por modelo pasa lo contrario: speaker y subwoofer se verían idénticos pese a medir 165 y 302 mm, y el carrusel dejaría de comunicar tamaño.
+Entre el más chico (speaker, 165 mm) y el más grande (sound-deadening, 496 mm de diámetro al girar) hay una relación de 1 a 3. A escala real el speaker ocuparía un tercio del cuadro. Con auto-fit por modelo pasa lo contrario: speaker y subwoofer se verían idénticos pese a medir 165 y 315 mm, y el carrusel dejaría de comunicar tamaño.
 
 `displayScale` es la **escala real elevada a 0.65**, normalizada al modelo más grande: conserva el orden de tamaños y acerca los extremos. Si alguien regenera el manifiesto sin saber del exponente, los tamaños relativos se rompen sin que nada falle ni avise.
 
-Un modelo chico puede llevar además `ajusteVista` en `lib/models3d.ts` (hoy el `speaker`, 1.25): multiplica solo la escala con la que se dibuja (`escalaDeVista`), sin tocar `displayScale` ni el encuadre de cámara, que dependen del modelo más grande. No lo calcula `manifest.py`: es un ajuste a ojo.
+Un modelo chico puede llevar además `ajusteVista` en `lib/models3d.ts` (hoy el `speaker`, 1.25, y el `equalizer`, 1.2): multiplica solo la escala con la que se dibuja (`escalaDeVista`), sin tocar `displayScale` ni el encuadre de cámara, que dependen del modelo más grande. No lo calcula `manifest.py`: es un ajuste a ojo, con dos límites. Uno lo vigila `lib/models3d.test.ts`: ningún modelo puede dibujarse más ancho que el más grande, o se sale del cuadro al girar. El otro es de criterio: que no altere el orden de tamaños —el ecualizador con 1.2 queda en 0.169 de radio en pantalla, todavía por debajo del amplificador (0.183) y del subwoofer (0.185)—. En escritorio cada producto llena entre 18 % y 30 % del ancho del cuadro, y RCA y kit solo 1.5–2.4 % del área (medido en noviembre de 2026): agrandarlos es una decisión del negocio, no un ajuste técnico.
 
 `FRAME_RADIUS` (0.248) y `FRAME_HEIGHT` (0.1937) son el radio y la altura ya escalados del modelo más grande (hoy `sound-deadening`, con `displayScale` 1.0000; los valores vigentes viven en `lib/models3d.ts`), y de ahí sale el encuadre de cámara. `FRAME_RADIUS` es el radio del **cilindro** que barre el modelo al girar sobre Y — verificado midiendo los vértices de los nueve `.glb` en el navegador. Para comprobarlo no sirve `Box3.setFromObject`: transforma la caja de cada geometría en vez de sus vértices, así que sobre un modelo girado devuelve una caja inflada por la diagonal (hasta √2 de más).
 
@@ -606,6 +610,8 @@ Dos perillas, en orden de importancia:
 
 El contraste lo ponen los focos, no el gris de fondo: conviene mantener el ciclorama contenido y los `Lightformer` brillantes, que es como se ilumina metal en un estudio de verdad.
 
+**La tercera perilla es la luz cenital**, y decide cómo sale TODO lo que mira hacia arriba, no solo el metal: un negro mate refleja cerca del 4 % de ese panel. Con la cenital en 3.4 (hasta noviembre de 2026) la placa «negro mate» del amplificador salía gris medio, el cable rojo salmón y las láminas de aluminio de insonorización casi del color del fondo del cuadro, al punto de no distinguirse en móvil. Hoy está en **1.5**, y la principal subió de 2.4 a 3 para que las caras laterales conserven forma. No bajarla más: en 1.3 la bocina, que es toda negra, se empasta (cono y borde de goma dejan de separarse). Si se toca cualquiera de las tres, se vuelven a tomar las capturas y a generar las imágenes estáticas.
+
 #### Cámara propia, sin `OrbitControls`
 
 La cámara la maneja `Camara` en `CarouselCanvas.tsx`. Toda la vista son cinco números —azimut, polar, distancia y el punto de mira— y se recoloca desde ellos en cada frame. `useRotateGesture` no toca nada: traduce punteros y rueda a INCREMENTOS que `Camara` consume y vacía.
@@ -642,7 +648,9 @@ La órbita es **libre en los dos ejes**: azimut sin tope y polar de polo a polo,
 
 Por eso cada entrada de `MODELS` en `lib/models3d.ts` tiene un campo **`archivo`** aparte del id: el id (`sound-deadening`) es semántico y permanente, y el archivo lleva la versión (`sound-deadening-3.glb`). Al regenerar se sube el número en los dos lados —la constante `ARCHIVO` del script de Blender y el `archivo` del manifiesto— y nada más cambia.
 
-**Si el modelo nuevo cambia de tamaño, cambian los NUEVE `displayScale`,** porque la normalización cuelga del más grande: se corre `manifest.py` y se copian los nueve valores y el encuadre que imprime. Al reemplazar `sound-deadening` (radio 0.2545 → 0.2482) el mayor pasó a ser `rca-cable`, y con él se recalculó todo; después se achicó el `rca-cable` (radio 0.2533 → 0.1631) y la referencia volvió a ser `sound-deadening`. La cuenta es siempre la misma:
+**Si el modelo nuevo cambia de tamaño, cambian los NUEVE `displayScale`,** porque la normalización cuelga del más grande: se corre `manifest.py` y se copian los nueve valores y el encuadre que imprime. Al reemplazar `sound-deadening` (radio 0.2545 → 0.2482) el mayor pasó a ser `rca-cable`, y con él se recalculó todo; después se achicó el `rca-cable` (radio 0.2533 → 0.1631; hoy mide 0.1368) y la referencia volvió a ser `sound-deadening`. Si el modelo nuevo conserva radio y altura —como `equalizer-4`, que solo cambió las perillas— no cambia ningún `displayScale`: `manifest.py` imprime los mismos nueve valores y solo se actualiza `archivo`.
+
+**El .glb viejo no se borra del repo al subir la versión** (`equalizer-3.glb` sigue en `public/models/`): una pestaña abierta antes del deploy todavía lo pide. Se puede retirar más adelante, cuando Byron lo pida. La cuenta es siempre la misma:
 
 ```
 displayScale_i = (diámetro_mayor / diámetro_i) ^ 0.35      // diámetro = 2 · radius
@@ -651,6 +659,36 @@ FRAME_HEIGHT   = max(height_i · displayScale_i)
 ```
 
 El decoder de Draco (`public/draco/`) se copia de `node_modules/three/examples/jsm/libs/draco/gltf/` y se sirve local a propósito: el CDN de Google sería un tercero en el critical path del home. `lib/models3d.ts` exporta `DRACO_DECODER_PATH` y `ProductModel3D` se lo pasa a `useGLTF`; sin ese segundo argumento drei cae al CDN.
+
+### Sin WebGL: imagen estática
+
+Si el navegador no puede crear un contexto WebGL 2, o el canvas se cae después (un .glb o el bloque de three que no llegan), el cuadro muestra **la imagen estática de la categoría** (`posterUrl` en `lib/models3d.ts`, `public/models/posters/<archivo del .glb>.webp`), que cambia con las flechas. Hasta noviembre de 2026 quedaba vacío para siempre.
+
+- **WebGL se comprueba ANTES de pedir el canvas** (`hayWebGL` en `ProductCarousel3D.tsx`), no esperando a que falle: sin contexto, R3F no lanza un error que llegue a `SinCanvasSiFalla`, así que nada avisaba. De paso, quien no tiene WebGL no baja el megabyte de three.
+- **Las imágenes no son renders aparte**: `node --no-warnings scripts/carrusel/posters.mjs` captura el propio carrusel en reposo, con fondo transparente y sin chrome, contra el build de producción en el puerto 3100. Coinciden con el 3D en luz, ángulo y tamaño. **Hay que volver a correrlo** cuando cambia un .glb, la luz del estudio o el encuadre; `lib/models3d.test.ts` falla si a un modelo le falta la imagen con la versión de su .glb.
+- Las nueve son **el mismo recorte central** del cuadro de escritorio (60 % del ancho, 84 % del alto): recortar cada modelo a su contorno los igualaría y se perdería la jerarquía de `displayScale`. Pesan 8–17 KB cada una, y solo se pide una, y solo sin WebGL.
+- `alt` vacío a propósito: la categoría ya está escrita en el enlace de al lado, y un lector de pantalla la diría dos veces.
+- **No se usa como estado de carga.** El primer producto entra deslizándose desde la derecha; una imagen quieta en el centro que desaparece para que el modelo llegue de costado se leería como un salto. Mientras baja el canvas, el cuadro sigue vacío.
+
+### Medir antes de cambiar
+
+`scripts/carrusel/linea-base.mjs` es la herramienta del antes/después, y mide sobre el carrusel real (el home servido por `next start` en el puerto 3100: configuración `sonoro-prod` de `.claude/launch.json`), no sobre un visor aparte:
+
+```bash
+node --no-warnings scripts/carrusel/linea-base.mjs --salida "Claude outputs/<carpeta>"
+```
+
+Saca las 27 capturas (los nueve en móvil y en escritorio, más un acercamiento), una hoja de contacto por vista, pesos, tiempo hasta el primer modelo visible y tiempo por frame. `--fases` y `--modelos` acotan la corrida. La salida va a `Claude outputs/`, que no se versiona. El informe de la primera corrida es `docs/modelos3d-2026-11-13.md`.
+
+Tres cosas que costó averiguar:
+
+- **«Primer modelo visible» se detecta mirando píxeles** de una franja del cuadro, sin tocar el sitio. El lanzador del chat es fijo en la esquina de la ventana y, con el cuadro a medio asomar, cae en esa franja: por eso la franja usa solo el 70 % central del ancho.
+- **`next start` no comprime cuando el User-Agent es de un navegador** (Chrome, Firefox o Safari): el JS de la portada viaja en 1.75 MB en vez de 0.51 MB. En producción comprime Vercel, en brotli. La fase de carga pide con un User-Agent que no es de navegador para que la medición se parezca a producción; **Lighthouse en local mide sin comprimir**, así que sus tiempos son un techo.
+- **El freno de CPU y de red es emulación.** En la máquina de Byron el carrusel dibuja a 4.2 ms por frame incluso con la CPU frenada 4×: ahí el costo es de GPU y no hay forma de medir un teléfono de gama media sin tener uno.
+
+**El orden de descarga no importa** (medido, noviembre de 2026): al nacer el canvas se piden los nueve .glb a la vez y el decoder de Draco un segundo después, y parece un desperdicio, pero bajar el primer .glb y el decoder en paralelo con three, o montar los vecinos y precargar el resto recién con el primer modelo dibujado, dio 8.4–9.1 s hasta el primer modelo con red lenta, contra 8.3–8.6 s de partida y ±1 s de variación entre corridas. Lo que manda es el bloque de three (283 KB en gzip, 232 KB en brotli). No reintentar ese cambio sin una medición que diga otra cosa.
+
+`e2e/carrusel-3d.spec.ts` prueba lo que se ve —mide los píxeles del cuadro—: la entrada del primer producto (grabando los cuadros que compone el navegador: una captura suelta tarda casi lo que dura la entrada), el cambio rápido de producto, `prefers-reduced-motion` y la imagen estática sin WebGL. Corre en serie: tres canvas por software a la vez dejaban sin procesador a las pruebas del chat.
 
 <!-- El bloque de abajo lo escribe `next dev` cuando lo corre un agente de IA, y lo
      reemplaza entero entre sus dos marcas. Nada propio ahí adentro: se borra. -->

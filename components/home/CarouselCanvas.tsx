@@ -197,8 +197,8 @@ function useEncuadre(chrome: { v: number; h: number }) {
   // Acercarse más que el radio del modelo metería la cámara adentro.
   const distanciaMin = Math.max(FRAME_RADIUS * 1.05, distanciaEncuadre * ZOOM_MIN);
   const distanciaMax = distanciaEncuadre * ZOOM_MAX;
-  // La vista predeterminada no es el encuadre justo sino el 85% del
-  // acercamiento máximo: el producto entra más grande.
+  // La vista predeterminada ES el encuadre justo (ZOOM_DEFECTO = 1): lo más
+  // grande que entra sin rozar el chrome. Un valor menor lo recorta.
   const distanciaReposo = Math.min(
     Math.max(distanciaEncuadre * ZOOM_DEFECTO, distanciaMin),
     distanciaMax,
