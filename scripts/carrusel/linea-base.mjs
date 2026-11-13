@@ -59,6 +59,15 @@ const RED_LENTA = {
 };
 const FRENO_CPU = 4;
 
+// `next start` NO comprime la respuesta cuando el User-Agent es el de un
+// navegador (Chrome, Firefox o Safari): el JS de la portada viaja en 1.75 MB
+// en vez de ~0.55 MB, y con la red frenada eso tapa todo lo demás. En
+// producción comprime el CDN. Para que la medición de carga se parezca a
+// producción se pide con un User-Agent que no es de navegador, y el servidor
+// local responde en gzip. Solo en la fase de carga: las capturas y los frames
+// no dependen de cuánto pesa lo que viaja.
+const UA_CON_COMPRESION = "Mozilla/5.0 (linea-base del carrusel)";
+
 /** Fondo del cuadro (`bg-fondo-alt`, #F5F5F3): el canvas es transparente. */
 const FONDO = [245, 245, 243];
 /** Fracción de la franja que tiene que dejar de ser fondo para decir «hay modelo». */
@@ -264,7 +273,7 @@ const categoriaDe = (direccion) =>
   CATEGORIAS.find(([, patron]) => patron.test(direccion))?.[0] ?? "otros";
 
 async function medirUnaCarga(navegador, url, vista, conFreno) {
-  const contexto = await navegador.newContext(vista);
+  const contexto = await navegador.newContext({ ...vista, userAgent: UA_CON_COMPRESION });
   const page = await contexto.newPage();
   const cdp = await contexto.newCDPSession(page);
   await cdp.send("Network.enable");
