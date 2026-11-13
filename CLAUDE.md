@@ -532,7 +532,7 @@ Un modelo chico puede llevar además `ajusteVista` en `lib/models3d.ts` (hoy el 
 
 ### Cámara del carrusel
 
-El usuario puede **orbitar, acercar y desplazar** el modelo, para ver el detalle del producto:
+El usuario puede **orbitar, acercar y desplazar** el modelo, para ver el detalle del producto (hacia abajo la órbita se detiene 10° bajo el horizonte; ver § Órbita y encuadre):
 
 | | Escritorio | Táctil |
 |---|---|---|
@@ -635,7 +635,10 @@ Y el paso es solo la mitad de la historia: la cámara **no salta a la distancia 
 
 #### Órbita y encuadre
 
-La órbita es **libre en los dos ejes**: azimut sin tope y polar de polo a polo, menos **0.05 rad (≈2.9°) de margen en cada polo**. Ese margen no es cosmético: en el polo exacto la dirección de vista queda paralela al vector «arriba», el producto cruz que arma la base de la cámara da cero y `lookAt` devuelve una matriz con `NaN`. No se ve un tirón, se ve el cuadro vacío.
+El azimut no tiene tope. El polar va **desde casi el polo de arriba hasta 10° bajo el horizonte** (`POLAR_MIN` 0.05 rad, `POLAR_MAX` 100°, en `useRotateGesture.ts`).
+
+- **Arriba, 0.05 rad (≈2.9°) de margen.** No es cosmético: en el polo exacto la dirección de vista queda paralela al vector «arriba», el producto cruz que arma la base de la cámara da cero y `lookAt` devuelve una matriz con `NaN`. No se ve un tirón, se ve el cuadro vacío.
+- **Abajo, 10° bajo el horizonte** (decisión del negocio, noviembre de 2026). Hasta entonces la órbita llegaba casi al polo de abajo, y desde ahí los nueve modelos eran una silueta negra: la base solo recibe el piso oscuro del estudio. Aclarar el piso no era salida —es lo que hace que el metal se lea como metal—, así que se limitó la órbita. Con 10° se ve el canto inferior y algo de la base, de refilón. No subir ese tope sin mirar los nueve con `scripts/carrusel/vistas.mjs`, cuya toma «abajo» arrastra de más a propósito y se queda en el tope.
 
 `distanciaPara(polar)` calcula el encuadre: de canto manda la altura del modelo, desde arriba manda su diámetro, dos veces y media más. Es el punto de partida y el destino al volver, **no una cárcel**: forzar `minDistance = maxDistance` en cada frame encuadra perfecto y anula la rueda por completo. `gap` se calcula contra la distancia máxima alcanzable —la del polo o la del zoom más lejano— o al alejarse aparecen los productos vecinos por los costados.
 
@@ -681,9 +684,9 @@ node --no-warnings scripts/carrusel/linea-base.mjs --salida "Claude outputs/<car
 
 Saca las 27 capturas (los nueve en móvil y en escritorio, más un acercamiento), una hoja de contacto por vista, pesos, tiempo hasta el primer modelo visible y tiempo por frame. `--fases` y `--modelos` acotan la corrida.
 
-`scripts/carrusel/vistas.mjs` completa lo que la pose de reposo no muestra: cada modelo **desde atrás, desde arriba y desde abajo**, con los mismos gestos que un visitante (rueda y arrastre). La órbita es libre, así que un defecto en la espalda o en la base también se ve; antes de dar por bueno un modelo hay que mirarlo así. Captura con el botón apretado: al soltar, la cámara vuelve sola a la vista predeterminada.
+`scripts/carrusel/vistas.mjs` completa lo que la pose de reposo no muestra: cada modelo **desde atrás, desde arriba y desde lo más abajo que deja la órbita**, con los mismos gestos que un visitante (rueda y arrastre). El cliente puede orbitar, así que un defecto en la espalda o en el canto inferior también se ve; antes de dar por bueno un modelo hay que mirarlo así. Captura con el botón apretado: al soltar, la cámara vuelve sola a la vista predeterminada.
 
-**Desde abajo los nueve se oscurecen mucho**, porque la base solo recibe el piso oscuro del estudio (medido en noviembre de 2026). No está resuelto: las dos salidas —limitar la órbita un poco bajo el horizonte o una luz tenue de relleno desde abajo— son decisión del negocio, y la segunda puede aplanar el metal. Lo que sí ayuda sin tocar el estudio es que la base tenga piezas de metal claro, como la placa trasera del imán de `speaker-4`. La salida va a `Claude outputs/`, que no se versiona. El informe de la primera corrida es `docs/modelos3d-2026-11-13.md`.
+**Desde abajo los nueve se oscurecían hasta quedar en silueta**, porque la base solo recibe el piso oscuro del estudio (medido en noviembre de 2026). Se resolvió limitando la órbita, no aclarando el piso (§ Órbita y encuadre). Para lo poco de la base que todavía se ve ayuda que tenga piezas de metal claro, como la placa trasera del imán de `speaker-4`. La salida va a `Claude outputs/`, que no se versiona. El informe de la primera corrida es `docs/modelos3d-2026-11-13.md`.
 
 Tres cosas que costó averiguar:
 

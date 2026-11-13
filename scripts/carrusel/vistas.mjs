@@ -1,6 +1,7 @@
 // Cada modelo del carrusel visto por donde la pose de reposo no lo muestra:
-// desde atrás, desde arriba y desde abajo. El cliente puede orbitar libremente,
-// así que un defecto en la espalda o en la base también se ve.
+// desde atrás, desde arriba y desde lo más abajo que deja la órbita (10° bajo
+// el horizonte, POLAR_MAX). El cliente puede orbitar, así que un defecto en la
+// espalda o en el canto inferior también se ve.
 //
 //   node --no-warnings scripts/carrusel/vistas.mjs "Claude outputs/<carpeta>"
 //
@@ -27,7 +28,8 @@ const SOLO = process.argv[4]?.split(",") ?? MODEL_IDS;
 
 // Una vuelta completa por alto de cuadro (useRotateGesture): con 470 px de
 // alto, 235 px de arrastre horizontal son media vuelta. El arrastre vertical
-// inclina: hacia abajo se mira desde más arriba.
+// inclina: hacia abajo se mira desde más arriba. La toma «abajo» arrastra de
+// más a propósito: se queda en el tope, y así también comprueba que existe.
 const VISTAS = [
   { nombre: "reposo", dx: 0, dy: 0 },
   { nombre: "atras", dx: -245, dy: 0 },
