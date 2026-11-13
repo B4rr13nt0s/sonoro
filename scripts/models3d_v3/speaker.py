@@ -56,6 +56,28 @@ Qué cambia respecto de la v1
     agarra el brillo que separa el marco del cono.
   - Carcasa del tweeter en negro piano: un anillo de brillo en el centro.
   - Imán con bisel de 2 mm (antes 1.5).
+
+speaker-4 (13 de noviembre de 2026): que no sea una silueta negra
+-----------------------------------------------------------------
+Es el primer producto del carrusel y era el más plano: cinco negros y casi
+nada de metal (el aro del tweeter y dos terminales de 8 mm). El subwoofer,
+con aro y canasta de aluminio, se leía mucho mejor. Tres cambios:
+
+  - CONO en `graphite` (333336, rugosidad 0.50) en vez de textured-black
+    (2A2A2B, 0.90): agarra una franja de brillo y se separa del borde de
+    goma. Sigue siendo más claro que el marco (corrección 3 de la v1).
+  - MOTOR con sus tres piezas de verdad: placa trasera y placa superior de
+    acero (brushed-alu, r 39.5 mm, 4.5 mm cada una) y, entre las dos, el
+    imán cerámico negro (r 42.5 mm). Antes era un cilindro negro entero y
+    una placa negra de 30 mm escondida bajo la cesta. Las dos placas se ven
+    como franjas claras desde la pose de reposo, y la trasera le da algo que
+    leer a la base, que desde abajo era un disco negro.
+  - TERMINALES de 12 x 7.5 x 9 mm (antes 8 x 5 x 6) y girados 60° sobre el
+    eje: quedan de cara a la cámara en la pose de reposo (azimut 150° del
+    carrusel = 60° desde +X hacia +Y en Blender). A 0° caían a un costado,
+    medio tapados por el marco.
+
+Medidas exteriores sin cambios: 165 mm de diámetro, 55 mm de alto.
 """
 
 import math
@@ -86,7 +108,7 @@ import _common                                              # noqa: E402
 importlib.reload(_common)   # Blender cachea los módulos entre corridas
 from _common import *       # noqa: F401,F403,E402
 
-ARCHIVO = "speaker-3"
+ARCHIVO = "speaker-4"
 
 # 72 segmentos en las piezas grandes: con 96 el conjunto pasa de 30k
 # triángulos. A 72 el paso angular es de 5 grados.
@@ -99,7 +121,8 @@ R_FRAME_IN = 0.0705       # plancha de 12.0 mm de ancho radial
 R_SURROUND_IN = 0.0610    # arranque del cono; surround de 9.5 mm
 R_NECK = 0.0180           # cuello del cono
 R_MAGNET = 0.0425
-R_PLATE = 0.0300
+R_YOKE = 0.0395           # placas de acero del motor: 3 mm menos que el imán
+R_PLATE = 0.0300          # donde muere la cesta contra la placa superior
 R_VENT = 0.0060
 R_BOLT = 0.0028           # barreno pasante 5.6 mm
 R_BOLT_RING = 0.0765      # centro exacto de la plancha: (0.0705 + 0.0825) / 2.
@@ -128,7 +151,12 @@ SURROUND_H = 0.0034       # cresta ~1.1 mm bajo la cara del marco
 
 Z_NECK = 0.0235
 Z_PLATE_TOP = 0.0205
-Z_MAGNET_TOP = 0.0170
+Z_MAGNET_TOP = 0.0160     # placa superior de 4.5 mm
+Z_YOKE_TOP = 0.0045       # placa trasera de 4.5 mm; el imán va entre las dos
+
+# Hacia dónde mira la cámara del carrusel en la pose de reposo, medido desde
+# +X hacia +Y de Blender (azimut 150° en el glTF). Los terminales van ahí.
+ANG_CAMARA = math.radians(60.0)
 
 CHAMFER = 0.0012          # v1: 0.0007, invisible a tamaño de carrusel
 
@@ -206,7 +234,7 @@ def build_cone():
     drop = Z_SURROUND_IN - Z_NECK
     profile = [(R_SURROUND_IN + (R_NECK - R_SURROUND_IN) * (i / steps),
                 Z_SURROUND_IN - drop * ((i / steps) ** 1.10)) for i in range(steps + 1)]
-    obj = lathe("cone", profile, segments=SEG, material=textured_black())
+    obj = lathe("cone", profile, segments=SEG, material=graphite())
     apply_solidify(obj, 0.0009, offset=-1.0)
     return obj
 
@@ -248,37 +276,49 @@ def build_tweeter():
 
 
 def build_motor():
-    """Imán cerámico, placa superior y venteo central."""
+    """
+    Motor en sus tres piezas, de abajo hacia arriba: placa trasera de acero,
+    imán cerámico y placa superior de acero, con el venteo central pasante.
+    El imán sobresale 3 mm de las placas, como en un driver de verdad.
+    """
     parts = []
-    mag = cylinder("magnet", R_MAGNET, Z_MAGNET_TOP, segments=SEG,
-                   location=(0.0, 0.0, Z_MAGNET_TOP / 2.0), material=matte_black())
-    bevel(mag, 0.0020, segments=3)
-    boolean(mag, cylinder("vent-cutter", R_VENT, 0.0800, segments=20,
-                          location=(0.0, 0.0, Z_MAGNET_TOP / 2.0)))
-    parts.append(mag)
-
-    plate = cylinder("pole-plate", R_PLATE, Z_PLATE_TOP - Z_MAGNET_TOP, segments=SEG,
-                     location=(0.0, 0.0, (Z_PLATE_TOP + Z_MAGNET_TOP) / 2.0),
-                     material=matte_black())
-    bevel(plate, 0.0012, segments=2)
-    boolean(plate, cylinder("vent-cutter", R_VENT, 0.0800, segments=20,
-                            location=(0.0, 0.0, (Z_PLATE_TOP + Z_MAGNET_TOP) / 2.0)))
-    parts.append(plate)
+    for name, radius, z0, z1, mat, bev in (
+        ("back-plate", R_YOKE, 0.0, Z_YOKE_TOP, brushed_alu(), 0.0012),
+        ("magnet", R_MAGNET, Z_YOKE_TOP, Z_MAGNET_TOP, matte_black(), 0.0020),
+        ("top-plate", R_YOKE, Z_MAGNET_TOP, Z_PLATE_TOP, brushed_alu(), 0.0012),
+    ):
+        part = cylinder(name, radius, z1 - z0, segments=SEG,
+                        location=(0.0, 0.0, (z0 + z1) / 2.0), material=mat)
+        bevel(part, bev, segments=3)
+        boolean(part, cylinder("vent-cutter", R_VENT, 0.0800, segments=20,
+                               location=(0.0, 0.0, (z0 + z1) / 2.0)))
+        parts.append(part)
     return parts
 
 
 def build_terminals():
-    """Dos terminales push de 8 x 5 mm, con polaridad, mordiendo la cesta."""
+    """
+    Dos terminales push de 12 x 7.5 mm, con polaridad, mordiendo la cesta y de
+    cara a la cámara del carrusel (ANG_CAMARA). Se arman sobre +X y se giran:
+    (r, y) es radial y tangencial.
+    """
     parts = []
     z = 0.0300
+    ca, sa = math.cos(ANG_CAMARA), math.sin(ANG_CAMARA)
+
+    def place(r, y):
+        return (r * ca - y * sa, r * sa + y * ca, z)
+
     for i, (s, mat) in enumerate(((1.0, accent_orange()), (-1.0, matte_black()))):
-        y = s * 0.0068
-        body = box("terminal-%d" % (i + 1), (0.0080, 0.0050, 0.0060),
-                   location=(0.0410, y, z), material=chrome())
-        bevel(body, 0.0006, segments=2)
+        y = s * 0.0092
+        body = box("terminal-%d" % (i + 1), (0.0120, 0.0075, 0.0090),
+                   location=place(0.0430, y), rotation=(0.0, 0.0, ANG_CAMARA),
+                   material=chrome())
+        bevel(body, 0.0009, segments=2)
         parts.append(body)
-        parts.append(box("terminal-tab-%d" % (i + 1), (0.0030, 0.0036, 0.0014),
-                         location=(0.0454, y, z), material=mat))
+        parts.append(box("terminal-tab-%d" % (i + 1), (0.0045, 0.0054, 0.0021),
+                         location=place(0.0496, y), rotation=(0.0, 0.0, ANG_CAMARA),
+                         material=mat))
     return parts
 
 

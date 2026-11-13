@@ -441,7 +441,7 @@ blender --background --python-exit-code 1 --python scripts/models3d_v3/subwoofer
 python scripts/models3d_v3/manifest.py   # los números para lib/models3d.ts
 ```
 
-**Blender 4.5 LTS.** Con otra versión el script avisa, y el .glb puede salir distinto. **Siempre con `--python-exit-code 1`**: sin esa opción Blender termina con código 0 aunque el script lance una excepción, y un error de validación pasa inadvertido en una corrida por lotes. También corre con el módulo `bpy` 4.5 de pip (`python scripts/models3d_v3/subwoofer.py`), que es como se generaron ocho de los nueve actuales.
+**Blender 4.5 LTS.** Con otra versión el script avisa, y el .glb puede salir distinto. **Siempre con `--python-exit-code 1`**: sin esa opción Blender termina con código 0 aunque el script lance una excepción, y un error de validación pasa inadvertido en una corrida por lotes. También corre con el módulo `bpy` 4.5 de pip (`python scripts/models3d_v3/subwoofer.py`), que es como se generaron los siete que no se tocaron en noviembre de 2026 (`equalizer-4` y `speaker-4` salieron del Blender portable).
 
 En la computadora de Byron el Blender instalado es el 5.2, que no sirve para esto. El 4.5.14 —la versión exacta de los nueve .glb— está como portable, sin instalar, en `C:\Users\byron\Sonoro\herramientas\blender-4.5.14\blender-4.5.14-windows-x64\blender.exe` (noviembre de 2026; fuera del repo). **En esa máquina ese Blender se cae al cerrarse** (`EXCEPTION_ACCESS_VIOLATION` después de «Blender quit»), con el .glb ya escrito: el código de salida sale distinto de cero aunque todo haya ido bien, así que ahí el resultado se lee en el reporte de `finalize()` —el bloque entre líneas de `=` sin ninguna línea `ERROR`— y no en el código de salida. Desde PowerShell, no desde Git Bash, que no muestra su salida.
 
@@ -477,7 +477,7 @@ Cada script tiene una constante `ARCHIVO = "<id>-N"`: escribe `public/models/<id
 - **Draco obligatorio** (`KHR_draco_mesh_compression` en `extensionsRequired`), nivel 6, cuantización de posición 14.
 - **Sin cámaras ni luces. Materiales PBR por valores, sin texturas de imagen**, con una excepción: **las pantallas encendidas** (la de `screen` y el LCD de `head-unit`). Lo que muestran lo dibuja `screen_ui.py` en cada export —una interfaz genérica: glifos propios, barras donde iría texto, ningún logo de app ni marca— y va como textura emisiva WebP (`EXT_texture_webp`). No es un archivo del repo. El script lo declara con `finalize(..., texture=True)`; cualquier otro modelo con una imagen hace fallar el export.
 - **Una sola pieza transparente:** la tapa del portafusible del kit (`clear-plastic`, alphaMode BLEND).
-- 5,000–25,000 triángulos y menos de 300 KB por modelo. Los nueve suman ~428 KB (438,124 bytes y 114,336 triángulos desde `equalizer-4`), de los que 27 KB son las dos texturas de pantalla. Ninguno está bajo el mínimo: el que menos tiene es `screen`, con 5,412.
+- 5,000–25,000 triángulos y menos de 300 KB por modelo. Los nueve suman ~434 KB (444,288 bytes y 115,856 triángulos desde `equalizer-4` y `speaker-4`), de los que 27 KB son las dos texturas de pantalla. Ninguno está bajo el mínimo: el que menos tiene es `screen`, con 5,412.
 - Nombres de objetos y materiales en inglés, kebab-case.
 
 ### Paleta de materiales compartida
@@ -491,6 +491,7 @@ Cada script tiene una constante `ARCHIVO = "<id>-N"`: escribe `public/models/<id
 | `matte-black` | `#1B1B1C` | 0.72 | 0 | |
 | `satin-black` | `#1F1F21` | 0.46 | 0 | |
 | `textured-black` | `#2A2A2B` | 0.90 | 0 | |
+| `graphite` | `#333336` | 0.50 | 0 | |
 | `anodized-black` | `#2A2A2E` | 0.40 | 1 | |
 | `brushed-alu` | `#B8BCC0` | 0.33 | 1 | |
 | `chrome` | `#E8EAED` | 0.08 | 1 | |
@@ -511,7 +512,7 @@ Cada script tiene una constante `ARCHIVO = "<id>-N"`: escribe `public/models/<id
 
 Las pantallas encendidas no usan la paleta: `display_material()` arma un vidrio negro con clearcoat y la imagen de `screen_ui.py` como emisión.
 
-Los negros se separan por valor **y** por rugosidad (de más oscuro a más claro: `rubber`, `gloss-black`, `matte-black`, `satin-black`, `textured-black`). En la v1 eran tres casi iguales y los modelos negros se leían como siluetas. Con la iluminación del carrusel, la rugosidad es lo que decide si un canto agarra brillo. `anodized-black` es metálico: refleja el estudio y dibuja la forma (chasis del ecualizador).
+Los negros se separan por valor **y** por rugosidad (de más oscuro a más claro: `rubber`, `gloss-black`, `matte-black`, `satin-black`, `textured-black`, `graphite`). `graphite` es el polipropileno del cono de la bocina: el más claro y semibrillante, para que el cono agarre una franja de brillo y no se empaste con el borde de goma. En la v1 eran tres casi iguales y los modelos negros se leían como siluetas. Con la iluminación del carrusel, la rugosidad es lo que decide si un canto agarra brillo. `anodized-black` es metálico: refleja el estudio y dibuja la forma (chasis del ecualizador).
 
 Los forros de cable llevan brillo a propósito (rugosidad ~0.35): mates, los cables se leían como mangueras o plastilina.
 
@@ -650,7 +651,7 @@ Por eso cada entrada de `MODELS` en `lib/models3d.ts` tiene un campo **`archivo`
 
 **Si el modelo nuevo cambia de tamaño, cambian los NUEVE `displayScale`,** porque la normalización cuelga del más grande: se corre `manifest.py` y se copian los nueve valores y el encuadre que imprime. Al reemplazar `sound-deadening` (radio 0.2545 → 0.2482) el mayor pasó a ser `rca-cable`, y con él se recalculó todo; después se achicó el `rca-cable` (radio 0.2533 → 0.1631; hoy mide 0.1368) y la referencia volvió a ser `sound-deadening`. Si el modelo nuevo conserva radio y altura —como `equalizer-4`, que solo cambió las perillas— no cambia ningún `displayScale`: `manifest.py` imprime los mismos nueve valores y solo se actualiza `archivo`.
 
-**El .glb viejo no se borra del repo al subir la versión** (`equalizer-3.glb` sigue en `public/models/`): una pestaña abierta antes del deploy todavía lo pide. Se puede retirar más adelante, cuando Byron lo pida. La cuenta es siempre la misma:
+**El .glb viejo no se borra del repo al subir la versión** (`equalizer-3.glb` y `speaker-3.glb` siguen en `public/models/`, y `speaker-3.webp` en `posters/`): una pestaña abierta antes del deploy todavía los pide. Se puede retirar más adelante, cuando Byron lo pida. La cuenta es siempre la misma:
 
 ```
 displayScale_i = (diámetro_mayor / diámetro_i) ^ 0.35      // diámetro = 2 · radius
@@ -665,7 +666,7 @@ El decoder de Draco (`public/draco/`) se copia de `node_modules/three/examples/j
 Si el navegador no puede crear un contexto WebGL 2, o el canvas se cae después (un .glb o el bloque de three que no llegan), el cuadro muestra **la imagen estática de la categoría** (`posterUrl` en `lib/models3d.ts`, `public/models/posters/<archivo del .glb>.webp`), que cambia con las flechas. Hasta noviembre de 2026 quedaba vacío para siempre.
 
 - **WebGL se comprueba ANTES de pedir el canvas** (`hayWebGL` en `ProductCarousel3D.tsx`), no esperando a que falle: sin contexto, R3F no lanza un error que llegue a `SinCanvasSiFalla`, así que nada avisaba. De paso, quien no tiene WebGL no baja el megabyte de three.
-- **Las imágenes no son renders aparte**: `node --no-warnings scripts/carrusel/posters.mjs` captura el propio carrusel en reposo, con fondo transparente y sin chrome, contra el build de producción en el puerto 3100. Coinciden con el 3D en luz, ángulo y tamaño. **Hay que volver a correrlo** cuando cambia un .glb, la luz del estudio o el encuadre; `lib/models3d.test.ts` falla si a un modelo le falta la imagen con la versión de su .glb.
+- **Las imágenes no son renders aparte**: `node --no-warnings scripts/carrusel/posters.mjs` captura el propio carrusel en reposo, con fondo transparente y sin chrome, contra el build de producción en el puerto 3100. Coinciden con el 3D en luz, ángulo y tamaño. **Hay que volver a correrlo** cuando cambia un .glb, la luz del estudio o el encuadre; `lib/models3d.test.ts` falla si a un modelo le falta la imagen con la versión de su .glb. Las imágenes de los modelos que no cambiaron salen idénticas byte a byte, así que el diff muestra solo la nueva. **Después de generarlas hay que reiniciar el servidor de producción**: `next start` no sirve un archivo de `public/` agregado después del build, y la prueba e2e de sin WebGL falla con una imagen que no carga.
 - Las nueve son **el mismo recorte central** del cuadro de escritorio (60 % del ancho, 84 % del alto): recortar cada modelo a su contorno los igualaría y se perdería la jerarquía de `displayScale`. Pesan 8–17 KB cada una, y solo se pide una, y solo sin WebGL.
 - `alt` vacío a propósito: la categoría ya está escrita en el enlace de al lado, y un lector de pantalla la diría dos veces.
 - **No se usa como estado de carga.** El primer producto entra deslizándose desde la derecha; una imagen quieta en el centro que desaparece para que el modelo llegue de costado se leería como un salto. Mientras baja el canvas, el cuadro sigue vacío.
@@ -678,7 +679,11 @@ Si el navegador no puede crear un contexto WebGL 2, o el canvas se cae después 
 node --no-warnings scripts/carrusel/linea-base.mjs --salida "Claude outputs/<carpeta>"
 ```
 
-Saca las 27 capturas (los nueve en móvil y en escritorio, más un acercamiento), una hoja de contacto por vista, pesos, tiempo hasta el primer modelo visible y tiempo por frame. `--fases` y `--modelos` acotan la corrida. La salida va a `Claude outputs/`, que no se versiona. El informe de la primera corrida es `docs/modelos3d-2026-11-13.md`.
+Saca las 27 capturas (los nueve en móvil y en escritorio, más un acercamiento), una hoja de contacto por vista, pesos, tiempo hasta el primer modelo visible y tiempo por frame. `--fases` y `--modelos` acotan la corrida.
+
+`scripts/carrusel/vistas.mjs` completa lo que la pose de reposo no muestra: cada modelo **desde atrás, desde arriba y desde abajo**, con los mismos gestos que un visitante (rueda y arrastre). La órbita es libre, así que un defecto en la espalda o en la base también se ve; antes de dar por bueno un modelo hay que mirarlo así. Captura con el botón apretado: al soltar, la cámara vuelve sola a la vista predeterminada.
+
+**Desde abajo los nueve se oscurecen mucho**, porque la base solo recibe el piso oscuro del estudio (medido en noviembre de 2026). No está resuelto: las dos salidas —limitar la órbita un poco bajo el horizonte o una luz tenue de relleno desde abajo— son decisión del negocio, y la segunda puede aplanar el metal. Lo que sí ayuda sin tocar el estudio es que la base tenga piezas de metal claro, como la placa trasera del imán de `speaker-4`. La salida va a `Claude outputs/`, que no se versiona. El informe de la primera corrida es `docs/modelos3d-2026-11-13.md`.
 
 Tres cosas que costó averiguar:
 

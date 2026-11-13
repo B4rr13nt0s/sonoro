@@ -130,7 +130,7 @@ def check_blender_version():
 #         emission=(hex, intensidad) -> emissiveFactor
 #
 # Los negros van de más oscuro a más claro: rubber < gloss-black <
-# matte-black < satin-black < textured-black. Se distinguen tanto por valor
+# matte-black < satin-black < textured-black < graphite. Se distinguen tanto por valor
 # como por rugosidad: con la iluminación del carrusel, la rugosidad es lo que
 # decide si un canto agarra brillo o no.
 
@@ -140,6 +140,10 @@ PALETTE = {
     "matte-black":     ("1B1B1C", 0.72, 0.0, {}),
     "satin-black":     ("1F1F21", 0.46, 0.0, {}),
     "textured-black":  ("2A2A2B", 0.90, 0.0, {}),
+    # polipropileno de un cono: el negro más claro de todos y semibrillante,
+    # para que el cono agarre una franja de brillo y no se empaste con el
+    # borde de goma (bocina, speaker-4)
+    "graphite":        ("333336", 0.50, 0.0, {}),
     # aluminio anodizado negro: metal, así que refleja el estudio y dibuja
     # la forma, que es lo que un plástico negro mate no puede hacer
     "anodized-black":  ("2A2A2E", 0.40, 1.0, {}),
@@ -240,6 +244,7 @@ def gloss_black():     return material("gloss-black")
 def matte_black():     return material("matte-black")
 def satin_black():     return material("satin-black")
 def textured_black():  return material("textured-black")
+def graphite():        return material("graphite")
 def anodized_black():  return material("anodized-black")
 def brushed_alu():     return material("brushed-alu")
 def chrome():          return material("chrome")
