@@ -87,6 +87,8 @@ function argumentos() {
     url: valor("url", "http://localhost:3100").replace(/\/$/, ""),
     fases: valor("fases", FASES.join(",")).split(","),
     corridas: Number(valor("corridas", "3")),
+    // Para iterar sobre un cambio: `--modelos amplifier,equalizer` captura solo esos.
+    modelos: valor("modelos", MODEL_IDS.join(",")).split(","),
   };
 }
 
@@ -220,7 +222,7 @@ function escucharConsola(page, bolsa) {
 
 // --------------------------------------------------------------- capturas ---
 
-async function capturar(navegador, url, salida, consola) {
+async function capturar(navegador, url, salida, consola, modelos) {
   const carpeta = path.join(salida, "capturas");
   await mkdir(carpeta, { recursive: true });
   const avisos = [];
@@ -235,6 +237,11 @@ async function capturar(navegador, url, salida, consola) {
     for (let i = 0; i < MODEL_IDS.length; i++) {
       const id = MODEL_IDS[i];
       const base = `${nombre}-${i + 1}-${id}`;
+      if (!modelos.includes(id)) {
+        await page.getByRole("button", { name: "Categoría siguiente" }).click();
+        await page.waitForTimeout(300);
+        continue;
+      }
       if (!(await esperarQuieto(page))) avisos.push(`${base}: el cuadro no quedó quieto`);
       await page.locator(CAJA).screenshot({ path: path.join(carpeta, `${base}.png`) });
 
@@ -255,8 +262,37 @@ async function capturar(navegador, url, salida, consola) {
       }
     }
     await contexto.close();
+    await hojaDeContacto(carpeta, nombre, modelos, path.join(salida, `hoja-${nombre}.png`));
   }
   return { carpeta: path.relative(RAIZ, carpeta), avisos };
+}
+
+/** Las capturas en reposo de una vista, en una sola imagen de tres columnas. */
+async function hojaDeContacto(carpeta, vista, modelos, destino) {
+  const [ancho, alto] = vista === "movil" ? [342, 300] : [592, 235];
+  const ids = MODEL_IDS.filter((id) => modelos.includes(id));
+  const piezas = await Promise.all(
+    ids.map(async (id, n) => ({
+      input: await sharp(path.join(carpeta, `${vista}-${MODEL_IDS.indexOf(id) + 1}-${id}.png`))
+        .resize(ancho, alto)
+        .png()
+        .toBuffer(),
+      left: (n % 3) * (ancho + 8),
+      top: Math.floor(n / 3) * (alto + 8),
+    })),
+  );
+  const filas = Math.ceil(ids.length / 3);
+  await sharp({
+    create: {
+      width: 3 * ancho + 16,
+      height: filas * alto + (filas - 1) * 8,
+      channels: 3,
+      background: "#ffffff",
+    },
+  })
+    .composite(piezas)
+    .png()
+    .toFile(destino);
 }
 
 // ------------------------------------------------------------------ carga ---
@@ -446,7 +482,7 @@ async function medirFrames(navegador, url) {
 // ------------------------------------------------------------------- main ---
 
 async function main() {
-  const { salida, url, fases, corridas } = argumentos();
+  const { salida, url, fases, corridas, modelos } = argumentos();
   await mkdir(salida, { recursive: true });
   const informe = {
     fecha: new Date().toISOString(),
@@ -483,7 +519,7 @@ async function main() {
 
     const consola = new Map();
     if (fases.includes("capturas"))
-      informe.capturas = await capturar(navegador, url, salida, consola);
+      informe.capturas = await capturar(navegador, url, salida, consola, modelos);
     if (fases.includes("carga")) informe.carga = await medirCarga(navegador, url, corridas);
     if (fases.includes("frames")) informe.frames = await medirFrames(navegador, url);
     informe.consola = [...consola].map(([texto, veces]) => ({ veces, texto }));

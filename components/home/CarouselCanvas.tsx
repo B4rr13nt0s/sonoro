@@ -281,12 +281,21 @@ function Escena({
             conviene bajarlo y dejarlos brillantes, que es como se ilumina
             metal en un estudio de verdad. */}
         <color attach="background" args={[FONDO_ESTUDIO_3D]} />
-        {/* Cenital ancha: el brillo largo que recorre las tapas metálicas. */}
-        <Lightformer intensity={3.4} form="rect" position={[0, 6, 1]} scale={[12, 8, 1]} />
+        {/* Cenital ancha: el brillo largo que recorre las tapas metálicas.
+            Es la que decide cómo sale TODO lo que mira hacia arriba, no solo
+            el metal: un negro mate refleja ~4 % de este panel, así que con
+            la cenital en 3.4 la placa «negro mate» del amplificador salía
+            gris medio, el cable rojo salmón y las láminas de aluminio casi
+            del color del fondo del cuadro (en móvil no se distinguían).
+            Bajarla más de 1.5 apaga la bocina, que es toda negra: en 1.3 el
+            cono y el borde de goma se empastan. La principal subió de 2.4 a
+            3 para que las caras laterales no pierdan forma. Capturas en
+            docs/modelos3d-2026-11-13.md. */}
+        <Lightformer intensity={1.5} form="rect" position={[0, 6, 1]} scale={[12, 8, 1]} />
         {/* Principal, del lado de la cámara en la pose predeterminada
             (azimut 150° = cámara en +X/−Z). Si se pone en +Z el producto
             queda a contraluz y la cara que se ve cae en sombra. */}
-        <Lightformer intensity={2.4} form="rect" position={[6, 3, -5]} scale={[9, 9, 1]} />
+        <Lightformer intensity={3} form="rect" position={[6, 3, -5]} scale={[9, 9, 1]} />
         {/* Relleno opuesto, para que el lado en sombra no se cierre. */}
         <Lightformer intensity={1.2} form="rect" position={[-7, 2, 4]} scale={[9, 9, 1]} />
         {/* Contra: despega el contorno del fondo claro del cuadro. */}
