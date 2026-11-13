@@ -30,6 +30,21 @@ Qué cambia respecto de la v1
   - Bisel del chasis de 2 mm (antes 1.2) y del bezel de 1.5 mm (antes 1.0).
   - Bezel y perillas satinados: los conos de las perillas agarran brillo y
     la fila se lee como controles.
+
+equalizer-4 (13 de noviembre de 2026): perillas legibles
+--------------------------------------------------------
+En las capturas del carrusel el equalizer-3 era el modelo que peor se leía:
+negro sobre negro, luminancia media 63 (el más oscuro de los nueve), y en
+móvil una barra oscura sin controles a la vista. El «punto indicador» de
+cada perilla medía 1.4 mm de diámetro: a 0.4–1.2 px por milímetro no existe.
+
+  - Cada perilla lleva una TAPA de aluminio cepillado en su cara frontal:
+    diez discos claros en fila sobre el frente negro, que es lo que hace que
+    se lea como una hilera de controles a cualquier tamaño.
+  - El indicador pasa de punto a RAYA, del centro al borde de la tapa
+    (3.3 mm en las bandas, 4.6 mm en las dos grandes), en negro satinado
+    sobre el aluminio. El de sub-level sigue en accent-orange.
+  - El chasis no cambia: anodizado negro, decisión del negocio.
 """
 
 import math
@@ -60,7 +75,7 @@ import _common                                              # noqa: E402
 importlib.reload(_common)   # Blender cachea los módulos entre corridas
 from _common import *       # noqa: F401,F403,E402
 
-ARCHIVO = "equalizer-3"
+ARCHIVO = "equalizer-4"
 
 W = 0.1780
 D = 0.0850
@@ -189,13 +204,26 @@ def build_control_row():
         bevel(knob, 0.0008, segments=2)
         parts.append(knob)
 
+        # Tapa de aluminio en la cara frontal de la perilla: 0.7 mm afuera y
+        # 0.3 mm embutida, para que no quede coplanar con el cono.
+        y_knob_face = Y_FACE - out_len + 0.0003
+        cap_r = r - 0.0018
+        cap = cylinder("knob-cap-%s" % name, cap_r, 0.0010, segments=SEG_ROUND,
+                       location=(x, y_knob_face - 0.0002, Z_CTRL),
+                       rotation=rot, material=brushed_alu())
+        parts.append(cap)
+
+        # Indicador: una raya del centro al borde de la tapa, girada distinto
+        # en cada perilla. Rotar la caja sobre Y lleva su eje largo (Z) a
+        # (sen a, 0, cos a), que es hacia donde se la desplaza.
         ang = math.radians((-130.0 + i * 29.0) % 360.0)
-        dot_mat = accent_orange() if name == "sub-level" else brushed_alu()
-        parts.append(cylinder("knob-dot-%s" % name, 0.0007, 0.0012, segments=12,
-                              location=(x + (r - 0.0022) * math.sin(ang),
-                                        Y_FACE - out_len - 0.0002,
-                                        Z_CTRL + (r - 0.0022) * math.cos(ang)),
-                              rotation=rot, material=dot_mat))
+        line_len = cap_r - 0.0004
+        line_mat = accent_orange() if name == "sub-level" else satin_black()
+        parts.append(box("knob-line-%s" % name, (0.0012, 0.0008, line_len),
+                         location=(x + (line_len / 2.0 + 0.0002) * math.sin(ang),
+                                   y_knob_face - 0.0008,
+                                   Z_CTRL + (line_len / 2.0 + 0.0002) * math.cos(ang)),
+                         rotation=(0.0, ang, 0.0), material=line_mat))
     return parts, gap
 
 

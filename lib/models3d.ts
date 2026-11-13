@@ -77,10 +77,15 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     href: "/catalogo/bocinas",
   },
   equalizer: {
-    archivo: "equalizer-3.glb",
+    archivo: "equalizer-4.glb",
     displayScale: 1.3569,
     radius: 0.1037,
     height: 0.026,
+    // Es el modelo más bajo (26 mm) y el segundo más chico: en el cuadro
+    // llenaba 2.4 % del área en escritorio y 3.2 % en móvil, la mitad que la
+    // bocina. Con 1.2 su radio en pantalla (0.169) sigue por debajo del
+    // amplificador y del subwoofer, así que no altera el orden de tamaños.
+    ajusteVista: 1.2,
     label: "Ecualizadores",
     href: "/catalogo/ecualizadores",
   },

@@ -1,10 +1,10 @@
 {
   "id": "equalizer",
-  "archivo": "equalizer-3.glb",
+  "archivo": "equalizer-4.glb",
   "radius": 0.1037,
   "height": 0.026,
-  "tris": 11376,
-  "bytes": 36432,
+  "tris": 12296,
+  "bytes": 39892,
   "materials": [
     "accent-orange",
     "anodized-black",
