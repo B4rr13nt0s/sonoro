@@ -156,6 +156,22 @@ export const escalaDeVista = (id: ModelId) =>
 
 export const modelUrl = (id: ModelId) => `/models/${MODELS[id].archivo}`;
 
+// Imagen estática de cada modelo, para cuando el canvas 3D no puede crearse
+// o falla (sin WebGL, un .glb que no baja): el cuadro la muestra en vez de
+// quedar vacío. La genera scripts/carrusel/posters.mjs capturando el propio
+// carrusel en reposo, así que hay que volver a correrlo cuando cambia un
+// .glb, la luz del estudio o el encuadre. Lleva el nombre del .glb, versión
+// incluida, porque /models/* se sirve con caché `immutable`.
+//
+// Los nueve son el MISMO recorte central del cuadro de escritorio
+// (1184 × 470 px): 60 % del ancho y 84 % del alto. Recortar cada modelo a su
+// contorno los dejaría a todos del mismo tamaño y se perdería la jerarquía
+// que da displayScale.
+export const POSTER_ANCHO = 710;
+export const POSTER_ALTO = 395;
+export const posterUrl = (id: ModelId) =>
+  `/models/posters/${MODELS[id].archivo.replace(/\.glb$/, ".webp")}`;
+
 // El decoder de Draco es local (public/draco/), no el CDN de gstatic.com:
 // es un tercero en el critical path del home.
 export const DRACO_DECODER_PATH = "/draco/";

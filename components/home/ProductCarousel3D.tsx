@@ -1,10 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { MODELS, MODEL_IDS } from "@/lib/models3d.ts";
+import { MODELS, MODEL_IDS, POSTER_ALTO, POSTER_ANCHO, posterUrl } from "@/lib/models3d.ts";
 
 import { SinCanvasSiFalla } from "./SinCanvasSiFalla";
 import { useCicloCarrusel } from "./useIdleReturn";
@@ -51,26 +52,49 @@ const CarouselCanvas = dynamic(() => import("./CarouselCanvas").then((m) => m.Ca
 });
 
 /**
- * `true` cuando conviene cargar el canvas: al quedar el navegador ocioso
- * después del primer pintado, o a los 2 s como tope.
+ * ¿Este navegador puede crear un contexto WebGL 2? Es lo que necesita three
+ * (dejó WebGL 1 en la r163). El contexto de prueba se suelta enseguida: los
+ * navegadores limitan cuántos puede haber vivos a la vez.
+ */
+function hayWebGL(): boolean {
+  try {
+    const gl = document.createElement("canvas").getContext("webgl2");
+    if (!gl) return false;
+    gl.getExtension("WEBGL_lose_context")?.loseContext();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * `"listo"` cuando conviene cargar el canvas: al quedar el navegador ocioso
+ * después del primer pintado, o a los 2 s como tope. `"sin-webgl"` si para
+ * entonces resulta que el navegador no puede dibujarlo.
  *
  * `requestIdleCallback` no existe en Safari, de ahí el `setTimeout` de
  * respaldo. El plazo es corto a propósito: el modelo es lo que el visitante
  * viene a ver, solo no debe competir con el primer pintado.
+ *
+ * WebGL se comprueba ACÁ, antes de pedir el canvas, y no esperando a que
+ * falle: sin contexto, R3F no lanza un error que llegue a SinCanvasSiFalla
+ * —el cuadro se quedaba vacío para siempre, sin que nada avisara—, y además
+ * así quien no tiene WebGL no baja el megabyte de three para nada.
  */
-function useCanvasDiferido(): boolean {
-  const [listo, setListo] = useState(false);
+function useCanvasDiferido(): "pendiente" | "listo" | "sin-webgl" {
+  const [estado, setEstado] = useState<"pendiente" | "listo" | "sin-webgl">("pendiente");
 
   useEffect(() => {
+    const decidir = () => setEstado(hayWebGL() ? "listo" : "sin-webgl");
     if (typeof window.requestIdleCallback !== "function") {
-      const id = window.setTimeout(() => setListo(true), 200);
+      const id = window.setTimeout(decidir, 200);
       return () => window.clearTimeout(id);
     }
-    const id = window.requestIdleCallback(() => setListo(true), { timeout: 2000 });
+    const id = window.requestIdleCallback(decidir, { timeout: 2000 });
     return () => window.cancelIdleCallback(id);
   }, []);
 
-  return listo;
+  return estado;
 }
 
 function usePrefersReducedMotion(): boolean {
@@ -104,7 +128,7 @@ export function ProductCarousel3D() {
   const [cambioManual, setCambioManual] = useState(false);
 
   const contenedor = useRef<HTMLDivElement>(null);
-  const canvasListo = useCanvasDiferido();
+  const canvas = useCanvasDiferido();
   const reducedMotion = usePrefersReducedMotion();
   const anchoSm = useMediaQuery("(min-width: 640px)");
   const chrome = anchoSm ? CHROME_SM : CHROME_MOVIL;
@@ -131,7 +155,15 @@ export function ProductCarousel3D() {
     canvasVivo,
   );
   const alCrearCanvas = useCallback(() => setCanvasVivo(true), []);
-  const alFallarCanvas = useCallback(() => setCanvasVivo(false), []);
+  // El canvas se cayó (un .glb o el bloque de three que no llegan). No se
+  // recupera solo: desde ahí el cuadro muestra la imagen estática de la
+  // categoría, que cambia con las flechas. Lo mismo si el navegador no tiene
+  // WebGL, que se sabe antes de pedir el canvas (useCanvasDiferido).
+  const [canvasFallo, setCanvasFallo] = useState(false);
+  const alFallarCanvas = useCallback(() => {
+    setCanvasVivo(false);
+    setCanvasFallo(true);
+  }, []);
   const alModeloListo = useCallback(() => setModeloListo(true), []);
 
   // Navegación manual: se salta al producto pedido y el ciclo arranca de
@@ -201,7 +233,7 @@ export function ProductCarousel3D() {
         if (!evento.currentTarget.contains(evento.relatedTarget)) setConFoco(false);
       }}
     >
-      {canvasListo ? (
+      {canvas === "listo" ? (
         <SinCanvasSiFalla alFallar={alFallarCanvas}>
           <CarouselCanvas
             index={index}
@@ -217,6 +249,24 @@ export function ProductCarousel3D() {
             alModeloListo={alModeloListo}
           />
         </SinCanvasSiFalla>
+      ) : null}
+
+      {/* Sin canvas, la imagen estática del mismo modelo: es el carrusel
+          capturado en reposo (scripts/carrusel/posters.mjs), con el 84 % del
+          alto del cuadro —lo que mide el recorte—, así que en escritorio cae
+          donde estaría el 3D. `alt` vacío a propósito: la categoría ya está
+          escrita al lado, en el enlace, y un lector de pantalla la diría dos
+          veces. No pasa por /_next/image: ya es un WebP del tamaño justo. */}
+      {canvasFallo || canvas === "sin-webgl" ? (
+        <Image
+          src={posterUrl(MODEL_IDS[index])}
+          alt=""
+          width={POSTER_ANCHO}
+          height={POSTER_ALTO}
+          unoptimized
+          draggable={false}
+          className="pointer-events-none absolute inset-0 m-auto h-[84%] w-auto max-w-[calc(100%-32px)] object-contain"
+        />
       ) : null}
 
       {/* Toda la interfaz vive en el DOM, encima del canvas, nunca dentro.
