@@ -30,9 +30,28 @@ export default defineConfig({
     baseURL: BASE_URL,
     trace: "on-first-retry",
   },
-  // Un solo proyecto — el pedido es "un test e2e", no una matriz de
+  // Un solo navegador — el pedido es "un test e2e", no una matriz de
   // navegadores. Se puede ampliar agregando firefox/webkit después.
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  //
+  // Son dos proyectos por una sola razón: carrusel-3d.spec.ts mira los
+  // píxeles del canvas, que acá se dibuja por software, y graba los cuadros
+  // de la entrada. Corriendo al lado de las demás les quitaba el procesador:
+  // la prueba del flujo crítico —que ni pasa por la portada— fallaba una de
+  // cada dos veces esperando los resultados de /buscar. `dependencies` hace
+  // que esas pruebas corran DESPUÉS de todas las otras, y solo si pasaron.
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+      testIgnore: "**/carrusel-3d.spec.ts",
+    },
+    {
+      name: "carrusel-3d",
+      use: { ...devices["Desktop Chrome"] },
+      testMatch: "**/carrusel-3d.spec.ts",
+      dependencies: ["chromium"],
+    },
+  ],
   webServer: {
     command: `npm run build && npm run start -- -p ${PORT}`,
     url: BASE_URL,
