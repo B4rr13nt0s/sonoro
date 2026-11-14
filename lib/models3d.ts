@@ -114,7 +114,7 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     href: "/catalogo/amplificadores",
   },
   subwoofer: {
-    archivo: "subwoofer-3.glb",
+    archivo: "subwoofer-4.glb",
     displayScale: 1.1722,
     radius: 0.1575,
     height: 0.1652,

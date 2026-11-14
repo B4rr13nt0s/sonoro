@@ -41,6 +41,24 @@ Qué cambia respecto de la v1
     brillo continuo en el canto.
   - Dust cap satinado: se separa del cono (texturado) por el brillo.
   - Lazo de tinsel suave (en la v1 era un tubo de 8 lados facetado).
+
+subwoofer-4 (13 de noviembre de 2026): el acento naranja, al frente
+-------------------------------------------------------------------
+Era de los modelos que mejor se leían, pero mirado de cerca y por todos
+lados tenía tres flojeras. No cambia nada de lo que define la silueta.
+
+  - CONO en `graphite` (333336, rugosidad 0.50) en vez de textured-black:
+    agarra una franja de brillo y se separa del dust cap, que sigue en
+    satin-black y ahora es claramente más oscuro que el cono. Es el mismo
+    cambio que en speaker-4.
+  - PLACA DE TERMINALES girada 60° sobre el eje, de cara a la cámara del
+    carrusel en la pose de reposo (ANG_CAMARA). A 0° quedaba a un costado,
+    y el brazo que sí miraba a la cámara salía casi negro: su cara cae hacia
+    el piso oscuro del estudio. Ahora ese brazo lleva la placa encima, y el
+    lazo de tinsel naranja —el único acento de color— queda al frente.
+  - PLACA TRASERA de aluminio en la base del boot, con el venteo del polo:
+    la base era un disco negro liso. Va embutida en un rebaje del boot, a
+    ras de z = 0.
 """
 
 import math
@@ -71,7 +89,7 @@ import _common                                              # noqa: E402
 importlib.reload(_common)   # Blender cachea los módulos entre corridas
 from _common import *       # noqa: F401,F403,E402
 
-ARCHIVO = "subwoofer-3"
+ARCHIVO = "subwoofer-4"
 
 SEG = 64
 
@@ -120,6 +138,16 @@ PLATE_RY = 0.6180
 PLATE_R = 0.1004
 PLATE_Z = 0.1040
 TERM_OFFSET = 0.0240
+
+# Hacia dónde mira la cámara del carrusel en la pose de reposo, medido desde
+# +X hacia +Y de Blender (azimut 150° en el glTF). Es múltiplo del paso de los
+# brazos (60°), así que la placa sigue montada sobre un brazo.
+ANG_CAMARA = math.radians(60.0)
+
+# --- placa trasera (m) -------------------------------------------------------
+R_BACK = 0.0620
+BACK_T = 0.0040
+R_POLE_VENT = 0.0130
 
 
 def spherical_cap_profile(radius_base, height, steps=8):
@@ -229,7 +257,7 @@ def build_cone():
     profile = [(R_SURROUND_IN + (R_DUSTCAP - R_SURROUND_IN) * (i / steps),
                 Z_SURROUND_IN - CONE_DROP * ((i / steps) ** 1.10)) for i in range(steps + 1)]
     profile.reverse()
-    obj = lathe("cone", profile, segments=SEG, material=textured_black())
+    obj = lathe("cone", profile, segments=SEG, material=graphite())
     apply_solidify(obj, 0.0025, offset=0.0)
     return obj
 
@@ -245,8 +273,12 @@ def build_motor_boot():
     """Boot sobre el motor: cilindro de 0.180 x 70 mm, hombro redondeado y 10
     nervios verticales. El perfil cierra solo en r = 0 arriba y abajo."""
     parts = []
+    # La base lleva un rebaje de 1.5 mm donde asienta la placa trasera: así
+    # la placa queda a ras de z = 0 sin una cara coplanar con el boot.
     profile = [
-        (0.0000, 0.0000),
+        (0.0000,          0.0015),
+        (R_BACK + 0.0010, 0.0015),
+        (R_BACK + 0.0030, 0.0000),
         (0.0860, 0.0000),
         (R_BOOT, 0.0045),
         (R_BOOT, 0.0555),          # pared recta: es donde van los nervios
@@ -268,15 +300,30 @@ def build_motor_boot():
         return r
 
     parts += radial_instances(rib, RIB_COUNT, 0.0, origin=(0, 0, 0))
+
+    back = cylinder("back-plate", R_BACK, BACK_T, segments=SEG,
+                    location=(0.0, 0.0, BACK_T / 2.0), material=brushed_alu())
+    bevel(back, 0.0012, segments=2)
+    boolean(back, cylinder("pole-vent-cutter", R_POLE_VENT, 0.0400, segments=24,
+                           location=(0.0, 0.0, BACK_T / 2.0)))
+    parts.append(back)
     return parts
 
 
 def build_terminal_plate():
     """Placa de terminales sobre la pared del basket, inclinada con ella, con
-    dos terminales de resorte y el lazo de tinsel colgando entre ellos."""
+    dos terminales de resorte y el lazo de tinsel colgando entre ellos. Se
+    arma sobre +X y se gira ANG_CAMARA sobre el eje: (r, y) es radial y
+    tangencial."""
     parts = []
+    ca, sa = math.cos(ANG_CAMARA), math.sin(ANG_CAMARA)
+
+    def place(r, y, z):
+        return (r * ca - y * sa, r * sa + y * ca, z)
+
+    rot = (0.0, PLATE_RY, ANG_CAMARA)
     plate = box("terminal-plate", (0.0090, 0.0900, 0.0360),
-                location=(PLATE_R, 0.0, PLATE_Z), rotation=(0.0, PLATE_RY, 0.0),
+                location=place(PLATE_R, 0.0, PLATE_Z), rotation=rot,
                 material=matte_black())
     bevel(plate, 0.0015, segments=2)
     parts.append(plate)
@@ -285,9 +332,9 @@ def build_terminal_plate():
     for sign, mat, name in ((1.0, accent_orange(), "positive"),
                             (-1.0, brushed_alu(), "negative")):
         term = box("spring-terminal-%s" % name, (0.0070, 0.0180, 0.0160),
-                   location=(PLATE_R + 0.0070 * nr, sign * TERM_OFFSET,
-                             PLATE_Z + 0.0070 * nz),
-                   rotation=(0.0, PLATE_RY, 0.0), material=mat)
+                   location=place(PLATE_R + 0.0070 * nr, sign * TERM_OFFSET,
+                                  PLATE_Z + 0.0070 * nz),
+                   rotation=rot, material=mat)
         bevel(term, 0.0010, segments=2)
         parts.append(term)
 
@@ -296,9 +343,9 @@ def build_terminal_plate():
     for i in range(steps + 1):
         t = i / steps
         sag = math.sin(math.pi * t)
-        path.append((PLATE_R + 0.0040 * nr + 0.0030 * sag,
-                     TERM_OFFSET * (1.0 - 2.0 * t),
-                     PLATE_Z + 0.0040 * nz - 0.0090 - 0.0190 * sag))
+        path.append(place(PLATE_R + 0.0040 * nr + 0.0030 * sag,
+                          TERM_OFFSET * (1.0 - 2.0 * t),
+                          PLATE_Z + 0.0040 * nz - 0.0090 - 0.0190 * sag))
     parts.append(swept_tube("tinsel-lead", path, 0.0022, sides=10,
                             material=accent_orange()))
     return parts
