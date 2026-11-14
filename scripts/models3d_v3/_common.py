@@ -464,7 +464,16 @@ def cone(name, radius_bottom, radius_top, depth, segments=32, location=(0, 0, 0)
 
 def tube(name, radius_outer, radius_inner, depth, segments=32, location=(0, 0, 0),
          rotation=(0, 0, 0), material=None):
-    """Anillo extruido (aro, boca de puerto, cuerpo de conector)."""
+    """Anillo extruido (aro, boca de puerto, cuerpo de conector).
+
+    OJO: NO queda centrado en `location`. El anillo nace en -depth/2 y se
+    engrosa hacia atrás, así que sobre su eje ocupa de -1.5·depth a
+    -0.5·depth. Para que quede centrado en un punto hay que pasarle ese punto
+    MÁS `depth` sobre el eje. No se corrige acá porque movería las piezas de
+    los modelos ya publicados que lo usan con la posición ajustada a ojo
+    (medido en noviembre de 2026 con subwoofer-5, donde dejó enterrados los
+    aros de los terminales; en el subwoofer el gasket llevaba así desde la v3).
+    """
     bm = bmesh.new()
     for i in range(segments):
         a0 = 2 * math.pi * i / segments
