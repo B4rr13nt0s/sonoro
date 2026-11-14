@@ -27,6 +27,24 @@ Qué cambia respecto de la v1
   - Placa central negra, ahora VISIBLE: en la v1 quedaba enterrada 3 mm
     bajo la tapa (con su logo), así que no se veía. Sin logo.
   - Perillas y cilindros a 32 segmentos (antes 24).
+
+amplifier-4 (13 de noviembre de 2026): que el aluminio tenga relieve
+--------------------------------------------------------------------
+En las capturas el amplifier-3 se leía como una caja gris pintada: el
+aluminio reflejaba el mismo gris en la tapa, en las aletas y en el fondo de
+los valles, y los dos costados largos eran planos. Era el modelo con menos
+detalle (7,232 triángulos). Dos cambios, sin tocar la placa central:
+
+  - OCLUSIÓN EN VÉRTICES, siempre (antes solo con --ao, que nadie usaba). Se
+    hornea por vértice, así que hace falta un vértice donde la sombra
+    cambia: la tapa del cuerpo es una sola cara y no tiene ninguno en los
+    valles. Por eso cada valle entre aletas lleva su propio FONDO, una tira
+    de aluminio 0.3 mm sobre la tapa, partida en tres tramos: los vértices
+    de adentro salen oscuros y los de la boca del valle, claros.
+  - NERVADURAS de extrusión en los dos costados largos: tres por lado, de
+    4 mm de alto y 2 mm de saliente. Agarran una línea de brillo cada una y,
+    con la oclusión, sombra entre ellas. Terminan 16 mm antes de cada
+    esquina, así que el radio del modelo no cambia.
 """
 
 import math
@@ -57,7 +75,7 @@ import _common                                              # noqa: E402
 importlib.reload(_common)   # Blender cachea los módulos entre corridas
 from _common import *       # noqa: F401,F403,E402
 
-ARCHIVO = "amplifier-3"
+ARCHIVO = "amplifier-4"
 
 L = 0.2600                  # largo total (X)
 W = 0.1750                  # ancho del cuerpo (Y)
@@ -119,6 +137,42 @@ def build_fins():
                       material=brushed_alu())
             bevel(fin, 0.0010, segments=2)
             parts.append(fin)
+    return parts
+
+
+def build_valley_floors():
+    """
+    Fondo de cada valle entre aletas: una tira de aluminio apenas sobre la
+    tapa, en tres tramos a tope. No se ve como pieza aparte; existe para que
+    la oclusión horneada tenga vértices DENTRO del valle (ver encabezado).
+    Bajo la placa central queda escondida: la placa asoma 0.4 mm y la tira 0.3.
+    """
+    parts = []
+    gap = FIN_PITCH - FIN_W
+    width = gap - 0.0004                     # 0.2 mm de luz contra cada aleta
+    z0, z1 = Z_BODY_TOP - 0.0010, Z_BODY_TOP + 0.0003
+    mouth = 0.0140                           # tramo de la boca del valle
+    half = FIN_LEN / 2.0
+    spans = ((-half + mouth / 2.0, mouth), (0.0, FIN_LEN - 2 * mouth), (half - mouth / 2.0, mouth))
+    for i in range(FIN_COUNT - 1):
+        y = (i - (FIN_COUNT - 2) / 2.0) * FIN_PITCH
+        for k, (cx, length) in enumerate(spans):
+            parts.append(box("valley-floor-%02d%s" % (i + 1, "abc"[k]),
+                             (length, width, z1 - z0),
+                             location=(cx, y, (z0 + z1) / 2.0), material=brushed_alu()))
+    return parts
+
+
+def build_side_ribs():
+    """Tres nervaduras de extrusión en cada costado largo, por encima de la oreja."""
+    parts = []
+    length = L - 2 * 0.0160
+    for i, sy in enumerate((-1, 1)):
+        for j, z in enumerate((0.0190, 0.0260, 0.0330)):
+            rib = box("side-rib-%d-%d" % (i + 1, j + 1), (length, 0.0040, 0.0040),
+                      location=(0.0, sy * Y_HALF, z), material=brushed_alu())
+            bevel(rib, 0.0010, segments=2)
+            parts.append(rib)
     return parts
 
 
@@ -240,6 +294,8 @@ def main():
     reset_scene()
     parts = [build_body()]
     parts += build_fins()
+    parts += build_valley_floors()
+    parts += build_side_ribs()
     parts += build_badge_plate()
     parts += build_input_panel()
     parts += build_power_panel()
@@ -250,8 +306,8 @@ def main():
     obj = join_objects(parts, "amplifier")
     # en X no se compara: los 260 mm son del cuerpo, y los conectores de los
     # dos paneles cortos suman 14 mm al bbox (0.274)
-    finalize(obj, ARCHIVO, front="-Y", expected_dims=(None, None, 0.055),
-             ao="--ao" in sys.argv)
+    # La oclusión va siempre: es lo que le da profundidad al disipador.
+    finalize(obj, ARCHIVO, front="-Y", expected_dims=(None, None, 0.055), ao=True)
 
 
 if __name__ == "__main__":

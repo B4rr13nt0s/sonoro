@@ -106,7 +106,7 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     href: "/catalogo/receptores",
   },
   amplifier: {
-    archivo: "amplifier-3.glb",
+    archivo: "amplifier-4.glb",
     displayScale: 1.1769,
     radius: 0.1557,
     height: 0.055,

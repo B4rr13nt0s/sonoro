@@ -1,10 +1,10 @@
 {
   "id": "amplifier",
-  "archivo": "amplifier-3.glb",
+  "archivo": "amplifier-4.glb",
   "radius": 0.1557,
   "height": 0.055,
-  "tris": 7232,
-  "bytes": 26836,
+  "tris": 8348,
+  "bytes": 45984,
   "materials": [
     "accent-orange",
     "brushed-alu",
