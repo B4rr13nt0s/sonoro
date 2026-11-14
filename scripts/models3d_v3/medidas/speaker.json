@@ -1,10 +1,10 @@
 {
   "id": "speaker",
-  "archivo": "speaker-4.glb",
+  "archivo": "speaker-5.glb",
   "radius": 0.0825,
-  "height": 0.055,
-  "tris": 20720,
-  "bytes": 67836,
+  "height": 0.07,
+  "tris": 17388,
+  "bytes": 65628,
   "materials": [
     "accent-orange",
     "brushed-alu",

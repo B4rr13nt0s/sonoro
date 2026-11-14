@@ -78,6 +78,37 @@ con aro y canasta de aluminio, se leía mucho mejor. Tres cambios:
     medio tapados por el marco.
 
 Medidas exteriores sin cambios: 165 mm de diámetro, 55 mm de alto.
+
+speaker-5 (14 de noviembre de 2026): estructura tomada de un coaxial real
+-------------------------------------------------------------------------
+A pedido del negocio, la ESTRUCTURA se rehace mirando fotos de un coaxial de
+6.5" real (de costado, de espaldas y de frente). Solo la estructura: los
+materiales son los de la paleta, y no hay logo, texto ni etiqueta de marca.
+
+  - PROFUNDIDAD: 70 mm (antes 55). La bocina era un plato; ahora tiene la
+    proporción de un driver, con canasta honda e imán grande. El diámetro no
+    cambia, así que no cambia ningún displayScale; sí cambia `height` en
+    lib/models3d.ts, que es con lo que el carrusel la centra.
+  - CANASTA de chapa estampada, a la vista: un aro bajo el marco, un aro que
+    asienta en el motor y, entre los dos, cuatro brazos curvos con cuatro
+    ventanas. Antes era un tronco de cono cerrado, escondido bajo el marco. En
+    brushed-alu, como la canasta del subwoofer: se probó en anodized-black y
+    se perdía contra el imán y el marco. Los brazos son sectores de
+    revolución (`sector`), no tablones.
+  - ARAÑA corrugada y formador de la bobina, visibles por las ventanas.
+  - MOTOR más grande: imán de 76 mm por 17 mm (antes 85 por 11.5), con la
+    placa trasera más chica que el imán y la superior apenas menor.
+  - TERMINALES de lengüeta: una regleta al pie de la ventana que mira a la
+    cámara, con dos palas, ancha y angosta. Reemplazan a los dos bloques
+    cromados. El naranja queda en el manguito de la pala positiva.
+  - TWEETER más ancho: 44 mm (antes 38), con las mismas reglas de la
+    corrección 5: pastilla de pared vertical y malla hundida.
+
+Lo que NO se tomó de las fotos, por las correcciones de arriba: las orejas y
+ranuras de montaje del marco (corrección 1: el marco es un disco circular),
+ni la trama del cono ni la rejilla del tweeter (decenas de miles de
+triángulos). El cono y el surround bajaron de 20 y 16 pasos a 10 y 12 para
+pagar la canasta y la araña sin subir el peso.
 """
 
 import math
@@ -108,22 +139,27 @@ import _common                                              # noqa: E402
 importlib.reload(_common)   # Blender cachea los módulos entre corridas
 from _common import *       # noqa: F401,F403,E402
 
-ARCHIVO = "speaker-4"
+import bmesh                # noqa: E402  (después de _common, que importa bpy)
+
+ARCHIVO = "speaker-5"
 
 # 72 segmentos en las piezas grandes: con 96 el conjunto pasa de 30k
 # triángulos. A 72 el paso angular es de 5 grados.
 SEG = 72
 SEG_TWEETER = 48          # el tweeter es chico pero se mira de cerca
+SEG_INNER = 36            # araña y formador: se ven chicos y por una ventana
+SEG_MOTOR = 48            # imán y placas: cilindros lisos, a 48 no se nota
 
 # --- radios (m) --------------------------------------------------------------
 R_OUTER = 0.0825          # 165 mm de diámetro
 R_FRAME_IN = 0.0705       # plancha de 12.0 mm de ancho radial
 R_SURROUND_IN = 0.0610    # arranque del cono; surround de 9.5 mm
 R_NECK = 0.0180           # cuello del cono
-R_MAGNET = 0.0425
-R_YOKE = 0.0395           # placas de acero del motor: 3 mm menos que el imán
-R_PLATE = 0.0300          # donde muere la cesta contra la placa superior
+R_MAGNET = 0.0380         # imán de 76 mm: 46 % del marco
+R_YOKE = 0.0360           # placa superior de acero
+R_BACK = 0.0340           # placa trasera, más chica que el imán
 R_VENT = 0.0060
+R_FORMER = 0.0190         # formador de la bobina
 R_BOLT = 0.0028           # barreno pasante 5.6 mm
 R_BOLT_RING = 0.0765      # centro exacto de la plancha: (0.0705 + 0.0825) / 2.
                           # No poner el círculo más afuera: el barreno queda
@@ -132,33 +168,89 @@ R_BOLT_RING = 0.0765      # centro exacto de la plancha: (0.0705 + 0.0825) / 2.
 BOLT_COUNT = 8            # 8 a 45 grados; i=0 queda a las 3 en punto
 
 # --- tweeter de pastilla (m) -------------------------------------------------
-R_TW_BODY = 0.0190        # cuerpo cilíndrico, más ancho que el cuello del cono
-R_TW_RIM = 0.0182         # canto de la cara superior, tras el redondeo
-R_TW_MESH = 0.0158        # malla hundida: bisel de solo 2.4 mm de ancho
+R_TW_BODY = 0.0220        # cuerpo cilíndrico, más ancho que el cuello del cono
+R_TW_RIM = 0.0211         # canto de la cara superior, tras el redondeo
+R_TW_MESH = 0.0183        # malla hundida: bisel de 2.8 mm de ancho
 
-Z_TW_BASE = 0.0215
-Z_TW_RIM = 0.0390         # cara del bisel: 17.5 mm de alto
-Z_TW_APEX = 0.0384        # ápice de la malla: 0.6 mm POR DEBAJO del bisel
+Z_TW_BASE = 0.0365
+Z_TW_RIM = 0.0540         # cara del bisel: 17.5 mm de alto
+Z_TW_APEX = 0.0534        # ápice de la malla: 0.6 mm POR DEBAJO del bisel
 
 # --- alturas (m) -------------------------------------------------------------
-Z_FRAME_TOP = 0.0550      # cara del marco: el punto más alto de la pieza
+Z_FRAME_TOP = 0.0700      # cara del marco: el punto más alto de la pieza
 FRAME_T = 0.0030
-Z_FRAME_BOT = Z_FRAME_TOP - FRAME_T          # 0.0520
+Z_FRAME_BOT = Z_FRAME_TOP - FRAME_T          # 0.0670
 
-Z_SURROUND_IN = 0.0498    # talón interior (donde nace el cono)
-Z_SURROUND_OUT = 0.0521   # talón exterior, metido bajo la pared del marco
+Z_SURROUND_IN = 0.0648    # talón interior (donde nace el cono)
+Z_SURROUND_OUT = 0.0671   # talón exterior, metido bajo la pared del marco
 SURROUND_H = 0.0034       # cresta ~1.1 mm bajo la cara del marco
 
-Z_NECK = 0.0235
-Z_PLATE_TOP = 0.0205
-Z_MAGNET_TOP = 0.0160     # placa superior de 4.5 mm
-Z_YOKE_TOP = 0.0045       # placa trasera de 4.5 mm; el imán va entre las dos
-
-# Hacia dónde mira la cámara del carrusel en la pose de reposo, medido desde
-# +X hacia +Y de Blender (azimut 150° en el glTF). Los terminales van ahí.
-ANG_CAMARA = math.radians(60.0)
+Z_NECK = 0.0385
+Z_YOKE_TOP = 0.0045       # placa trasera de 4.5 mm
+Z_MAGNET_TOP = 0.0215     # imán de 17 mm
+Z_PLATE_TOP = 0.0255      # placa superior de 4 mm
 
 CHAMFER = 0.0012          # v1: 0.0007, invisible a tamaño de carrusel
+
+# --- canasta estampada (m) ---------------------------------------------------
+# La pared es un tronco de cono, del piso de la canasta a la cara de abajo del
+# marco. Todo se ubica sobre esa línea con un parámetro t de 0 (abajo) a 1.
+WALL_BOT = (0.0440, 0.0270)
+WALL_TOP = (0.0715, 0.0672)
+WALL_T = 0.0022           # chapa estampada
+T_LOW_RING = 0.22         # el aro de abajo llega hasta acá
+T_HIGH_RING = 0.74        # el aro de arriba empieza acá
+SPOKE_COUNT = 4
+SPOKE_ARC = math.radians(29.0)   # cada brazo: 35 mm arriba, 22 mm abajo
+
+Z_SPIDER = 0.0345
+R_SPIDER_OUT = 0.0470
+SPIDER_WAVES = 4
+SPIDER_AMP = 0.0015
+
+# Hacia dónde mira la cámara del carrusel en la pose de reposo, medido desde
+# +X hacia +Y de Blender (azimut 150° en el glTF). Los cuatro brazos van
+# corridos 45° respecto de ese ángulo: frente a la cámara cae una VENTANA, por
+# la que se ve la araña, y al pie de esa ventana van los terminales.
+ANG_CAMARA = math.radians(60.0)
+
+
+def wall(t, offset=0.0):
+    """Punto (r, z) de la pared de la canasta en t, corrido `offset` hacia
+    afuera (negativo: hacia adentro del cuenco)."""
+    dr, dz = WALL_TOP[0] - WALL_BOT[0], WALL_TOP[1] - WALL_BOT[1]
+    length = math.hypot(dr, dz)
+    return (WALL_BOT[0] + dr * t + (dz / length) * offset,
+            WALL_BOT[1] + dz * t - (dr / length) * offset)
+
+
+def wall_band(t0, t1, extra=0.0):
+    """Sección cerrada de la chapa entre t0 y t1. `extra` la engrosa a los
+    dos lados: los brazos van 0.3 mm más gruesos que los aros para que sus
+    caras no queden coplanares con las de ellos donde se solapan."""
+    return [wall(t0, extra), wall(t1, extra),
+            wall(t1, -WALL_T - extra), wall(t0, -WALL_T - extra)]
+
+
+def sector(name, section, a0, a1, steps, material):
+    """Revoluciona una sección cerrada (lista de (r, z)) solo entre dos
+    ángulos, con tapas en los extremos. Es `lathe` para una pieza que no da
+    la vuelta entera: un brazo de chapa curvado con la canasta, no un tablón."""
+    bm = bmesh.new()
+    rings = []
+    for k in range(steps + 1):
+        a = a0 + (a1 - a0) * k / steps
+        rings.append([bm.verts.new((r * math.cos(a), r * math.sin(a), z))
+                      for (r, z) in section])
+    n = len(section)
+    for k in range(steps):
+        for j in range(n):
+            bm.faces.new((rings[k][j], rings[k][(j + 1) % n],
+                          rings[k + 1][(j + 1) % n], rings[k + 1][j]))
+    bm.faces.new(rings[0])
+    bm.faces.new(list(reversed(rings[-1])))
+    bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+    return _common._from_bmesh(name, bm, material)
 
 
 def build_frame():
@@ -189,20 +281,62 @@ def build_frame():
 
 
 def build_basket():
-    """Cesta troncocónica de 3 mm, escondida tras la pared interior del marco."""
-    t = 0.0030
-    outer = [
-        (R_FRAME_IN, Z_FRAME_BOT - 0.0002),
-        (0.0660, 0.0472),
-        (0.0580, 0.0432),
-        (0.0490, 0.0382),
-        (0.0405, 0.0322),
-        (0.0345, 0.0268),
-        (R_PLATE + 0.0020, Z_PLATE_TOP),
-    ]
-    profile = list(outer) + [(r, z - t) for (r, z) in reversed(outer)]
+    """
+    Canasta de chapa estampada, en cuenco: un aro arriba, pegado bajo el
+    marco; un aro abajo, que asienta en el motor; y entre los dos, cuatro
+    brazos curvos que dejan cuatro ventanas. En aluminio, como la canasta del
+    subwoofer: en anodizado negro se perdía contra el imán y el marco —negro
+    sobre negro, que era justo el problema de la bocina— y las ventanas no se
+    leían. El marco sigue negro: queda como un aro oscuro sobre la chapa clara.
+    """
+    mat = brushed_alu
+    parts = []
+    for name, t0, t1 in (("basket-ring-low", 0.0, T_LOW_RING),
+                         ("basket-ring-high", T_HIGH_RING, 1.0)):
+        section = wall_band(t0, t1)
+        parts.append(lathe(name, section + [section[0]], segments=SEG, material=mat()))
+
+    # Piso de la canasta, sobre la placa superior del motor.
+    parts.append(lathe("basket-floor", [
+        (R_FORMER + 0.0010, Z_PLATE_TOP),
+        (WALL_BOT[0] + 0.0005, Z_PLATE_TOP),
+        (WALL_BOT[0] + 0.0005, WALL_BOT[1] + 0.0010),
+        (R_FORMER + 0.0010, WALL_BOT[1] + 0.0010),
+        (R_FORMER + 0.0010, Z_PLATE_TOP),
+    ], segments=SEG, material=mat()))
+
+    section = wall_band(T_LOW_RING - 0.04, T_HIGH_RING + 0.04, extra=0.0003)
+    for i in range(SPOKE_COUNT):
+        center = ANG_CAMARA + math.pi / SPOKE_COUNT + 2.0 * math.pi * i / SPOKE_COUNT
+        parts.append(sector("basket-spoke-%d" % (i + 1), section,
+                            center - SPOKE_ARC / 2.0, center + SPOKE_ARC / 2.0,
+                            steps=4, material=mat()))
+    return parts
+
+
+def build_spider():
+    """
+    Araña corrugada y formador de la bobina: lo que se ve por las ventanas de
+    la canasta. Sin ellos, por una ventana se veía la de enfrente.
+    """
+    steps = SPIDER_WAVES * 4
+    top = []
+    for i in range(steps + 1):
+        t = i / steps
+        top.append((R_FORMER + (R_SPIDER_OUT - R_FORMER) * t,
+                    Z_SPIDER + SPIDER_AMP * math.sin(2.0 * math.pi * SPIDER_WAVES * t)))
+    thick = 0.0010
+    profile = top + [(r, z - thick) for (r, z) in reversed(top)]
     profile.append(profile[0])
-    return lathe("basket", profile, segments=SEG, material=matte_black())
+    spider = lathe("spider", profile, segments=SEG_INNER, material=textured_black())
+
+    former = lathe("coil-former", [
+        (0.0000,   Z_PLATE_TOP - 0.0010),
+        (R_FORMER, Z_PLATE_TOP - 0.0010),
+        (R_FORMER, Z_NECK + 0.0020),
+        (0.0000,   Z_NECK + 0.0020),
+    ], segments=SEG_INNER, material=matte_black())
+    return [spider, former]
 
 
 def build_surround():
@@ -214,7 +348,7 @@ def build_surround():
     r_in, r_out = R_SURROUND_IN, R_FRAME_IN + 0.0002
     r_center = (r_in + r_out) / 2.0
     r_arc = (r_out - r_in) / 2.0
-    steps = 16
+    steps = 12
 
     profile = [(r_in - 0.0020, Z_SURROUND_IN - 0.0006)]      # talón interior
     for i in range(steps + 1):
@@ -230,7 +364,7 @@ def build_surround():
 
 def build_cone():
     """Cono liso y continuo, sin dust cap: 26 mm de caída, casi recto."""
-    steps = 20
+    steps = 10
     drop = Z_SURROUND_IN - Z_NECK
     profile = [(R_SURROUND_IN + (R_NECK - R_SURROUND_IN) * (i / steps),
                 Z_SURROUND_IN - drop * ((i / steps) ** 1.10)) for i in range(steps + 1)]
@@ -243,20 +377,20 @@ def build_tweeter():
     """
     Tweeter de pastilla: carcasa (cilindro recto -> redondeo del canto ->
     bisel anular -> hueco) y malla casi plana, HUNDIDA 0.6 mm bajo el bisel.
-    El cuerpo (r 0.0190) es más ancho que el cuello del cono (r 0.0180) y
+    El cuerpo (r 0.0220) es más ancho que el cuello del cono (r 0.0180) y
     arranca por debajo del final del cono: la carcasa atraviesa el cono.
     """
     parts = []
     housing = [
-        (0.0000,     Z_TW_BASE),
-        (0.0186,     Z_TW_BASE),           # base, con el desmoldeo
-        (R_TW_BODY,  Z_TW_BASE + 0.0035),
-        (R_TW_BODY,  Z_TW_RIM - 0.0012),   # pared VERTICAL
-        (0.0188,     Z_TW_RIM - 0.0003),   # redondeo del canto
-        (R_TW_RIM,   Z_TW_RIM),            # cara del bisel
-        (R_TW_MESH,  Z_TW_RIM),            # canto interior del bisel
-        (R_TW_MESH,  Z_TW_RIM - 0.0022),   # pared del hueco
-        (0.0000,     Z_TW_RIM - 0.0026),   # fondo del hueco
+        (0.0000,             Z_TW_BASE),
+        (R_TW_BODY - 0.0004, Z_TW_BASE),           # base, con el desmoldeo
+        (R_TW_BODY,          Z_TW_BASE + 0.0035),
+        (R_TW_BODY,          Z_TW_RIM - 0.0012),   # pared VERTICAL
+        (R_TW_BODY - 0.0002, Z_TW_RIM - 0.0003),   # redondeo del canto
+        (R_TW_RIM,           Z_TW_RIM),            # cara del bisel
+        (R_TW_MESH,          Z_TW_RIM),            # canto interior del bisel
+        (R_TW_MESH,          Z_TW_RIM - 0.0022),   # pared del hueco
+        (0.0000,             Z_TW_RIM - 0.0026),   # fondo del hueco
     ]
     parts.append(lathe("tweeter-housing", housing, segments=SEG_TWEETER,
                        material=gloss_black()))
@@ -279,17 +413,18 @@ def build_motor():
     """
     Motor en sus tres piezas, de abajo hacia arriba: placa trasera de acero,
     imán cerámico y placa superior de acero, con el venteo central pasante.
-    El imán sobresale 3 mm de las placas, como en un driver de verdad.
+    El imán sobresale de las dos placas, y la trasera es la más chica, como
+    en un driver de verdad.
     """
     parts = []
     for name, radius, z0, z1, mat, bev in (
-        ("back-plate", R_YOKE, 0.0, Z_YOKE_TOP, brushed_alu(), 0.0012),
+        ("back-plate", R_BACK, 0.0, Z_YOKE_TOP, brushed_alu(), 0.0015),
         ("magnet", R_MAGNET, Z_YOKE_TOP, Z_MAGNET_TOP, matte_black(), 0.0020),
-        ("top-plate", R_YOKE, Z_MAGNET_TOP, Z_PLATE_TOP, brushed_alu(), 0.0012),
+        ("top-plate", R_YOKE, Z_MAGNET_TOP, Z_PLATE_TOP, brushed_alu(), 0.0010),
     ):
-        part = cylinder(name, radius, z1 - z0, segments=SEG,
+        part = cylinder(name, radius, z1 - z0, segments=SEG_MOTOR,
                         location=(0.0, 0.0, (z0 + z1) / 2.0), material=mat)
-        bevel(part, bev, segments=3)
+        bevel(part, bev, segments=2)
         boolean(part, cylinder("vent-cutter", R_VENT, 0.0800, segments=20,
                                location=(0.0, 0.0, (z0 + z1) / 2.0)))
         parts.append(part)
@@ -298,33 +433,46 @@ def build_motor():
 
 def build_terminals():
     """
-    Dos terminales push de 12 x 7.5 mm, con polaridad, mordiendo la cesta y de
-    cara a la cámara del carrusel (ANG_CAMARA). Se arman sobre +X y se giran:
-    (r, y) es radial y tangencial.
+    Regleta de terminales al pie de la ventana que mira a la cámara, sobre el
+    aro de abajo de la canasta: una tira aislante y dos lengüetas de pala,
+    una ancha y una angosta, que salen hacia afuera y algo hacia abajo. La
+    ancha lleva un manguito naranja: es la positiva. Se arma sobre +X y se
+    gira ANG_CAMARA: (r, y) es radial y tangencial.
     """
     parts = []
-    z = 0.0300
     ca, sa = math.cos(ANG_CAMARA), math.sin(ANG_CAMARA)
 
-    def place(r, y):
+    def place(r, y, z):
         return (r * ca - y * sa, r * sa + y * ca, z)
 
-    for i, (s, mat) in enumerate(((1.0, accent_orange()), (-1.0, matte_black()))):
-        y = s * 0.0092
-        body = box("terminal-%d" % (i + 1), (0.0120, 0.0075, 0.0090),
-                   location=place(0.0430, y), rotation=(0.0, 0.0, ANG_CAMARA),
-                   material=chrome())
-        bevel(body, 0.0009, segments=2)
-        parts.append(body)
-        parts.append(box("terminal-tab-%d" % (i + 1), (0.0045, 0.0054, 0.0021),
-                         location=place(0.0496, y), rotation=(0.0, 0.0, ANG_CAMARA),
-                         material=mat))
+    r_wall, z_wall = wall(0.14)
+    strip = box("terminal-strip", (0.0050, 0.0260, 0.0100),
+                location=place(r_wall + 0.0015, 0.0, z_wall),
+                rotation=(0.0, 0.0, ANG_CAMARA), material=matte_black())
+    bevel(strip, 0.0010, segments=2)
+    parts.append(strip)
+
+    tilt = math.radians(18.0)                    # las palas caen hacia afuera
+    for name, y, width, length, sleeve in (("wide", 0.0065, 0.0070, 0.0125, accent_orange),
+                                           ("narrow", -0.0070, 0.0046, 0.0105, satin_black)):
+        r_mid = r_wall + 0.0030 + (length / 2.0) * math.cos(tilt)
+        z_mid = z_wall - (length / 2.0) * math.sin(tilt)
+        blade = box("spade-%s" % name, (length, width, 0.0013),
+                    location=place(r_mid, y, z_mid),
+                    rotation=(0.0, tilt, ANG_CAMARA), material=chrome())
+        bevel(blade, 0.0004, segments=1)
+        parts.append(blade)
+        parts.append(box("spade-sleeve-%s" % name, (0.0045, width + 0.0022, 0.0038),
+                         location=place(r_wall + 0.0052, y, z_wall - 0.0006),
+                         rotation=(0.0, tilt, ANG_CAMARA), material=sleeve()))
     return parts
 
 
 def main():
     reset_scene()
-    parts = [build_frame(), build_basket(), build_surround(), build_cone()]
+    parts = [build_frame(), build_surround(), build_cone()]
+    parts += build_basket()
+    parts += build_spider()
     parts += build_tweeter()
     parts += build_motor()
     parts += build_terminals()
@@ -336,7 +484,7 @@ def main():
     # bbox correría el eje del driver y el tweeter dejaría de estar sobre el
     # eje del cono. El eje de construcción ya es (0, 0).
     finalize(obj, ARCHIVO, front="top", xy="keep",
-             expected_dims=(0.165, 0.165, 0.055), ao="--ao" in sys.argv)
+             expected_dims=(0.165, 0.165, 0.070), ao="--ao" in sys.argv)
 
 
 if __name__ == "__main__":
