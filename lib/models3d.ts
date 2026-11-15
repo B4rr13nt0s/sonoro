@@ -130,10 +130,10 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     href: "/catalogo/kits",
   },
   "sound-deadening": {
-    archivo: "sound-deadening-4.glb",
+    archivo: "sound-deadening-5.glb",
     displayScale: 1.0,
     radius: 0.248,
-    height: 0.1118,
+    height: 0.1117,
     label: "Insonorización",
     href: "/catalogo/insonorizacion",
   },

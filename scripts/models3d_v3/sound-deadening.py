@@ -68,6 +68,24 @@ se vea como una lámina enrollada y no como un cilindro.
   - No cambian las medidas exteriores (el radio y la altura de este modelo
     son los que fijan el encuadre de los nueve), la lengüeta, la pila ni el
     rodillo.
+
+sound-deadening-5 (noviembre de 2026): sin la orilla negra del rollo
+--------------------------------------------------------------------
+En sound-deadening-4 se había conservado, en el canto de cada cara del
+rollo, el aro del disco macizo de la v3: sus vértices eran los más lejanos
+del eje y de ellos salía el radio del modelo, que fija el encuadre y el
+displayScale de los nueve. Pero ese aro mide 54.7 mm de radio y la vuelta de
+afuera de la lámina, en espiral, va de 53 a 55: en media vuelta el aro
+asomaba por encima del aluminio como una orilla negra. El negocio pidió
+quitarla.
+
+  - Sale el aro. En el canto de cada cara queda lo que hay de verdad: el
+    filo de la vuelta de afuera de la lámina.
+  - Para que el radio del modelo siga en 0.2480 sin el aro, el rollo va
+    0.5 mm más atrás (ROLL_CY 0.1050 -> 0.1055). Sin eso bajaba a 0.2478 y
+    había que recalcular el displayScale de los nueve y regenerar todas las
+    imágenes estáticas. Si se toca el rollo, la lengüeta o la pila, hay que
+    volver a comprobar que `finalize` siga dando radio 0.2480.
 """
 
 import math
@@ -98,7 +116,7 @@ import _common                                              # noqa: E402
 importlib.reload(_common)   # Blender cachea los módulos entre corridas
 from _common import *       # noqa: F401,F403,E402
 
-ARCHIVO = "sound-deadening-4"
+ARCHIVO = "sound-deadening-5"
 
 SHEET_T = 0.0020                        # espesor de lámina
 FOIL_TILE = 0.0200                      # lado del mosaico del relieve: dos
@@ -108,7 +126,8 @@ FOIL_PX = 64
 ROLL_R = 0.0550
 ROLL_W = 0.3000
 ROLL_CX = -0.0500
-ROLL_CY = 0.1050
+ROLL_CY = 0.1055                        # 0.5 mm más atrás que en la v3: ver
+                                        # «sound-deadening-5» en el encabezado
 ROLL_CORE_R = ROLL_R - SHEET_T          # la capa exterior es la lengüeta
 ROLL_HOLE_R = 0.0160                    # hueco del centro del rollo
 ROLL_TURNS = 11                         # vueltas que se ven en cada cara
@@ -382,23 +401,8 @@ def build_roll():
         (ROLL_HOLE_R, half), (ROLL_HOLE_R, -half),
     ], segments=64, location=(ROLL_CX, ROLL_CY, ROLL_R),
         rotation=(0.0, math.pi / 2.0, 0.0), material=matte_black())
-    parts = [core, spiral_face("deadening-roll-face-1", -1.0),
-             spiral_face("deadening-roll-face-2", 1.0)]
-    # Aro de butilo en el canto de cada cara: es el borde del disco macizo
-    # que tenía la v3, con el centro recortado para dejar ver la espiral. Se
-    # conserva tal cual (mismo radio, mismo cilindro de 64 lados) porque sus
-    # vértices son los más lejanos del eje: de ellos sale el radio del modelo,
-    # y de ese radio, el encuadre y el displayScale de los nueve.
-    for i, side in enumerate((-1.0, 1.0)):
-        x = ROLL_CX + side * (ROLL_W / 2.0 - 0.0015)
-        ring = cylinder("deadening-roll-rim-%d" % (i + 1), ROLL_R - 0.0003, 0.0030,
-                        segments=64, location=(x, ROLL_CY, ROLL_R),
-                        rotation=(0.0, math.pi / 2.0, 0.0), material=matte_black())
-        boolean(ring, cylinder("rim-cutter", ROLL_CORE_R - 0.0004, 0.0200, segments=64,
-                               location=(x, ROLL_CY, ROLL_R),
-                               rotation=(0.0, math.pi / 2.0, 0.0)))
-        parts.append(ring)
-    return parts
+    return [core, spiral_face("deadening-roll-face-1", -1.0),
+            spiral_face("deadening-roll-face-2", 1.0)]
 
 
 # ------------------------------------------------------- láminas sueltas ----
