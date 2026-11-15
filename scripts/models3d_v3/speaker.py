@@ -138,10 +138,24 @@ parte se asemeje lo mayor posible». Sigue sin logo, texto ni etiqueta.
 
 Lo que NO se tomó de la foto: la etiqueta y el relieve con la marca (son
 marca); el cable del tweeter, que sale por el centro de la placa trasera y
-acá esa cara es la que apoya en el piso; las orejas del contorno de la
-pestaña (corrección 1: el contorno es circular); y la transparencia del
-bloque del terminal (va en white-plastic: el carrusel tiene una sola pieza
-transparente).
+acá esa cara es la que apoya en el piso; y las orejas del contorno de la
+pestaña (corrección 1: el contorno es circular).
+
+speaker-7 (15 de noviembre de 2026): el terminal, como es y donde va
+--------------------------------------------------------------------
+El terminal de speaker-6 estaba mal leído: un bloque blanco sobre un brazo,
+con las lengüetas saliendo perpendiculares a la chapa. El negocio mandó dos
+fotos de cerca. Es así:
+
+  - una REGLETA aislante oscura, plana y vertical, atravesada al pie de la
+    ventana y centrada en ella (no sobre un brazo);
+  - sujeta por un REMACHE central, un ojal con el agujero cuadrado, a un
+    soporte oscuro que sube desde el aro de abajo de la canasta;
+  - dos LENGÜETAS de pala, la ancha a la izquierda y la angosta a la
+    derecha: cada una con su pata remachada sobre la regleta y la pala
+    colgando hacia el imán, paralela al eje, con su agujero.
+
+Va en la ventana que mira a la cámara. Sale el bloque de white-plastic.
 """
 
 import math
@@ -174,7 +188,7 @@ from _common import *       # noqa: F401,F403,E402
 
 import bmesh                # noqa: E402  (después de _common, que importa bpy)
 
-ARCHIVO = "speaker-6"
+ARCHIVO = "speaker-7"
 
 # 72 segmentos en las piezas grandes: con 96 el conjunto pasa de 30k
 # triángulos. A 72 el paso angular es de 5 grados.
@@ -240,7 +254,6 @@ WINDOW_ARC = math.radians(55.0)  # los brazos quedan de 35°
 WINDOW_T = (0.20, 0.80)          # la ventana ocupa el 60 % central de la pared
 WINDOW_FILLET = 0.0060
 SLOT = (0.0090, 0.0032)          # ranuras de la pestaña: largo x ancho
-TERMINAL_SIDE = 1.0              # de qué lado de la ventana va el terminal
 
 Z_SPIDER = 0.0345
 R_SPIDER_OUT = 0.0505
@@ -250,7 +263,7 @@ SPIDER_AMP = 0.0015
 # Hacia dónde mira la cámara del carrusel en la pose de reposo, medido desde
 # +X hacia +Y de Blender (azimut 150° en el glTF). Los cuatro brazos van
 # corridos 45° respecto de ese ángulo: frente a la cámara cae una VENTANA, por
-# la que se ve la araña, y al borde de esa ventana va el terminal.
+# la que se ve la araña, y al pie de esa ventana va el terminal.
 ANG_CAMARA = math.radians(60.0)
 
 
@@ -548,20 +561,24 @@ def build_motor():
 
 def build_terminals():
     """
-    Terminal de lengüetas sobre la pared de la canasta, al borde de la
-    ventana que mira a la cámara (en la foto va en ese mismo lugar): un bloque
-    aislante apoyado en la chapa y dos lengüetas, ancha y angosta, que salen
-    perpendiculares a la pared, hacia afuera y hacia atrás. Se arma en el
-    marco local de la pared (a = normal, b = tangencial, c = pared arriba).
+    Terminal como el de las fotos: una regleta aislante oscura, plana y
+    vertical, atravesada al pie de la ventana que mira a la cámara; un
+    remache central (ojal con agujero cuadrado) que la sujeta a un soporte
+    que sube desde el aro de abajo de la canasta; y dos lengüetas de pala, la ancha a la izquierda y la
+    angosta a la derecha, con la pata sobre la regleta y la pala colgando
+    hacia el imán, paralela al eje.
+
+    Se arma en un marco local centrado en la regleta: a = radial hacia
+    afuera (la cara que se ve), b = tangencial (hacia la derecha de quien
+    mira desde afuera), c = hacia arriba.
     """
-    (nr, nz), (vr, vz) = wall_frame()
-    az = ANG_CAMARA + TERMINAL_SIDE * math.radians(35.5)
-    ca, sa = math.cos(az), math.sin(az)
-    r0, z0 = wall(0.56)
+    ca, sa = math.cos(ANG_CAMARA), math.sin(ANG_CAMARA)
+    r0 = wall(WINDOW_T[0])[0] + 0.0018          # justo por fuera del pie de la ventana
+    z0 = wall(WINDOW_T[0])[1] + 0.0022
     M = Matrix((
-        (nr * ca, -sa, vr * ca, r0 * ca),
-        (nr * sa, ca, vr * sa, r0 * sa),
-        (nz, 0.0, vz, z0),
+        (ca, -sa, 0.0, r0 * ca),
+        (sa, ca, 0.0, r0 * sa),
+        (0.0, 0.0, 1.0, z0),
         (0.0, 0.0, 0.0, 1.0),
     ))
 
@@ -570,20 +587,46 @@ def build_terminals():
         obj.data.update()
         return obj
 
-    block = box("terminal-block", (0.0056, 0.0150, 0.0090),
-                location=(0.0025, 0.0, 0.0), material=white_plastic())
-    bevel(block, 0.0012, segments=2)
-    parts = [lay(block)]
-    for name, b, width, length in (("wide", 0.0036, 0.0063, 0.0110),
-                                   ("narrow", -0.0040, 0.0046, 0.0095)):
-        blade = box("spade-%s" % name, (length, width, 0.0009),
-                    location=(0.0045 + length / 2.0, b, 0.0), material=chrome())
+    strip_t, strip_w, strip_h = 0.0015, 0.0300, 0.0100
+    face = strip_t / 2.0
+    strip = box("terminal-strip", (strip_t, strip_w, strip_h), material=matte_black())
+    bevel(strip, 0.0005, segments=1)
+    # el soporte: sube desde el aro de abajo, por detrás de la regleta, y
+    # asoma por encima de ella. Oscuro, como en la foto: en gris se leía como
+    # un bloque suelto.
+    tab = box("terminal-tab", (0.0030, 0.0090, 0.0105),
+              location=(-0.0020, 0.0, 0.0018), material=matte_black())
+    parts = [lay(strip), lay(tab)]
+
+    # remache central: ojal con el agujero cuadrado
+    parts.append(lay(cylinder("terminal-eyelet", 0.0027, 0.0008, segments=16,
+                              location=(face + 0.0004, 0.0, 0.0002),
+                              rotation=(0.0, math.pi / 2.0, 0.0), material=chrome())))
+    parts.append(lay(box("terminal-eyelet-hole", (0.0006, 0.0018, 0.0018),
+                         location=(face + 0.0007, 0.0, 0.0002), material=rubber())))
+
+    # lengüetas: pata remachada arriba y pala colgando por debajo de la regleta
+    lug_t = 0.0009
+    for name, b, pad_w, blade_w, blade_len, hole in (
+            ("wide", -0.0098, 0.0078, 0.0063, 0.0090, (0.0022, 0.0026)),
+            ("narrow", 0.0100, 0.0058, 0.0032, 0.0080, (0.0012, 0.0018))):
+        a = face + lug_t / 2.0
+        pad = box("lug-pad-%s" % name, (lug_t, pad_w, 0.0072),
+                  location=(a, b, 0.0006), material=brushed_alu())
+        bevel(pad, 0.0003, segments=1)
+        parts.append(lay(pad))
+        blade = box("lug-blade-%s" % name, (lug_t, blade_w, blade_len + 0.0030),
+                    location=(a, b, -strip_h / 2.0 - blade_len / 2.0 + 0.0015),
+                    material=brushed_alu())
         bevel(blade, 0.0003, segments=1)
         parts.append(lay(blade))
-    # el remache que sujeta el bloque a la chapa
-    parts.append(lay(cylinder("terminal-rivet", 0.0016, 0.0014, segments=12,
-                              location=(0.0056, 0.0, 0.0), rotation=(0.0, math.pi / 2.0, 0.0),
-                              material=chrome())))
+        parts.append(lay(box("lug-hole-%s" % name, (0.0004, hole[0], hole[1]),
+                             location=(a + lug_t / 2.0, b, -strip_h / 2.0 - blade_len * 0.55),
+                             material=rubber())))
+        # el remache de la pata
+        parts.append(lay(cylinder("lug-rivet-%s" % name, 0.0013, 0.0006, segments=10,
+                                  location=(a + lug_t / 2.0 + 0.0002, b, 0.0022),
+                                  rotation=(0.0, math.pi / 2.0, 0.0), material=chrome())))
     return parts
 
 

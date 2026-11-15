@@ -1,10 +1,10 @@
 {
   "id": "speaker",
-  "archivo": "speaker-6.glb",
+  "archivo": "speaker-7.glb",
   "radius": 0.0825,
   "height": 0.07,
-  "tris": 20468,
-  "bytes": 78536,
+  "tris": 20628,
+  "bytes": 79020,
   "materials": [
     "brushed-alu",
     "chrome",
@@ -14,8 +14,7 @@
     "matte-black",
     "rubber",
     "satin-black",
-    "textured-black",
-    "white-plastic"
+    "textured-black"
   ],
   "blender": "4.5.14 LTS"
 }
