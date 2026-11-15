@@ -122,9 +122,9 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     href: "/catalogo/subwoofers",
   },
   "install-kit": {
-    archivo: "install-kit-3.glb",
-    displayScale: 1.0874,
-    radius: 0.1952,
+    archivo: "install-kit-4.glb",
+    displayScale: 1.1032,
+    radius: 0.1873,
     height: 0.027,
     label: "Kits de instalación",
     href: "/catalogo/kits",
