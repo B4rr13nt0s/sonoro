@@ -161,6 +161,7 @@ PALETTE = {
     "gold":            ("C9A34E", 0.28, 1.0, {}),
     # plástico blanco (cuerpo del fusible ANL)
     "white-plastic":   ("E4E1DA", 0.45, 0.0, {}),
+    "grey-paint":      ("A4A6A6", 0.72, 0.0, {}),
     # tapa transparente de policarbonato: alphaMode BLEND en el glTF
     "clear-plastic":   ("F2F4F6", 0.05, 0.0, {"alpha": 0.20, "coat": (1.0, 0.02)}),
     # Forros de cable: código de color eléctrico, no acentos de marca. PVC
@@ -258,6 +259,7 @@ def cable_white():     return material("cable-white")
 def cable_black():     return material("cable-black")
 def gold():            return material("gold")
 def white_plastic():   return material("white-plastic")
+def grey_paint():      return material("grey-paint")
 def clear_plastic():   return material("clear-plastic")
 def connector_red():   return material("connector-red")
 def connector_smoke(): return material("connector-smoke")

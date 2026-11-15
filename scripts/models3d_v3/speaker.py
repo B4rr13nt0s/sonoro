@@ -109,6 +109,39 @@ ranuras de montaje del marco (corrección 1: el marco es un disco circular),
 ni la trama del cono ni la rejilla del tweeter (decenas de miles de
 triángulos). El cono y el surround bajaron de 20 y 16 pasos a 10 y 12 para
 pagar la canasta y la araña sin subir el peso.
+
+speaker-6 (15 de noviembre de 2026): la parte de atrás, como la de la foto
+--------------------------------------------------------------------------
+Pedido del negocio, con una foto de la bocina vista de espaldas: «que esta
+parte se asemeje lo mayor posible». Sigue sin logo, texto ni etiqueta.
+
+  - CANASTA Y PESTAÑA EN UNA SOLA CHAPA, pintada de gris claro (`grey-paint`,
+    material nuevo de la paleta: en la foto es chapa pintada, no metal a la
+    vista, y en brushed-alu salía casi negra porque refleja el piso). Un solo
+    perfil de revolución: asiento sobre el motor, pared cónica, pestaña bajo
+    el marco y un borde doblado hacia atrás. El marco negro del frente no
+    cambia (correcciones 1 a 3): la pestaña queda debajo, 1.7 mm más adentro.
+  - VENTANAS de trapecio con las esquinas redondeadas, recortadas de la
+    chapa (un boolean), y brazos anchos de 35°. Antes eran cuatro tablones
+    entre dos aros, con las ventanas en ángulo vivo.
+  - PESTAÑA con los ocho barrenos del marco y ocho ranuras entre ellos, como
+    los agujeros de montaje de la foto. Las ranuras no atraviesan el marco:
+    por ellas se ve su cara de abajo, negra.
+  - MOTOR como el de la foto: una banda de acero bajo la canasta y, cubriendo
+    el imán, la funda de goma con el hombro redondeado, un cordón y el labio
+    de atrás; adentro del labio, la placa trasera. Es más ancho (83 mm, antes
+    76). Antes: tres discos apilados.
+  - TERMINAL sobre la pared de la canasta, al borde de la ventana que mira a
+    la cámara: un bloque aislante con dos lengüetas, ancha y angosta, que
+    salen perpendiculares a la chapa. Antes era una regleta al pie de la
+    ventana, con un manguito naranja que la foto no tiene.
+
+Lo que NO se tomó de la foto: la etiqueta y el relieve con la marca (son
+marca); el cable del tweeter, que sale por el centro de la placa trasera y
+acá esa cara es la que apoya en el piso; las orejas del contorno de la
+pestaña (corrección 1: el contorno es circular); y la transparencia del
+bloque del terminal (va en white-plastic: el carrusel tiene una sola pieza
+transparente).
 """
 
 import math
@@ -141,7 +174,7 @@ from _common import *       # noqa: F401,F403,E402
 
 import bmesh                # noqa: E402  (después de _common, que importa bpy)
 
-ARCHIVO = "speaker-5"
+ARCHIVO = "speaker-6"
 
 # 72 segmentos en las piezas grandes: con 96 el conjunto pasa de 30k
 # triángulos. A 72 el paso angular es de 5 grados.
@@ -155,10 +188,10 @@ R_OUTER = 0.0825          # 165 mm de diámetro
 R_FRAME_IN = 0.0705       # plancha de 12.0 mm de ancho radial
 R_SURROUND_IN = 0.0610    # arranque del cono; surround de 9.5 mm
 R_NECK = 0.0180           # cuello del cono
-R_MAGNET = 0.0380         # imán de 76 mm: 46 % del marco
-R_YOKE = 0.0360           # placa superior de acero
-R_BACK = 0.0340           # placa trasera, más chica que el imán
-R_VENT = 0.0060
+R_BOOT = 0.0415           # funda de goma del imán: 83 mm, 50 % del marco
+R_BAND = 0.0400           # banda de acero entre la funda y la canasta
+R_BACK = 0.0300           # placa trasera, adentro del labio de la funda
+R_VENT = 0.0045
 R_FORMER = 0.0190         # formador de la bobina
 R_BOLT = 0.0028           # barreno pasante 5.6 mm
 R_BOLT_RING = 0.0765      # centro exacto de la plancha: (0.0705 + 0.0825) / 2.
@@ -186,32 +219,38 @@ Z_SURROUND_OUT = 0.0671   # talón exterior, metido bajo la pared del marco
 SURROUND_H = 0.0034       # cresta ~1.1 mm bajo la cara del marco
 
 Z_NECK = 0.0385
-Z_YOKE_TOP = 0.0045       # placa trasera de 4.5 mm
-Z_MAGNET_TOP = 0.0215     # imán de 17 mm
-Z_PLATE_TOP = 0.0255      # placa superior de 4 mm
+Z_BOOT_TOP = 0.0150       # la funda cubre los 15 mm de atrás del motor
+Z_PLATE_TOP = 0.0255      # hasta acá llega la banda de acero; encima, la canasta
 
 CHAMFER = 0.0012          # v1: 0.0007, invisible a tamaño de carrusel
 
 # --- canasta estampada (m) ---------------------------------------------------
-# La pared es un tronco de cono, del piso de la canasta a la cara de abajo del
-# marco. Todo se ubica sobre esa línea con un parámetro t de 0 (abajo) a 1.
-WALL_BOT = (0.0440, 0.0270)
-WALL_TOP = (0.0715, 0.0672)
-WALL_T = 0.0022           # chapa estampada
-T_LOW_RING = 0.22         # el aro de abajo llega hasta acá
-T_HIGH_RING = 0.74        # el aro de arriba empieza acá
-SPOKE_COUNT = 4
-SPOKE_ARC = math.radians(29.0)   # cada brazo: 35 mm arriba, 22 mm abajo
+# La pared es un tronco de cono, del asiento sobre el motor a la pestaña.
+# Todo se ubica sobre esa línea con un parámetro t de 0 (abajo) a 1.
+WALL_BOT = (0.0465, 0.0280)
+WALL_TOP = (0.0708, 0.0650)
+WALL_T = 0.0016           # chapa estampada
+Z_FLANGE_BOT = 0.0657     # cara de atrás de la pestaña
+Z_FLANGE_TOP = 0.0671     # cara de adelante: queda 0.1 mm adentro del marco
+R_FLANGE = 0.0808         # 1.7 mm más adentro que el marco
+LIP_T = 0.0010            # borde doblado hacia atrás
+Z_LIP = 0.0651
+WINDOW_COUNT = 4
+WINDOW_ARC = math.radians(55.0)  # los brazos quedan de 35°
+WINDOW_T = (0.20, 0.80)          # la ventana ocupa el 60 % central de la pared
+WINDOW_FILLET = 0.0060
+SLOT = (0.0090, 0.0032)          # ranuras de la pestaña: largo x ancho
+TERMINAL_SIDE = 1.0              # de qué lado de la ventana va el terminal
 
 Z_SPIDER = 0.0345
-R_SPIDER_OUT = 0.0470
+R_SPIDER_OUT = 0.0505
 SPIDER_WAVES = 4
 SPIDER_AMP = 0.0015
 
 # Hacia dónde mira la cámara del carrusel en la pose de reposo, medido desde
 # +X hacia +Y de Blender (azimut 150° en el glTF). Los cuatro brazos van
 # corridos 45° respecto de ese ángulo: frente a la cámara cae una VENTANA, por
-# la que se ve la araña, y al pie de esa ventana van los terminales.
+# la que se ve la araña, y al borde de esa ventana va el terminal.
 ANG_CAMARA = math.radians(60.0)
 
 
@@ -224,33 +263,50 @@ def wall(t, offset=0.0):
             WALL_BOT[1] + dz * t - (dr / length) * offset)
 
 
-def wall_band(t0, t1, extra=0.0):
-    """Sección cerrada de la chapa entre t0 y t1. `extra` la engrosa a los
-    dos lados: los brazos van 0.3 mm más gruesos que los aros para que sus
-    caras no queden coplanares con las de ellos donde se solapan."""
-    return [wall(t0, extra), wall(t1, extra),
-            wall(t1, -WALL_T - extra), wall(t0, -WALL_T - extra)]
+def wall_frame():
+    """Normal hacia afuera y dirección «pared arriba» de la canasta, en (r, z)."""
+    dr, dz = WALL_TOP[0] - WALL_BOT[0], WALL_TOP[1] - WALL_BOT[1]
+    length = math.hypot(dr, dz)
+    return (dz / length, -dr / length), (dr / length, dz / length)
 
 
-def sector(name, section, a0, a1, steps, material):
-    """Revoluciona una sección cerrada (lista de (r, z)) solo entre dos
-    ángulos, con tapas en los extremos. Es `lathe` para una pieza que no da
-    la vuelta entera: un brazo de chapa curvado con la canasta, no un tablón."""
+def rounded_polygon(points, radius, steps=5):
+    """Polígono convexo (en sentido antihorario) con las esquinas redondeadas."""
+    out = []
+    n = len(points)
+    for i in range(n):
+        p = Vector(points[i] + (0.0,))
+        d1 = (Vector(points[i - 1] + (0.0,)) - p).normalized()
+        d2 = (Vector(points[(i + 1) % n] + (0.0,)) - p).normalized()
+        half = d1.angle(d2) / 2.0
+        reach = radius / math.tan(half)
+        center = p + (d1 + d2).normalized() * (radius / math.sin(half))
+        a = p + d1 * reach - center
+        b = p + d2 * reach - center
+        a0 = math.atan2(a.y, a.x)
+        sweep = (math.atan2(b.y, b.x) - a0 + math.pi) % (2.0 * math.pi) - math.pi
+        for k in range(steps + 1):
+            ang = a0 + sweep * k / steps      # (Vector.slerp normaliza: no sirve)
+            out.append((center.x + radius * math.cos(ang), center.y + radius * math.sin(ang)))
+    return out
+
+
+def prism(name, outline, origin, ex, ey, ez, back, front):
+    """Prisma cerrado: el contorno 2D `outline`, puesto en el plano (ex, ey)
+    que pasa por `origin`, extruido sobre ez de -back a +front. Cortador de
+    las ventanas y de las ranuras."""
+    origin, ex, ey, ez = (Vector(v) for v in (origin, ex, ey, ez))
     bm = bmesh.new()
-    rings = []
-    for k in range(steps + 1):
-        a = a0 + (a1 - a0) * k / steps
-        rings.append([bm.verts.new((r * math.cos(a), r * math.sin(a), z))
-                      for (r, z) in section])
-    n = len(section)
-    for k in range(steps):
-        for j in range(n):
-            bm.faces.new((rings[k][j], rings[k][(j + 1) % n],
-                          rings[k + 1][(j + 1) % n], rings[k + 1][j]))
-    bm.faces.new(rings[0])
-    bm.faces.new(list(reversed(rings[-1])))
+    lo = [bm.verts.new(origin + ex * x + ey * y - ez * back) for (x, y) in outline]
+    hi = [bm.verts.new(origin + ex * x + ey * y + ez * front) for (x, y) in outline]
+    n = len(outline)
+    for i in range(n):
+        j = (i + 1) % n
+        bm.faces.new((lo[i], lo[j], hi[j], hi[i]))
+    bm.faces.new(list(reversed(lo)))
+    bm.faces.new(hi)
     bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
-    return _common._from_bmesh(name, bm, material)
+    return _common._from_bmesh(name, bm, None)
 
 
 def build_frame():
@@ -282,36 +338,77 @@ def build_frame():
 
 def build_basket():
     """
-    Canasta de chapa estampada, en cuenco: un aro arriba, pegado bajo el
-    marco; un aro abajo, que asienta en el motor; y entre los dos, cuatro
-    brazos curvos que dejan cuatro ventanas. En aluminio, como la canasta del
-    subwoofer: en anodizado negro se perdía contra el imán y el marco —negro
-    sobre negro, que era justo el problema de la bocina— y las ventanas no se
-    leían. El marco sigue negro: queda como un aro oscuro sobre la chapa clara.
+    Canasta y pestaña en una sola chapa estampada y pintada de gris, como la
+    de la foto: el asiento sobre el motor, la pared cónica, la pestaña que
+    queda bajo el marco y un borde doblado hacia atrás. Las cuatro ventanas
+    (trapecios de esquinas redondeadas), los ocho barrenos y las ocho ranuras
+    de la pestaña se recortan con UN solo boolean.
+
+    El marco negro del frente no cambia: la pestaña va debajo y 1.7 mm más
+    adentro, así que de frente solo asoma como un filo claro bajo el canto.
     """
-    mat = brushed_alu
-    parts = []
-    for name, t0, t1 in (("basket-ring-low", 0.0, T_LOW_RING),
-                         ("basket-ring-high", T_HIGH_RING, 1.0)):
-        section = wall_band(t0, t1)
-        parts.append(lathe(name, section + [section[0]], segments=SEG, material=mat()))
+    (nr, nz), (vr, vz) = wall_frame()
+    top_t = 1.0 + (Z_FLANGE_TOP - wall(1.0, -WALL_T)[1]) / (WALL_TOP[1] - WALL_BOT[1])
+    profile = [
+        (R_FORMER + 0.0010, Z_PLATE_TOP),               # asiento, cara de atrás
+        (WALL_BOT[0] - 0.0022, Z_PLATE_TOP),
+        (WALL_BOT[0] - 0.0006, Z_PLATE_TOP + 0.0008),   # canto del asiento
+        WALL_BOT,                                       # pared, cara de atrás
+        wall(0.07),         # un anillo cerca de cada doblez: el redondeo del
+        wall(0.93),         # sombreado queda ahí y la pared sale recta
+        WALL_TOP,
+        (WALL_TOP[0] + 0.0014, Z_FLANGE_BOT),           # doblez hacia la pestaña
+        (R_FLANGE - LIP_T, Z_FLANGE_BOT),
+        (R_FLANGE - LIP_T, Z_LIP),                      # borde doblado
+        (R_FLANGE, Z_LIP),
+        (R_FLANGE, Z_FLANGE_TOP),
+        wall(top_t, -WALL_T),                           # cara de adelante
+        wall(0.93, -WALL_T),
+        wall(0.07, -WALL_T),
+        wall(0.0, -WALL_T),
+        (R_FORMER + 0.0010, Z_PLATE_TOP + 0.0022),
+    ]
+    basket = lathe("basket", profile + [profile[0]], segments=SEG, material=grey_paint())
 
-    # Piso de la canasta, sobre la placa superior del motor.
-    parts.append(lathe("basket-floor", [
-        (R_FORMER + 0.0010, Z_PLATE_TOP),
-        (WALL_BOT[0] + 0.0005, Z_PLATE_TOP),
-        (WALL_BOT[0] + 0.0005, WALL_BOT[1] + 0.0010),
-        (R_FORMER + 0.0010, WALL_BOT[1] + 0.0010),
-        (R_FORMER + 0.0010, Z_PLATE_TOP),
-    ], segments=SEG, material=mat()))
-
-    section = wall_band(T_LOW_RING - 0.04, T_HIGH_RING + 0.04, extra=0.0003)
-    for i in range(SPOKE_COUNT):
-        center = ANG_CAMARA + math.pi / SPOKE_COUNT + 2.0 * math.pi * i / SPOKE_COUNT
-        parts.append(sector("basket-spoke-%d" % (i + 1), section,
-                            center - SPOKE_ARC / 2.0, center + SPOKE_ARC / 2.0,
-                            steps=4, material=mat()))
-    return parts
+    cutters = []
+    # ventanas: el contorno se dibuja en el plano tangente a la pared en el
+    # centro de la ventana y se extruye sobre la normal
+    t0, t1 = WINDOW_T
+    length = math.hypot(WALL_TOP[0] - WALL_BOT[0], WALL_TOP[1] - WALL_BOT[1])
+    r_mid = wall((t0 + t1) / 2.0)[0]
+    half_v = (t1 - t0) * length / 2.0
+    w0 = wall(t0)[0] * math.sin(WINDOW_ARC / 2.0)
+    w1 = wall(t1)[0] * math.sin(WINDOW_ARC / 2.0)
+    outline = rounded_polygon([(-w0, -half_v), (w0, -half_v), (w1, half_v), (-w1, half_v)],
+                              WINDOW_FILLET)
+    for i in range(WINDOW_COUNT):
+        az = ANG_CAMARA + 2.0 * math.pi * i / WINDOW_COUNT
+        ca, sa = math.cos(az), math.sin(az)
+        rm, zm = wall((t0 + t1) / 2.0, -WALL_T / 2.0)
+        cutters.append(prism("window-cutter-%d" % (i + 1), outline,
+                             (rm * ca, rm * sa, zm),
+                             (-sa, ca, 0.0),                     # tangencial
+                             (vr * ca, vr * sa, vz),             # pared arriba
+                             (nr * ca, nr * sa, nz),             # normal
+                             back=0.0300, front=0.0120))
+    # barrenos (los mismos ocho del marco) y ranuras entre ellos
+    slot = rounded_polygon([(-SLOT[0] / 2.0, -SLOT[1] / 2.0), (SLOT[0] / 2.0, -SLOT[1] / 2.0),
+                            (SLOT[0] / 2.0, SLOT[1] / 2.0), (-SLOT[0] / 2.0, SLOT[1] / 2.0)],
+                           SLOT[1] / 2.0 - 0.0001, steps=4)
+    for i in range(BOLT_COUNT):
+        a = 2.0 * math.pi * i / BOLT_COUNT
+        cutters.append(cylinder("flange-bore-cutter-%d" % (i + 1), R_BOLT, 0.0120,
+                                segments=20,
+                                location=(R_BOLT_RING * math.cos(a),
+                                          R_BOLT_RING * math.sin(a), 0.0655)))
+        a += math.pi / BOLT_COUNT
+        ca, sa = math.cos(a), math.sin(a)
+        cutters.append(prism("flange-slot-cutter-%d" % (i + 1), slot,
+                             (R_BOLT_RING * ca, R_BOLT_RING * sa, 0.0655),
+                             (-sa, ca, 0.0), (ca, sa, 0.0), (0.0, 0.0, 1.0),
+                             back=0.0060, front=0.0060))
+    boolean(basket, join_objects(cutters, "basket-cutters", prepare=False))
+    return [basket]
 
 
 def build_spider():
@@ -411,60 +508,82 @@ def build_tweeter():
 
 def build_motor():
     """
-    Motor en sus tres piezas, de abajo hacia arriba: placa trasera de acero,
-    imán cerámico y placa superior de acero, con el venteo central pasante.
-    El imán sobresale de las dos placas, y la trasera es la más chica, como
-    en un driver de verdad.
+    Motor como el de la foto, de atrás hacia adelante: la placa trasera,
+    hundida 1.2 mm adentro del labio de la funda; la funda de goma que cubre
+    el imán, con el hombro redondeado, un cordón moldeado y el labio de atrás
+    (sobre el que apoya la bocina); y la banda de acero que queda a la vista
+    entre la funda y el asiento de la canasta.
     """
-    parts = []
-    for name, radius, z0, z1, mat, bev in (
-        ("back-plate", R_BACK, 0.0, Z_YOKE_TOP, brushed_alu(), 0.0015),
-        ("magnet", R_MAGNET, Z_YOKE_TOP, Z_MAGNET_TOP, matte_black(), 0.0020),
-        ("top-plate", R_YOKE, Z_MAGNET_TOP, Z_PLATE_TOP, brushed_alu(), 0.0010),
-    ):
-        part = cylinder(name, radius, z1 - z0, segments=SEG_MOTOR,
-                        location=(0.0, 0.0, (z0 + z1) / 2.0), material=mat)
-        bevel(part, bev, segments=2)
-        boolean(part, cylinder("vent-cutter", R_VENT, 0.0800, segments=20,
-                               location=(0.0, 0.0, (z0 + z1) / 2.0)))
-        parts.append(part)
-    return parts
+    back = cylinder("back-plate", R_BACK + 0.0003, 0.0048, segments=SEG_MOTOR,
+                    location=(0.0, 0.0, 0.0036), material=brushed_alu())
+    cutters = [cylinder("vent-cutter", R_VENT, 0.0200, segments=20,
+                        location=(0.0, 0.0, 0.0036))]
+    for sx in (-1.0, 1.0):                       # dos barrenos ciegos de la placa
+        cutters.append(cylinder("back-dimple-cutter", 0.0022, 0.0200, segments=12,
+                                location=(sx * 0.0150, 0.0, 0.0036)))
+    boolean(back, join_objects(cutters, "back-cutters", prepare=False))
+
+    shoulder = 0.0040
+    boot = [(R_BACK, 0.0), (R_BOOT - shoulder, 0.0)]
+    for k in range(1, 6):                        # hombro redondeado
+        a = math.radians(-90.0 + 90.0 * k / 5.0)
+        boot.append((R_BOOT - shoulder + shoulder * math.cos(a),
+                     shoulder + shoulder * math.sin(a)))
+    boot += [
+        (R_BOOT, 0.0116),
+        (R_BOOT + 0.0007, 0.0122),               # cordón
+        (R_BOOT + 0.0007, 0.0134),
+        (R_BOOT, 0.0140),
+        (R_BOOT, Z_BOOT_TOP + 0.0002),
+        (R_BACK, Z_BOOT_TOP + 0.0002),
+    ]
+    boot_obj = lathe("magnet-boot", boot + [boot[0]], segments=SEG_MOTOR, material=rubber())
+
+    band = cylinder("motor-band", R_BAND, Z_PLATE_TOP - Z_BOOT_TOP, segments=SEG_MOTOR,
+                    location=(0.0, 0.0, (Z_PLATE_TOP + Z_BOOT_TOP) / 2.0),
+                    material=brushed_alu())
+    bevel(band, 0.0010, segments=2)
+    return [back, boot_obj, band]
 
 
 def build_terminals():
     """
-    Regleta de terminales al pie de la ventana que mira a la cámara, sobre el
-    aro de abajo de la canasta: una tira aislante y dos lengüetas de pala,
-    una ancha y una angosta, que salen hacia afuera y algo hacia abajo. La
-    ancha lleva un manguito naranja: es la positiva. Se arma sobre +X y se
-    gira ANG_CAMARA: (r, y) es radial y tangencial.
+    Terminal de lengüetas sobre la pared de la canasta, al borde de la
+    ventana que mira a la cámara (en la foto va en ese mismo lugar): un bloque
+    aislante apoyado en la chapa y dos lengüetas, ancha y angosta, que salen
+    perpendiculares a la pared, hacia afuera y hacia atrás. Se arma en el
+    marco local de la pared (a = normal, b = tangencial, c = pared arriba).
     """
-    parts = []
-    ca, sa = math.cos(ANG_CAMARA), math.sin(ANG_CAMARA)
+    (nr, nz), (vr, vz) = wall_frame()
+    az = ANG_CAMARA + TERMINAL_SIDE * math.radians(35.5)
+    ca, sa = math.cos(az), math.sin(az)
+    r0, z0 = wall(0.56)
+    M = Matrix((
+        (nr * ca, -sa, vr * ca, r0 * ca),
+        (nr * sa, ca, vr * sa, r0 * sa),
+        (nz, 0.0, vz, z0),
+        (0.0, 0.0, 0.0, 1.0),
+    ))
 
-    def place(r, y, z):
-        return (r * ca - y * sa, r * sa + y * ca, z)
+    def lay(obj):
+        obj.data.transform(M)
+        obj.data.update()
+        return obj
 
-    r_wall, z_wall = wall(0.14)
-    strip = box("terminal-strip", (0.0050, 0.0260, 0.0100),
-                location=place(r_wall + 0.0015, 0.0, z_wall),
-                rotation=(0.0, 0.0, ANG_CAMARA), material=matte_black())
-    bevel(strip, 0.0010, segments=2)
-    parts.append(strip)
-
-    tilt = math.radians(18.0)                    # las palas caen hacia afuera
-    for name, y, width, length, sleeve in (("wide", 0.0065, 0.0070, 0.0125, accent_orange),
-                                           ("narrow", -0.0070, 0.0046, 0.0105, satin_black)):
-        r_mid = r_wall + 0.0030 + (length / 2.0) * math.cos(tilt)
-        z_mid = z_wall - (length / 2.0) * math.sin(tilt)
-        blade = box("spade-%s" % name, (length, width, 0.0013),
-                    location=place(r_mid, y, z_mid),
-                    rotation=(0.0, tilt, ANG_CAMARA), material=chrome())
-        bevel(blade, 0.0004, segments=1)
-        parts.append(blade)
-        parts.append(box("spade-sleeve-%s" % name, (0.0045, width + 0.0022, 0.0038),
-                         location=place(r_wall + 0.0052, y, z_wall - 0.0006),
-                         rotation=(0.0, tilt, ANG_CAMARA), material=sleeve()))
+    block = box("terminal-block", (0.0056, 0.0150, 0.0090),
+                location=(0.0025, 0.0, 0.0), material=white_plastic())
+    bevel(block, 0.0012, segments=2)
+    parts = [lay(block)]
+    for name, b, width, length in (("wide", 0.0036, 0.0063, 0.0110),
+                                   ("narrow", -0.0040, 0.0046, 0.0095)):
+        blade = box("spade-%s" % name, (length, width, 0.0009),
+                    location=(0.0045 + length / 2.0, b, 0.0), material=chrome())
+        bevel(blade, 0.0003, segments=1)
+        parts.append(lay(blade))
+    # el remache que sujeta el bloque a la chapa
+    parts.append(lay(cylinder("terminal-rivet", 0.0016, 0.0014, segments=12,
+                              location=(0.0056, 0.0, 0.0), rotation=(0.0, math.pi / 2.0, 0.0),
+                              material=chrome())))
     return parts
 
 

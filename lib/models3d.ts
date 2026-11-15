@@ -68,7 +68,7 @@ export interface ModelEntry {
 // sound-deadening (radio 0.2480, displayScale 1.0000).
 export const MODELS: Record<ModelId, ModelEntry> = {
   speaker: {
-    archivo: "speaker-5.glb",
+    archivo: "speaker-6.glb",
     displayScale: 1.4699,
     radius: 0.0825,
     height: 0.07,
