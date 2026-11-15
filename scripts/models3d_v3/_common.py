@@ -268,12 +268,13 @@ def zip_clear():       return material("zip-clear")
 
 # ---------------------------------------------------- pantalla encendida -----
 
-def image_from_array(name, rgb):
+def image_from_array(name, rgb, colorspace="sRGB"):
     """
     Imagen de Blender a partir de un array (alto, ancho, 3) en sRGB 0..1 con
     la fila 0 ARRIBA (como una imagen normal). Blender guarda la fila 0
     abajo, así que se invierte. Se empaqueta: el .blend no depende de un
-    archivo externo y el exportador la encuentra.
+    archivo externo y el exportador la encuentra. Un mapa de normales va con
+    `colorspace="Non-Color"`: sus valores son vectores, no color.
     """
     import numpy as np
     h, w, _ = rgb.shape
@@ -281,7 +282,7 @@ def image_from_array(name, rgb):
     if img is not None:
         bpy.data.images.remove(img)
     img = bpy.data.images.new(name, width=w, height=h, alpha=False)
-    img.colorspace_settings.name = "sRGB"
+    img.colorspace_settings.name = colorspace
     rgba = np.ones((h, w, 4), np.float32)
     rgba[..., :3] = rgb[::-1]
     img.pixels.foreach_set(rgba.ravel())
@@ -314,6 +315,40 @@ def display_material(name, image, strength=1.0):
     nt.links.new(tex.outputs["Color"], bsdf.inputs["Emission Color"])
     _set_input(bsdf, "Emission Strength", strength)
     mat.diffuse_color = (0.02, 0.03, 0.06, 1.0)
+    return mat
+
+
+def foil_material(name, normal_image, strength=1.0):
+    """
+    Aluminio gofrado: los valores de `brushed-alu` más un mapa de normales en
+    mosaico. El relieve de una lámina butílica son rombos de pocos
+    milímetros; modelarlo con geometría sobre toda la lámina costaría decenas
+    de miles de triángulos, y con una rejilla gruesa salía como ruido. El
+    mapa lo da en todas las caras de aluminio por un par de KB. Necesita la
+    capa de UV «uv» en las caras que lo usan (se repite: UV fuera de 0..1).
+    """
+    hex_str, roughness, metallic, _extras = PALETTE["brushed-alu"]
+    mat = bpy.data.materials.get(name) or bpy.data.materials.new(name=name)
+    mat.use_nodes = True
+    mat.use_backface_culling = True
+    nt = mat.node_tree
+    bsdf = nt.nodes.get("Principled BSDF")
+    _set_input(bsdf, "Base Color", hex_to_linear_rgba(hex_str))
+    _set_input(bsdf, "Roughness", roughness)
+    _set_input(bsdf, "Metallic", metallic)
+    _set_input(bsdf, "Specular IOR Level", 0.5)
+    _set_input(bsdf, "Emission Strength", 0.0)
+    tex = nt.nodes.new("ShaderNodeTexImage")
+    tex.image = normal_image
+    tex.interpolation = "Linear"
+    bump = nt.nodes.new("ShaderNodeNormalMap")
+    bump.uv_map = "uv"
+    bump.inputs["Strength"].default_value = strength
+    nt.links.new(tex.outputs["Color"], bump.inputs["Color"])
+    nt.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    mat.diffuse_color = hex_to_linear_rgba(hex_str)
+    mat.roughness = roughness
+    mat.metallic = metallic
     return mat
 
 
@@ -1088,8 +1123,9 @@ def finalize(obj, basename, front="+Y", xy="bbox", expected_dims=None,
       front     hacia dónde mira el frente en el script («-Y», «+X», «top»…)
       xy        «bbox» o «keep» (drivers: se respeta el eje de construcción)
       ao        hornear oclusión de contacto en COLOR_0
-      texture   el modelo lleva la textura de una pantalla encendida
-                (screen, head-unit)
+      texture   el modelo lleva UNA textura: la de una pantalla encendida
+                (screen, head-unit) o el relieve del aluminio gofrado
+                (sound-deadening)
     """
     model_id = basename.rsplit("-", 1)[0] if basename.rsplit("-", 1)[-1].isdigit() else basename
     normalize_object(obj, xy=xy, front=front)
@@ -1121,10 +1157,11 @@ def finalize(obj, basename, front="+Y", xy="bbox", expected_dims=None,
     image_bytes = sum(gltf["bufferViews"][im["bufferView"]]["byteLength"]
                       for im in images if "bufferView" in im)
     if texture and len(images) != 1:
-        errors.append("se esperaba 1 imagen (la pantalla) y hay %d" % len(images))
+        errors.append("se esperaba 1 imagen (pantalla o relieve) y hay %d" % len(images))
     if not texture and images:
-        errors.append("trae %d imágenes: solo una pantalla encendida puede llevar "
-                      "textura, y el script lo declara con texture=True" % len(images))
+        errors.append("trae %d imágenes: solo una pantalla encendida o el aluminio "
+                      "gofrado pueden llevar textura, y el script lo declara con "
+                      "texture=True" % len(images))
     if "KHR_draco_mesh_compression" not in gltf.get("extensionsRequired", []):
         errors.append("falta KHR_draco_mesh_compression en extensionsRequired")
     if abs(lo.z) > 1e-6:
