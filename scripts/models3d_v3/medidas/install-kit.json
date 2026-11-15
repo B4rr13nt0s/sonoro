@@ -1,10 +1,10 @@
 {
   "id": "install-kit",
-  "archivo": "install-kit-3.glb",
-  "radius": 0.1952,
+  "archivo": "install-kit-4.glb",
+  "radius": 0.1873,
   "height": 0.027,
-  "tris": 22536,
-  "bytes": 83868,
+  "tris": 22752,
+  "bytes": 82832,
   "materials": [
     "brushed-alu",
     "cable-black",
@@ -16,7 +16,6 @@
     "gold",
     "matte-black",
     "rubber",
-    "satin-black",
     "white-plastic"
   ],
   "blender": "4.5.14 LTS"

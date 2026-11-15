@@ -71,8 +71,21 @@ const PASO_RUEDA = 0.985;
  */
 export const AZIMUT_REPOSO = 150 * (Math.PI / 180);
 export const POLAR_REPOSO = 65 * (Math.PI / 180);
+/**
+ * Topes de la inclinación. Hacia arriba la órbita llega casi al polo: el
+ * margen de 0.05 rad evita que la dirección de vista quede paralela al
+ * «arriba» de la cámara, donde `lookAt` devuelve NaN y el cuadro queda vacío.
+ *
+ * Hacia abajo se detiene 10° bajo el horizonte (100° desde +Y). Hasta
+ * noviembre de 2026 llegaba casi al polo de abajo, y desde ahí los nueve
+ * modelos eran una silueta negra: la base solo recibe el piso oscuro del
+ * estudio, que es justo lo que hace que el metal se lea como metal, así que
+ * aclararlo no era salida. Con 10° todavía se ve el canto inferior y algo de
+ * la base, de refilón, que es lo más que tiene sentido mostrar de un producto
+ * que va apoyado.
+ */
 export const POLAR_MIN = 0.05;
-export const POLAR_MAX = Math.PI - 0.05;
+export const POLAR_MAX = 100 * (Math.PI / 180);
 
 /**
  * Topes de zoom y punto de partida, como multiplicador de la distancia de

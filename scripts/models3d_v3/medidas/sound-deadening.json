@@ -1,13 +1,14 @@
 {
   "id": "sound-deadening",
-  "archivo": "sound-deadening-3.glb",
+  "archivo": "sound-deadening-5.glb",
   "radius": 0.248,
-  "height": 0.1118,
-  "tris": 15054,
-  "bytes": 40700,
+  "height": 0.1117,
+  "tris": 13816,
+  "bytes": 42092,
   "materials": [
     "brushed-alu",
     "chrome",
+    "embossed-foil",
     "matte-black",
     "rubber",
     "satin-black"

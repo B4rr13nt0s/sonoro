@@ -76,3 +76,7 @@ brag-output/
 
 # Bocetos y registros de los planes (skills de superpowers): borrador, no se versiona.
 .superpowers/
+
+# sonoro — capturas y mediciones de las sesiones de trabajo (línea base del
+# carrusel 3D, comparaciones antes/después). Evidencia local, no se versiona.
+Claude outputs/

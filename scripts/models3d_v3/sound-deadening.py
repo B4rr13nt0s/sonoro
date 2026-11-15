@@ -42,6 +42,50 @@ Qué cambia respecto de la v1
     liso, con el pandeo transversal del tramo suelto.
   - Normales: la v1 salía 100 % suavizada (ver _common.py, nota 1).
   - Mango del rodillo satinado.
+
+sound-deadening-4 (noviembre de 2026)
+-------------------------------------
+Pedido del negocio: mejorar la textura de la parte plateada, y que el rollo
+se vea como una lámina enrollada y no como un cilindro.
+
+  - ALUMINIO GOFRADO CON MAPA DE NORMALES. La lámina de verdad lleva un
+    relieve de rombos de pocos milímetros. En la v3 solo lo tenía la lámina
+    suelta de arriba, como geometría (rejilla de 4 mm, 3,400 triángulos), y
+    la lengüeta y el rollo iban lisos: «con la rejilla que admite el
+    presupuesto el patrón salía como ruido». Ahora TODAS las caras de
+    aluminio de la lámina usan `foil_material` (_common.py): los valores de
+    brushed-alu más un mapa de normales de 64 x 64 en mosaico, dibujado acá
+    con numpy (`foil_normal_map`). Es la segunda textura del carrusel, junto
+    con las pantallas encendidas, y la única que no es emisiva. Las láminas
+    sueltas vuelven a ser cajas de cara plana.
+  - EL ROLLO ES UNA LÁMINA ENROLLADA. Las dos caras eran discos negros
+    macizos: de costado se leía un cilindro. Ahora cada cara muestra la
+    ESPIRAL de las capas —el butilo negro y, entre vuelta y vuelta, el filo
+    de aluminio— alrededor del hueco del centro. La espiral termina donde
+    empieza la vuelta de afuera, que es la lengüeta. Las vueltas se dibujan
+    de 3.4 mm, no de los 2 mm de la lámina: a tamaño de carrusel 2 mm es
+    poco más de un píxel y las líneas se empastaban.
+  - No cambian las medidas exteriores (el radio y la altura de este modelo
+    son los que fijan el encuadre de los nueve), la lengüeta, la pila ni el
+    rodillo.
+
+sound-deadening-5 (noviembre de 2026): sin la orilla negra del rollo
+--------------------------------------------------------------------
+En sound-deadening-4 se había conservado, en el canto de cada cara del
+rollo, el aro del disco macizo de la v3: sus vértices eran los más lejanos
+del eje y de ellos salía el radio del modelo, que fija el encuadre y el
+displayScale de los nueve. Pero ese aro mide 54.7 mm de radio y la vuelta de
+afuera de la lámina, en espiral, va de 53 a 55: en media vuelta el aro
+asomaba por encima del aluminio como una orilla negra. El negocio pidió
+quitarla.
+
+  - Sale el aro. En el canto de cada cara queda lo que hay de verdad: el
+    filo de la vuelta de afuera de la lámina.
+  - Para que el radio del modelo siga en 0.2480 sin el aro, el rollo va
+    0.5 mm más atrás (ROLL_CY 0.1050 -> 0.1055). Sin eso bajaba a 0.2478 y
+    había que recalcular el displayScale de los nueve y regenerar todas las
+    imágenes estáticas. Si se toca el rollo, la lengüeta o la pila, hay que
+    volver a comprobar que `finalize` siga dando radio 0.2480.
 """
 
 import math
@@ -72,18 +116,22 @@ import _common                                              # noqa: E402
 importlib.reload(_common)   # Blender cachea los módulos entre corridas
 from _common import *       # noqa: F401,F403,E402
 
-ARCHIVO = "sound-deadening-3"
+ARCHIVO = "sound-deadening-5"
 
 SHEET_T = 0.0020                        # espesor de lámina
-EMB_PITCH = 0.0320                      # paso del patrón de rombos
-EMB_DEPTH = 0.0006                      # alto del relieve, HACIA ARRIBA
-EMB_GRID = 0.0040                       # muestreo del relieve
+FOIL_TILE = 0.0200                      # lado del mosaico del relieve: dos
+                                        # rombos por mosaico, 14 mm de rombo
+FOIL_PX = 64
 
 ROLL_R = 0.0550
 ROLL_W = 0.3000
 ROLL_CX = -0.0500
-ROLL_CY = 0.1050
+ROLL_CY = 0.1055                        # 0.5 mm más atrás que en la v3: ver
+                                        # «sound-deadening-5» en el encabezado
 ROLL_CORE_R = ROLL_R - SHEET_T          # la capa exterior es la lengüeta
+ROLL_HOLE_R = 0.0160                    # hueco del centro del rollo
+ROLL_TURNS = 11                         # vueltas que se ven en cada cara
+ROLL_FOIL_EDGE = 0.0010                 # filo de aluminio entre vuelta y vuelta
 
 TONGUE_W = ROLL_W
 TONGUE_CX = ROLL_CX
@@ -98,16 +146,54 @@ def smoothstep(e0, e1, x):
     return t * t * (3.0 - 2.0 * t)
 
 
-def emboss(u, v):
+def foil_normal_map():
     """
-    Relieve de rombos en coordenadas de la lámina (u, v), en metros, SIEMPRE
-    >= 0: meseta en el centro del rombo, pendiente suave hacia la ranura. Una
-    función continua, para que la rejilla la muestree sin escalones.
+    Mapa de normales del aluminio gofrado, en mosaico: una red de rombos
+    abombados separados por ranuras. Devuelve (alto, ancho, 3) en 0..1 con la
+    fila 0 arriba, como lo pide image_from_array.
+
+    Con g = |sin πa| · |sin πb|, a = u + v y b = u − v, la altura es
+    h = 1 − (1 − g)^2.5: vale 0 en las ranuras, sube rápido al salir de ellas
+    y se aplana en el centro del rombo, como una almohadilla. (La primera
+    versión, g^0.7 con 38° de pendiente, daba pirámides de canto vivo: se
+    leía como chapa tachonada, no como aluminio gofrado.) La normal sale del
+    gradiente, con v creciendo hacia ARRIBA (la convención de glTF: el verde
+    es +V).
     """
-    a = ((u + v) / EMB_PITCH) % 1.0 - 0.5
-    b = ((u - v) / EMB_PITCH) % 1.0 - 0.5
-    d = max(abs(a), abs(b))
-    return EMB_DEPTH * (1.0 - smoothstep(0.26, 0.42, d))
+    import numpy as np
+    n = FOIL_PX
+    u = (np.arange(n) + 0.5) / n
+    uu, vv = np.meshgrid(u, u)               # fila i -> v creciente
+    g = np.abs(np.sin(np.pi * (uu + vv))) * np.abs(np.sin(np.pi * (uu - vv)))
+    h = 1.0 - (1.0 - g) ** 2.5
+    du = (np.roll(h, -1, axis=1) - np.roll(h, 1, axis=1)) / 2.0
+    dv = (np.roll(h, -1, axis=0) - np.roll(h, 1, axis=0)) / 2.0
+    gain = math.tan(math.radians(30.0)) / np.percentile(np.hypot(du, dv), 95)
+    nx, ny, nz = -du * gain, -dv * gain, np.ones_like(h)
+    norm = np.sqrt(nx * nx + ny * ny + nz * nz)
+    rgb = np.stack([nx / norm, ny / norm, nz / norm], axis=-1) * 0.5 + 0.5
+    return rgb[::-1].astype(np.float32)      # fila 0 arriba
+
+
+_FOIL = {}
+
+
+def foil():
+    """El material de aluminio gofrado, creado una sola vez."""
+    if "mat" not in _FOIL:
+        image = image_from_array("foil-normal", foil_normal_map(), colorspace="Non-Color")
+        _FOIL["mat"] = foil_material("embossed-foil", image)
+    return _FOIL["mat"]
+
+
+def set_uv(obj, fn):
+    """UV por vértice: fn(índice del vértice) -> (u, v), o None para dejarlo en 0."""
+    me = obj.data
+    layer = me.uv_layers.get("uv") or me.uv_layers.new(name="uv")
+    for loop in me.loops:
+        uv = fn(loop.vertex_index)
+        layer.data[loop.index].uv = uv if uv is not None else (0.0, 0.0)
+    return obj
 
 
 def _grid(name, rows, cols, pos_fn, material_, flip=False):
@@ -239,8 +325,11 @@ def build_tongue():
             off += -0.0042 * math.sin(math.pi * u) * math.sin(math.pi * t) ** 0.7
         return Vector((x, y + ny * off, z + nz * off))
 
-    pieces = [_grid("deadening-sheet-top", rows, cols, lambda i, j: surface(i, j, 1),
-                    brushed_alu()),
+    top = _grid("deadening-sheet-top", rows, cols, lambda i, j: surface(i, j, 1), foil())
+    # el relieve corre a lo largo de la lámina: u a lo ancho, v sobre el arco
+    set_uv(top, lambda k: ((k % cols) / (cols - 1) * TONGUE_W / FOIL_TILE,
+                           frames[k // cols][2] / FOIL_TILE))
+    pieces = [top,
               _grid("deadening-sheet-bottom", rows, cols, lambda i, j: surface(i, j, -1),
                     matte_black(), flip=True)]
     for j_edge, tag in ((0, "left"), (cols - 1, "right")):
@@ -253,53 +342,92 @@ def build_tongue():
     return [join_objects(pieces, "deadening-sheet", prepare=False)]
 
 
+def spiral_face(name, side):
+    """
+    Cara del rollo: la espiral de las capas de la lámina enrollada, plana, en
+    dos materiales. Cada vuelta es una banda de butilo y, por fuera, el filo
+    del aluminio. La primera vuelta nace con ancho cero en el borde del hueco;
+    la última termina donde empieza la vuelta de afuera (la lengüeta), en el
+    mismo ángulo, así que la espiral sigue de largo en ella.
+
+    `side` es +1 para la cara de +X y −1 para la de −X: las caras miran
+    hacia afuera del rollo.
+    """
+    pitch = (ROLL_CORE_R - 0.0005 - ROLL_HOLE_R) / ROLL_TURNS
+    end = math.radians(WRAP_START_DEG + 90.0)    # ángulo donde nace la lengüeta
+    x = ROLL_CX + side * (ROLL_W / 2.0 - 0.0004)
+    bm = bmesh.new()
+    rows = []
+    for turn in range(ROLL_TURNS):
+        steps = 28 if turn < ROLL_TURNS // 2 else 40
+        for k in range(steps + (1 if turn == ROLL_TURNS - 1 else 0)):
+            t = turn + k / steps                 # vueltas desde el hueco
+            th = end - 2.0 * math.pi * (ROLL_TURNS - t)
+            outer = ROLL_HOLE_R + pitch * t
+            inner = max(ROLL_HOLE_R, outer - pitch)
+            mid = max(inner, outer - ROLL_FOIL_EDGE)
+            rows.append([bm.verts.new((x, ROLL_CY + r * math.cos(th), ROLL_R + r * math.sin(th)))
+                         for r in (inner, mid, outer)])
+    for a, b in zip(rows[:-1], rows[1:]):
+        for band in (0, 1):
+            quad = [a[band], a[band + 1], b[band + 1], b[band]]
+            if side < 0:
+                quad.reverse()
+            try:
+                face = bm.faces.new(quad)
+            except ValueError:
+                continue
+            face.material_index = band
+    bmesh.ops.remove_doubles(bm, verts=list(bm.verts), dist=1e-7)
+    mesh = bpy.data.meshes.new(name)
+    bm.to_mesh(mesh)
+    bm.free()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+    obj.data.materials.append(matte_black())
+    obj.data.materials.append(brushed_alu())
+    return obj
+
+
 def build_roll():
-    """Núcleo liso de butilo, una lámina más chico que el radio nominal, y
-    dos tapas MACIZAS (por el agujero de un anillo se veía la tapa interior)."""
-    parts = [cylinder("deadening-roll", ROLL_CORE_R, ROLL_W, segments=64,
-                      location=(ROLL_CX, ROLL_CY, ROLL_R),
-                      rotation=(0.0, math.pi / 2.0, 0.0), material=matte_black())]
-    for i, s in enumerate((-1.0, 1.0)):
-        parts.append(cylinder("deadening-roll-face-%d" % (i + 1), ROLL_R - 0.0003, 0.0030,
-                              segments=64,
-                              location=(ROLL_CX + s * (ROLL_W / 2.0 - 0.0015), ROLL_CY, ROLL_R),
-                              rotation=(0.0, math.pi / 2.0, 0.0), material=matte_black()))
-    return parts
+    """
+    El rollo por dentro de la vuelta de afuera: un tubo de butilo con el
+    hueco del centro y, en cada cara, la espiral de las capas. La vuelta de
+    afuera es la lengüeta (build_tongue).
+    """
+    half = ROLL_W / 2.0 - 0.0010
+    core = lathe("deadening-roll", [
+        (ROLL_HOLE_R, -half), (ROLL_CORE_R, -half), (ROLL_CORE_R, half),
+        (ROLL_HOLE_R, half), (ROLL_HOLE_R, -half),
+    ], segments=64, location=(ROLL_CX, ROLL_CY, ROLL_R),
+        rotation=(0.0, math.pi / 2.0, 0.0), material=matte_black())
+    return [core, spiral_face("deadening-roll-face-1", -1.0),
+            spiral_face("deadening-roll-face-2", 1.0)]
 
 
 # ------------------------------------------------------- láminas sueltas ----
 
-def slab(name, cx, cy, yaw, w, d, z_base, t, nu, nv, bump, top_mat, side_mat):
+def slab(name, cx, cy, yaw, w, d, z_base, t):
     """
-    Lámina como sólido CERRADO: cara superior en rejilla nu x nv con relieve
-    `bump(u, v)` (>= 0), cantos y fondo. Cara superior en `top_mat`, el resto
-    en `side_mat`. Sin piezas superpuestas: no hay nada que atravesar.
+    Lámina suelta como sólido CERRADO: una caja con la cara de arriba en
+    aluminio gofrado (con su UV) y los cantos y el fondo en butilo. Sin piezas
+    superpuestas: no hay nada que atravesar.
     """
     c, s = math.cos(yaw), math.sin(yaw)
+    corners = [(-w / 2.0, -d / 2.0), (w / 2.0, -d / 2.0), (w / 2.0, d / 2.0), (-w / 2.0, d / 2.0)]
 
     def place(u, v, z):
         return Vector((cx + u * c - v * s, cy + u * s + v * c, z))
 
-    us = [-w / 2.0 + w * j / (nu - 1) for j in range(nu)]
-    vs = [-d / 2.0 + d * i / (nv - 1) for i in range(nv)]
     bm = bmesh.new()
-    top = [[bm.verts.new(place(u, v, z_base + t + bump(u, v))) for u in us] for v in vs]
-    for i in range(nv - 1):
-        for j in range(nu - 1):
-            bm.faces.new([top[i][j], top[i][j + 1], top[i + 1][j + 1], top[i + 1][j]])
-
-    ring = ([(0, j) for j in range(nu)] + [(i, nu - 1) for i in range(1, nv)]
-            + [(nv - 1, j) for j in range(nu - 2, -1, -1)]
-            + [(i, 0) for i in range(nv - 2, 0, -1)])
-    bottom = [bm.verts.new(place(us[j], vs[i], z_base)) for (i, j) in ring]
-    n = len(ring)
-    sides = []
-    for k in range(n):
-        a, b = ring[k], ring[(k + 1) % n]
-        sides.append(bm.faces.new([top[a[0]][a[1]], bottom[k],
-                                   bottom[(k + 1) % n], top[b[0]][b[1]]]))
-    base = bm.faces.new(list(reversed(bottom)))
-    for f in sides + [base]:
+    top = [bm.verts.new(place(u, v, z_base + t)) for (u, v) in corners]
+    bottom = [bm.verts.new(place(u, v, z_base)) for (u, v) in corners]
+    bm.faces.new(top)
+    others = [bm.faces.new(list(reversed(bottom)))]
+    for k in range(4):
+        n = (k + 1) % 4
+        others.append(bm.faces.new([top[k], bottom[k], bottom[n], top[n]]))
+    for f in others:
         f.material_index = 1
     bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
 
@@ -308,26 +436,19 @@ def slab(name, cx, cy, yaw, w, d, z_base, t, nu, nv, bump, top_mat, side_mat):
     bm.free()
     obj = bpy.data.objects.new(name, mesh)
     bpy.context.collection.objects.link(obj)
-    obj.data.materials.append(top_mat)
-    obj.data.materials.append(side_mat)
+    obj.data.materials.append(foil())
+    obj.data.materials.append(matte_black())
+    set_uv(obj, lambda k: ((corners[k][0] / FOIL_TILE, corners[k][1] / FOIL_TILE)
+                           if k < 4 else None))
     return obj
 
 
 def build_loose_sheets():
-    """Tres láminas apiladas al frente, con desfase y giro leve. Solo la de
-    arriba lleva relieve: de las otras dos se ven los cantos."""
-    parts = []
+    """Tres láminas apiladas al frente, con desfase y giro leve."""
     specs = ((-0.0500, -0.1720, 3.5), (-0.0470, -0.1750, -2.5), (-0.0530, -0.1690, 1.0))
-    nu = int(round(LOOSE_W / EMB_GRID)) + 1
-    nv = int(round(LOOSE_D / EMB_GRID)) + 1
-    for k, (cx, cy, deg) in enumerate(specs):
-        top = k == len(specs) - 1
-        parts.append(slab("loose-sheet-%d" % (k + 1), cx, cy, math.radians(deg),
-                          LOOSE_W, LOOSE_D, k * SHEET_T, SHEET_T,
-                          nu if top else 2, nv if top else 2,
-                          emboss if top else (lambda u, v: 0.0),
-                          brushed_alu(), matte_black()))
-    return parts
+    return [slab("loose-sheet-%d" % (k + 1), cx, cy, math.radians(deg),
+                 LOOSE_W, LOOSE_D, k * SHEET_T, SHEET_T)
+            for k, (cx, cy, deg) in enumerate(specs)]
 
 
 def build_roller():
@@ -402,7 +523,7 @@ def main():
     print("\npiezas: %d" % len(parts))
     discard_orphans(parts)
     obj = join_objects(parts, "sound-deadening")
-    finalize(obj, ARCHIVO, front="-Y", ao="--ao" in sys.argv)
+    finalize(obj, ARCHIVO, front="-Y", ao="--ao" in sys.argv, texture=True)
 
 
 if __name__ == "__main__":

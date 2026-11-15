@@ -24,6 +24,18 @@
       "env": {
         "NEXT_PUBLIC_CHAT_ENABLED": "true"
       }
+    },
+    {
+      "name": "sonoro-prod",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "scripts/lhci-serve.js"
+      ],
+      "port": 3100,
+      "env": {
+        "NEXT_PUBLIC_WHATSAPP_NUMBER": "50200000000",
+        "NEXT_PUBLIC_CHAT_ENABLED": "true"
+      }
     }
   ]
 }

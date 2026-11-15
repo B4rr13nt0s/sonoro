@@ -9,15 +9,19 @@ publicado: mismo inventario y misma fila de accesorios al frente, pero los
 cables y el portafusible están rehechos (ver «Qué cambia»).
 
     área          ~0.30 (X) x 0.22 (Y), alto máximo ~0.03
-    cable de poder 4 AWG rojo  (9 mm de diámetro), madeja de 4.2 vueltas
-    cable de tierra 4 AWG negro, madeja de 4.2 vueltas
-    cable de remoto 18 AWG azul (3.2 mm), madeja de 6.2 vueltas
+    cable de poder 4 AWG rojo  (9 mm de diámetro), madeja de 5.2 vueltas
+                   (3 en el piso y 2.2 encima)
+    cable de tierra 4 AWG negro, madeja de 3.4 vueltas (2 y 1.4)
+    cable de remoto 18 AWG azul (3.2 mm), madeja de 6.2 vueltas (4 y 2.2)
     portafusible ANL 0.096 x 0.036 x ~0.027
 
 Cinco reglas que el script hace cumplir por código, no a ojo:
 
 1. NADA FLOTA NI SE APILA. Cada grupo se apoya plano en el piso con
-   snap_group_to_floor(): su punto más bajo queda exactamente en z = 0.
+   snap_group_to_floor(): su punto más bajo queda exactamente en z = 0. Y
+   dentro de cada cable, support_gap() mide cuánto aire queda debajo de cada
+   tramo (hasta el piso o hasta el cable en el que se apoya) y el script
+   falla si pasa de SUPPORT_MAX diámetros.
 2. NADA SE TOCA. audit_layout() mide la separación real en planta entre
    cada par de grupos (vértice a vértice) y avisa si baja de 6 mm.
 3. LO QUE SE CONECTA, PENETRA. Ojos unidos al barril por lengüeta, fusible
@@ -40,9 +44,9 @@ Qué cambia respecto de la v1
 ----------------------------
   - CABLES. En la v1 eran espirales planas con aire entre vueltas, de sección
     gruesa y mate: se leían como mangueras o rollos de plastilina. Ahora:
-      * cada cable es una MADEJA: las vueltas se apoyan unas en otras y van
-        rotando alrededor del corte del aro, como un cable enrollado de
-        fábrica, con un leve óvalo para que no parezca un toro perfecto;
+      * cada cable es una MADEJA: las vueltas se apoyan unas en otras, con
+        un leve óvalo para que no parezca un toro perfecto (cómo se apilan
+        cambió en install-kit-4, ver abajo);
       * las dos puntas SALEN de la madeja en una S larga, sin quiebres, y
         terminan pelado, con las hebras de cobre a la vista: es el rasgo que
         dice «cable» a cualquier tamaño;
@@ -55,6 +59,33 @@ Qué cambia respecto de la v1
     En la v1 era una caja ahumada con una laminilla de cobre.
   - Sin los dos terminales de bocina (los cubitos negros junto al rollo azul).
   - Normales: la v1 salía 100 % suavizada (ver _common.py, nota 1).
+
+Qué cambia en install-kit-4 (noviembre de 2026)
+-----------------------------------------------
+Pedido del negocio: «que las secciones de los cables que están flotando
+dejen de flotar», y pulir el resto.
+
+  - MADEJAS EN DOS CAPAS, TODAS APOYADAS. En install-kit-3 las vueltas iban
+    rotando alrededor de un hueco (cinco puestos en una elipse): las de
+    arriba no descansaban en nada, y las dos puntas salían de la madeja a
+    media altura y bajaban en el aire a lo largo de 5 cm. Ahora cada cable
+    es una espiral plana en el piso con las vueltas restantes montadas
+    encima, y las dos puntas salen por el piso. Ver coil_path(). La altura
+    de la capa de arriba se calcula apoyándola sobre la de abajo, y
+    support_gap() lo exige (regla 1).
+  - El cable de poder pasa de 4.2 a 5.2 vueltas y el de tierra de 4.2 a
+    3.4: en dos capas, la madeja de tierra no admite más sin que su vuelta
+    de adentro doble demasiado cerrada. El de remoto sigue en 6.2.
+  - Las puntas del cable de tierra se giraron hacia el espacio libre (antes
+    las dos salían hacia atrás).
+  - TERMINALES DE OJO: ojo y lengüeta planos, de chapa, apoyados en el piso
+    (el ojo era un toro y la lengüeta quedaba 0.9 mm en el aire), y la boca
+    del barril.
+  - CONECTORES BANANA rehechos: cuerpo rojo y negro, collar y espiga
+    cromados, inclinados hasta apoyar la punta. Eran un cilindro cromado con
+    tapa negra, sin espiga, 1.4 mm en el aire.
+  - No cambian el portafusible, el inventario ni la fila de accesorios al
+    frente.
 """
 
 import math
@@ -86,23 +117,34 @@ import _common                                              # noqa: E402
 importlib.reload(_common)   # Blender cachea los módulos entre corridas
 from _common import *       # noqa: F401,F403,E402
 
-ARCHIVO = "install-kit-3"
+ARCHIVO = "install-kit-4"
 
 SEED = 20260903
 RNG = random.Random(SEED)
 MIN_GAP = 0.0060
 
-# Madejas: centro, radio del aro, radio del cable, vueltas completas y
-# ángulos del aro (grados) donde salen las puntas. Colas: largo de la de
-# arriba (el principio) y de la de abajo (el final), y cuánto avanza la de
-# arriba a su altura antes de empezar a bajar. Las puntas se eligen hacia el
-# espacio libre: nunca hacia otro grupo.
-POWER = dict(center=(-0.0580, 0.0180), R=0.0560, wire_r=0.0045, full=4,
-             theta0=140.0, theta1=205.0, tail_up=0.072, tail_down=0.048, delay=0.016)
-GROUND = dict(center=(0.0700, 0.0560), R=0.0340, wire_r=0.0045, full=4,
-              theta0=40.0, theta1=100.0, tail_up=0.072, tail_down=0.048, delay=0.016)
-REMOTE = dict(center=(0.1200, -0.0280), R=0.0210, wire_r=0.0016, full=6,
-              theta0=-60.0, theta1=5.0, tail_up=0.032, tail_down=0.020, delay=0.007)
+# Madejas: centro, radio de la vuelta de afuera de la capa del piso (R), radio
+# del cable, vueltas de la capa del piso (bottom, entero) y de la de arriba
+# (top), ángulo del aro (grados) donde entra la punta A y largo de las dos
+# colas. La punta B sale en theta0 + 360 x la fracción de `top`. Las puntas se
+# eligen hacia el espacio libre: nunca hacia otro grupo.
+POWER = dict(center=(-0.0580, 0.0180), R=0.0660, wire_r=0.0045, bottom=3, top=2.22,
+             theta0=125.0, tail_a=0.058, tail_b=0.048)
+GROUND = dict(center=(0.0740, 0.0560), R=0.0440, wire_r=0.0045, bottom=2, top=1.36,
+              theta0=80.0, tail_a=0.050, tail_b=0.048)
+REMOTE = dict(center=(0.1200, -0.0280), R=0.0265, wire_r=0.0016, bottom=4, top=2.18,
+              theta0=-60.0, tail_a=0.030, tail_b=0.020)
+
+# Separación entre dos vueltas vecinas de la capa del piso y distancia entre
+# un cable y el que lo sostiene, las dos en diámetros. La primera deja la
+# ranura oscura que permite contar las vueltas; la segunda es contacto, con
+# el margen justo para que la malla (12 lados, tramos rectos) no se muerda.
+PITCH = 1.07
+REST = 1.04
+
+# Un tramo está APOYADO si entre él y el piso, o el cable que tiene debajo,
+# queda menos de esto (en diámetros). Si no, el script falla.
+SUPPORT_MAX = 0.12
 
 # Radio de curvatura mínimo de las colas, en diámetros del cable.
 BEND_MIN = 3.0
@@ -165,106 +207,115 @@ def audit_layout(groups):
 
 # ---------------------------------------------------------------- cables ----
 
-def coil_path(center, R, wire_r, full, theta0, theta1, tail_up, tail_down, delay,
+def coil_path(center, R, wire_r, bottom, top, theta0, tail_a, tail_b,
               splay=30.0, steps_per_turn=56):
     """
-    Madeja de cable: `turns` vueltas alrededor de un aro de radio R, que se
-    apoyan unas en otras sin atravesarse.
+    Madeja de cable EN DOS CAPAS, como queda un cable enrollado a mano sobre
+    una mesa. Todo el recorrido está apoyado: en el piso, o sobre el cable que
+    tiene debajo.
 
-    En el corte del aro hay S = ceil(turns) PUESTOS repartidos en una elipse,
-    y cada vuelta avanza un puesto. En un mismo ángulo del aro nunca hay más
-    de S tramos de cable, así que cada uno cae en un puesto distinto, y dos
-    puestos vecinos están separados por el diámetro del cable más 10 % de
-    aire: esa ranura oscura es la que deja contar las vueltas.
+      punta A   en el piso; entra por afuera, tangente a la primera vuelta
+      piso      `bottom` vueltas en espiral plana hacia adentro, una pegada a
+                la otra (PITCH diámetros entre centros)
+      arriba    `top` vueltas: el cable sube por el costado de adentro de la
+                espiral, la cruza en diagonal hacia afuera montado sobre las
+                vueltas del piso (se acuesta en las ranuras y pasa por encima
+                de cada vuelta) y baja al piso por el costado de afuera
+      punta B   en el piso, sale por afuera
 
-    (Hasta el 30 de septiembre de 2026 los puestos se repartían entre
-    `turns`, que no es entero: la primera y la última vuelta caían a 15° una
-    de otra en el corte y se atravesaban, y las colas bajaban cruzando las
-    vueltas de afuera. Era el «cable que se superpone a sí mismo».)
+    (Hasta `install-kit-3` las vueltas iban rotando alrededor de un hueco:
+    cinco puestos en una elipse, con aire en el medio. Las vueltas de arriba
+    no se apoyaban en nada, y las dos puntas salían de la madeja a media
+    altura (la del cable de poder, a 12.5 mm del piso) y bajaban en el aire
+    a lo largo de 5 cm. Eran los «tramos flotando».)
 
-    La elipse es más ancha que alta (1.35 : 1): las vueltas se acuestan como
-    un cable enrollado a mano sobre una mesa. La separación mínima la fija el
-    eje corto, así que la cuenta vale igual.
+    Cómo se arma. La espiral del piso es rho(th) = R - D x vueltas. La capa
+    de arriba se describe con una coordenada c, en vueltas del piso contadas
+    desde esa misma espiral prolongada hacia adentro: c = 0 es el final de la
+    espiral, c entero es «encima de una vuelta», c + 1/2 es «en la ranura».
+    En la vuelta g de la capa de arriba, las vueltas del piso están en c = k
+    con k entre g y g + bottom. `pack` lleva c de 0 a (justo encima de la
+    vuelta de más afuera) mientras se dan las vueltas enteras, y en la
+    fracción final cruza la primera vuelta, la que viene de la punta A, y
+    baja al piso por afuera. Dos pasadas de la capa de arriba quedan siempre
+    a más de un diámetro una de otra: la separación la mide `path_clearance`.
 
-    Puntas: `theta0` y `theta1` son los ángulos del aro donde salen; las
-    vueltas son `full` + la fracción entre los dos. Los puestos de salida de
-    las dos puntas quedan simétricos alrededor del punto MÁS DE AFUERA del
-    corte: la del principio, arriba de ese punto, y la del final, abajo.
-    Ningún tramo de la madeja queda más afuera que ellas, así que las colas
-    se van hacia afuera sin cruzar nada. Ver `tail` para cómo salen.
+    La ALTURA no se dibuja: se calcula. Para cada punto de la capa de arriba
+    se busca el cable del piso más cercano en planta, y el punto queda a la
+    altura a la que un cilindro se apoya sobre otro (REST diámetros entre
+    centros). Donde la curva de apoyo hace un pico hacia abajo (el fondo de
+    una ranura, el arranque desde el piso) se redondea hacia ARRIBA, nunca
+    hacia abajo: un cable no dobla en ángulo, y así no se entierra en el que
+    lo sostiene. `support_gap` mide después cuánto aire queda debajo de cada
+    tramo y el script falla si pasa de SUPPORT_MAX.
+
+    El aro lleva un óvalo leve, igual para todas las vueltas, para que no
+    parezca un toro perfecto. Ver `tail` para cómo salen las puntas.
     """
-    turns = full + ((theta1 - theta0) % 360.0) / 360.0
-    slots = math.ceil(turns)
-    dpsi = 2.0 * math.pi / slots
-    D = 2.0 * wire_r * 1.10
-    rho = D / (2.0 * math.sin(math.pi / slots))
-    rho_r = rho * 1.35
-    zc = rho + wire_r                     # el puesto más bajo apoya en z = 0
+    whole = int(math.floor(top))
+    frac = top - whole
+    if whole < 1 or frac < 0.05:
+        raise ModelError("coil_path: `top` necesita al menos una vuelta entera "
+                         "y una fracción para bajar al piso")
+    total = bottom + top
+    D = 2.0 * wire_r * PITCH
+    Dr = 2.0 * wire_r * REST
+    c_seam = whole + bottom - 1 + 0.2       # encima de la vuelta de más afuera
+    c_end = whole + bottom + 1              # en el piso, por afuera
+    ease = 0.15
+    rate = c_seam / (whole - ease / 2.0)
     cx, cy = center
     th0 = math.radians(theta0)
-    # corrimiento total del puesto entre la primera y la última punta, entre
-    # -pi y pi; las puntas quedan en +w/2 y -w/2 del punto de afuera (psi = 0)
-    sweep = (turns * dpsi + math.pi) % (2.0 * math.pi) - math.pi
-    psi0 = -sweep / 2.0
 
-    def at(t):
+    def pack(g):
+        if g <= ease:                       # arranca sin tirón
+            return rate * g * g / (2.0 * ease)
+        if g <= whole:
+            return rate * (g - ease / 2.0)
+        u = min(1.0, (g - whole) / frac)    # Hermite: llega al piso sin pendiente
+        u2, u3 = u * u, u * u * u
+        return ((2.0 * u3 - 3.0 * u2 + 1.0) * c_seam + (u3 - 2.0 * u2 + u) * frac * rate
+                + (3.0 * u2 - 2.0 * u3) * c_end)
+
+    def plan(t):
         th = th0 + 2.0 * math.pi * t
-        psi = psi0 + dpsi * t
+        c = pack(t - bottom) if t > bottom else 0.0
         # óvalo leve: depende solo del ángulo del aro, igual para todas las
         # vueltas, así que no cambia la separación entre ellas
-        rr = R * (1.0 + 0.035 * math.sin(2.0 * th + 0.7)) + rho_r * math.cos(psi)
-        return Vector((cx + rr * math.cos(th), cy + rr * math.sin(th),
-                       zc + rho * math.sin(psi)))
+        rr = R * (1.0 + 0.035 * math.sin(2.0 * th + 0.7)) + D * (c - t)
+        return cx + rr * math.cos(th), cy + rr * math.sin(th)
 
-    n = int(turns * steps_per_turn)
-    coil = [at(turns * i / n) for i in range(n + 1)]
-
-    def tail(t_end, sense, length, delay_):
+    def tail(t_end, sense, length):
         """
-        Cola desde la punta de la madeja (t_end) hasta el piso. `sense` es +1
-        si el recorrido sale hacia adelante (el final) y −1 si sale hacia
-        atrás (el principio).
+        Cola en planta desde la punta de la madeja (t_end). `sense` es +1 si
+        el recorrido sale hacia adelante (la punta B) y -1 si sale hacia
+        atrás (la punta A). Devuelve los puntos cada 0.25 mm.
 
-        Hasta el 30 de septiembre de 2026 la cola salía casi radial: el cable
-        doblaba ~60° de golpe en el punto de salida y se veía un quiebre. Un
-        cable de verdad no dobla así; la cola aquí es CONTINUA en dirección y
-        en curvatura con la madeja:
-
-          * en planta arranca con la tangente y la curvatura que trae la
-            vuelta; esa curvatura se apaga en el primer quinto de la cola y,
-            mientras, una curva suave en sentido contrario (una campana de
-            curvatura, sin saltos) la abre `splay` grados hacia afuera. El
-            cable se despega del rollo en una S larga, como cuando uno suelta
-            la punta;
-          * en alto se queda a la altura de su puesto durante `delay_` (lo
-            que tarda en librar las vueltas de abajo) y después baja al piso
-            con un perfil coseno, sin pendiente al empezar ni al terminar; los
-            últimos milímetros van apoyados, para que la punta pelada quede
-            en el piso.
+        La cola es CONTINUA en dirección y en curvatura con la madeja:
+        arranca con la tangente y la curvatura que trae la vuelta; esa
+        curvatura se apaga en el primer quinto de la cola y, mientras, una
+        curva suave en sentido contrario (una campana de curvatura, sin
+        saltos) la abre `splay` grados hacia afuera. El cable se despega del
+        rollo en una S larga, como cuando uno suelta la punta. (Hasta el 30 de
+        septiembre de 2026 salía casi radial y doblaba ~60 grados de golpe.)
 
         Los radios de curvatura que salen de aquí los mide y los exige
         `bend_radii` en build_cable.
         """
         h = 0.002
-        p0, p1, p2 = at(t_end), at(t_end - sense * h), at(t_end - 2.0 * sense * h)
+        p0, p1, p2 = (Vector(plan(t_end - sense * k * h) + (0.0,)) for k in range(3))
         heading = math.atan2(p0.y - p1.y, p0.x - p1.x)
         # curvatura con signo en planta, en el sentido en que se recorre
-        a1, a2 = p1 - p2, p0 - p1
-        a1.z = a2.z = 0.0
-        chord = Vector((p0.x - p2.x, p0.y - p2.y, 0.0))
+        a1, a2, chord = p1 - p2, p0 - p1, p0 - p2
         k_coil = 2.0 * (a1.x * a2.y - a1.y * a2.x) / (a1.length * a2.length * chord.length)
         fade = 0.20 * length                  # la curvatura del rollo se apaga
         bell = 0.75 * length                  # campana de curvatura hacia afuera
         turn = -math.copysign(math.radians(splay), k_coil) - k_coil * fade / 2.0
         k_out = 2.0 * turn / bell             # integral de sin^2 en [0, bell] = bell/2
-        flat = min(0.005, 0.15 * length)
-        z0, z1 = p0.z, wire_r
         ds = 0.00025
         x, y = p0.x, p0.y
         pts = []
-        steps = int(round(length / ds))
-        every = max(1, int(round(0.0025 / ds)))
-        for i in range(1, steps + 1):
+        for i in range(1, int(round(length / ds)) + 1):
             s = i * ds
             k = k_coil * (1.0 - smoothstep(0.0, fade, s))
             if s < bell:
@@ -272,15 +323,102 @@ def coil_path(center, R, wire_r, full, theta0, theta1, tail_up, tail_down, delay
             heading += k * ds
             x += math.cos(heading) * ds
             y += math.sin(heading) * ds
-            u = min(1.0, max(0.0, (s - delay_) / (length - delay_ - flat)))
-            z = z0 + (z1 - z0) * 0.5 * (1.0 - math.cos(math.pi * u))
-            if i % every == 0 or i == steps:
-                pts.append(Vector((x, y, z)))
+            pts.append((x, y))
         return pts
 
-    start = tail(0.0, -1.0, tail_up, delay)
-    end = tail(turns, 1.0, tail_down, 0.0)
+    def thin(pts, every=10):
+        return [p for i, p in enumerate(pts, 1) if i % every == 0 or i == len(pts)]
+
+    # --- lo que está en el piso: la punta A y la espiral de abajo ----------
+    from mathutils.kdtree import KDTree
+    fine = steps_per_turn * 8
+    tail_a_pts = tail(0.0, -1.0, tail_a)
+    lower = [(x, y, -(i + 1) * 0.00025 / (2.0 * math.pi * R))
+             for i, (x, y) in enumerate(tail_a_pts)]
+    lower += [plan(i / fine) + (i / fine,) for i in range(bottom * fine + 1)]
+    tree = KDTree(len(lower))
+    for i, (x, y, _t) in enumerate(lower):
+        tree.insert(Vector((x, y, 0.0)), i)
+    tree.balance()
+
+    # --- altura de la capa de arriba: apoyada en lo de abajo ---------------
+    n_top = int(round(top * fine))
+    env = []
+    for i in range(n_top + 1):
+        t = bottom + top * i / n_top
+        x, y = plan(t)
+        best = None
+        for (_co, j, d) in tree.find_range(Vector((x, y, 0.0)), Dr):
+            # media vuelta de recorrido para atrás es el mismo tramo, no apoyo
+            if t - lower[j][2] > 0.5 and (best is None or d < best):
+                best = d
+        env.append(0.0 if best is None else math.sqrt(max(0.0, Dr * Dr - best * best)))
+    # redondeo hacia arriba (gaussiana de 0.8 diámetros de recorrido)
+    step = 2.0 * math.pi * (R - D * bottom / 2.0) / fine
+    sigma = 0.8 * 2.0 * wire_r / step
+    half = int(3.0 * sigma) + 1
+    kernel = [math.exp(-0.5 * (k / sigma) ** 2) for k in range(-half, half + 1)]
+    norm = sum(kernel)
+    lift = []
+    for i in range(n_top + 1):
+        acc = 0.0
+        for k in range(-half, half + 1):
+            acc += kernel[k + half] * env[min(n_top, max(0, i + k))]
+        lift.append(max(env[i], acc / norm))
+
+    def at(t):
+        x, y = plan(t)
+        z = wire_r
+        if t > bottom:
+            u = (t - bottom) / top * n_top
+            i = min(n_top - 1, int(u))
+            z += lift[i] + (lift[i + 1] - lift[i]) * (u - i)
+        return Vector((x, y, z))
+
+    n = int(total * steps_per_turn)
+    coil = [at(total * i / n) for i in range(n + 1)]
+    start = [Vector((x, y, wire_r)) for (x, y) in thin(tail_a_pts)]
+    # la punta B termina de asentarse en el piso con un perfil coseno
+    tail_b_pts = tail(total, 1.0, tail_b)
+    z0 = coil[-1].z
+    end = []
+    for i, (x, y) in enumerate(tail_b_pts, 1):
+        if i % 10 == 0 or i == len(tail_b_pts):
+            u = min(1.0, i / (0.5 * len(tail_b_pts)))
+            end.append(Vector((x, y, wire_r + (z0 - wire_r) * 0.5 * (1.0 + math.cos(math.pi * u)))))
     return list(reversed(start)) + coil + end, len(start), len(end)
+
+
+def support_gap(path, wire_r, step=0.001):
+    """
+    Cuánto aire queda debajo del tramo peor apoyado: para cada punto del
+    recorrido (remuestreado a 1 mm), la menor de dos distancias: al piso, y
+    al cable en el que se apoya (otro tramo del mismo cable, más de 3
+    diámetros de recorrido más allá y más bajo: debajo, o al costado cuando
+    el cable sube recostado en la vuelta vecina). Cero es tocando.
+    """
+    from mathutils.kdtree import KDTree
+    pts, arcs = [path[0]], [0.0]
+    for a, b in zip(path[:-1], path[1:]):
+        seg = (b - a).length
+        k = max(1, int(seg / step))
+        for i in range(1, k + 1):
+            pts.append(a.lerp(b, i / k))
+            arcs.append(arcs[-1] + seg / k)
+    tree = KDTree(len(pts))
+    for i, p in enumerate(pts):
+        tree.insert(p, i)
+    tree.balance()
+    diam = 2.0 * wire_r
+    worst = 0.0
+    for i, p in enumerate(pts):
+        gap = p.z - wire_r
+        if gap > 1e-5:
+            for (_co, j, d) in tree.find_range(p, diam * 1.5):
+                if abs(arcs[i] - arcs[j]) > 3.0 * diam and pts[j].z < p.z - 1e-4:
+                    gap = min(gap, d - diam)
+        worst = max(worst, gap)
+    return worst
 
 
 def bend_radii(path, first, last):
@@ -352,20 +490,29 @@ def stripped_end(tag, tip, direction, wire_r):
 
 def build_cable(name, material_, spec, sides=12, steps_per_turn=56):
     path, n_start, n_end = coil_path(
-        spec["center"], spec["R"], spec["wire_r"], spec["full"],
-        spec["theta0"], spec["theta1"], spec["tail_up"], spec["tail_down"],
-        spec["delay"], splay=spec.get("splay", 30.0), steps_per_turn=steps_per_turn)
-    gap = path_clearance(path, spec["wire_r"])
+        spec["center"], spec["R"], spec["wire_r"], spec["bottom"], spec["top"],
+        spec["theta0"], spec["tail_a"], spec["tail_b"],
+        splay=spec.get("splay", 30.0), steps_per_turn=steps_per_turn)
     need = 2.0 * spec["wire_r"]
+    gap = path_clearance(path, spec["wire_r"])
     print("  %-14s separación mínima entre tramos: %.2f mm (diámetro %.2f mm)%s"
           % (name, gap * 1000, need * 1000, "" if gap >= need * 0.99 else "  <-- SE CRUZA"))
     if gap < need * 0.99:
         raise ModelError("%s: el cable se atraviesa a sí mismo (%.2f mm < %.2f mm)"
                          % (name, gap * 1000, need * 1000))
+    air = support_gap(path, spec["wire_r"])
+    print("  %-14s aire bajo el tramo peor apoyado: %.2f mm (máximo %.2f)%s"
+          % (name, air * 1000, SUPPORT_MAX * need * 1000,
+             "" if air <= SUPPORT_MAX * need else "  <-- FLOTA"))
+    if air > SUPPORT_MAX * need:
+        raise ModelError("%s: un tramo queda %.2f mm en el aire (máximo %.2f mm)"
+                         % (name, air * 1000, SUPPORT_MAX * need * 1000))
     r_up, r_down = bend_radii(path, n_start, len(path) - 1 - n_end)
+    r_all = bend_radii(path, len(path) - 4, 2)[0]
     r_min = BEND_MIN * need
-    print("  %-14s radio de curvatura de las colas: %.1f / %.1f mm (mínimo %.1f)%s"
-          % (name, r_up * 1000, r_down * 1000, r_min * 1000,
+    print("  %-14s radio de curvatura de las colas: %.1f / %.1f mm (mínimo %.1f); "
+          "de todo el cable: %.1f mm%s"
+          % (name, r_up * 1000, r_down * 1000, r_min * 1000, r_all * 1000,
              "" if min(r_up, r_down) >= r_min else "  <-- DOBLEZ"))
     if min(r_up, r_down) < r_min:
         raise ModelError("%s: una cola dobla con radio %.1f mm < %.1f mm"
@@ -479,8 +626,16 @@ def build_fuse_holder():
 # ------------------------------------------------------------- accesorios ---
 
 def build_ring_terminals():
-    """6 terminales de ojo en abanico de ±14 grados apuntando al frente."""
+    """
+    6 terminales de ojo en abanico de ±14 grados apuntando al frente.
+
+    Cada uno es una pieza de chapa estampada: el barril donde entra el cable
+    (con la boca oscura atrás) y, de la misma chapa, la lengüeta y el ojo
+    PLANOS, apoyados en el piso. Hasta `install-kit-3` el ojo era un toro, que
+    se leía como una argolla, y la lengüeta quedaba 0.9 mm en el aire.
+    """
     parts = []
+    sheet = 0.0014                              # espesor de la chapa
     for i in range(6):
         yaw = math.radians(-90.0 + (i - 2.5) * 5.6) + jitter(1.5)
         ux, uy = math.cos(yaw), math.sin(yaw)
@@ -489,31 +644,65 @@ def build_ring_terminals():
         parts.append(cylinder("ring-terminal-barrel-%d" % (i + 1), 0.0032, 0.0130,
                               segments=16, location=(ox, oy, 0.0032),
                               rotation=(0.0, math.pi / 2.0, yaw), material=copper()))
-        parts.append(box("ring-terminal-tab-%d" % (i + 1), (0.0060, 0.0055, 0.0014),
-                         location=(ox + ux * 0.0080, oy + uy * 0.0080, 0.0016),
+        parts.append(cylinder("ring-terminal-mouth-%d" % (i + 1), 0.0023, 0.0006,
+                              segments=12,
+                              location=(ox - ux * 0.0064, oy - uy * 0.0064, 0.0032),
+                              rotation=(0.0, math.pi / 2.0, yaw), material=rubber()))
+        parts.append(box("ring-terminal-tab-%d" % (i + 1), (0.0070, 0.0058, sheet),
+                         location=(ox + ux * 0.0085, oy + uy * 0.0085, sheet / 2.0),
                          rotation=(0.0, 0.0, yaw), material=copper()))
-        parts.append(torus("ring-terminal-eye-%d" % (i + 1), 0.0046, 0.0016,
-                           major_segments=20, minor_segments=8,
-                           location=(ox + ux * 0.0142, oy + uy * 0.0142, 0.0016),
-                           rotation=(0.0, 0.0, yaw), material=copper()))
+        # tube() ocupa de -1.5 a -0.5 de su largo: con 1.5 x sheet queda de 0 a sheet
+        parts.append(tube("ring-terminal-eye-%d" % (i + 1), 0.0062, 0.0030, sheet,
+                          segments=24,
+                          location=(ox + ux * 0.0150, oy + uy * 0.0150, 1.5 * sheet),
+                          rotation=(0.0, 0.0, yaw), material=copper()))
     return snap_group_to_floor(parts)
 
 
 def build_banana_pair():
-    """Par de conectores banana, apuntando al frente."""
+    """
+    Par de conectores banana, uno rojo y uno negro (la polaridad, el mismo
+    código de color de los cables), apuntando al frente.
+
+    Cuerpo de plástico, collar y espiga cromados con la punta afinada. Cada
+    conector se construye sobre su eje y después se inclina hasta que la
+    punta de la espiga toca el piso: descansa en el borde del cuerpo y en la
+    punta, como queda uno de verdad sobre una mesa. Hasta `install-kit-3`
+    eran un cilindro cromado con una tapa negra, sin espiga, y el cilindro
+    quedaba 1.4 mm en el aire.
+    """
+    r_body, r_tip, reach = 0.0046, 0.0011, 0.0200
+    tilt = math.atan2(r_body - r_tip, reach)
+    along = (0.0, math.pi / 2.0, 0.0)
     parts = []
-    for i, (x, yaw_deg) in enumerate(((-0.0490, -84.0), (-0.0370, -96.0))):
+    for i, (x, yaw_deg, plastic) in enumerate(((-0.0490, -84.0, cable_red),
+                                               (-0.0370, -96.0, cable_black))):
         yaw = math.radians(yaw_deg) + jitter(2)
-        y = -0.0920
-        parts.append(cylinder("banana-plug-%d" % (i + 1), 0.0040, 0.0230, segments=16,
-                              location=(x, y, 0.0040),
-                              rotation=(0.0, math.pi / 2.0, yaw), material=chrome()))
-        parts.append(cylinder("banana-plug-collar-%d" % (i + 1), 0.0054, 0.0080,
-                              segments=16,
-                              location=(x - math.cos(yaw) * 0.0125,
-                                        y - math.sin(yaw) * 0.0125, 0.0040),
-                              rotation=(0.0, math.pi / 2.0, yaw), material=satin_black()))
-    return snap_group_to_floor(parts)
+        M = (Matrix.Translation(Vector((x, -0.0860, 0.0)))
+             @ Matrix.Rotation(yaw, 4, "Z") @ Matrix.Rotation(tilt, 4, "Y"))
+
+        def lay(obj):
+            obj.data.transform(M)
+            obj.data.update()
+            return obj
+
+        tag = "banana-plug-%d" % (i + 1)
+        body = cylinder(tag + "-body", r_body, 0.0170, segments=20,
+                        location=(-0.0085, 0.0, 0.0), rotation=along, material=plastic())
+        bevel(body, 0.0008, segments=2)
+        one = [
+            lay(body),
+            lay(cylinder(tag + "-entry", 0.0026, 0.0008, segments=12,
+                         location=(-0.0172, 0.0, 0.0), rotation=along, material=rubber())),
+            lay(cylinder(tag + "-collar", 0.0034, 0.0030, segments=16,
+                         location=(0.0015, 0.0, 0.0), rotation=along, material=chrome())),
+            lay(cylinder(tag + "-pin", 0.0020, 0.0152, segments=12,
+                         location=(0.0104, 0.0, 0.0), rotation=along, material=chrome())),
+            lay(cone(tag + "-tip", 0.0020, r_tip, 0.0020, segments=12,
+                     location=(0.0190, 0.0, 0.0), rotation=along, material=chrome())),
+        ]
+        parts += snap_group_to_floor(one)
+    return parts
 
 
 def main():

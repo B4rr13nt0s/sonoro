@@ -1,10 +1,10 @@
 {
   "id": "rca-cable",
-  "archivo": "rca-cable-3.glb",
-  "radius": 0.1368,
-  "height": 0.0433,
-  "tris": 9800,
-  "bytes": 42028,
+  "archivo": "rca-cable-4.glb",
+  "radius": 0.1161,
+  "height": 0.0242,
+  "tris": 9964,
+  "bytes": 38552,
   "materials": [
     "cable-black",
     "cable-red",

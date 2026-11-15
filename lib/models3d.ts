@@ -68,19 +68,24 @@ export interface ModelEntry {
 // sound-deadening (radio 0.2480, displayScale 1.0000).
 export const MODELS: Record<ModelId, ModelEntry> = {
   speaker: {
-    archivo: "speaker-3.glb",
+    archivo: "speaker-7.glb",
     displayScale: 1.4699,
     radius: 0.0825,
-    height: 0.055,
+    height: 0.07,
     ajusteVista: 1.25,
     label: "Bocinas",
     href: "/catalogo/bocinas",
   },
   equalizer: {
-    archivo: "equalizer-3.glb",
+    archivo: "equalizer-4.glb",
     displayScale: 1.3569,
     radius: 0.1037,
     height: 0.026,
+    // Es el modelo más bajo (26 mm) y el segundo más chico: en el cuadro
+    // llenaba 2.4 % del área en escritorio y 3.2 % en móvil, la mitad que la
+    // bocina. Con 1.2 su radio en pantalla (0.169) sigue por debajo del
+    // amplificador y del subwoofer, así que no altera el orden de tamaños.
+    ajusteVista: 1.2,
     label: "Ecualizadores",
     href: "/catalogo/ecualizadores",
   },
@@ -101,15 +106,15 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     href: "/catalogo/receptores",
   },
   amplifier: {
-    archivo: "amplifier-3.glb",
-    displayScale: 1.1769,
-    radius: 0.1557,
-    height: 0.055,
+    archivo: "amplifier-5.glb",
+    displayScale: 1.1681,
+    radius: 0.1591,
+    height: 0.0455,
     label: "Amplificadores",
     href: "/catalogo/amplificadores",
   },
   subwoofer: {
-    archivo: "subwoofer-3.glb",
+    archivo: "subwoofer-5.glb",
     displayScale: 1.1722,
     radius: 0.1575,
     height: 0.1652,
@@ -117,26 +122,26 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     href: "/catalogo/subwoofers",
   },
   "install-kit": {
-    archivo: "install-kit-3.glb",
-    displayScale: 1.0874,
-    radius: 0.1952,
+    archivo: "install-kit-4.glb",
+    displayScale: 1.1032,
+    radius: 0.1873,
     height: 0.027,
     label: "Kits de instalación",
     href: "/catalogo/kits",
   },
   "sound-deadening": {
-    archivo: "sound-deadening-3.glb",
+    archivo: "sound-deadening-5.glb",
     displayScale: 1.0,
     radius: 0.248,
-    height: 0.1118,
+    height: 0.1117,
     label: "Insonorización",
     href: "/catalogo/insonorizacion",
   },
   "rca-cable": {
-    archivo: "rca-cable-3.glb",
-    displayScale: 1.2315,
-    radius: 0.1368,
-    height: 0.0433,
+    archivo: "rca-cable-4.glb",
+    displayScale: 1.3043,
+    radius: 0.1161,
+    height: 0.0242,
     label: "Accesorios",
     href: "/catalogo/accesorios",
   },
@@ -150,6 +155,22 @@ export const escalaDeVista = (id: ModelId) =>
   MODELS[id].displayScale * (MODELS[id].ajusteVista ?? 1);
 
 export const modelUrl = (id: ModelId) => `/models/${MODELS[id].archivo}`;
+
+// Imagen estática de cada modelo, para cuando el canvas 3D no puede crearse
+// o falla (sin WebGL, un .glb que no baja): el cuadro la muestra en vez de
+// quedar vacío. La genera scripts/carrusel/posters.mjs capturando el propio
+// carrusel en reposo, así que hay que volver a correrlo cuando cambia un
+// .glb, la luz del estudio o el encuadre. Lleva el nombre del .glb, versión
+// incluida, porque /models/* se sirve con caché `immutable`.
+//
+// Los nueve son el MISMO recorte central del cuadro de escritorio
+// (1184 × 470 px): 60 % del ancho y 84 % del alto. Recortar cada modelo a su
+// contorno los dejaría a todos del mismo tamaño y se perdería la jerarquía
+// que da displayScale.
+export const POSTER_ANCHO = 710;
+export const POSTER_ALTO = 395;
+export const posterUrl = (id: ModelId) =>
+  `/models/posters/${MODELS[id].archivo.replace(/\.glb$/, ".webp")}`;
 
 // El decoder de Draco es local (public/draco/), no el CDN de gstatic.com:
 // es un tercero en el critical path del home.
