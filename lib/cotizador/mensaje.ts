@@ -1,0 +1,69 @@
+// Cotizador privado: el texto que Byron copia y pega en otro medio
+// (docs/superpowers/specs/2026-11-16-cotizador-design.md § Mensaje).
+//
+// No es el pedido de WhatsApp: cada línea muestra cantidad, nombre, precio
+// unitario Y total de la línea, y no lleva Ref ni se registra en la hoja. Por
+// eso tiene su propia línea y no reusa `formatearLinea` (lib/whatsapp), que
+// pone el sku entre paréntesis y el unitario solo si hay más de una unidad.
+import { ENVIO_POR_COBRAR, envioGratis } from "../cart/envio.ts";
+import { marcaDisponibilidad } from "../catalog/disponibilidad.ts";
+import type { Disponibilidad } from "../catalog/types.ts";
+import { formatQ } from "../format/precio.ts";
+
+export type LineaCotizacion = {
+  sku: string;
+  nombre: string;
+  qty: number;
+  unitPriceCents: number;
+  disponibilidad: Disponibilidad;
+};
+
+/** El nombre del cliente se corta acá: es una línea de encabezado, no un campo libre. */
+export const MAX_CLIENTE = 80;
+
+// En 308 de 327 productos el `nombre` del catálogo ya trae el código del
+// fabricante («Subwoofer Champion Series 12" TS-W312D4»): repetirlo entre
+// paréntesis sería ruido. En los demás se agrega al final, para que el cliente
+// no se quede sin él.
+function nombreConCodigo(nombre: string, sku: string): string {
+  return nombre.toUpperCase().includes(sku.toUpperCase()) ? nombre : `${nombre} ${sku}`;
+}
+
+export function lineaCotizacion(linea: LineaCotizacion): string {
+  const total = linea.qty * linea.unitPriceCents;
+  const estado = marcaDisponibilidad(linea.disponibilidad);
+  const marca = estado ? ` · ${estado}` : "";
+  return (
+    `${linea.qty}x ${nombreConCodigo(linea.nombre, linea.sku)}` +
+    ` — ${formatQ(linea.unitPriceCents)} c/u — ${formatQ(total)}${marca}`
+  );
+}
+
+// Una sola línea y de largo acotado: un salto de línea en el campo «Cliente»
+// no puede colar renglones propios dentro del mensaje.
+function normalizarCliente(cliente: string): string {
+  return cliente.replace(/\s+/g, " ").trim().slice(0, MAX_CLIENTE).trim();
+}
+
+/** `""` si no hay líneas: no hay nada que copiar. */
+export function buildQuoteMessage(params: {
+  cliente: string;
+  lineas: readonly LineaCotizacion[];
+}): string {
+  const { lineas } = params;
+  if (lineas.length === 0) return "";
+
+  const cliente = normalizarCliente(params.cliente);
+  const subtotal = lineas.reduce((suma, l) => suma + l.qty * l.unitPriceCents, 0);
+
+  return [
+    cliente ? `Cotización Sonoro para ${cliente}:` : "Cotización Sonoro:",
+    "",
+    ...lineas.map(lineaCotizacion),
+    "",
+    `Subtotal: ${formatQ(subtotal)}`,
+    `Envío: ${envioGratis(subtotal) ? "gratis" : ENVIO_POR_COBRAR}`,
+    `Total: ${formatQ(subtotal)}`,
+    "Precios con IVA incluido.",
+  ].join("\n");
+}
