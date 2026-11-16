@@ -11,7 +11,7 @@ export function FormularioEntrada() {
   const [estado, accion, pendiente] = useActionState(entrar, ESTADO_INICIAL);
 
   return (
-    <form action={accion} className="flex max-w-[420px] flex-col gap-4">
+    <form action={accion} className="flex w-full max-w-[420px] flex-col gap-4">
       <label className="flex flex-col gap-2 text-[14px]">
         <span className="text-texto-secundario">Contraseña</span>
         <input

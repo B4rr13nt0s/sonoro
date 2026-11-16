@@ -36,13 +36,9 @@ export default async function CotizadorPage() {
 
   if (acceso === "formulario") {
     return (
-      <div className="flex flex-1 flex-col">
-        <div className={ENCABEZADO}>
-          <h1 className={TITULO}>Cotizador</h1>
-        </div>
-        <div className="px-6 pb-16 sm:px-12">
-          <FormularioEntrada />
-        </div>
+      <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-16 sm:px-12">
+        <h1 className={TITULO}>Cotizador</h1>
+        <FormularioEntrada />
       </div>
     );
   }
