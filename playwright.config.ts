@@ -60,6 +60,9 @@ export default defineConfig({
     env: {
       SITE_URL: BASE_URL,
       NEXT_PUBLIC_WHATSAPP_NUMBER: "50200000000",
+      // Contraseña del cotizador privado, solo de este servidor de pruebas:
+      // sin ella la ruta responde 404 y e2e/cotizador.spec.ts no tiene qué probar.
+      COTIZADOR_PASSWORD: "contrasena-de-prueba-e2e",
       // El chat va tras esta bandera, que se lee al compilar: sin ella el
       // build no trae el lanzador y e2e/chat.spec.ts no tiene qué probar.
       NEXT_PUBLIC_CHAT_ENABLED: "true",
