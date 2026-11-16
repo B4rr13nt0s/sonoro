@@ -267,6 +267,7 @@ Antes de imprenta o bordado, convertir el texto de los SVG a curvas.
 /chat/catalogo.json                 Catálogo del chat (estático, noindex)
 /buscar/vehiculos.json              Datos del selector de vehículos (estático, noindex)
 /api/chat-log                      Registro anónimo del chat (siempre 204)
+/cotizador                         Cotizador privado (contraseña, noindex; no se enlaza)
 ```
 
 - **Tres listados distintos, que se confunden fácil:**
@@ -278,6 +279,7 @@ Antes de imprenta o bordado, convertir el texto de los SVG a curvas.
   - Su estado vive en la URL (`?skus=SQ12-D2,COR-S124D`), no en `localStorage`, porque lo que le da valor es que se pueda **compartir por WhatsApp**. Quien abre un enlace ajeno ve lo del enlace y no pierde su propia selección.
   - `noindex` en la metadata, pero **NO** en el `Disallow` de `robots.ts`: un Disallow impediría que Google llegara a leer el noindex, y la URL está hecha para compartirse.
   - **El resaltado de diferencias solo cuenta filas donde TODAS las columnas traen dato.** Un hueco no es una diferencia entre productos, es un dato que el fabricante no publica. Contarlo marcaba 17 de 17.1 filas con cuatro subwoofers —el resaltado dejaba de distinguir nada— porque `specsFicha` no tiene vocabulario fijo: Bocinas usa 49 etiquetas distintas entre 106 productos y cada uno lleva de 3 a 13.
+- **`/cotizador` es una herramienta interna, no una página del sitio** (§ Cotizador privado): protegida con contraseña, `noindex`, en el `Disallow` de `robots.ts`, sin enlace en el nav ni en el pie, y fuera del sitemap y de `llms.txt`. Quien la abre desde un marcador es solo Byron.
 - **No existe `/checkout`.** No crearla.
 - **No existe `/instalacion`.** Sonoro instala (regla 1), pero no hay página de ese servicio y no se arma una sin que el negocio defina qué dice: alcance, precios y qué separa una instalación básica de una compleja (ver Decisiones abiertas).
 - Filtros y orden en **query params** (`?marca=memphis&precio_max=200000`): URL compartible por WhatsApp y rastreable por Google.
@@ -390,6 +392,14 @@ En `/buscar`, pestaña «Por vehículo»: el cliente elige marca, modelo y año 
 - **No cambian** la ficha de producto (no dice en qué vehículos cabe) ni el nav. El chat sí contesta qué le queda a un carro (§ Chatbot), sobre los mismos datos y las mismas reglas.
 
 ---
+
+## Cotizador privado
+
+`/cotizador`: una herramienta para que Byron arme cotizaciones para clientes con productos del catálogo y copie un mensaje de texto que pega en otro medio (WhatsApp, correo). Diseño y razones: `docs/superpowers/specs/2026-11-16-cotizador-design.md`. **No es el carrito ni un pedido**: no lleva `Ref`, no se registra en la hoja y no pasa por `/api/quote-log`.
+
+- **Acceso.** Contraseña en `COTIZADOR_PASSWORD` (variable de servidor; mínimo 12 caracteres). **Sin definir, o más corta, la ruta responde 404:** nunca queda abierta por olvido, y la página es dinámica (`force-dynamic`) para que ese 404 no se hornee en el build. Entrar pone una cookie `cotizador` (`httpOnly`, `sameSite: strict`, `path: /cotizador`, 7 días) con la expiración firmada con la propia contraseña (`lib/cotizador/sesion.ts`): cambiarla cierra todas las sesiones. `lib/cotizador/acceso.ts` (`haySesion()`) es el único lugar que decide si hay sesión, y la página lo comprueba **antes** de consultar el catálogo: sin sesión no viaja ni un nombre de producto (`e2e/cotizador.spec.ts` lo prueba). Los intentos fallidos esperan un segundo, pero el límite real es el largo de la contraseña: no hay limitador entre instancias.
+- **El mensaje** (`lib/cotizador/mensaje.ts`): una línea por producto con **cantidad, nombre, precio unitario y total de la línea** —`1x Subwoofer Champion Series 12" TS-W312D4 — Q 885.00 c/u — Q 885.00`—, y debajo subtotal, envío (la misma regla de `envioGratis()`), total y «Precios con IVA incluido.». «c/u» va siempre, también con una unidad, para no confundir unitario y total. El nombre es el del catálogo: en 308 de 327 productos ya trae el código, así que no se repite entre paréntesis (como sí hace el pedido de WhatsApp); en los demás se agrega al final. Lo bajo pedido lleva `· bajo pedido`; lo agotado no se agrega. No lleva cuota, vigencia, descuentos ni instalación: ninguna está definida por el negocio (§ Decisiones abiertas).
+- **El borrador** (`lib/cotizador/borrador.ts`) guarda solo `{ sku, qty }` por línea y el nombre del cliente, en `localStorage` (`sonoro:cotizador`). Precio, nombre y disponibilidad se leen del catálogo en cada render, así que un borrador viejo nunca arrastra un precio desactualizado; un sku que ya no está a la venta se quita con aviso. No se guarda hasta haber leído lo guardado, o el estado vacío inicial lo pisaría.
 
 ## El handoff de diseño
 
