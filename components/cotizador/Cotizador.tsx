@@ -21,6 +21,7 @@ import {
   type Borrador,
 } from "@/lib/cotizador/borrador.ts";
 import { MAX_CLIENTE, buildQuoteMessage } from "@/lib/cotizador/mensaje.ts";
+import { copiarTexto } from "@/lib/cotizador/portapapeles.ts";
 import { MAX_CANTIDAD_POR_LINEA } from "@/lib/cart/index.ts";
 import { formatQ } from "@/lib/format/precio.ts";
 
@@ -72,7 +73,7 @@ const CLASE_CAMPO =
 export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
   const [{ borrador, hidratado, avisados }, despachar] = useReducer(reducir, ESTADO_INICIAL);
   const [consulta, setConsulta] = useState("");
-  const [copiado, setCopiado] = useState(false);
+  const [copia, setCopia] = useState<{ mensaje: string; ok: boolean } | null>(null);
   const areaMensaje = useRef<HTMLTextAreaElement>(null);
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -115,18 +116,26 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
 
   const mensaje = buildQuoteMessage({ cliente: borrador.cliente, lineas });
 
+  // «Copiado» solo vale para el mensaje que se copió: si la cotización cambia
+  // en los 2 s siguientes, el botón vuelve a «Copiar» (el portapapeles tiene la
+  // versión anterior). Y si la copia falla, el botón lo dice: Byron no pega lo
+  // que hubiera de antes creyendo que es esta cotización.
+  const textoBoton =
+    copia && copia.mensaje === mensaje ? (copia.ok ? "Copiado" : "No se pudo copiar") : "Copiar";
+
   async function copiar() {
-    try {
-      await navigator.clipboard.writeText(mensaje);
-    } catch {
-      // Sin permiso del portapapeles (o sin API): se selecciona el cuadro y se
-      // copia con el método viejo.
-      areaMensaje.current?.select();
-      document.execCommand("copy");
-    }
-    setCopiado(true);
+    const ok = await copiarTexto(mensaje, {
+      escribir: navigator.clipboard?.writeText.bind(navigator.clipboard),
+      // La vía vieja deja el texto seleccionado: si también falla, se puede
+      // copiar a mano con Ctrl+C.
+      copiarSeleccion: () => {
+        areaMensaje.current?.select();
+        return document.execCommand("copy");
+      },
+    });
+    setCopia({ mensaje, ok });
     if (temporizador.current) clearTimeout(temporizador.current);
-    temporizador.current = setTimeout(() => setCopiado(false), 2000);
+    temporizador.current = setTimeout(() => setCopia(null), 2000);
   }
 
   return (
@@ -288,7 +297,7 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
             onClick={copiar}
             className={mensaje === "" ? claseBotonInactivo("principal") : claseBoton("principal")}
           >
-            {copiado ? "Copiado" : "Copiar"}
+            {textoBoton}
           </button>
           <button
             type="button"

@@ -75,3 +75,23 @@ export function sesionValida(
   if (Number(expira) <= ahoraS) return false;
   return timingSafeEqual(Buffer.from(hex, "hex"), Buffer.from(firma(contrasena, expira), "hex"));
 }
+
+export type EstadoAcceso = "cerrada" | "formulario" | "abierta";
+
+/**
+ * Lo que decide la página, en una sola función para poder probarlo:
+ * - `cerrada`: no hay contraseña utilizable en el entorno → la ruta no existe
+ *   (404), venga la cookie que venga. Es la garantía central del diseño: sin
+ *   la variable, el cotizador nunca queda abierto.
+ * - `formulario`: hay contraseña pero no una sesión válida → solo el formulario.
+ * - `abierta`: sesión válida → la herramienta.
+ */
+export function estadoAcceso(
+  envPassword: string | undefined,
+  cookie: string | undefined,
+  ahoraS: number,
+): EstadoAcceso {
+  const contrasena = contrasenaConfigurada(envPassword);
+  if (contrasena === null) return "cerrada";
+  return sesionValida(cookie, contrasena, ahoraS) ? "abierta" : "formulario";
+}
