@@ -2669,7 +2669,28 @@
     "precioCents": 649500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/T1S2-10S_frontal1.jpg",
+        "alt": "Subwoofer Power T1 Slim de 10\" T1S2-10S — frontal1"
+      },
+      {
+        "url": "/productos/T1S2-10S_frontal2.jpg",
+        "alt": "Subwoofer Power T1 Slim de 10\" T1S2-10S — frontal2"
+      },
+      {
+        "url": "/productos/T1S2-10S_lateral1.jpg",
+        "alt": "Subwoofer Power T1 Slim de 10\" T1S2-10S — lateral1"
+      },
+      {
+        "url": "/productos/T1S2-10S_lateral2.jpg",
+        "alt": "Subwoofer Power T1 Slim de 10\" T1S2-10S — lateral2"
+      },
+      {
+        "url": "/productos/T1S2-10S_posterior.jpg",
+        "alt": "Subwoofer Power T1 Slim de 10\" T1S2-10S — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -2750,7 +2771,24 @@
     "precioCents": 379500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P3D4-15_frontal1.jpg",
+        "alt": "Subwoofer Punch P3 de 15\" P3D4-15 — frontal1"
+      },
+      {
+        "url": "/productos/P3D4-15_frontal2.jpg",
+        "alt": "Subwoofer Punch P3 de 15\" P3D4-15 — frontal2"
+      },
+      {
+        "url": "/productos/P3D4-15_lateral.jpg",
+        "alt": "Subwoofer Punch P3 de 15\" P3D4-15 — lateral"
+      },
+      {
+        "url": "/productos/P3D4-15_posterior.jpg",
+        "alt": "Subwoofer Punch P3 de 15\" P3D4-15 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -2827,7 +2865,24 @@
     "precioCents": 349500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P3D4-12_frontal1.jpg",
+        "alt": "Subwoofer Punch P3 de 12\" P3D4-12 — frontal1"
+      },
+      {
+        "url": "/productos/P3D4-12_frontal2.jpg",
+        "alt": "Subwoofer Punch P3 de 12\" P3D4-12 — frontal2"
+      },
+      {
+        "url": "/productos/P3D4-12_lateral.jpg",
+        "alt": "Subwoofer Punch P3 de 12\" P3D4-12 — lateral"
+      },
+      {
+        "url": "/productos/P3D4-12_posterior.jpg",
+        "alt": "Subwoofer Punch P3 de 12\" P3D4-12 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -2908,7 +2963,24 @@
     "precioCents": 325000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P3SD4-12_frontal1.jpg",
+        "alt": "Subwoofer Punch P3S de 12\" P3SD4-12 — frontal1"
+      },
+      {
+        "url": "/productos/P3SD4-12_frontal2.jpg",
+        "alt": "Subwoofer Punch P3S de 12\" P3SD4-12 — frontal2"
+      },
+      {
+        "url": "/productos/P3SD4-12_lateral.jpg",
+        "alt": "Subwoofer Punch P3S de 12\" P3SD4-12 — lateral"
+      },
+      {
+        "url": "/productos/P3SD4-12_posterior.jpg",
+        "alt": "Subwoofer Punch P3S de 12\" P3SD4-12 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -2989,7 +3061,24 @@
     "precioCents": 295000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P3SD4-10_frontal1.jpg",
+        "alt": "Subwoofer Punch P3S de 10\" P3SD4-10 — frontal1"
+      },
+      {
+        "url": "/productos/P3SD4-10_frontal2.jpg",
+        "alt": "Subwoofer Punch P3S de 10\" P3SD4-10 — frontal2"
+      },
+      {
+        "url": "/productos/P3SD4-10_lateral.jpg",
+        "alt": "Subwoofer Punch P3S de 10\" P3SD4-10 — lateral"
+      },
+      {
+        "url": "/productos/P3SD4-10_posterior.jpg",
+        "alt": "Subwoofer Punch P3S de 10\" P3SD4-10 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -3074,7 +3163,24 @@
     "precioCents": 259500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P2D4-12_frontal1.jpg",
+        "alt": "Subwoofer Punch P2 de 12\" P2D4-12 — frontal1"
+      },
+      {
+        "url": "/productos/P2D4-12_frontal2.jpg",
+        "alt": "Subwoofer Punch P2 de 12\" P2D4-12 — frontal2"
+      },
+      {
+        "url": "/productos/P2D4-12_lateral.jpg",
+        "alt": "Subwoofer Punch P2 de 12\" P2D4-12 — lateral"
+      },
+      {
+        "url": "/productos/P2D4-12_posterior.jpg",
+        "alt": "Subwoofer Punch P2 de 12\" P2D4-12 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -3159,7 +3265,20 @@
     "precioCents": 189500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R2SD4-12_frontal.jpg",
+        "alt": "Subwoofer Prime R2 de 12\" R2SD4-12 — frontal"
+      },
+      {
+        "url": "/productos/R2SD4-12_lateral.jpg",
+        "alt": "Subwoofer Prime R2 de 12\" R2SD4-12 — lateral"
+      },
+      {
+        "url": "/productos/R2SD4-12_posterior.jpg",
+        "alt": "Subwoofer Prime R2 de 12\" R2SD4-12 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -3244,7 +3363,20 @@
     "precioCents": 179500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R2SD4-10_frontal1.jpg",
+        "alt": "Subwoofer Prime R2 de 10\" R2SD4-10 — frontal1"
+      },
+      {
+        "url": "/productos/R2SD4-10_lateral.jpg",
+        "alt": "Subwoofer Prime R2 de 10\" R2SD4-10 — lateral"
+      },
+      {
+        "url": "/productos/R2SD4-10_posterior.jpg",
+        "alt": "Subwoofer Prime R2 de 10\" R2SD4-10 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -3330,7 +3462,32 @@
     "precioCents": 599500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/M2D4-10IB_frontal1.jpg",
+        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — frontal1"
+      },
+      {
+        "url": "/productos/M2D4-10IB_frontal2.jpg",
+        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — frontal2"
+      },
+      {
+        "url": "/productos/M2D4-10IB_lateral1.jpg",
+        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — lateral1"
+      },
+      {
+        "url": "/productos/M2D4-10IB_lateral2.jpg",
+        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — lateral2"
+      },
+      {
+        "url": "/productos/M2D4-10IB_piezas.jpg",
+        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — piezas"
+      },
+      {
+        "url": "/productos/M2D4-10IB_posterior.jpg",
+        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -9766,7 +9923,28 @@
     "precioCents": 399500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/T2652-S_frontal1.jpg",
+        "alt": "Componentes Power T2 de 6.5\" T2652-S — frontal1"
+      },
+      {
+        "url": "/productos/T2652-S_frontal2.jpg",
+        "alt": "Componentes Power T2 de 6.5\" T2652-S — frontal2"
+      },
+      {
+        "url": "/productos/T2652-S_grupal.jpg",
+        "alt": "Componentes Power T2 de 6.5\" T2652-S — grupal"
+      },
+      {
+        "url": "/productos/T2652-S_lateral.jpg",
+        "alt": "Componentes Power T2 de 6.5\" T2652-S — lateral"
+      },
+      {
+        "url": "/productos/T2652-S_posterior.jpg",
+        "alt": "Componentes Power T2 de 6.5\" T2652-S — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -9855,7 +10033,28 @@
     "precioCents": 339500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/T1650-S_frontal1.jpg",
+        "alt": "Componentes Power T1 de 6.5\" T1650-S — frontal1"
+      },
+      {
+        "url": "/productos/T1650-S_frontal2.jpg",
+        "alt": "Componentes Power T1 de 6.5\" T1650-S — frontal2"
+      },
+      {
+        "url": "/productos/T1650-S_grupal.jpg",
+        "alt": "Componentes Power T1 de 6.5\" T1650-S — grupal"
+      },
+      {
+        "url": "/productos/T1650-S_lateral.jpg",
+        "alt": "Componentes Power T1 de 6.5\" T1650-S — lateral"
+      },
+      {
+        "url": "/productos/T1650-S_posterior.jpg",
+        "alt": "Componentes Power T1 de 6.5\" T1650-S — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -9944,7 +10143,28 @@
     "precioCents": 199500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/T1693_completo.jpg",
+        "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — completo"
+      },
+      {
+        "url": "/productos/T1693_frontal1.jpg",
+        "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — frontal1"
+      },
+      {
+        "url": "/productos/T1693_frontal2.jpg",
+        "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — frontal2"
+      },
+      {
+        "url": "/productos/T1693_lateral.jpg",
+        "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — lateral"
+      },
+      {
+        "url": "/productos/T1693_posterior.jpg",
+        "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -10037,7 +10257,28 @@
     "precioCents": 219500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/T1650_completo.jpg",
+        "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — completo"
+      },
+      {
+        "url": "/productos/T1650_frontal1.jpg",
+        "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — frontal1"
+      },
+      {
+        "url": "/productos/T1650_frontal2.jpg",
+        "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — frontal2"
+      },
+      {
+        "url": "/productos/T1650_lateral.jpg",
+        "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — lateral"
+      },
+      {
+        "url": "/productos/T1650_posterior.jpg",
+        "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -10122,7 +10363,24 @@
     "precioCents": 179500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/T1T-S_frontal1.jpg",
+        "alt": "Tweeters Power T1 de 1\" T1T-S — frontal1"
+      },
+      {
+        "url": "/productos/T1T-S_frontal2.jpg",
+        "alt": "Tweeters Power T1 de 1\" T1T-S — frontal2"
+      },
+      {
+        "url": "/productos/T1T-S_grupal.jpg",
+        "alt": "Tweeters Power T1 de 1\" T1T-S — grupal"
+      },
+      {
+        "url": "/productos/T1T-S_posterior.jpg",
+        "alt": "Tweeters Power T1 de 1\" T1T-S — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -10219,7 +10477,20 @@
     "precioCents": 229500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P1V2-675_frontal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 V2 de 6.75\" P1V2-675 — frontal"
+      },
+      {
+        "url": "/productos/P1V2-675_lateral.jpg",
+        "alt": "Bocinas coaxiales Punch P1 V2 de 6.75\" P1V2-675 — lateral"
+      },
+      {
+        "url": "/productos/P1V2-675_posterior.jpg",
+        "alt": "Bocinas coaxiales Punch P1 V2 de 6.75\" P1V2-675 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -10312,7 +10583,20 @@
     "precioCents": 249500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P1V2-69_frontal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 V2 de 6x9\" P1V2-69 — frontal"
+      },
+      {
+        "url": "/productos/P1V2-69_lateral.jpg",
+        "alt": "Bocinas coaxiales Punch P1 V2 de 6x9\" P1V2-69 — lateral"
+      },
+      {
+        "url": "/productos/P1V2-69_posterior.jpg",
+        "alt": "Bocinas coaxiales Punch P1 V2 de 6x9\" P1V2-69 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -10401,7 +10685,24 @@
     "precioCents": 169500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P1V2-4_frontal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 V2 de 4\" P1V2-4 — frontal"
+      },
+      {
+        "url": "/productos/P1V2-4_grupal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 V2 de 4\" P1V2-4 — grupal"
+      },
+      {
+        "url": "/productos/P1V2-4_lateral.jpg",
+        "alt": "Bocinas coaxiales Punch P1 V2 de 4\" P1V2-4 — lateral"
+      },
+      {
+        "url": "/productos/P1V2-4_posterior.jpg",
+        "alt": "Bocinas coaxiales Punch P1 V2 de 4\" P1V2-4 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -10490,7 +10791,28 @@
     "precioCents": 259500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P165-SE_frontal1.jpg",
+        "alt": "Componentes Punch de 6.5\" P165-SE — frontal1"
+      },
+      {
+        "url": "/productos/P165-SE_frontal2.jpg",
+        "alt": "Componentes Punch de 6.5\" P165-SE — frontal2"
+      },
+      {
+        "url": "/productos/P165-SE_grupal.jpg",
+        "alt": "Componentes Punch de 6.5\" P165-SE — grupal"
+      },
+      {
+        "url": "/productos/P165-SE_lateral.jpg",
+        "alt": "Componentes Punch de 6.5\" P165-SE — lateral"
+      },
+      {
+        "url": "/productos/P165-SE_posterior.jpg",
+        "alt": "Componentes Punch de 6.5\" P165-SE — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -10579,7 +10901,28 @@
     "precioCents": 155000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P1694_frontal1.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 6x9\" P1694 — frontal1"
+      },
+      {
+        "url": "/productos/P1694_frontal2.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 6x9\" P1694 — frontal2"
+      },
+      {
+        "url": "/productos/P1694_grupal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 6x9\" P1694 — grupal"
+      },
+      {
+        "url": "/productos/P1694_lateral.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 6x9\" P1694 — lateral"
+      },
+      {
+        "url": "/productos/P1694_posterior.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 6x9\" P1694 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -10668,7 +11011,28 @@
     "precioCents": 135000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P1650_frontal1.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 6.5\" P1650 — frontal1"
+      },
+      {
+        "url": "/productos/P1650_frontal2.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 6.5\" P1650 — frontal2"
+      },
+      {
+        "url": "/productos/P1650_grupal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 6.5\" P1650 — grupal"
+      },
+      {
+        "url": "/productos/P1650_lateral.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 6.5\" P1650 — lateral"
+      },
+      {
+        "url": "/productos/P1650_posterior.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 6.5\" P1650 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -10757,7 +11121,24 @@
     "precioCents": 112500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P1572_frontal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 5x7\" P1572 — frontal"
+      },
+      {
+        "url": "/productos/P1572_grupal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 5x7\" P1572 — grupal"
+      },
+      {
+        "url": "/productos/P1572_lateral.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 5x7\" P1572 — lateral"
+      },
+      {
+        "url": "/productos/P1572_posterior.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 5x7\" P1572 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -10846,7 +11227,24 @@
     "precioCents": 99500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P142_frontal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 4\" P142 — frontal"
+      },
+      {
+        "url": "/productos/P142_grupal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 4\" P142 — grupal"
+      },
+      {
+        "url": "/productos/P142_lateral.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 4\" P142 — lateral"
+      },
+      {
+        "url": "/productos/P142_posterior.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 4\" P142 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -10935,7 +11333,24 @@
     "precioCents": 89500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P1462_frontal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 4x6\" P1462 — frontal"
+      },
+      {
+        "url": "/productos/P1462_grupal.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 4x6\" P1462 — grupal"
+      },
+      {
+        "url": "/productos/P1462_lateral.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 4x6\" P1462 — lateral"
+      },
+      {
+        "url": "/productos/P1462_posterior.jpg",
+        "alt": "Bocinas coaxiales Punch P1 de 4x6\" P1462 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11020,7 +11435,24 @@
     "precioCents": 145000,
     "moneda": "GTQ",
     "disponibilidad": "agotado",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P1T-S_frontal.jpg",
+        "alt": "Tweeters Punch P1 de 1\" P1T-S — frontal"
+      },
+      {
+        "url": "/productos/P1T-S_grupal.jpg",
+        "alt": "Tweeters Punch P1 de 1\" P1T-S — grupal"
+      },
+      {
+        "url": "/productos/P1T-S_lateral.jpg",
+        "alt": "Tweeters Punch P1 de 1\" P1T-S — lateral"
+      },
+      {
+        "url": "/productos/P1T-S_posterior.jpg",
+        "alt": "Tweeters Punch P1 de 1\" P1T-S — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -11109,7 +11541,24 @@
     "precioCents": 269500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/PPS4-8_frontal1.jpg",
+        "alt": "Bocina de medio rango Punch Pro de 8\" PPS4-8 — frontal1"
+      },
+      {
+        "url": "/productos/PPS4-8_frontal2.jpg",
+        "alt": "Bocina de medio rango Punch Pro de 8\" PPS4-8 — frontal2"
+      },
+      {
+        "url": "/productos/PPS4-8_lateral.jpg",
+        "alt": "Bocina de medio rango Punch Pro de 8\" PPS4-8 — lateral"
+      },
+      {
+        "url": "/productos/PPS4-8_posterior.jpg",
+        "alt": "Bocina de medio rango Punch Pro de 8\" PPS4-8 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11198,7 +11647,20 @@
     "precioCents": 249500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/PPS4-6_frontal1.jpg",
+        "alt": "Bocina de medio rango Punch Pro de 6.5\" PPS4-6 — frontal1"
+      },
+      {
+        "url": "/productos/PPS4-6_lateral.jpg",
+        "alt": "Bocina de medio rango Punch Pro de 6.5\" PPS4-6 — lateral"
+      },
+      {
+        "url": "/productos/PPS4-6_posterior.jpg",
+        "alt": "Bocina de medio rango Punch Pro de 6.5\" PPS4-6 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11287,7 +11749,20 @@
     "precioCents": 229500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/PP4-T_frontal.jpg",
+        "alt": "Tweeter Punch Pro de 1.5\" PP4-T — frontal"
+      },
+      {
+        "url": "/productos/PP4-T_lateral.jpg",
+        "alt": "Tweeter Punch Pro de 1.5\" PP4-T — lateral"
+      },
+      {
+        "url": "/productos/PP4-T_posterior.jpg",
+        "alt": "Tweeter Punch Pro de 1.5\" PP4-T — posterior"
+      }
+    ],
     "destacado": false,
     "activo": false,
     "atributos": {
@@ -11372,7 +11847,28 @@
     "precioCents": 119500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R165-S_frontal1.jpg",
+        "alt": "Componentes Prime de 6.5\" R165-S — frontal1"
+      },
+      {
+        "url": "/productos/R165-S_frontal2.jpg",
+        "alt": "Componentes Prime de 6.5\" R165-S — frontal2"
+      },
+      {
+        "url": "/productos/R165-S_grupal.jpg",
+        "alt": "Componentes Prime de 6.5\" R165-S — grupal"
+      },
+      {
+        "url": "/productos/R165-S_lateral.jpg",
+        "alt": "Componentes Prime de 6.5\" R165-S — lateral"
+      },
+      {
+        "url": "/productos/R165-S_posterior.jpg",
+        "alt": "Componentes Prime de 6.5\" R165-S — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11461,7 +11957,28 @@
     "precioCents": 99500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R169X3_frontal1.jpg",
+        "alt": "Bocinas coaxiales Prime de 6x9\" R169X3 — frontal1"
+      },
+      {
+        "url": "/productos/R169X3_frontal2.jpg",
+        "alt": "Bocinas coaxiales Prime de 6x9\" R169X3 — frontal2"
+      },
+      {
+        "url": "/productos/R169X3_grupal.jpg",
+        "alt": "Bocinas coaxiales Prime de 6x9\" R169X3 — grupal"
+      },
+      {
+        "url": "/productos/R169X3_lateral.jpg",
+        "alt": "Bocinas coaxiales Prime de 6x9\" R169X3 — lateral"
+      },
+      {
+        "url": "/productos/R169X3_posterior.jpg",
+        "alt": "Bocinas coaxiales Prime de 6x9\" R169X3 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -11550,7 +12067,28 @@
     "precioCents": 82500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R165X3_frontal1.jpg",
+        "alt": "Bocinas coaxiales Prime de 6.5\" R165X3 — frontal1"
+      },
+      {
+        "url": "/productos/R165X3_frontal2.jpg",
+        "alt": "Bocinas coaxiales Prime de 6.5\" R165X3 — frontal2"
+      },
+      {
+        "url": "/productos/R165X3_grupal.jpg",
+        "alt": "Bocinas coaxiales Prime de 6.5\" R165X3 — grupal"
+      },
+      {
+        "url": "/productos/R165X3_lateral.jpg",
+        "alt": "Bocinas coaxiales Prime de 6.5\" R165X3 — lateral"
+      },
+      {
+        "url": "/productos/R165X3_posterior.jpg",
+        "alt": "Bocinas coaxiales Prime de 6.5\" R165X3 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -11639,7 +12177,28 @@
     "precioCents": 79500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R1525X2_frontal1.jpg",
+        "alt": "Bocinas coaxiales Prime de 5.25\" R1525X2 — frontal1"
+      },
+      {
+        "url": "/productos/R1525X2_frontal2.jpg",
+        "alt": "Bocinas coaxiales Prime de 5.25\" R1525X2 — frontal2"
+      },
+      {
+        "url": "/productos/R1525X2_grupal.jpg",
+        "alt": "Bocinas coaxiales Prime de 5.25\" R1525X2 — grupal"
+      },
+      {
+        "url": "/productos/R1525X2_lateral.jpg",
+        "alt": "Bocinas coaxiales Prime de 5.25\" R1525X2 — lateral"
+      },
+      {
+        "url": "/productos/R1525X2_posterior.jpg",
+        "alt": "Bocinas coaxiales Prime de 5.25\" R1525X2 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11728,7 +12287,28 @@
     "precioCents": 69500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R14X2_frontal1.jpg",
+        "alt": "Bocinas coaxiales Prime de 4\" R14X2 — frontal1"
+      },
+      {
+        "url": "/productos/R14X2_frontal2.jpg",
+        "alt": "Bocinas coaxiales Prime de 4\" R14X2 — frontal2"
+      },
+      {
+        "url": "/productos/R14X2_grupal.jpg",
+        "alt": "Bocinas coaxiales Prime de 4\" R14X2 — grupal"
+      },
+      {
+        "url": "/productos/R14X2_lateral.jpg",
+        "alt": "Bocinas coaxiales Prime de 4\" R14X2 — lateral"
+      },
+      {
+        "url": "/productos/R14X2_posterior.jpg",
+        "alt": "Bocinas coaxiales Prime de 4\" R14X2 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -11817,7 +12397,24 @@
     "precioCents": 59500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R1T-S_frontal.jpg",
+        "alt": "Tweeters Prime de 1\" R1T-S — frontal"
+      },
+      {
+        "url": "/productos/R1T-S_grupal.jpg",
+        "alt": "Tweeters Prime de 1\" R1T-S — grupal"
+      },
+      {
+        "url": "/productos/R1T-S_lateral.jpg",
+        "alt": "Tweeters Prime de 1\" R1T-S — lateral"
+      },
+      {
+        "url": "/productos/R1T-S_posterior.jpg",
+        "alt": "Tweeters Prime de 1\" R1T-S — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -11911,7 +12508,28 @@
     "precioCents": 2029500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/M2WL-8HB_frontal1.jpg",
+        "alt": "Bocinas de torre Marine M2 de 8\" M2WL-8HB — frontal1"
+      },
+      {
+        "url": "/productos/M2WL-8HB_frontal2.jpg",
+        "alt": "Bocinas de torre Marine M2 de 8\" M2WL-8HB — frontal2"
+      },
+      {
+        "url": "/productos/M2WL-8HB_grupal.jpg",
+        "alt": "Bocinas de torre Marine M2 de 8\" M2WL-8HB — grupal"
+      },
+      {
+        "url": "/productos/M2WL-8HB_lateral.jpg",
+        "alt": "Bocinas de torre Marine M2 de 8\" M2WL-8HB — lateral"
+      },
+      {
+        "url": "/productos/M2WL-8HB_posterior.jpg",
+        "alt": "Bocinas de torre Marine M2 de 8\" M2WL-8HB — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -12004,7 +12622,28 @@
     "precioCents": 1499500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/M2WL-65MB_frontal1.jpg",
+        "alt": "Bocinas Moto-Can Color Optix M2 de 6.5\" M2WL-65MB — frontal1"
+      },
+      {
+        "url": "/productos/M2WL-65MB_frontal2.jpg",
+        "alt": "Bocinas Moto-Can Color Optix M2 de 6.5\" M2WL-65MB — frontal2"
+      },
+      {
+        "url": "/productos/M2WL-65MB_grupal.jpg",
+        "alt": "Bocinas Moto-Can Color Optix M2 de 6.5\" M2WL-65MB — grupal"
+      },
+      {
+        "url": "/productos/M2WL-65MB_lateral.jpg",
+        "alt": "Bocinas Moto-Can Color Optix M2 de 6.5\" M2WL-65MB — lateral"
+      },
+      {
+        "url": "/productos/M2WL-65MB_posterior.jpg",
+        "alt": "Bocinas Moto-Can Color Optix M2 de 6.5\" M2WL-65MB — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -12105,7 +12744,28 @@
     "precioCents": 669500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/M2-65B_frontal1.jpg",
+        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — frontal1"
+      },
+      {
+        "url": "/productos/M2-65B_frontal2.jpg",
+        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — frontal2"
+      },
+      {
+        "url": "/productos/M2-65B_grupal.jpg",
+        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — grupal"
+      },
+      {
+        "url": "/productos/M2-65B_lateral1.jpg",
+        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — lateral1"
+      },
+      {
+        "url": "/productos/M2-65B_lateral2.jpg",
+        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — lateral2"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -12199,7 +12859,24 @@
     "precioCents": 199500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/M0-65B_frontal.jpg",
+        "alt": "Bocinas coaxiales Marine de 6.5\" M0 — frontal"
+      },
+      {
+        "url": "/productos/M0-65B_grupal.jpg",
+        "alt": "Bocinas coaxiales Marine de 6.5\" M0 — grupal"
+      },
+      {
+        "url": "/productos/M0-65B_lateral.jpg",
+        "alt": "Bocinas coaxiales Marine de 6.5\" M0 — lateral"
+      },
+      {
+        "url": "/productos/M0-65B_posterior.jpg",
+        "alt": "Bocinas coaxiales Marine de 6.5\" M0 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17089,7 +17766,28 @@
     "precioCents": 519500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/P400X4_frontal1.jpg",
+        "alt": "Amplificador Punch de 4 canales P400X4 — frontal1"
+      },
+      {
+        "url": "/productos/P400X4_frontal2.jpg",
+        "alt": "Amplificador Punch de 4 canales P400X4 — frontal2"
+      },
+      {
+        "url": "/productos/P400X4_frontal3.jpg",
+        "alt": "Amplificador Punch de 4 canales P400X4 — frontal3"
+      },
+      {
+        "url": "/productos/P400X4_frontal4.jpg",
+        "alt": "Amplificador Punch de 4 canales P400X4 — frontal4"
+      },
+      {
+        "url": "/productos/P400X4_lateral.jpg",
+        "alt": "Amplificador Punch de 4 canales P400X4 — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17186,7 +17884,24 @@
     "precioCents": 399500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/PBR300X1_frontal1.jpg",
+        "alt": "Amplificador Punch monoblock compacto PBR300X1 — frontal1"
+      },
+      {
+        "url": "/productos/PBR300X1_frontal2.jpg",
+        "alt": "Amplificador Punch monoblock compacto PBR300X1 — frontal2"
+      },
+      {
+        "url": "/productos/PBR300X1_lateral1.jpg",
+        "alt": "Amplificador Punch monoblock compacto PBR300X1 — lateral1"
+      },
+      {
+        "url": "/productos/PBR300X1_lateral2.jpg",
+        "alt": "Amplificador Punch monoblock compacto PBR300X1 — lateral2"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17288,7 +18003,24 @@
     "precioCents": 399500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/PBR400X4D_frontal1.jpg",
+        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — frontal1"
+      },
+      {
+        "url": "/productos/PBR400X4D_frontal2.jpg",
+        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — frontal2"
+      },
+      {
+        "url": "/productos/PBR400X4D_lateral1.jpg",
+        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — lateral1"
+      },
+      {
+        "url": "/productos/PBR400X4D_lateral2.jpg",
+        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — lateral2"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17375,7 +18107,16 @@
     "precioCents": 599500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R2-750X5_frontal.jpg",
+        "alt": "Amplificador Prime de 5 canales R2-750X5 — frontal"
+      },
+      {
+        "url": "/productos/R2-750X5_lateral.jpg",
+        "alt": "Amplificador Prime de 5 canales R2-750X5 — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17462,7 +18203,16 @@
     "precioCents": 609500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R2-1200X1_frontal.jpg",
+        "alt": "Amplificador Prime monoblock R2-1200X1 — frontal"
+      },
+      {
+        "url": "/productos/R2-1200X1_lateral.jpg",
+        "alt": "Amplificador Prime monoblock R2-1200X1 — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17562,7 +18312,16 @@
     "precioCents": 549500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R2-750X1_frontal.jpg",
+        "alt": "Amplificador Prime monoblock R2-750X1 — frontal"
+      },
+      {
+        "url": "/productos/R2-750X1_lateral.jpg",
+        "alt": "Amplificador Prime monoblock R2-750X1 — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17662,7 +18421,16 @@
     "precioCents": 349500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R2-500X1_frontal.jpg",
+        "alt": "Amplificador Prime monoblock R2-500X1 — frontal"
+      },
+      {
+        "url": "/productos/R2-500X1_lateral.jpg",
+        "alt": "Amplificador Prime monoblock R2-500X1 — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17758,7 +18526,16 @@
     "precioCents": 259500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R2-250X1_frontal.jpg",
+        "alt": "Amplificador Prime monoblock R2-250X1 — frontal"
+      },
+      {
+        "url": "/productos/R2-250X1_lateral.jpg",
+        "alt": "Amplificador Prime monoblock R2-250X1 — lateral"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -17854,7 +18631,16 @@
     "precioCents": 429500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R2-500X4_frontal.jpg",
+        "alt": "Amplificador Prime de 4 canales R2-500X4 — frontal"
+      },
+      {
+        "url": "/productos/R2-500X4_lateral.jpg",
+        "alt": "Amplificador Prime de 4 canales R2-500X4 — lateral"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -17941,7 +18727,16 @@
     "precioCents": 309500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/R2-300X4_frontal.jpg",
+        "alt": "Amplificador Prime de 4 canales R2-300X4 — frontal"
+      },
+      {
+        "url": "/productos/R2-300X4_lateral.jpg",
+        "alt": "Amplificador Prime de 4 canales R2-300X4 — lateral"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -18037,7 +18832,28 @@
     "precioCents": 1459500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/M5-1500X5_frontal.jpg",
+        "alt": "Amplificador Marine de 5 canales M5-1500X5 — frontal"
+      },
+      {
+        "url": "/productos/M5-1500X5_grupal.jpg",
+        "alt": "Amplificador Marine de 5 canales M5-1500X5 — grupal"
+      },
+      {
+        "url": "/productos/M5-1500X5_lateral1.jpg",
+        "alt": "Amplificador Marine de 5 canales M5-1500X5 — lateral1"
+      },
+      {
+        "url": "/productos/M5-1500X5_lateral2.jpg",
+        "alt": "Amplificador Marine de 5 canales M5-1500X5 — lateral2"
+      },
+      {
+        "url": "/productos/M5-1500X5_lateral3.jpg",
+        "alt": "Amplificador Marine de 5 canales M5-1500X5 — lateral3"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -18129,7 +18945,28 @@
     "precioCents": 859500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/M2-750X5_frontal.jpg",
+        "alt": "Amplificador Marine de 5 canales M2-750X5 — frontal"
+      },
+      {
+        "url": "/productos/M2-750X5_agua.jpg",
+        "alt": "Amplificador Marine de 5 canales M2-750X5 — agua"
+      },
+      {
+        "url": "/productos/M2-750X5_grupal.jpg",
+        "alt": "Amplificador Marine de 5 canales M2-750X5 — grupal"
+      },
+      {
+        "url": "/productos/M2-750X5_lateral.jpg",
+        "alt": "Amplificador Marine de 5 canales M2-750X5 — lateral"
+      },
+      {
+        "url": "/productos/M2-750X5_transversal.jpg",
+        "alt": "Amplificador Marine de 5 canales M2-750X5 — transversal"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -18209,7 +19046,28 @@
     "precioCents": 539500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/M2-500X1_frontal.jpg",
+        "alt": "Amplificador Marine monoblock M2-500X1 — frontal"
+      },
+      {
+        "url": "/productos/M2-500X1_agua.jpg",
+        "alt": "Amplificador Marine monoblock M2-500X1 — agua"
+      },
+      {
+        "url": "/productos/M2-500X1_grupal.jpg",
+        "alt": "Amplificador Marine monoblock M2-500X1 — grupal"
+      },
+      {
+        "url": "/productos/M2-500X1_lateral.jpg",
+        "alt": "Amplificador Marine monoblock M2-500X1 — lateral"
+      },
+      {
+        "url": "/productos/M2-500X1_transversal.jpg",
+        "alt": "Amplificador Marine monoblock M2-500X1 — transversal"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -18298,7 +19156,28 @@
     "precioCents": 539500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/M2-300X4_frontal.jpg",
+        "alt": "Amplificador Marine de 4 canales M2-300X4 — frontal"
+      },
+      {
+        "url": "/productos/M2-300X4_agua.jpg",
+        "alt": "Amplificador Marine de 4 canales M2-300X4 — agua"
+      },
+      {
+        "url": "/productos/M2-300X4_grupal.jpg",
+        "alt": "Amplificador Marine de 4 canales M2-300X4 — grupal"
+      },
+      {
+        "url": "/productos/M2-300X4_lateral.jpg",
+        "alt": "Amplificador Marine de 4 canales M2-300X4 — lateral"
+      },
+      {
+        "url": "/productos/M2-300X4_transversal.jpg",
+        "alt": "Amplificador Marine de 4 canales M2-300X4 — transversal"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -19422,7 +20301,24 @@
     "precioCents": 799500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/PMX-3_frontal.jpg",
+        "alt": "Receptor marino PMX-3 — frontal"
+      },
+      {
+        "url": "/productos/PMX-3_grupal.jpg",
+        "alt": "Receptor marino PMX-3 — grupal"
+      },
+      {
+        "url": "/productos/PMX-3_lateral.jpg",
+        "alt": "Receptor marino PMX-3 — lateral"
+      },
+      {
+        "url": "/productos/PMX-3_posterior.jpg",
+        "alt": "Receptor marino PMX-3 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -19511,7 +20407,28 @@
     "precioCents": 999500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/PMX-HD9813_frontal.jpg",
+        "alt": "Receptor para Harley-Davidson PMX-HD9813 — frontal"
+      },
+      {
+        "url": "/productos/PMX-HD9813_instalada1.jpg",
+        "alt": "Receptor para Harley-Davidson PMX-HD9813 — instalada1"
+      },
+      {
+        "url": "/productos/PMX-HD9813_instalada2.jpg",
+        "alt": "Receptor para Harley-Davidson PMX-HD9813 — instalada2"
+      },
+      {
+        "url": "/productos/PMX-HD9813_lateral.jpg",
+        "alt": "Receptor para Harley-Davidson PMX-HD9813 — lateral"
+      },
+      {
+        "url": "/productos/PMX-HD9813_posterior.jpg",
+        "alt": "Receptor para Harley-Davidson PMX-HD9813 — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -24465,7 +25382,20 @@
     "precioCents": 15000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RFI-16_cable.jpg",
+        "alt": "Cable RCA de 2 canales y 16 pies RFI-16 — cable"
+      },
+      {
+        "url": "/productos/RFI-16_conectores.jpg",
+        "alt": "Cable RCA de 2 canales y 16 pies RFI-16 — conectores"
+      },
+      {
+        "url": "/productos/RFI-16_empaque.jpg",
+        "alt": "Cable RCA de 2 canales y 16 pies RFI-16 — empaque"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -24530,7 +25460,20 @@
     "precioCents": 15000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RFI-6_cable.jpg",
+        "alt": "Cable RCA de 2 canales y 6 pies RFI-6 — cable"
+      },
+      {
+        "url": "/productos/RFI-6_conectores.jpg",
+        "alt": "Cable RCA de 2 canales y 6 pies RFI-6 — conectores"
+      },
+      {
+        "url": "/productos/RFI-6_empaque.jpg",
+        "alt": "Cable RCA de 2 canales y 6 pies RFI-6 — empaque"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -24591,7 +25534,16 @@
     "precioCents": 32500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RFD4_frontal.jpg",
+        "alt": "Bloque de distribución de 1 entrada y 3 salidas RFD4 — frontal"
+      },
+      {
+        "url": "/productos/RFD4_separado.jpg",
+        "alt": "Bloque de distribución de 1 entrada y 3 salidas RFD4 — separado"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -25670,7 +26622,20 @@
     "precioCents": 7000000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/X317-STG6_grupal.jpg",
+        "alt": "Sistema de audio para Can-Am Maverick X3 X317-STG6 — grupal"
+      },
+      {
+        "url": "/productos/X317-STG6_localizaciones.jpg",
+        "alt": "Sistema de audio para Can-Am Maverick X3 X317-STG6 — localizaciones"
+      },
+      {
+        "url": "/productos/X317-STG6_separado.jpg",
+        "alt": "Sistema de audio para Can-Am Maverick X3 X317-STG6 — separado"
+      }
+    ],
     "destacado": false,
     "activo": true
   },
@@ -25727,7 +26692,20 @@
     "precioCents": 4620000,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/X317-STG4_grupal.jpg",
+        "alt": "Sistema de audio para Can-Am Maverick X3 X317-STG4 — grupal"
+      },
+      {
+        "url": "/productos/X317-STG4_localizaciones.jpg",
+        "alt": "Sistema de audio para Can-Am Maverick X3 X317-STG4 — localizaciones"
+      },
+      {
+        "url": "/productos/X317-STG4_separado.jpg",
+        "alt": "Sistema de audio para Can-Am Maverick X3 X317-STG4 — separado"
+      }
+    ],
     "destacado": false,
     "activo": true
   },
@@ -25800,7 +26778,32 @@
     "precioCents": 3100000,
     "moneda": "GTQ",
     "disponibilidad": "bajo_pedido",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RZR19PXP-STG6_grupal.jpg",
+        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — grupal"
+      },
+      {
+        "url": "/productos/RZR19PXP-STG6_instalado1.jpg",
+        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — instalado1"
+      },
+      {
+        "url": "/productos/RZR19PXP-STG6_instalado2.jpg",
+        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — instalado2"
+      },
+      {
+        "url": "/productos/RZR19PXP-STG6_instalado3.jpg",
+        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — instalado3"
+      },
+      {
+        "url": "/productos/RZR19PXP-STG6_localizaciones.jpg",
+        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — localizaciones"
+      },
+      {
+        "url": "/productos/RZR19PXP-STG6_separado.jpg",
+        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — separado"
+      }
+    ],
     "destacado": false,
     "activo": false
   },
@@ -25873,7 +26876,24 @@
     "precioCents": 1700000,
     "moneda": "GTQ",
     "disponibilidad": "bajo_pedido",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/RZR19PXP-STG4_grupal.jpg",
+        "alt": "Sistema Stage 4 para Polaris RZR Pro XP — grupal"
+      },
+      {
+        "url": "/productos/RZR19PXP-STG4_instalado.jpg",
+        "alt": "Sistema Stage 4 para Polaris RZR Pro XP — instalado"
+      },
+      {
+        "url": "/productos/RZR19PXP-STG4_localizaciones.jpg",
+        "alt": "Sistema Stage 4 para Polaris RZR Pro XP — localizaciones"
+      },
+      {
+        "url": "/productos/RZR19PXP-STG4_separado.jpg",
+        "alt": "Sistema Stage 4 para Polaris RZR Pro XP — separado"
+      }
+    ],
     "destacado": false,
     "activo": false
   },

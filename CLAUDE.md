@@ -350,6 +350,7 @@ SRX62_lateral.jpg
 ACX 165_frontal.jpg      ← el sku se escribe tal cual (con su espacio interno)
 ```
 
+- **Fotos que llegan en otro tamaño o encuadre** (una marca nueva, un zip del distribuidor): `node scripts/fotos/normalizar-producto.mjs <carpeta> [--salida public/productos]` las lleva al formato de arriba —1600 × 1600, fondo blanco, producto al 80 %, jpg— sin tocar los originales. Las vistas `agua`, `conectores` e `instalada`/`instalado` (primeros planos y producto instalado, donde el producto va cortado por el borde o la foto es una escena) salen a sangre, sin recorte ni margen. Avisa de las que tuvo que agrandar más de 1.5× (originales de menos de ~850 px: se ven blandas). Rockford Fosgate entró así en noviembre de 2026 (240 fotos, 60 skus).
 - **Formatos:** `jpg`, `jpeg`, `png`, `webp`. Cualquier otra extensión se ignora y se reporta.
 - El **primer** `_` del nombre separa sku de vista — nunca ambiguo, porque `SKU_REGEX` (`lib/catalog/types.ts`) no admite `_` dentro de un sku. La vista puede traer sus propios guiones bajos (`SRX62_tres_cuartos.jpg` → vista `tres_cuartos`).
 - `scripts/import-catalog.ts` escanea la carpeta en cada corrida de `npm run import:catalog` y arma `imagenes` por sku emparejando con `lib/catalog/photos.ts` (lógica pura, testeada en `photos.test.ts`). Ningún componente cambia — `ProductImage`/`ProductGallery` ya leen `imagenes` tal cual venga.
