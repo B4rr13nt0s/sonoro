@@ -16,23 +16,21 @@ import { put } from "@vercel/blob";
 
 import {
   nombreBlob,
+  opcionesDeSubida,
   serializarManifiesto,
   type ManifiestoFotos,
 } from "../../lib/catalog/fotos-blob.ts";
-import { leerHashesDeFotos, leerManifiesto, pendientesDeSubir } from "../catalogo/fotos.ts";
+import {
+  leerHashesDeFotos,
+  leerManifiesto,
+  pendientesDeSubir,
+  subirEnLotes,
+} from "../catalogo/fotos.ts";
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const CARPETA = path.join(RAIZ, "assets", "productos");
 const RUTA_MANIFIESTO = path.join(RAIZ, "data", "fotos-blob.json");
 const EN_PARALELO = 4;
-const UN_ANIO_S = 31_536_000;
-
-const TIPOS: Record<string, string> = {
-  webp: "image/webp",
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  png: "image/png",
-};
 
 // Antes de leer o subir nada: sin token no hay nada que hacer, y un error a
 // mitad de la subida sería más difícil de entender.
@@ -53,25 +51,18 @@ async function subir() {
   let subidas = 0;
   let bytesSubidos = 0;
   try {
-    for (let i = 0; i < pendientes.length; i += EN_PARALELO) {
-      await Promise.all(
-        pendientes.slice(i, i + EN_PARALELO).map(async (archivo) => {
-          const hash = enDisco.get(archivo)!;
-          const contenido = readFileSync(path.join(CARPETA, archivo));
-          const extension = archivo.slice(archivo.lastIndexOf(".") + 1).toLowerCase();
-          const { url } = await put(nombreBlob(archivo, hash), contenido, {
-            access: "public",
-            addRandomSuffix: false,
-            allowOverwrite: false,
-            contentType: TIPOS[extension],
-            cacheControlMaxAge: UN_ANIO_S,
-          });
-          manifiesto[archivo] = { url, hash, bytes: contenido.length };
-          subidas += 1;
-          bytesSubidos += contenido.length;
-        }),
-      );
-    }
+    await subirEnLotes(
+      pendientes,
+      async (archivo) => {
+        const hash = enDisco.get(archivo)!;
+        const contenido = readFileSync(path.join(CARPETA, archivo));
+        const { url } = await put(nombreBlob(archivo, hash), contenido, opcionesDeSubida(archivo));
+        manifiesto[archivo] = { url, hash, bytes: contenido.length };
+        subidas += 1;
+        bytesSubidos += contenido.length;
+      },
+      EN_PARALELO,
+    );
   } finally {
     // Entradas de archivos que ya no existen en disco: fuera. Y se escribe
     // siempre, también si algo falló a mitad: lo ya subido queda registrado y

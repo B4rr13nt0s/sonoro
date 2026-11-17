@@ -4,7 +4,13 @@ import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { hashDeFoto, leerHashesDeFotos, leerManifiesto, pendientesDeSubir } from "./fotos.ts";
+import {
+  hashDeFoto,
+  leerHashesDeFotos,
+  leerManifiesto,
+  pendientesDeSubir,
+  subirEnLotes,
+} from "./fotos.ts";
 
 const carpetaTemporal = () => mkdtempSync(path.join(tmpdir(), "fotos-"));
 const entrada = (hash: string) => ({
@@ -59,4 +65,28 @@ test("pendientesDeSubir: tras una subida interrumpida solo faltan las que no se 
   const guardado = { "A.webp": entrada("h1"), "B.webp": entrada("h2") };
   assert.deepEqual(pendientesDeSubir(enDisco, guardado), ["C.webp"]);
   assert.deepEqual(pendientesDeSubir(enDisco, { ...guardado, "C.webp": entrada("h3") }), []);
+});
+
+test("subirEnLotes: si una falla, las demás del lote terminan y el error se relanza", async () => {
+  const hechas: string[] = [];
+  const hacer = async (archivo: string) => {
+    if (archivo === "B") throw new Error("falló B");
+    await new Promise((resolver) => setTimeout(resolver, 20));
+    hechas.push(archivo);
+  };
+  await assert.rejects(subirEnLotes(["A", "B", "C", "D"], hacer, 4), /falló B/);
+  assert.deepEqual(hechas.sort(), ["A", "C", "D"]);
+});
+
+test("subirEnLotes: sin errores recorre todo y no pasa del tamaño del lote", async () => {
+  let enVuelo = 0;
+  let maximo = 0;
+  const hacer = async () => {
+    enVuelo += 1;
+    maximo = Math.max(maximo, enVuelo);
+    await new Promise((resolver) => setTimeout(resolver, 5));
+    enVuelo -= 1;
+  };
+  await subirEnLotes(["1", "2", "3", "4", "5", "6", "7"], hacer, 3);
+  assert.equal(maximo, 3);
 });

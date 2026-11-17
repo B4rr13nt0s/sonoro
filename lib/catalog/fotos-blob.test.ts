@@ -6,6 +6,7 @@ import {
   compararConManifiesto,
   hostsDeManifiesto,
   nombreBlob,
+  opcionesDeSubida,
   serializarManifiesto,
   type EntradaFoto,
 } from "./fotos-blob.ts";
@@ -94,4 +95,17 @@ test("hostsDeManifiesto: hostnames únicos y ordenados; una URL con %20 no rompe
     "zeta.public.blob.vercel-storage.com",
   ]);
   assert.deepEqual(hostsDeManifiesto({}), []);
+});
+
+test("opcionesDeSubida: pública, sin sufijo y con sobrescritura (el nombre ya lleva el hash)", () => {
+  const o = opcionesDeSubida("A_frontal.webp");
+  assert.equal(o.access, "public");
+  assert.equal(o.addRandomSuffix, false);
+  // Con el hash en el nombre, sobrescribir es escribir lo mismo: así volver a
+  // subir (manifiesto perdido, subida a medias) no falla con «ya existe».
+  assert.equal(o.allowOverwrite, true);
+  assert.equal(o.contentType, "image/webp");
+  assert.equal(o.cacheControlMaxAge, 31_536_000);
+  assert.equal(opcionesDeSubida("B.JPG").contentType, "image/jpeg");
+  assert.equal(opcionesDeSubida("C.png").contentType, "image/png");
 });

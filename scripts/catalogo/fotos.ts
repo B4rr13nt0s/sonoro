@@ -43,3 +43,21 @@ export function pendientesDeSubir(
     .map(([archivo]) => archivo)
     .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 }
+
+/**
+ * Corre `hacer` sobre cada elemento, de a `enParalelo`. Si alguno falla, las
+ * demás del mismo lote terminan antes de relanzar el primer error (y no
+ * empieza otro lote): con Promise.all las que seguían en vuelo se subían a
+ * Blob sin llegar al manifiesto.
+ */
+export async function subirEnLotes<T>(
+  items: readonly T[],
+  hacer: (item: T) => Promise<void>,
+  enParalelo: number,
+): Promise<void> {
+  for (let i = 0; i < items.length; i += enParalelo) {
+    const resultados = await Promise.allSettled(items.slice(i, i + enParalelo).map(hacer));
+    const fallo = resultados.find((r): r is PromiseRejectedResult => r.status === "rejected");
+    if (fallo) throw fallo.reason;
+  }
+}

@@ -69,3 +69,27 @@ export function hostsDeManifiesto(m: ManifiestoFotos): string[] {
   const hosts = new Set(Object.values(m).map((e) => new URL(e.url).hostname));
   return [...hosts].sort(comparar);
 }
+
+const TIPOS: Record<string, string> = {
+  webp: "image/webp",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+};
+
+/**
+ * Opciones de `put` de @vercel/blob para una foto. Sobrescribir es seguro: el
+ * nombre ya lleva el hash del contenido, así que «ya existe» solo puede ser la
+ * misma foto —por un manifiesto perdido o una subida a medias— y fallar ahí
+ * dejaría la subida atascada para siempre.
+ */
+export function opcionesDeSubida(archivo: string) {
+  const extension = archivo.slice(archivo.lastIndexOf(".") + 1).toLowerCase();
+  return {
+    access: "public" as const,
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: TIPOS[extension],
+    cacheControlMaxAge: 31_536_000,
+  };
+}
