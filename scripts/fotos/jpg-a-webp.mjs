@@ -1,6 +1,6 @@
-// Convierte a WebP (q80) los .jpg de public/productos/ y borra el .jpg.
+// Convierte a WebP (q80) los .jpg de assets/productos/ y borra el .jpg.
 //
-//   node scripts/fotos/jpg-a-webp.mjs [carpeta]      (por defecto public/productos)
+//   node scripts/fotos/jpg-a-webp.mjs [carpeta]      (por defecto assets/productos)
 //
 // Se corrió una vez, en noviembre de 2026, para bajar el peso de cada deployment
 // de Vercel (82 MB de fotos en jpg). Mismo tamaño en píxeles, mismo nombre
@@ -11,7 +11,7 @@ import { readdir, readFile, writeFile, unlink } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
-const carpeta = path.resolve(process.argv[2] ?? "public/productos");
+const carpeta = path.resolve(process.argv[2] ?? "assets/productos");
 const archivos = (await readdir(carpeta)).filter((f) => /\.jpe?g$/i.test(f)).sort();
 
 async function convertir(archivo) {
