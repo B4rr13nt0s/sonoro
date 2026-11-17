@@ -163,8 +163,12 @@ def procesar(ruta):
     if tiene_alfa:
         rgba = np.array(im.convert("RGBA"))
         rgb = rgba[..., :3]
-        m = (rgba[..., 3] >= 250).astype(np.float32)
-        m = cv2.GaussianBlur(m, (0, 0), 0.9)
+        opaco = (rgba[..., 3] >= 250).astype(np.float32)
+        # algunos PNG declaran alfa pero todo es opaco (fondo blanco macizo): sin
+        # transparencia real no hay sombra que separar, así que va al modelo
+        tiene_alfa = opaco.mean() < 0.97
+    if tiene_alfa:
+        m = cv2.GaussianBlur(opaco, (0, 0), 0.9)
         modo = "alfa"
     else:
         rgb = np.array(im.convert("RGB"))
