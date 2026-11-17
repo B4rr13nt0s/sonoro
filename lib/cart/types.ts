@@ -56,6 +56,10 @@ export type CatalogoSku = {
   // Para que /carrito enlace cada línea a su ficha. Opcional: reconcile() no
   // lo usa, y sin él la línea se muestra sin enlace.
   slug?: string;
+  // URL de la foto principal, para la miniatura de /carrito: el CartItem
+  // guarda una copia (imagenSnapshot) que envejece cuando cambia dónde viven
+  // las fotos, así que la línea muestra la del catálogo (./foto.ts).
+  foto?: string;
   activo: boolean;
   disponibilidad: Disponibilidad;
   precioCents: number;

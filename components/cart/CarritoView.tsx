@@ -17,6 +17,7 @@ import { avisosDeCambios } from "@/components/cart/avisos.ts";
 import { PildoraDisponibilidad } from "@/components/catalog/PildoraDisponibilidad";
 import { PlaceholderImage } from "@/components/media/PlaceholderImage";
 import { claseBoton } from "@/components/ui/boton.ts";
+import { fotoDeLinea } from "@/lib/cart/foto.ts";
 import type { Disponibilidad } from "@/lib/catalog/index.ts";
 import { formatQ, lineaCuota } from "@/lib/format/precio.ts";
 import {
@@ -49,6 +50,7 @@ export function CarritoView() {
     descartarCambios,
     disponibilidadPorSku,
     slugPorSku,
+    fotoPorSku,
     setQty,
     removeItem,
     clear,
@@ -143,6 +145,7 @@ export function CarritoView() {
                 item={item}
                 disponibilidad={disponibilidadPorSku[item.sku]}
                 slug={slugPorSku[item.sku]}
+                foto={fotoDeLinea(item.imagenSnapshot, fotoPorSku[item.sku])}
                 onSetQty={(qty) => setQty(item.sku, qty)}
                 onRemove={() => removeItem(item.sku)}
               />
@@ -192,6 +195,7 @@ function CartLineItem({
   item,
   disponibilidad,
   slug,
+  foto: urlFoto,
   onSetQty,
   onRemove,
 }: {
@@ -199,16 +203,18 @@ function CartLineItem({
   disponibilidad: Disponibilidad | undefined;
   /** Si el catálogo lo conoce, la foto y el nombre llevan a la ficha. */
   slug: string | undefined;
+  /** La foto actual de la línea (null → placeholder): ver lib/cart/foto.ts. */
+  foto: string | null;
   onSetQty: (qty: number) => void;
   onRemove: () => void;
 }) {
   const totalLinea = item.unitPriceCents * item.qty;
   const href = slug ? `/producto/${slug}` : null;
 
-  const foto = item.imagenSnapshot ? (
+  const foto = urlFoto ? (
     <div className="relative h-[110px] w-[100px] flex-none overflow-hidden rounded-[10px] sm:w-[140px]">
       <Image
-        src={item.imagenSnapshot}
+        src={urlFoto}
         alt={item.nombreSnapshot}
         fill
         // La miniatura mide 100 px (140 en sm): sin `sizes`, `fill`
