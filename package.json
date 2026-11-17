@@ -19,6 +19,7 @@
     "import:vehiculos": "tsx scripts/import-vehiculos.ts",
     "fotos:sin-fondo": "node scripts/fotos/quitar-fondo.mjs",
     "fotos:logos": "node scripts/fotos/logos-marcas.mjs",
+    "fotos:subir": "tsx --env-file-if-exists=.env.local scripts/fotos/subir-blob.ts",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -48,6 +49,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.185.4",
+    "@vercel/blob": "^2.9.0",
     "csv-parse": "^7.0.2",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
