@@ -79,28 +79,55 @@ test("emparejarFotosConSkus: archivos de distintos sku no se mezclan", () => {
   assert.equal(porSku.get("MJP800.4")?.length, 1);
 });
 
-test("construirImagenes: arma url absoluta desde la raíz y alt con nombre — vista", () => {
+const BLOB = "https://x.public.blob.vercel-storage.com/productos";
+const urlBlob = (archivo: string) => `${BLOB}/${archivo}`;
+
+test("construirImagenes: toma la url de urlDe y arma el alt con nombre — vista", () => {
   const imagenes = construirImagenes(
-    [{ sku: "SRX62", vista: "frontal", archivo: "SRX62_frontal.jpg" }],
+    [{ sku: "SRX62", vista: "frontal", archivo: "SRX62_frontal.webp" }],
     "Subwoofer SRX 12",
-    "/productos",
+    urlBlob,
   );
   assert.deepEqual(imagenes, [
-    { url: "/productos/SRX62_frontal.jpg", alt: "Subwoofer SRX 12 — frontal" },
+    { url: `${BLOB}/SRX62_frontal.webp`, alt: "Subwoofer SRX 12 — frontal" },
   ]);
 });
 
 test("construirImagenes: preserva el orden que le pasen (ya viene ordenado de emparejarFotosConSkus)", () => {
   const imagenes = construirImagenes(
     [
-      { sku: "SRX62", vista: "frontal", archivo: "SRX62_frontal.jpg" },
-      { sku: "SRX62", vista: "lateral", archivo: "SRX62_lateral.jpg" },
+      { sku: "SRX62", vista: "frontal", archivo: "SRX62_frontal.webp" },
+      { sku: "SRX62", vista: "lateral", archivo: "SRX62_lateral.webp" },
     ],
     "Subwoofer SRX 12",
-    "/productos",
+    urlBlob,
   );
-  assert.equal(imagenes[0].url, "/productos/SRX62_frontal.jpg");
-  assert.equal(imagenes[1].url, "/productos/SRX62_lateral.jpg");
+  assert.equal(imagenes[0].url, `${BLOB}/SRX62_frontal.webp`);
+  assert.equal(imagenes[1].url, `${BLOB}/SRX62_lateral.webp`);
+});
+
+test("construirImagenes: una foto sin url (sin subir) no entra", () => {
+  const imagenes = construirImagenes(
+    [
+      { sku: "SRX62", vista: "frontal", archivo: "SRX62_frontal.webp" },
+      { sku: "SRX62", vista: "lateral", archivo: "SRX62_lateral.webp" },
+    ],
+    "Subwoofer SRX 12",
+    (archivo) => (archivo === "SRX62_lateral.webp" ? urlBlob(archivo) : undefined),
+  );
+  assert.deepEqual(
+    imagenes.map((i) => i.url),
+    [`${BLOB}/SRX62_lateral.webp`],
+  );
+});
+
+test("construirImagenes: sin ninguna url devuelve [] (el placeholder es un estado de renderizado)", () => {
+  const imagenes = construirImagenes(
+    [{ sku: "SRX62", vista: "frontal", archivo: "SRX62_frontal.webp" }],
+    "Subwoofer SRX 12",
+    () => undefined,
+  );
+  assert.deepEqual(imagenes, []);
 });
 
 test("emparejarFotosConSkus: la vista frontal va primero aunque otra ordene antes", () => {

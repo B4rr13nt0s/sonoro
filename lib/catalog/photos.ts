@@ -1,6 +1,6 @@
 // Empareja archivos de foto con productos por nombre de archivo — la mitad
 // pura y testeable del pipeline de fotos; scripts/import-catalog.ts aporta
-// el filesystem (readdirSync de public/productos/) y llama a estas
+// el filesystem (los hashes de assets/productos/ y el manifiesto de Blob) y llama a estas
 // funciones. CLAUDE.md § Imágenes: "cuando lleguen las fotos, es solo un
 // cambio de datos, cero código" — por eso esto vive del lado del
 // importador, no de los componentes (ProductImage/ProductGallery ya leen
@@ -97,13 +97,16 @@ export function emparejarFotosConSkus(
   return { porSku, ignorados };
 }
 
+// `urlDe` da la URL de cada foto (hoy, la del manifiesto de Blob). Una foto
+// sin URL —todavía sin subir— no entra: sin ninguna, `imagenes` queda [] y
+// el componente dibuja el placeholder.
 export function construirImagenes(
   archivos: ArchivoFoto[],
   nombreProducto: string,
-  rutaBase: string,
+  urlDe: (archivo: string) => string | undefined,
 ): Imagen[] {
-  return archivos.map(({ archivo, vista }) => ({
-    url: `${rutaBase}/${archivo}`,
-    alt: `${nombreProducto} — ${vista}`,
-  }));
+  return archivos.flatMap(({ archivo, vista }): Imagen[] => {
+    const url = urlDe(archivo);
+    return url ? [{ url, alt: `${nombreProducto} — ${vista}` }] : [];
+  });
 }
