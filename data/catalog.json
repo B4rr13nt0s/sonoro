@@ -9574,7 +9574,24 @@
     "precioCents": 109500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/STADIUM 192T_frontal.webp",
+        "alt": "Tweeters Stadium de 3/4\" STADIUM 192T — frontal"
+      },
+      {
+        "url": "/productos/STADIUM 192T_frontal2.webp",
+        "alt": "Tweeters Stadium de 3/4\" STADIUM 192T — frontal2"
+      },
+      {
+        "url": "/productos/STADIUM 192T_lateral1.webp",
+        "alt": "Tweeters Stadium de 3/4\" STADIUM 192T — lateral1"
+      },
+      {
+        "url": "/productos/STADIUM 192T_lateral2.webp",
+        "alt": "Tweeters Stadium de 3/4\" STADIUM 192T — lateral2"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -9662,7 +9679,20 @@
     "precioCents": 99500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/CLUB 6520_frontal1.webp",
+        "alt": "Bocinas coaxiales Club de 6.5\" CLUB 6520 — frontal1"
+      },
+      {
+        "url": "/productos/CLUB 6520_frontal2.webp",
+        "alt": "Bocinas coaxiales Club de 6.5\" CLUB 6520 — frontal2"
+      },
+      {
+        "url": "/productos/CLUB 6520_lateral.webp",
+        "alt": "Bocinas coaxiales Club de 6.5\" CLUB 6520 — lateral"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -9747,7 +9777,24 @@
     "precioCents": 79500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/STAGE2 634_frontal1.webp",
+        "alt": "Bocinas coaxiales Stage de 6.5\" STAGE2 634 — frontal1"
+      },
+      {
+        "url": "/productos/STAGE2 634_frontal2.webp",
+        "alt": "Bocinas coaxiales Stage de 6.5\" STAGE2 634 — frontal2"
+      },
+      {
+        "url": "/productos/STAGE2 634_lateral.webp",
+        "alt": "Bocinas coaxiales Stage de 6.5\" STAGE2 634 — lateral"
+      },
+      {
+        "url": "/productos/STAGE2 634_posterior.webp",
+        "alt": "Bocinas coaxiales Stage de 6.5\" STAGE2 634 — posterior"
+      }
+    ],
     "destacado": true,
     "activo": true,
     "atributos": {
@@ -9831,7 +9878,24 @@
     "precioCents": 59500,
     "moneda": "GTQ",
     "disponibilidad": "disponible",
-    "imagenes": [],
+    "imagenes": [
+      {
+        "url": "/productos/STAGE2 45F_frontal1.webp",
+        "alt": "Bocinas coaxiales de 4\" STAGE2 45F — frontal1"
+      },
+      {
+        "url": "/productos/STAGE2 45F_frontal2.webp",
+        "alt": "Bocinas coaxiales de 4\" STAGE2 45F — frontal2"
+      },
+      {
+        "url": "/productos/STAGE2 45F_lateral.webp",
+        "alt": "Bocinas coaxiales de 4\" STAGE2 45F — lateral"
+      },
+      {
+        "url": "/productos/STAGE2 45F_posterior.webp",
+        "alt": "Bocinas coaxiales de 4\" STAGE2 45F — posterior"
+      }
+    ],
     "destacado": false,
     "activo": true,
     "atributos": {
@@ -9925,16 +9989,16 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
+        "url": "/productos/T2652-S_completo.webp",
+        "alt": "Componentes Power T2 de 6.5\" T2652-S — completo"
+      },
+      {
         "url": "/productos/T2652-S_frontal1.webp",
         "alt": "Componentes Power T2 de 6.5\" T2652-S — frontal1"
       },
       {
         "url": "/productos/T2652-S_frontal2.webp",
         "alt": "Componentes Power T2 de 6.5\" T2652-S — frontal2"
-      },
-      {
-        "url": "/productos/T2652-S_grupal.webp",
-        "alt": "Componentes Power T2 de 6.5\" T2652-S — grupal"
       },
       {
         "url": "/productos/T2652-S_lateral.webp",
@@ -10035,16 +10099,16 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
+        "url": "/productos/T1650-S_completo.webp",
+        "alt": "Componentes Power T1 de 6.5\" T1650-S — completo"
+      },
+      {
         "url": "/productos/T1650-S_frontal1.webp",
         "alt": "Componentes Power T1 de 6.5\" T1650-S — frontal1"
       },
       {
         "url": "/productos/T1650-S_frontal2.webp",
         "alt": "Componentes Power T1 de 6.5\" T1650-S — frontal2"
-      },
-      {
-        "url": "/productos/T1650-S_grupal.webp",
-        "alt": "Componentes Power T1 de 6.5\" T1650-S — grupal"
       },
       {
         "url": "/productos/T1650-S_lateral.webp",
@@ -10145,16 +10209,16 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
-        "url": "/productos/T1693_completo.webp",
-        "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — completo"
-      },
-      {
         "url": "/productos/T1693_frontal1.webp",
         "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — frontal1"
       },
       {
         "url": "/productos/T1693_frontal2.webp",
         "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — frontal2"
+      },
+      {
+        "url": "/productos/T1693_grupal.webp",
+        "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — grupal"
       },
       {
         "url": "/productos/T1693_lateral.webp",
@@ -10259,16 +10323,16 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
-        "url": "/productos/T1650_completo.webp",
-        "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — completo"
-      },
-      {
         "url": "/productos/T1650_frontal1.webp",
         "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — frontal1"
       },
       {
         "url": "/productos/T1650_frontal2.webp",
         "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — frontal2"
+      },
+      {
+        "url": "/productos/T1650_grupal.webp",
+        "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — grupal"
       },
       {
         "url": "/productos/T1650_lateral.webp",
@@ -10793,16 +10857,16 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
+        "url": "/productos/P165-SE_completo.webp",
+        "alt": "Componentes Punch de 6.5\" P165-SE — completo"
+      },
+      {
         "url": "/productos/P165-SE_frontal1.webp",
         "alt": "Componentes Punch de 6.5\" P165-SE — frontal1"
       },
       {
         "url": "/productos/P165-SE_frontal2.webp",
         "alt": "Componentes Punch de 6.5\" P165-SE — frontal2"
-      },
-      {
-        "url": "/productos/P165-SE_grupal.webp",
-        "alt": "Componentes Punch de 6.5\" P165-SE — grupal"
       },
       {
         "url": "/productos/P165-SE_lateral.webp",
@@ -11653,6 +11717,10 @@
         "alt": "Bocina de medio rango Punch Pro de 6.5\" PPS4-6 — frontal1"
       },
       {
+        "url": "/productos/PPS4-6_frontal2.webp",
+        "alt": "Bocina de medio rango Punch Pro de 6.5\" PPS4-6 — frontal2"
+      },
+      {
         "url": "/productos/PPS4-6_lateral.webp",
         "alt": "Bocina de medio rango Punch Pro de 6.5\" PPS4-6 — lateral"
       },
@@ -11849,16 +11917,16 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
+        "url": "/productos/R165-S_completo.webp",
+        "alt": "Componentes Prime de 6.5\" R165-S — completo"
+      },
+      {
         "url": "/productos/R165-S_frontal1.webp",
         "alt": "Componentes Prime de 6.5\" R165-S — frontal1"
       },
       {
         "url": "/productos/R165-S_frontal2.webp",
         "alt": "Componentes Prime de 6.5\" R165-S — frontal2"
-      },
-      {
-        "url": "/productos/R165-S_grupal.webp",
-        "alt": "Componentes Prime de 6.5\" R165-S — grupal"
       },
       {
         "url": "/productos/R165-S_lateral.webp",
