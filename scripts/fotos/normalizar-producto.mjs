@@ -1,10 +1,10 @@
 // Lleva fotos de producto al formato del sitio (CLAUDE.md § Imágenes):
-// 1600 × 1600 px, fondo blanco #FFFFFF, jpg, producto centrado con su lado
+// 1600 × 1600 px, fondo blanco #FFFFFF, webp, producto centrado con su lado
 // más largo al 80 % del cuadro (10 % de aire por lado).
 //
 //   node scripts/fotos/normalizar-producto.mjs <carpeta-de-entrada> [--salida public/productos]
 //
-// Los nombres se conservan (SKU_vista.ext); un .png sale como .jpg. Qué hace con cada foto:
+// Los nombres se conservan (SKU_vista.ext); todo sale como .webp. Qué hace con cada foto:
 //  - Aplana la transparencia sobre blanco y recorta el blanco sobrante.
 //  - Producto sobre blanco: lo escala a 1280 px por su lado más largo y lo centra.
 //  - Foto a sangre (primeros planos y producto instalado: vistas `agua`,
@@ -39,10 +39,16 @@ if (!entrada) {
   process.exit(1);
 }
 
-async function jpg(lienzo) {
-  for (const q of [90, 86, 82, 78, 74, 70]) {
-    const buf = await lienzo.clone().jpeg({ quality: q, mozjpeg: true }).toBuffer();
-    if (buf.length <= TOPE_BYTES || q === 70) return { buf, q };
+// WebP q80: a un tercio del peso del jpg sin diferencia visible a 100 % (probado
+// con la fibra de carbono de la Focal, el peor caso). Pesa menos en cada
+// deployment de Vercel, donde public/productos/ viaja completo.
+async function webp(lienzo) {
+  for (const q of [80, 76, 72, 68, 64]) {
+    const buf = await lienzo
+      .clone()
+      .webp({ quality: q, effort: 6, smartSubsample: true })
+      .toBuffer();
+    if (buf.length <= TOPE_BYTES || q === 64) return { buf, q };
   }
 }
 
@@ -73,8 +79,8 @@ async function procesar(archivo) {
   }).composite([
     { input: pieza, left: Math.round((LADO - rw) / 2), top: Math.round((LADO - rh) / 2) },
   ]);
-  const { buf, q } = await jpg(lienzo);
-  const nombre = path.basename(archivo, path.extname(archivo)) + ".jpg";
+  const { buf, q } = await webp(lienzo);
+  const nombre = path.basename(archivo, path.extname(archivo)) + ".webp";
   await writeFile(path.join(salida, nombre), buf);
   return { archivo, nombre, aSangre, agrandado: escala, kb: Math.round(buf.length / 1024), q };
 }
@@ -85,7 +91,7 @@ const archivos = (await readdir(entrada))
 const nombres = archivos.map((f) => path.basename(f, path.extname(f)));
 const repetidos = nombres.filter((n, i) => nombres.indexOf(n) !== i);
 if (repetidos.length) {
-  console.error("Dos archivos darían el mismo .jpg:", repetidos.join(", "));
+  console.error("Dos archivos darían el mismo .webp:", repetidos.join(", "));
   process.exit(1);
 }
 await mkdir(salida, { recursive: true });
