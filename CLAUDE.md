@@ -583,6 +583,8 @@ No es caballera estricta y no pretende serlo: la caballera es una proyección OB
 
 Hasta la v2 ese giro global no alcanzaba: cada modelo había decidido por su cuenta hacia dónde apuntaba su frente, y el manifiesto lo corregía con un `giroBase` por modelo. **Desde la v3 `finalize(front=...)` deja todos los frentes hacia −Z y `giroBase` no existe.** Si un producto aparece de espaldas, se corrige el `front` de su script y se regenera — nunca el azimut global, que movería a los nueve.
 
+**La bocina y el subwoofer arrancan girados 45° de derecha a izquierda, y el cable RCA 45° de izquierda a derecha** (decisión del negocio, noviembre de 2026; el RCA empezó en −45° y se le giraron 90° más): `giroReposo` en `lib/models3d.ts` (−π/4, el mismo sentido del giro del ciclo), que `ProductModel3D` suma al ángulo del ciclo. No es una corrección de frente —los .glb siguen con el frente hacia −Z, y no cambian ni su nombre ni su peso—, sino la pose en la que se ven en reposo, y como el giro del ciclo es absoluto y de una vuelta exacta, cada vuelta empieza y termina en esa pose. Los vecinos que esperan su turno también la llevan. **Su imagen estática se regeneró** (`posters.mjs`); si se cambia `giroReposo` de cualquier modelo, hay que volver a correrlo, porque el test solo comprueba que el archivo exista.
+
 Cuidado al juzgar «de frente o de espaldas» a ojo: en el ecualizador, los RCA traseros llevan aro `accent-orange` y se parecen bastante a perillas. La fila de controles reales es la de cilindros oscuros del canto frontal.
 
 #### Encuadre: el producto no toca el chrome ni los bordes

@@ -44,10 +44,14 @@ export function ProductModel3D({ id, offsetX = 0, anguloRef }: ProductModel3DPro
   const spinner = useRef<Group>(null);
 
   useFrame(() => {
-    // Solo el giro del ciclo: los .glb ya traen el frente hacia −Z, que es
-    // hacia donde mira la cámara en la vista predeterminada (CLAUDE.md
-    // § Modelos 3D). No hay giro base por modelo.
-    if (spinner.current) spinner.current.rotation.y = anguloRef?.current ?? 0;
+    // Los .glb ya traen el frente hacia −Z, que es hacia donde mira la
+    // cámara en la vista predeterminada (CLAUDE.md § Modelos 3D). Sobre eso
+    // va el giro de reposo del modelo, si tiene (`giroReposo`), y encima el
+    // giro del ciclo, que es absoluto y arranca en 0: el modelo vuelve a su
+    // pose de reposo al terminar cada vuelta.
+    if (spinner.current) {
+      spinner.current.rotation.y = (entry.giroReposo ?? 0) + (anguloRef?.current ?? 0);
+    }
   });
 
   // Los .glb apoyan en Y = 0 (Ymin = 0 es convención del pipeline). Para
