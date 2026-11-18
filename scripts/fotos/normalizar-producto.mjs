@@ -2,7 +2,7 @@
 // 1600 × 1600 px, fondo blanco #FFFFFF, webp, producto centrado con su lado
 // más largo al 80 % del cuadro (10 % de aire por lado).
 //
-//   node scripts/fotos/normalizar-producto.mjs <carpeta-de-entrada> [--salida public/productos]
+//   node scripts/fotos/normalizar-producto.mjs <carpeta-de-entrada> [--salida assets/productos]
 //
 // Los nombres se conservan (SKU_vista.ext); todo sale como .webp. Qué hace con cada foto:
 //  - Aplana la transparencia sobre blanco y recorta el blanco sobrante.
@@ -26,7 +26,7 @@ const EXT = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 
 const args = process.argv.slice(2);
 const iSalida = args.indexOf("--salida");
-const salida = path.resolve(iSalida >= 0 ? args[iSalida + 1] : "public/productos");
+const salida = path.resolve(iSalida >= 0 ? args[iSalida + 1] : "assets/productos");
 const iSangre = args.indexOf("--sangre");
 const esSangre =
   iSangre >= 0 ? new RegExp(args[iSangre + 1]) : /^(agua|conectores|instalad[ao]\d*)$/;
@@ -41,7 +41,7 @@ if (!entrada) {
 
 // WebP q80: a un tercio del peso del jpg sin diferencia visible a 100 % (probado
 // con la fibra de carbono de la Focal, el peor caso). Pesa menos en cada
-// deployment de Vercel, donde public/productos/ viaja completo.
+// deployment de Vercel, donde public/productos/ viajaba completo (hoy las fotos viven en assets/productos/ y en Blob).
 async function webp(lienzo) {
   for (const q of [80, 76, 72, 68, 64]) {
     const buf = await lienzo

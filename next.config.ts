@@ -1,7 +1,9 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import type { NextConfig } from "next";
+
+import { hostsDeManifiesto, type ManifiestoFotos } from "./lib/catalog/fotos-blob.ts";
 
 // docs/PLAN.md § Fase 0 nombra exactamente estos dominios: sonoro.gt
 // canónico (apex, sin www), sonoro.com.gt y sonoro.com defensivos. No son
@@ -66,6 +68,23 @@ const CABECERAS_SEGURIDAD = [
   },
 ];
 
+// Las fotos de producto viven en Vercel Blob (data/fotos-blob.json, que escribe
+// `npm run fotos:subir`) y next/image solo optimiza hosts declarados. El host
+// de la tienda sale del propio manifiesto: no se escribe a mano. Sin manifiesto
+// (repo fresco) no hay patrones y las fotos son el placeholder. Un manifiesto
+// con JSON roto sí tira el build: mejor eso que fotos sin optimizar.
+function patronesDeFotos() {
+  const ruta = path.join(process.cwd(), "data", "fotos-blob.json");
+  const manifiesto: ManifiestoFotos = existsSync(ruta)
+    ? JSON.parse(readFileSync(ruta, "utf-8"))
+    : {};
+  return hostsDeManifiesto(manifiesto).map((hostname) => ({
+    protocol: "https" as const,
+    hostname,
+    pathname: "/productos/**",
+  }));
+}
+
 // Las imágenes OG de producto se pregeneran en el build
 // (app/producto/[slug]/opengraph-image.tsx), así que son archivos estáticos y
 // esta cabecera sí les aplica: la red de Vercel las sirve cacheadas en vez de
@@ -109,6 +128,7 @@ const nextConfig: NextConfig = {
   // `next start` no aplica la lista, el optimizador de Vercel sí.
   images: {
     qualities: [50, 75],
+    remotePatterns: patronesDeFotos(),
   },
 
   // Los .glb de public/models/ y el decoder de Draco de public/draco/ son

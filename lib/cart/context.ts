@@ -74,6 +74,9 @@ type CartContextValue = {
   // Slug ACTUAL de cada sku, para enlazar la línea a su ficha (el CartItem no
   // lo guarda: el slug es permanente, pero el carrito no es el dueño del dato).
   slugPorSku: Readonly<Record<string, string>>;
+  // Foto principal ACTUAL de cada sku (components/cart/CarritoView.tsx la
+  // prefiere al imagenSnapshot, que envejece: ver lib/cart/foto.ts).
+  fotoPorSku: Readonly<Record<string, string>>;
   // false hasta que el efecto de abajo lea localStorage — /carrito lo usa
   // para no mostrar "carrito vacío" un instante antes de que aparezca el
   // carrito real (CLAUDE.md § Modelo de conversión: localStorage no existe
@@ -264,6 +267,14 @@ export function CartProvider({
     [catalogo],
   );
 
+  const fotoPorSku = useMemo(
+    () =>
+      Object.fromEntries(
+        catalogo.flatMap((p): [string, string][] => (p.foto ? [[p.sku, p.foto]] : [])),
+      ),
+    [catalogo],
+  );
+
   const catalogoPorSku = useMemo(() => new Map(catalogo.map((p) => [p.sku, p])), [catalogo]);
 
   // Corrige lo guardado AHORA, no el carrito del último render: entre ese
@@ -314,6 +325,7 @@ export function CartProvider({
     descartarCambios,
     disponibilidadPorSku,
     slugPorSku,
+    fotoPorSku,
     hydrated,
     addItem,
     ...acciones,

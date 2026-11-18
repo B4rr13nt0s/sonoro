@@ -23,21 +23,25 @@
 // archivo no traduce ni formatea nada. El contrato de cada hoja (columnas,
 // obligatorios, orden de destacadas) vive en catalogo/hojas.ts.
 //
-// Fotos (CLAUDE.md § Imágenes): public/productos/ se escanea buscando
+// Fotos (CLAUDE.md § Imágenes): assets/productos/ se escanea buscando
 // archivos "SKU_vista.ext" — lib/catalog/photos.ts hace el emparejamiento
-// puro, este archivo solo aporta el filesystem.
+// puro, este archivo solo aporta el filesystem. La URL de cada foto sale de
+// data/fotos-blob.json (la escribe `npm run fotos:subir`): el build no
+// necesita token ni red hacia Blob.
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { CATEGORIAS_SITIO, perteneceACategoria } from "../lib/catalog/categorias.ts";
 import { construirConteos } from "../lib/catalog/conteos.ts";
 import { compararTexto } from "../lib/catalog/orden.ts";
+import { alertasDeFotos, compararConManifiesto } from "../lib/catalog/fotos-blob.ts";
 import { construirImagenes, emparejarFotosConSkus } from "../lib/catalog/photos.ts";
 import { ProductoSchema, type Producto } from "../lib/catalog/types.ts";
 import { formatQ } from "../lib/format/precio.ts";
 import { leerLibro, validarLibro, type LibroCrudo } from "./catalogo/contrato.ts";
+import { leerHashesDeFotos, leerManifiesto } from "./catalogo/fotos.ts";
 import {
   ampliarRegistro,
   detectarAlertas,
@@ -63,7 +67,8 @@ const RUTA_TAXONOMY = path.join(RAIZ, "data", "taxonomy.json");
 // data/retirados.json, que además lee proxy.ts para el 410.
 const RUTA_RETIRADOS = path.join(RAIZ, "data", "retirados.json");
 const RUTA_SKUS_PUBLICADOS = path.join(RAIZ, "data", "skus-publicados.json");
-const RUTA_FOTOS = path.join(RAIZ, "public", "productos");
+const RUTA_FOTOS = path.join(RAIZ, "assets", "productos");
+const RUTA_FOTOS_BLOB = path.join(RAIZ, "data", "fotos-blob.json");
 // Lee esto proxy.ts para el 410 de /producto/[slug] — un arreglo plano de
 // slugs en vez del catálogo completo, porque esa ruta corre en cada
 // petición y no tiene por qué resolver 10+ productos con specs completas
@@ -177,21 +182,22 @@ function main(): void {
     productosValidos.push(parseo.data);
   }
 
-  // public/productos/ puede no existir aún (repo fresco, antes de la
-  // primera foto) — se trata como carpeta vacía, no como error: es el
-  // mismo estado que "todavía no hay fotos", ya cubierto por imagenes: [].
-  // Archivos punto (.gitkeep, .DS_Store de macOS) son bookkeeping del
-  // filesystem, no fotos con typo — se descartan antes de reportar nada.
-  const nombresFotos = existsSync(RUTA_FOTOS)
-    ? readdirSync(RUTA_FOTOS).filter((nombre) => !nombre.startsWith("."))
-    : [];
+  // assets/productos/ puede no existir aún (repo fresco, antes de la primera
+  // foto) y el manifiesto puede estar vacío o ausente: los dos son el mismo
+  // estado que "todavía no hay fotos", ya cubierto por imagenes: []. Los
+  // archivos punto (.gitkeep, .DS_Store) son bookkeeping del filesystem, no
+  // fotos con typo (leerHashesDeFotos los descarta).
+  const hashesFotos = leerHashesDeFotos(RUTA_FOTOS);
+  const manifiestoFotos = leerManifiesto(RUTA_FOTOS_BLOB);
+  const diferenciasFotos = compararConManifiesto(hashesFotos, manifiestoFotos);
+  const nombresFotos = [...hashesFotos.keys()];
   const skusValidos = new Set(productosValidos.map((p) => p.sku));
   const resultadoFotos = emparejarFotosConSkus(nombresFotos, skusValidos);
   for (const producto of productosValidos) {
     producto.imagenes = construirImagenes(
       resultadoFotos.porSku.get(producto.sku) ?? [],
       producto.nombre,
-      "/productos",
+      (archivo) => manifiestoFotos[archivo]?.url,
     );
   }
   const productosConFotos = productosValidos.filter((p) => p.imagenes.length > 0).length;
@@ -212,6 +218,7 @@ function main(): void {
       new Set(rechazos.map((rechazo) => rechazo.sku)),
     ),
     ...resultadoFotos.ignorados,
+    ...alertasDeFotos(diferenciasFotos),
   ];
   alertas.forEach((alerta) => console.warn(`⚠ ALERTA: ${alerta}`));
 
@@ -290,7 +297,8 @@ function main(): void {
       `${alertas.length} alerta(s).`,
   );
   console.log(
-    `Fotos: ${productosConFotos} producto(s) con foto(s), ${resultadoFotos.ignorados.length} archivo(s) de public/productos/ ignorado(s).`,
+    `Fotos: ${productosConFotos} producto(s) con foto(s), ${resultadoFotos.ignorados.length} archivo(s) de assets/productos/ ignorado(s), ` +
+      `${diferenciasFotos.sinSubir.length} sin subir a Blob.`,
   );
 
   // Toda fila rechazada bloquea el build (npm run build = import:catalog &&

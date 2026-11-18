@@ -92,6 +92,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const catalogo = productos.map((p) => ({
     sku: p.sku,
     slug: p.slug,
+    foto: p.imagenes[0]?.url,
     activo: p.activo,
     disponibilidad: p.disponibilidad,
     precioCents: p.precioCents,
