@@ -32,10 +32,16 @@ export interface ModelEntry {
   displayScale: number; // escala real^0.65, normalizada al modelo más grande
   radius: number; // radio horizontal en metros, sin escalar
   height: number; // altura en metros, sin escalar (el modelo apoya en Y=0)
-  // No hay giro por modelo: desde la v3 todos los .glb salen con el frente
-  // hacia −Z (`front=` en su script de Blender). El antiguo `giroBase`
-  // corregía acá lo que cada .glb había decidido por su cuenta. Si un
-  // producto aparece de espaldas, se arregla el `front` del script.
+  // Desde la v3 todos los .glb salen con el frente hacia −Z (`front=` en su
+  // script de Blender). El antiguo `giroBase` corregía acá lo que cada .glb
+  // había decidido por su cuenta, y ya no existe: si un producto aparece de
+  // espaldas, se arregla el `front` del script.
+  // Giro de la pose predeterminada, en radianes sobre Y. NO corrige un frente
+  // mal puesto: es una decisión de cómo se ve el producto en reposo. Negativo
+  // es de derecha a izquierda, el mismo sentido del giro del ciclo. Se suma al
+  // giro del ciclo en `ProductModel3D`, así que el modelo arranca y termina
+  // cada vuelta en esta pose. Sin valor es 0.
+  giroReposo?: number;
   // Zoom por defecto de ESTE modelo, por encima de lo que le da displayScale:
   // multiplica la escala con la que se dibuja, y nada más —no toca el
   // encuadre de la cámara ni FRAME_RADIUS, que dependen del modelo más
@@ -66,6 +72,8 @@ export interface ModelEntry {
 // escribe cada export (scripts/models3d_v3/medidas/). Salen los nueve
 // juntos, porque la normalización cuelga del modelo más grande: hoy
 // sound-deadening (radio 0.2480, displayScale 1.0000).
+const GIRO_45_DERECHA_A_IZQUIERDA = -Math.PI / 4;
+
 export const MODELS: Record<ModelId, ModelEntry> = {
   speaker: {
     archivo: "speaker-7.glb",
@@ -73,6 +81,7 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     radius: 0.0825,
     height: 0.07,
     ajusteVista: 1.25,
+    giroReposo: GIRO_45_DERECHA_A_IZQUIERDA,
     label: "Bocinas",
     href: "/catalogo/bocinas",
   },
@@ -118,6 +127,7 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     displayScale: 1.1722,
     radius: 0.1575,
     height: 0.1652,
+    giroReposo: GIRO_45_DERECHA_A_IZQUIERDA,
     label: "Subwoofers",
     href: "/catalogo/subwoofers",
   },
@@ -142,6 +152,9 @@ export const MODELS: Record<ModelId, ModelEntry> = {
     displayScale: 1.3043,
     radius: 0.1161,
     height: 0.0242,
+    // 45° de derecha a izquierda como los otros dos, y después 90° de
+    // izquierda a derecha: queda a 45° de izquierda a derecha.
+    giroReposo: GIRO_45_DERECHA_A_IZQUIERDA + Math.PI / 2,
     label: "Accesorios",
     href: "/catalogo/accesorios",
   },
