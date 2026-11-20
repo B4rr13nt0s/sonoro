@@ -47,6 +47,7 @@ export function ProductCard({
           imagenes={producto.imagenes}
           nombre={producto.nombre}
           className="rounded-field aspect-square w-full"
+          escala={producto.escalaFoto}
         />
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-4">

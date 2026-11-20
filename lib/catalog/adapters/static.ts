@@ -7,6 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { perteneceACategoria } from "../categorias.ts";
+import { escalaFotoCatalogo } from "../escala-foto.ts";
 import { compararPrecioAsc, compararPrecioDesc, compararRelevancia } from "../orden.ts";
 import { PAGE_SIZE_DEFECTO } from "../paginacion.ts";
 import {
@@ -50,7 +51,14 @@ async function leerJson(ruta: string): Promise<unknown> {
   return JSON.parse(await readFile(ruta, "utf-8"));
 }
 
-const cargarProductos = enCache(async () => CatalogoSchema.parse(await leerJson(RUTA_CATALOG)));
+// A cada producto se le agrega `escalaFoto`, derivada de su categoría y su
+// medida (lib/catalog/escala-foto.ts): no está en catalog.json.
+const cargarProductos = enCache(async () =>
+  CatalogoSchema.parse(await leerJson(RUTA_CATALOG)).map((producto): Producto => {
+    const escalaFoto = escalaFotoCatalogo(producto.categoria, producto.atributos?.medida);
+    return escalaFoto === undefined ? producto : { ...producto, escalaFoto };
+  }),
+);
 const cargarBrands = enCache(async () => BrandsSchema.parse(await leerJson(RUTA_BRANDS)));
 const cargarCategorias = enCache(async () => CategoriasSchema.parse(await leerJson(RUTA_TAXONOMY)));
 
