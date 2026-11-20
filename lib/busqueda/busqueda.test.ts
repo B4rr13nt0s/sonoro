@@ -835,3 +835,20 @@ test("artículos, posesivos y «precio» no son palabras del producto", () => {
   const caros = buscar([COR, SUB2], "precio menos de 1000");
   assert.deepEqual(skus(caros), ["COR2-124D"]); // COR vale Q 800.00; MM1024, Q 2,500.00
 });
+
+test("las palabras de pregunta no son palabras del producto: «es» no coincide dentro de «Subwoofers»", () => {
+  const AMP = producto("Amplificador de 4 canales AMP4", "Memphis", "AMP4", {
+    categoria: "Amplificadores",
+  });
+  // Antes «es» coincidía por pedazo de palabra con las categorías en plural, y
+  // «cuál es su horario» llegaba al nivel «parcial» con medio catálogo.
+  for (const q of ["cuál es su horario", "cuánto es el iva", "dónde hay un horario"]) {
+    const r = buscar([COR, SUB2, AMP], q);
+    assert.equal(r.productos.length === 0 || r.modo !== "parcial", true, q);
+    assert.deepEqual(skus(buscar([COR, SUB2, AMP], "es su horario")), []);
+  }
+  // Una palabra de producto al lado sigue buscándose.
+  assert.deepEqual(skus(buscar([COR, SUB2, AMP], "cuál es el amplificador")), ["AMP4"]);
+  // Solas, siguen siendo lo único que se escribió y se buscan como siempre.
+  assert.ok(buscar([COR, SUB2, AMP], "es").productos.length > 0);
+});

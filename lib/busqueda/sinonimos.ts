@@ -81,6 +81,29 @@ export const PALABRAS_VACIAS: ReadonlySet<string> = new Set([
   "y",
   "o",
   "mi",
+  // Palabras de pregunta («cuál es su horario»): como término de texto
+  // coincidían por pedazo de palabra con medio catálogo («es» dentro de
+  // «Subwoofers», «me» dentro de «Memphis»: 130 y 137 productos) y una
+  // pregunta cualquiera caía en la búsqueda «parcial» con cientos de
+  // resultados sin relación. «se» no está: es un código real (P165-SE).
+  "es",
+  "son",
+  "me",
+  "te",
+  "si",
+  "no",
+  "lo",
+  "al",
+  "ya",
+  "hay",
+  "cual",
+  "cuales",
+  "como",
+  "cuanto",
+  "cuanta",
+  "cuantos",
+  "donde",
+  "quien",
   "vehiculo",
   "vehiculos",
   // «audio marino», «equipo para lancha», «productos de Memphis»: describen
