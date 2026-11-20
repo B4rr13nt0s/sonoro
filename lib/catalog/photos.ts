@@ -14,6 +14,21 @@ import type { Imagen } from "./types.ts";
 // guiones bajos traiga la vista misma.
 const EXTENSIONES_VALIDAS = new Set(["jpg", "jpeg", "png", "webp"]);
 
+/**
+ * ¿El nombre parece una foto de producto («SKU_vista.ext» con una extensión
+ * soportada)? Lo usa `npm run fotos:subir`: a un Blob PÚBLICO no debe llegar
+ * cualquier archivo que alguien haya dejado en assets/productos/ (un .psd, un
+ * .zip, un .env). No comprueba que el sku exista: eso lo reporta el importador.
+ */
+export function esNombreDeFoto(nombreArchivo: string): boolean {
+  const punto = nombreArchivo.lastIndexOf(".");
+  if (punto <= 0) return false;
+  if (!EXTENSIONES_VALIDAS.has(nombreArchivo.slice(punto + 1).toLowerCase())) return false;
+  const base = nombreArchivo.slice(0, punto);
+  const guionBajo = base.indexOf("_");
+  return guionBajo > 0 && guionBajo < base.length - 1;
+}
+
 export type ArchivoFoto = { sku: string; vista: string; archivo: string };
 
 export type ResultadoEmparejamiento = {
