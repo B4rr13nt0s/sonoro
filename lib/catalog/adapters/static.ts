@@ -55,7 +55,11 @@ async function leerJson(ruta: string): Promise<unknown> {
 // medida (lib/catalog/escala-foto.ts): no está en catalog.json.
 const cargarProductos = enCache(async () =>
   CatalogoSchema.parse(await leerJson(RUTA_CATALOG)).map((producto): Producto => {
-    const escalaFoto = escalaFotoCatalogo(producto.categoria, producto.atributos?.medida);
+    const escalaFoto = escalaFotoCatalogo({
+      categoria: producto.categoria,
+      medida: producto.atributos?.medida,
+      configuracion: producto.atributos?.configuracion,
+    });
     return escalaFoto === undefined ? producto : { ...producto, escalaFoto };
   }),
 );

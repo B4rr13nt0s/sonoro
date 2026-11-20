@@ -5,40 +5,41 @@
 // tamaño en pantalla acompaña al real. 1 es «el tamaño actual» y es el techo:
 // nada se agranda.
 //
-// Es un dato derivado de `categoria` y `atributos.medida`; no vive en
-// catalog.json. El adaptador estático lo agrega a cada producto al leerlo
-// (`escalaFoto`), y de ahí llega a la tarjeta de los listados, de /buscar y del
-// selector de vehículos. La ficha y su galería NO la usan: ahí la foto va
-// entera.
+// Es UNA sola curva para las dos categorías: una bocina de 8" y un subwoofer
+// de 8" se dibujan igual de grandes. Antes cada categoría tenía la suya (la
+// bocina de 6.5" a 95 % y el subwoofer de 6.5" a 80 %), y un producto de
+// 6.5" se veía de dos tamaños según lo que fuera.
+//
+// Es un dato derivado de la categoría, `atributos.medida` y
+// `atributos.configuracion`; no vive en catalog.json. El adaptador estático lo
+// agrega a cada producto al leerlo (`escalaFoto`), y de ahí llega a la tarjeta
+// de los listados, de /buscar y del selector de vehículos. La ficha y su
+// galería NO la usan: ahí la foto va entera.
 
 // Pares [pulgadas, escala], de menor a mayor. Entre dos pares la escala se
 // interpola en línea recta; fuera de los extremos se queda en el del extremo.
-// Los pares son los valores que fijó el negocio, y los tamaños intermedios que
-// el negocio no nombró (3.5", 4.5", 6.75"…) caen entre los dos vecinos en vez
-// de saltar de un escalón al siguiente.
-type Tramo = readonly (readonly [number, number])[];
-
-const BOCINAS: Tramo = [
-  [1, 0.65], // tweeters y bocinas chicas: de 65 %...
-  [3.5, 0.75], // ...a 75 % justo antes de las de 4"
-  [4, 0.8], // 4" y 4x6"
-  [5.25, 0.85], // 5.25" y 5x7"
-  [6.5, 0.95], // 6.5" y 6x9"
-  [8, 1], // 8" y más
-];
-
-const SUBWOOFERS: Tramo = [
-  [6.5, 0.8],
+// Los tamaños que el negocio no nombró (3.5", 4.5", 6.75"…) caen entre los dos
+// vecinos en vez de saltar de un escalón al siguiente.
+const CURVA: readonly (readonly [number, number])[] = [
+  [1, 0.55], // tweeters y bocinas chicas: de 55 %...
+  [3.5, 0.65], // ...a 65 % justo antes de las de 4"
+  [4, 0.7], // 4" y 4x6"
+  [5.25, 0.75], // 5.25" y 5x7"
+  [6.5, 0.8], // 6.5" y 6x9"
   [8, 0.85],
   [10, 0.9],
   [12, 0.95],
-  [15, 1],
+  [15, 1], // 15" o más
 ];
 
-const TRAMOS: Readonly<Record<string, Tramo>> = {
-  Bocinas: BOCINAS,
-  Subwoofers: SUBWOOFERS,
-};
+// Las dos categorías que llevan escala. Cualquier otra dibuja la foto entera.
+const CATEGORIAS = ["Bocinas", "Subwoofers"];
+
+// Un componente (bocina de dos o tres vías con el crossover y el tweeter
+// aparte) se vende como juego, y su foto principal es el juego entero, que
+// ocupa casi todo el ancho del cuadro. Achicarla lo dejaría más chico que una
+// bocina sola de la misma medida, así que el juego no lleva escala.
+const CONFIGURACIONES_SIN_ESCALA = ["componentes-2v", "componentes-3v"];
 
 // Una ovalada se mide con la redonda de su clase, como la agrupó el negocio:
 // una 4x6" va con las de 4", una 5x7" con las de 5.25" y una 6x9" con las de
@@ -62,15 +63,15 @@ export function pulgadasEquivalentes(medida: string): number | undefined {
   return /mm$/.test(texto) ? n / 25.4 : n;
 }
 
-function interpolar(tramo: Tramo, pulgadas: number): number {
-  const primero = tramo[0];
-  const ultimo = tramo[tramo.length - 1];
+function interpolar(pulgadas: number): number {
+  const primero = CURVA[0];
+  const ultimo = CURVA[CURVA.length - 1];
   if (pulgadas <= primero[0]) return primero[1];
   if (pulgadas >= ultimo[0]) return ultimo[1];
-  for (let i = 1; i < tramo.length; i += 1) {
-    const [x1, y1] = tramo[i];
+  for (let i = 1; i < CURVA.length; i += 1) {
+    const [x1, y1] = CURVA[i];
     if (pulgadas <= x1) {
-      const [x0, y0] = tramo[i - 1];
+      const [x0, y0] = CURVA[i - 1];
       return y0 + ((y1 - y0) * (pulgadas - x0)) / (x1 - x0);
     }
   }
@@ -78,17 +79,20 @@ function interpolar(tramo: Tramo, pulgadas: number): number {
 }
 
 /**
- * La escala (entre 0.65 y 1) con que se dibuja la foto de la tarjeta, o
- * `undefined` si el producto no la lleva: otra categoría, o una medida que no
- * se puede leer. Sin valor, la tarjeta dibuja la foto al tamaño de siempre.
+ * La escala (entre 0.55 y 1) con que se dibuja la foto de la tarjeta, o
+ * `undefined` si el producto no la lleva: otra categoría, un componente, o una
+ * medida que no se puede leer. Sin valor, la tarjeta dibuja la foto al tamaño
+ * de siempre.
  */
-export function escalaFotoCatalogo(
-  categoria: string,
-  medida: string | undefined,
-): number | undefined {
-  const tramo = Object.hasOwn(TRAMOS, categoria) ? TRAMOS[categoria] : undefined;
-  if (!tramo || !medida) return undefined;
+export function escalaFotoCatalogo(producto: {
+  categoria: string;
+  medida?: string;
+  configuracion?: string;
+}): number | undefined {
+  const { categoria, medida, configuracion } = producto;
+  if (!CATEGORIAS.includes(categoria) || !medida) return undefined;
+  if (configuracion && CONFIGURACIONES_SIN_ESCALA.includes(configuracion)) return undefined;
   const pulgadas = pulgadasEquivalentes(medida);
   if (pulgadas === undefined) return undefined;
-  return Math.round(interpolar(tramo, pulgadas) * 1000) / 1000;
+  return Math.round(interpolar(pulgadas) * 1000) / 1000;
 }
