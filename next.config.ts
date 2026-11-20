@@ -82,6 +82,11 @@ function patronesDeFotos() {
     protocol: "https" as const,
     hostname,
     pathname: "/productos/**",
+    // Sin `search`, el optimizador acepta cualquier query string: cada
+    // `?x=1`, `?x=2`… es una fuente distinta que optimizar y cachear, y la
+    // cuota de transformaciones de imágenes se gasta sola. Las URLs de Blob no
+    // llevan query.
+    search: "",
   }));
 }
 
@@ -142,6 +147,21 @@ const nextConfig: NextConfig = {
       {
         source: "/models/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      // Las imágenes estáticas del carrusel NO son inmutables: llevan el nombre
+      // del .glb pero se regeneran con el mismo nombre cuando cambia la luz,
+      // el encuadre o el giro de reposo (scripts/carrusel/posters.mjs; el
+      // giroReposo de la bocina, el subwoofer y el RCA las cambió sin renombrar
+      // nada). Con `immutable`, quien ya las tenía las veía viejas un año. Va
+      // DESPUÉS de la regla de /models/*: con la misma cabecera, la última gana.
+      {
+        source: "/models/posters/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
       },
       {
         source: "/draco/:path*",
