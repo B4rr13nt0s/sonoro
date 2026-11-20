@@ -487,3 +487,43 @@ test("una referencia con «quiero» es un pedido de carrito solo si no pide nada
     assert.notEqual(detectarIntencion(t, CONVERSANDO, CTX).tipo, "referencia", t);
   }
 });
+
+test("pedir ayuda o el menú se contesta con el inicio, no con una búsqueda", () => {
+  for (const texto of ["ayuda", "Menú", "opciones", "inicio", "necesito ayuda", "volver"]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "saludo" }, texto);
+  }
+});
+
+test("las preguntas cortas de tienda son tema: contacto, WhatsApp, ubicación, horario", () => {
+  for (const texto of [
+    "contacto",
+    "whatsapp",
+    "ubicación",
+    "horario",
+    "¿cuál es su horario?",
+    "cuál es su whatsapp",
+  ]) {
+    assert.deepEqual(detectarIntencion(texto), { tipo: "tema", tema: "contacto" }, texto);
+  }
+});
+
+test("las preguntas cortas de cómo pedir y de pago son tema", () => {
+  for (const texto of [
+    "cómo pedir",
+    "como pedir un subwoofer",
+    "hacer un pedido",
+    "pedido",
+    "cotizar",
+  ]) {
+    const i = detectarIntencion(texto);
+    assert.equal(i.tipo, "tema", texto);
+    assert.equal(i.tipo === "tema" && i.tema, "como_pedir", texto);
+  }
+  assert.deepEqual(detectarIntencion("pago"), { tipo: "tema", tema: "cuotas" });
+});
+
+test("«pedido» o «contacto» dentro de la búsqueda de un producto no la tapan", () => {
+  // Con otras palabras de producto, el motor prueba primero la búsqueda.
+  const i = detectarIntencion("amplificador bajo pedido");
+  assert.equal(i.tipo === "tema" && i.ambigua !== undefined, true);
+});

@@ -98,7 +98,8 @@ test("la frase sola pide el carro, sin evento", () => {
 test("por botones: modelo, generación, versión, resumen y grupo", () => {
   let estado: Estado = ESTADO_INICIAL;
   let r = responder(estado, escrito("prueba"), CON_VEHICULOS);
-  assert.deepEqual(textos(r.bloques), ["¿Qué modelo de Prueba?"]);
+  assert.deepEqual(textos(r.bloques), ["¿Qué modelo de Prueba?", NO_ESTA_VEHICULO]);
+  assert.ok(r.bloques.some((b) => b.tipo === "whatsapp"));
 
   const paso = (etiqueta: string) => {
     estado = r.estado;

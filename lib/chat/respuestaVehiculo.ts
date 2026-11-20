@@ -263,6 +263,11 @@ export function responderVehiculo(
           etiqueta: m.nombre,
         })),
       ),
+      // El modelo escrito puede no estar en la lista (la guía no trae Hilux,
+      // Hiace, D-Max ni L200): sin esta salida, el cliente de un Hilux solo
+      // veía los botones de modelos que no son el suyo.
+      texto(NO_ESTA_VEHICULO),
+      whatsapp(),
     ]);
   }
   const modelo = r.modelo;

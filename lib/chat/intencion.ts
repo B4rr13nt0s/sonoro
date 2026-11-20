@@ -70,6 +70,17 @@ const SALUDOS = [
   "buenas noches",
   "que tal",
   "saludos",
+  // Pedir el menú: se contesta con el inicio, no con una búsqueda de «ayuda».
+  "ayuda",
+  "ayudame",
+  "necesito ayuda",
+  "menu",
+  "opciones",
+  "inicio",
+  "empezar",
+  "comenzar",
+  "reiniciar",
+  "volver",
 ];
 
 /** Pide criterio: el sitio no asesora (regla 2), así que se redirige. */
@@ -114,6 +125,12 @@ const TEMAS: readonly { tema: Tema; palabras: readonly string[]; salvo?: readonl
       "como puedo comprar",
       "como se compra",
       "como se pide",
+      "como pedir",
+      "como ordenar",
+      "como ordeno",
+      "como hago pedido",
+      "hacer un pedido",
+      "hacer pedido",
       "pagar en linea",
     ],
   },
@@ -147,8 +164,23 @@ const TEMAS: readonly { tema: Tema; palabras: readonly string[]; salvo?: readonl
  * `TEMAS` son inequívocas y ganan siempre. Se prueban después de aquellas.
  */
 const TEMAS_AMBIGUOS: readonly { tema: Tema; palabras: readonly string[] }[] = [
-  { tema: "cuotas", palabras: ["pagos", "tarjeta"] },
-  { tema: "contacto", palabras: ["direccion", "telefono", "correo"] },
+  { tema: "cuotas", palabras: ["pagos", "pago", "tarjeta"] },
+  {
+    tema: "contacto",
+    palabras: [
+      "direccion",
+      "telefono",
+      "correo",
+      "contacto",
+      "whatsapp",
+      "ubicacion",
+      "horario",
+      "horarios",
+    ],
+  },
+  // «pedido» y «pedir» también están en fichas («bajo pedido»): por eso solo
+  // ganan solas, tras probar la búsqueda.
+  { tema: "como_pedir", palabras: ["pedido", "pedir", "cotizar", "cotizacion", "cotizaciones"] },
 ];
 
 /**
