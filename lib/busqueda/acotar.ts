@@ -313,9 +313,11 @@ export function hrefAcotado(
   let q = visible;
   for (const a of acotes) {
     if (a.campo === "precio") {
+      // Con «Q» delante, porque un número sin unidad ni «Q» se lee como
+      // potencia si el texto habla de potencia («amplificadores potencia»).
       const partes = [
-        a.min !== undefined ? `mas de ${a.min / 100}` : "",
-        a.max !== undefined ? `hasta ${a.max / 100}` : "",
+        a.min !== undefined ? `mas de Q${a.min / 100}` : "",
+        a.max !== undefined ? `hasta Q${a.max / 100}` : "",
       ].filter(Boolean);
       q = `${q} ${partes.join(" ")}`;
     }

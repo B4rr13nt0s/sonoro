@@ -73,6 +73,7 @@ const CLASE_CAMPO =
 export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
   const [{ borrador, hidratado, avisados }, despachar] = useReducer(reducir, ESTADO_INICIAL);
   const [consulta, setConsulta] = useState("");
+  const [verTodos, setVerTodos] = useState(false);
   const [copia, setCopia] = useState<{ mensaje: string; ok: boolean } | null>(null);
   const areaMensaje = useRef<HTMLTextAreaElement>(null);
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -106,13 +107,16 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
     despachar({ type: "retirar", skus: quitados });
   }, [hidratado, quitados]);
 
-  const resultados = useMemo(
-    () =>
-      consulta.trim()
-        ? buscar(productos, consulta, compararRelevancia).productos.slice(0, MAX_RESULTADOS)
-        : [],
+  // El resultado ENTERO, no solo `.productos`: el motor avisa cuando lo que
+  // devuelve no es lo que se escribió (aproximado, parcial, la medida más
+  // cercana) y qué filtros salieron de la consulta. Sin eso, «subwoofer 6
+  // pulgadas» listaba los de 6.5" como si fueran de 6".
+  const resultado = useMemo(
+    () => (consulta.trim() ? buscar(productos, consulta, compararRelevancia) : null),
     [productos, consulta],
   );
+  const encontrados = resultado?.productos ?? [];
+  const resultados = verTodos ? encontrados : encontrados.slice(0, MAX_RESULTADOS);
 
   const mensaje = buildQuoteMessage({ cliente: borrador.cliente, lineas });
 
@@ -144,13 +148,47 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
         <input
           type="text"
           value={consulta}
-          onChange={(evento) => setConsulta(evento.target.value)}
+          onChange={(evento) => {
+            setConsulta(evento.target.value);
+            setVerTodos(false);
+          }}
           placeholder="Nombre, marca o código"
           aria-label="Buscar productos"
           autoComplete="off"
           className={CLASE_CAMPO}
         />
-        {consulta.trim() && resultados.length === 0 ? (
+        {resultado && resultado.aplicados.length > 0 ? (
+          <p className="text-texto-secundario text-[14px]">
+            Filtros de la búsqueda: {resultado.aplicados.join(" · ")}
+          </p>
+        ) : null}
+        {resultado && resultado.modo !== "exacta" && encontrados.length > 0 ? (
+          <p role="status" className="text-texto-secundario text-[14px]">
+            {resultado.modo === "cercana"
+              ? resultado.cercania
+              : resultado.modo === "parcial"
+                ? "Ninguno coincide con todo lo escrito; estos coinciden con alguna palabra."
+                : "No hay coincidencias exactas; estos se le parecen."}
+            {resultado.correccion ? (
+              <>
+                {" "}
+                Quizá quisiste decir{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConsulta(resultado.correccion ?? "");
+                    setVerTodos(false);
+                  }}
+                  className="text-negro underline"
+                >
+                  «{resultado.correccion}»
+                </button>
+                .
+              </>
+            ) : null}
+          </p>
+        ) : null}
+        {resultado && encontrados.length === 0 ? (
           <p className="text-texto-secundario text-[15px]">Sin resultados.</p>
         ) : null}
         <ul className="flex flex-col">
@@ -192,6 +230,20 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
             );
           })}
         </ul>
+        {encontrados.length > resultados.length ? (
+          <div className="text-texto-secundario flex items-center justify-between gap-3 text-[14px]">
+            <span>
+              Mostrando {resultados.length} de {encontrados.length}.
+            </span>
+            <button
+              type="button"
+              onClick={() => setVerTodos(true)}
+              className="text-negro underline"
+            >
+              Ver todos
+            </button>
+          </div>
+        ) : null}
       </section>
 
       <section

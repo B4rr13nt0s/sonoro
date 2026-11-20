@@ -156,7 +156,24 @@ test("describir y enlace a /buscar con lo mismo acotado", () => {
       ],
       MARCAS,
     ),
-    "/buscar?q=subwoofer+mas+de+800+hasta+1500&medida=12&marca=Memphis",
+    "/buscar?q=subwoofer+mas+de+Q800+hasta+Q1500&medida=12&marca=Memphis",
+  );
+});
+
+// Sin la «Q», un número suelto se lee como potencia cuando el texto habla de
+// potencia: el «Ver los N» del chat cambiaba el filtro de precio por uno de watts.
+test("el precio del enlace lleva «Q»: «potencia» en el texto no lo vuelve watts", async () => {
+  const { interpretar, normalizar } = await import("./busqueda.ts");
+  const href = hrefAcotado(
+    "amplificadores potencia",
+    [{ campo: "precio", min: 149500, max: 319500 }],
+    MARCAS,
+  );
+  const q = new URL(href, "http://x").searchParams.get("q") ?? "";
+  const { restricciones } = interpretar(normalizar(q));
+  assert.deepEqual(
+    restricciones.map((r) => r.campo),
+    ["precio"],
   );
 });
 
