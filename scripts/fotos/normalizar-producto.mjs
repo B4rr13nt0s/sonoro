@@ -26,8 +26,19 @@ const EXT = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 
 const args = process.argv.slice(2);
 const iSalida = args.indexOf("--salida");
-const salida = path.resolve(iSalida >= 0 ? args[iSalida + 1] : "assets/productos");
 const iSangre = args.indexOf("--sangre");
+// Una opción sin valor no puede leerse como «vacío»: `new RegExp(undefined)`
+// coincide con TODO y dejaba cada foto a sangre sin avisar.
+for (const [nombre, i] of [
+  ["--salida", iSalida],
+  ["--sangre", iSangre],
+]) {
+  if (i >= 0 && (args[i + 1] === undefined || args[i + 1].startsWith("--"))) {
+    console.error(`${nombre} necesita un valor.`);
+    process.exit(1);
+  }
+}
+const salida = path.resolve(iSalida >= 0 ? args[iSalida + 1] : "assets/productos");
 const esSangre =
   iSangre >= 0 ? new RegExp(args[iSangre + 1]) : /^(agua|conectores|instalad[ao]\d*)$/;
 const valores = new Set([iSalida, iSangre].filter((i) => i >= 0).map((i) => i + 1));
@@ -55,7 +66,6 @@ async function webp(lienzo) {
 async function procesar(archivo) {
   const base = sharp(path.join(entrada, archivo)).rotate().flatten({ background: "#ffffff" });
   const original = await base.clone().toBuffer({ resolveWithObject: true });
-  const { width: W, height: H } = original.info;
 
   let recortado;
   try {
@@ -97,8 +107,15 @@ if (repetidos.length) {
 await mkdir(salida, { recursive: true });
 
 const resultados = [];
+const fallidas = [];
 for (let i = 0; i < archivos.length; i += 4) {
-  resultados.push(...(await Promise.all(archivos.slice(i, i + 4).map(procesar))));
+  // Cada foto por su cuenta: una imagen ilegible no tira el lote ni deja a medias
+  // las que seguían en vuelo; se cuenta y se informa al final.
+  const lote = await Promise.allSettled(archivos.slice(i, i + 4).map(procesar));
+  lote.forEach((r, j) => {
+    if (r.status === "fulfilled") resultados.push(r.value);
+    else fallidas.push(`${archivos[i + j]}: ${r.reason?.message ?? r.reason}`);
+  });
 }
 
 const sangre = resultados.filter((r) => r.aSangre);
@@ -109,9 +126,14 @@ console.log(`A sangre (sin recorte ni margen): ${sangre.length}`);
 for (const r of sangre) console.log(`  ${r.nombre}`);
 console.log(`Agrandadas más de 1.5× (original chico): ${blandas.length}`);
 for (const r of blandas) console.log(`  ${r.nombre}  ×${r.agrandado.toFixed(2)}`);
-console.log(`Sobre 300 KB aun a calidad 70: ${pesadas.length}`);
+console.log(`Sobre 300 KB aun a calidad 64: ${pesadas.length}`);
 for (const r of pesadas) console.log(`  ${r.nombre}  ${r.kb} KB`);
 const total = resultados.reduce((s, r) => s + r.kb, 0);
 console.log(
   `Total ${(total / 1024).toFixed(1)} MB, promedio ${Math.round(total / resultados.length)} KB`,
 );
+if (fallidas.length) {
+  console.error(`No se pudieron procesar ${fallidas.length} foto(s):`);
+  for (const f of fallidas) console.error(`  ${f}`);
+  process.exitCode = 1;
+}

@@ -144,9 +144,9 @@ test("sin nada: pide el carro, ofrece las marcas y la salida por WhatsApp", () =
   assert.equal(resultados, null);
 });
 
-test("con la marca: pide el modelo", () => {
+test("con la marca: pide el modelo y deja la salida de WhatsApp (el modelo escrito puede no estar)", () => {
   const { bloques } = responderVehiculo(pedido({ marca: "prueba" }), DATOS);
-  assert.deepEqual(textos(bloques), ["¿Qué modelo de Prueba?"]);
+  assert.deepEqual(textos(bloques), ["¿Qué modelo de Prueba?", NO_ESTA_VEHICULO]);
   assert.deepEqual(
     opciones(bloques).map((o) => o.etiqueta),
     ["Dos", "Uno"],
@@ -155,7 +155,7 @@ test("con la marca: pide el modelo", () => {
 
 test("un botón viejo vuelve a preguntar desde lo que falta", () => {
   const { bloques } = responderVehiculo(pedido({ marca: "prueba", modelo: "no-existe" }), DATOS);
-  assert.deepEqual(textos(bloques), ["¿Qué modelo de Prueba?"]);
+  assert.deepEqual(textos(bloques), ["¿Qué modelo de Prueba?", NO_ESTA_VEHICULO]);
 });
 
 test("modelo sin año: un botón por generación, del más nuevo al más viejo", () => {

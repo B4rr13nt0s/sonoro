@@ -112,6 +112,27 @@ export function emparejarFotosConSkus(
   return { porSku, ignorados };
 }
 
+// Vistas cuyo nombre de archivo pega dos palabras: se leen como dos.
+const VISTAS_COMPUESTAS: Readonly<Record<string, string>> = {
+  frontalposterior: "frontal y posterior",
+  diagonalderecha: "diagonal derecha",
+  diagonalizquierda: "diagonal izquierda",
+};
+
+/**
+ * La vista como se lee en voz alta. El nombre del archivo es un identificador
+ * («frontal2», «tres_cuartos», «frontalposterior»), y como `alt` un lector de
+ * pantalla lo decía tal cual: «frontal dos» sin separar, o una palabra pegada
+ * que no existe. El número se conserva, separado, porque distingue dos fotos
+ * del mismo ángulo.
+ */
+export function vistaLegible(vista: string): string {
+  const base = vista.replace(/\d+$/, "");
+  const numero = vista.slice(base.length);
+  const palabras = VISTAS_COMPUESTAS[base] ?? base.replaceAll("_", " ");
+  return numero ? `${palabras} ${numero}` : palabras;
+}
+
 // `urlDe` da la URL de cada foto (hoy, la del manifiesto de Blob). Una foto
 // sin URL —todavía sin subir— no entra: sin ninguna, `imagenes` queda [] y
 // el componente dibuja el placeholder.
@@ -122,6 +143,6 @@ export function construirImagenes(
 ): Imagen[] {
   return archivos.flatMap(({ archivo, vista }): Imagen[] => {
     const url = urlDe(archivo);
-    return url ? [{ url, alt: `${nombreProducto} — ${vista}` }] : [];
+    return url ? [{ url, alt: `${nombreProducto} — ${vistaLegible(vista)}` }] : [];
   });
 }

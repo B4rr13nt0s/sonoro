@@ -100,3 +100,43 @@ test("preguntaVaga", () => {
   assert.equal(preguntaVaga(59, "canales"), "Hay 59 resultados. ¿De cuántos canales?");
   assert.equal(preguntaVaga(110, "categoria"), "Hay 110 resultados. ¿Qué tipo de equipo buscas?");
 });
+
+test("charla: la cortesía con relleno es charla, no una búsqueda de producto", () => {
+  const casos: [string, ClaseCharla][] = [
+    ["gracias por la ayuda", "gracias"],
+    ["gracias por la información", "gracias"],
+    ["ok gracias", "gracias"],
+    ["ok, gracias", "gracias"],
+    ["perfecto gracias", "gracias"],
+    ["excelente gracias", "gracias"],
+    ["muy amable", "gracias"],
+    ["buena atención", "gracias"],
+    ["de nada", "gracias"],
+    ["gracias, eso es todo", "adios"],
+    ["ok gracias nada más", "adios"],
+    ["nos vemos", "adios"],
+    ["igualmente", "adios"],
+    ["que tenga buen día", "adios"],
+    ["todo bien", "confirmacion"],
+    ["ya entendí", "confirmacion"],
+    ["👍", "confirmacion"],
+    ["😀", "confirmacion"],
+    ["eres un robot", "quien_eres"],
+    ["¿cómo te llamas?", "quien_eres"],
+  ];
+  for (const [texto, clase] of casos) assert.equal(detectarCharla(texto), clase, texto);
+});
+
+test("charla: una palabra de producto o de pedido deja de ser cortesía", () => {
+  for (const texto of [
+    "gracias, y de 10?",
+    "gracias subwoofer 12",
+    "ok memphis",
+    "perfecto, y bocinas de 6.5",
+    "todo para mi carro",
+    "no es todo",
+    "ya tienen subwoofers",
+  ]) {
+    assert.equal(detectarCharla(texto), null, texto);
+  }
+});

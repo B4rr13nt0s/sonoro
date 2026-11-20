@@ -25,13 +25,18 @@ import { buildOrderRef } from "../lib/whatsapp/ref.ts";
 // mensaje, no cuánto cuesta cada producto.
 const CATALOGO = JSON.parse(readFileSync("data/catalog.json", "utf-8")) as {
   sku: string;
+  nombre: string;
   precioCents: number;
 }[];
-function precioDe(sku: string): number {
+function productoDe(sku: string) {
   const producto = CATALOGO.find((p) => p.sku === sku);
   if (!producto) throw new Error(`${sku} ya no está en data/catalog.json: elegir otro producto`);
-  return producto.precioCents;
+  return producto;
 }
+const precioDe = (sku: string) => productoDe(sku).precioCents;
+// El nombre también sale del catálogo: el libro se edita («Series 12"» pasó a
+// «Series de 12"») y un nombre escrito acá rompía la prueba sin que fallara nada real.
+const nombreDe = (sku: string) => productoDe(sku).nombre;
 
 // El Ref depende de cart.createdAt (lib/cart/context.ts: new Date() al
 // crear/tocar el carrito) Y del contenido del carrito (sku, qty y precio de
@@ -56,14 +61,14 @@ const FECHA_CONGELADA = new Date("2026-01-01T00:00:00.000Z");
 // con pocos productos que abarque dos categorías, no subir el INCREMENTO.
 const PRODUCTO_1 = {
   slug: "pioneer-ts-w312d4",
-  nombre: 'Subwoofer Champion Series 12" TS-W312D4',
+  nombre: nombreDe("TS-W312D4"),
   sku: "TS-W312D4",
   categoria: "Subwoofers",
   precioCents: precioDe("TS-W312D4"),
 };
 const PRODUCTO_2 = {
   slug: "pioneer-mvh-x700bt",
-  nombre: "Receptor digital MVH-X700BT",
+  nombre: nombreDe("MVH-X700BT"),
   sku: "MVH-X700BT",
   categoria: "Receptores",
   precioCents: precioDe("MVH-X700BT"),

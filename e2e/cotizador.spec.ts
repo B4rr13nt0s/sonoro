@@ -2,14 +2,22 @@
 // sin sesión no hay herramienta ni catálogo, con la contraseña sí, y el
 // borrador sobrevive a una recarga. La contraseña es la del servidor de
 // pruebas (playwright.config.ts → COTIZADOR_PASSWORD).
+import { readFileSync } from "node:fs";
+
 import { test, expect, type Page } from "@playwright/test";
 
 const CONTRASENA = "contrasena-de-prueba-e2e";
-const PRODUCTO = 'Subwoofer Champion Series 12" TS-W312D4';
+// El nombre sale del catálogo: el libro se edita y un nombre escrito acá rompía
+// la prueba sin que fallara nada real.
+const PRODUCTO = (
+  JSON.parse(readFileSync("data/catalog.json", "utf-8")) as { sku: string; nombre: string }[]
+).find((p) => p.sku === "TS-W312D4")!.nombre;
 // El precio va con expresión: la prueba no depende del valor del catálogo.
 // `\s` cubre el espacio duro que usa formatQ.
-const LINEA =
-  /1x Subwoofer Champion Series 12" TS-W312D4 — Q\s[\d,]+\.\d{2} c\/u — Q\s[\d,]+\.\d{2}/;
+const escapar = (texto: string) => texto.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const LINEA = new RegExp(
+  `1x ${escapar(PRODUCTO)} — Q\\s[\\d,]+\\.\\d{2} c\\/u — Q\\s[\\d,]+\\.\\d{2}`,
+);
 
 test.use({ permissions: ["clipboard-read", "clipboard-write"] });
 

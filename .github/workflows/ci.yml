@@ -1,8 +1,16 @@
 name: CI
 
+# `push` solo en main y `pull_request` para el resto: con los dos sin filtro,
+# cada commit de una rama con PR corría todo dos veces (build, e2e y Lighthouse).
 on:
   push:
+    branches: [main]
   pull_request:
+
+# El CI solo lee el repositorio; sin esto el GITHUB_TOKEN toma los permisos por
+# defecto del repo, que pueden incluir escritura.
+permissions:
+  contents: read
 
 jobs:
   test:

@@ -1,7 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { construirImagenes, emparejarFotosConSkus, esNombreDeFoto } from "./photos.ts";
+import {
+  construirImagenes,
+  emparejarFotosConSkus,
+  esNombreDeFoto,
+  vistaLegible,
+} from "./photos.ts";
 
 test("emparejarFotosConSkus: sku simple sin espacios", () => {
   const { porSku, ignorados } = emparejarFotosConSkus(["SRX62_frontal.jpg"], new Set(["SRX62"]));
@@ -178,4 +183,29 @@ test("esNombreDeFoto: solo «SKU_vista.ext» con extensión de imagen soportada"
   ]) {
     assert.equal(esNombreDeFoto(mal), false, mal);
   }
+});
+
+test("vistaLegible: el alt no lleva identificadores de archivo", () => {
+  assert.equal(vistaLegible("frontal"), "frontal");
+  assert.equal(vistaLegible("frontal2"), "frontal 2");
+  assert.equal(vistaLegible("lateral10"), "lateral 10");
+  assert.equal(vistaLegible("tres_cuartos"), "tres cuartos");
+  assert.equal(vistaLegible("frontalposterior"), "frontal y posterior");
+  assert.equal(vistaLegible("instalado2"), "instalado 2");
+  assert.equal(vistaLegible("diagonalderecha"), "diagonal derecha");
+});
+
+test("construirImagenes: el alt lleva la vista legible, con su número", () => {
+  const imagenes = construirImagenes(
+    [
+      { sku: "VR10", vista: "frontal", archivo: "VR10_frontal.webp" },
+      { sku: "VR10", vista: "lateral2", archivo: "VR10_lateral2.webp" },
+    ],
+    "Subwoofer VR10",
+    urlBlob,
+  );
+  assert.deepEqual(
+    imagenes.map((i) => i.alt),
+    ["Subwoofer VR10 — frontal", "Subwoofer VR10 — lateral 2"],
+  );
 });

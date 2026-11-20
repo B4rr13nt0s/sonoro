@@ -6,6 +6,7 @@ import { CATEGORIAS_SITIO } from "../catalog/categorias.ts";
 import {
   masFrecuentes,
   textosCategoria,
+  textosDestacados,
   textosMarca,
   textosProducto,
   TITULO_SITIO,
@@ -127,4 +128,57 @@ test("textosCategoria: los usos que nombra existen en la columna `uso` del catá
       `${nombre}: «${titulo}» vs uso motorsports`,
     );
   }
+});
+
+test("con un solo producto el conteo va en singular", () => {
+  const una = textosCategoria({
+    slug: "subwoofers",
+    nombre: "Subwoofers",
+    total: 1,
+    marcas: ["Pioneer"],
+    marcaFiltro: "Pioneer",
+    page: 1,
+  });
+  assert.ok(una.descripcion.startsWith("1 subwoofer Pioneer en Sonoro."), una.descripcion);
+  const varios = textosCategoria({
+    slug: "subwoofers",
+    nombre: "Subwoofers",
+    total: 2,
+    marcas: ["Pioneer"],
+    marcaFiltro: "Pioneer",
+    page: 1,
+  });
+  assert.ok(varios.descripcion.startsWith("2 subwoofers Pioneer"), varios.descripcion);
+  const sinFiltro = textosCategoria({
+    slug: "ecualizadores",
+    nombre: "Ecualizadores",
+    total: 1,
+    marcas: ["Memphis"],
+    page: 1,
+  });
+  assert.ok(sinFiltro.descripcion.startsWith("1 ecualizador para carro"), sinFiltro.descripcion);
+  const marca = textosMarca({
+    nombre: "Memphis",
+    total: 1,
+    categorias: ["Ecualizadores"],
+    categoriaFiltro: "Ecualizadores",
+    page: 1,
+  });
+  assert.ok(marca.descripcion.startsWith("1 ecualizador Memphis en Sonoro."), marca.descripcion);
+  const insonorizacion = textosMarca({
+    nombre: "SoundSkins",
+    total: 1,
+    categorias: ["Insonorización"],
+    categoriaFiltro: "Insonorización",
+    page: 1,
+  });
+  assert.ok(
+    insonorizacion.descripcion.startsWith("1 producto de insonorización SoundSkins"),
+    insonorizacion.descripcion,
+  );
+  assert.ok(
+    textosDestacados({ total: 1, marcaFiltro: "JBL", page: 1 }).descripcion.startsWith(
+      "1 producto destacado de JBL",
+    ),
+  );
 });

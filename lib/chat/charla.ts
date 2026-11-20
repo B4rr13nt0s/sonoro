@@ -22,7 +22,17 @@ export const SALUDOS_DE_APERTURA = [
 ];
 
 const FRASES: Readonly<Record<Exclude<ClaseCharla, "groseria">, readonly string[]>> = {
-  gracias: ["gracias", "muchas gracias", "mil gracias", "te agradezco", "gracias por la info"],
+  gracias: [
+    "gracias",
+    "muchas gracias",
+    "mil gracias",
+    "te agradezco",
+    "gracias por la info",
+    "de nada",
+    "buena atencion",
+    "buen servicio",
+    "muy buena atencion",
+  ],
   como_estas: ["como estas", "como esta", "que tal estas", "como te va"],
   quien_eres: [
     "eres un bot",
@@ -31,11 +41,84 @@ const FRASES: Readonly<Record<Exclude<ClaseCharla, "groseria">, readonly string[
     "con quien hablo",
     "quien eres",
     "eres real",
+    "eres un robot",
+    "eres robot",
+    "eres una maquina",
+    "eres una ia",
+    "eres ia",
+    "eres inteligencia artificial",
+    "como te llamas",
+    "cual es tu nombre",
+    "como te dicen",
   ],
-  adios: ["adios", "bye", "chao", "hasta luego", "eso es todo", "nada mas", "es todo"],
+  adios: [
+    "adios",
+    "bye",
+    "chao",
+    "hasta luego",
+    "hasta pronto",
+    "hasta manana",
+    "nos vemos",
+    "igualmente",
+    "eso es todo",
+    "nada mas",
+    "es todo",
+    "que tenga buen dia",
+    "que tengas buen dia",
+    "que tenga buena tarde",
+    "que tenga buena noche",
+  ],
   confirmacion: ["ok", "okay", "si", "dale", "va", "listo", "perfecto", "entendido", "esta bien"],
   negacion: ["no", "no gracias", "ninguno"],
 };
+
+// Las cortesías de verdad vienen con relleno («gracias por la ayuda», «ok
+// gracias», «muy amable», «gracias, eso es todo»), y una lista cerrada de frases
+// enteras no las alcanza: se leían como búsqueda de producto y terminaban en
+// «No encontramos productos para «gracias por la ayuda»». Un mensaje hecho SOLO
+// de estas palabras, y con una de las que dan la clase, es charla; con una
+// palabra de producto («gracias, y de 10?») ya no lo es.
+const RELLENO_CORTESIA = new Set([
+  "por",
+  "la",
+  "el",
+  "lo",
+  "su",
+  "tu",
+  "muy",
+  "mucho",
+  "muchas",
+  "mil",
+  "ayuda",
+  "informacion",
+  "info",
+  "atencion",
+  "servicio",
+  "respuesta",
+  "tiempo",
+  "todo",
+  "eso",
+  "es",
+  "ya",
+  "bien",
+  "buena",
+  "buen",
+  "bueno",
+]);
+const CLAVES_GRACIAS = new Set(["gracias", "agradezco", "amable", "excelente", "genial"]);
+const CLAVES_CONFIRMACION = new Set([
+  "ok",
+  "okay",
+  "listo",
+  "perfecto",
+  "dale",
+  "entendido",
+  "entendi",
+  "bien",
+  "claro",
+]);
+// Cierres que, tras puras cortesías, despiden: «gracias, eso es todo».
+const CIERRES = ["eso es todo", "es todo", "nada mas", "hasta luego", "nos vemos", "chao", "adios"];
 
 // Basta UNA de estas palabras en el mensaje. La respuesta no la repite.
 const GROSERIAS = new Set([
@@ -87,15 +170,41 @@ function sinSaludo(texto: string): string {
   return saludo ? texto.slice(saludo.length).trim() : texto;
 }
 
+/** Cortesía con relleno («gracias por la ayuda», «ok gracias», «gracias, eso es todo»). */
+function cortesiaConRelleno(candidato: string): ClaseCharla | null {
+  const cierre = CIERRES.find((c) => candidato === c || candidato.endsWith(` ${c}`));
+  if (cierre) {
+    const antes = candidato.slice(0, candidato.length - cierre.length).trim();
+    const sobrante = antes.split(" ").filter(Boolean);
+    if (
+      sobrante.every(
+        (p) => RELLENO_CORTESIA.has(p) || CLAVES_GRACIAS.has(p) || CLAVES_CONFIRMACION.has(p),
+      )
+    )
+      return "adios";
+  }
+  const palabras = candidato.split(" ");
+  const permitidas = (p: string) =>
+    RELLENO_CORTESIA.has(p) || CLAVES_GRACIAS.has(p) || CLAVES_CONFIRMACION.has(p);
+  if (!palabras.every(permitidas)) return null;
+  if (palabras.some((p) => CLAVES_GRACIAS.has(p))) return "gracias";
+  if (palabras.some((p) => CLAVES_CONFIRMACION.has(p))) return "confirmacion";
+  return null;
+}
+
 export function detectarCharla(texto: string): ClaseCharla | null {
   const entero = limpio(texto);
   if (entero.split(" ").some((p) => GROSERIAS.has(p))) return "groseria";
+  // Un mensaje sin una sola letra ni cifra (un emoji, «👍») es una reacción.
+  if (entero !== "" && !/[\p{L}\p{N}]/u.test(entero)) return "confirmacion";
   // Primero el texto entero: «qué tal estás» empieza con el saludo «qué tal».
   for (const candidato of [entero, sinSaludo(entero)]) {
     if (candidato === "") continue;
     for (const [clase, frases] of Object.entries(FRASES) as [ClaseCharla, readonly string[]][]) {
       if (frases.includes(candidato)) return clase;
     }
+    const conRelleno = cortesiaConRelleno(candidato);
+    if (conRelleno) return conRelleno;
   }
   return null;
 }

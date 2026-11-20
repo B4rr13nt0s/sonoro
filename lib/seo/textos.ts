@@ -27,7 +27,8 @@ type SlugCategoria = (typeof CATEGORIAS_SITIO)[number]["slug"];
 
 // En qué vehículos se usa lo que hay en cada categoría, revisado producto por
 // producto contra el catálogo de septiembre de 2026. Va a mano porque el
-// catálogo no tiene un campo de uso y el texto libre engaña: una búsqueda de
+// campo `uso` del catálogo es de cada producto, no de la categoría, y el texto
+// libre engaña: una búsqueda de
 // «moto» atrapa «control remoto» y «motor de neodimio». Ecualizadores e
 // insonorización no traen nada marino ni de motorsports: decir «para lancha»
 // ahí sería falso. Receptores dice «moto» y no «UTV» porque lo suyo es un
@@ -57,6 +58,26 @@ const NOMBRE_COMPLETO: Partial<Record<SlugCategoria, string>> = {
 // «Insonorización» no tiene plural: «7 productos de insonorización».
 function pluralCategoria(nombre: string): string {
   return nombre === "Insonorización" ? "productos de insonorización" : nombre.toLowerCase();
+}
+
+// «1 subwoofers Pioneer» era lo que salía con un solo producto: cuatro listados
+// reales (marca + categoría) tienen uno. Los plurales que arma `pluralCategoria`
+// y «productos» con su singular; el adjetivo, aparte.
+const SINGULAR: Readonly<Record<string, string>> = {
+  bocinas: "bocina",
+  subwoofers: "subwoofer",
+  amplificadores: "amplificador",
+  receptores: "receptor",
+  ecualizadores: "ecualizador",
+  kits: "kit",
+  accesorios: "accesorio",
+  productos: "producto",
+  "productos de insonorización": "producto de insonorización",
+};
+
+/** «1 bocina» / «24 bocinas». */
+function conteo(total: number, plural: string): string {
+  return total === 1 ? `1 ${SINGULAR[plural] ?? plural}` : `${total} ${plural}`;
 }
 
 function conPagina(titulo: string, page: number): string {
@@ -111,12 +132,12 @@ export function textosCategoria({
   if (marcaFiltro) {
     return {
       titulo: conPagina(`${nombreCompleto} ${marcaFiltro} en Guatemala`, page),
-      descripcion: `${total} ${plural} ${marcaFiltro} en Sonoro. ${CIERRE}`,
+      descripcion: `${conteo(total, plural)} ${marcaFiltro} en Sonoro. ${CIERRE}`,
     };
   }
   return {
     titulo: conPagina(`${nombreCompleto} para ${usos}`, page),
-    descripcion: `${total} ${plural} para ${usos} de ${enumerar(marcas)}, en Guatemala. ${CIERRE}`,
+    descripcion: `${conteo(total, plural)} para ${usos} de ${enumerar(marcas)}, en Guatemala. ${CIERRE}`,
   };
 }
 
@@ -139,13 +160,13 @@ export function textosMarca({
   if (categoriaFiltro) {
     return {
       titulo: conPagina(`${nombre}: ${categoriaFiltro.toLowerCase()} en Guatemala`, page),
-      descripcion: `${total} ${pluralCategoria(categoriaFiltro)} ${nombre} en Sonoro. ${CIERRE}`,
+      descripcion: `${conteo(total, pluralCategoria(categoriaFiltro))} ${nombre} en Sonoro. ${CIERRE}`,
     };
   }
   const principales = categorias.slice(0, 3).map((categoria) => categoria.toLowerCase());
   return {
     titulo: conPagina(`${nombre} en Guatemala: ${enumerar(principales.slice(0, 2))}`, page),
-    descripcion: `${total} productos ${nombre} en Sonoro: ${enumerar(principales)}. ${CIERRE}`,
+    descripcion: `${conteo(total, "productos")} ${nombre} en Sonoro: ${enumerar(principales)}. ${CIERRE}`,
   };
 }
 
@@ -161,7 +182,7 @@ export function textosCatalogo({
   if (marcaFiltro) {
     return {
       titulo: conPagina(`Catálogo ${marcaFiltro} en Guatemala`, page),
-      descripcion: `${total} productos ${marcaFiltro} en el catálogo de Sonoro. ${CIERRE}`,
+      descripcion: `${conteo(total, "productos")} ${marcaFiltro} en el catálogo de Sonoro. ${CIERRE}`,
     };
   }
   return {
@@ -184,12 +205,12 @@ export function textosDestacados({
   if (marcaFiltro) {
     return {
       titulo: conPagina(`Destacados de ${marcaFiltro}`, page),
-      descripcion: `${total} productos destacados de ${marcaFiltro} en Sonoro. ${CIERRE}`,
+      descripcion: `${conteo(total, "productos")} ${total === 1 ? "destacado" : "destacados"} de ${marcaFiltro} en Sonoro. ${CIERRE}`,
     };
   }
   return {
     titulo: conPagina(`Destacados: ${LEMA.toLowerCase()}`, page),
-    descripcion: `${total} productos destacados del catálogo de Sonoro: ${LEMA.toLowerCase()} en Guatemala. Hasta 6 pagos precio contado y envíos a todo el país.`,
+    descripcion: `${conteo(total, "productos")} ${total === 1 ? "destacado" : "destacados"} del catálogo de Sonoro: ${LEMA.toLowerCase()} en Guatemala. Hasta 6 pagos precio contado y envíos a todo el país.`,
   };
 }
 
