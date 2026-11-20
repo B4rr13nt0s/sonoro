@@ -40,6 +40,7 @@ function aTarjeta(producto: Producto): ProductoTarjeta {
     destacado: producto.destacado,
     imagenes: producto.imagenes,
     specsDestacadas: producto.specsDestacadas,
+    ...(producto.escalaFoto ? { escalaFoto: producto.escalaFoto } : {}),
   };
 }
 

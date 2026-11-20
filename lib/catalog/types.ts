@@ -160,6 +160,10 @@ export const ProductoSchema = z
     // no los lee ninguna pantalla; son la materia prima de filtros y
     // comparador. Ausente en los productos de ESPECIALES.
     atributos: AtributosSchema.optional(),
+    // Escala de la foto en la TARJETA (lib/catalog/escala-foto.ts). Derivado:
+    // no viene de catalog.json, lo agrega el adaptador al leerlo, y solo para
+    // bocinas y subwoofers. Ausente = la foto al tamaño de siempre.
+    escalaFoto: z.number().min(0.5).max(1).optional(),
   })
   .refine((p) => p.precioAntesCents === undefined || p.precioAntesCents > p.precioCents, {
     message: "precioAntesCents debe ser mayor que precioCents",
@@ -195,6 +199,7 @@ export type ProductoTarjeta = Pick<
   | "destacado"
   | "imagenes"
   | "specsDestacadas"
+  | "escalaFoto"
 >;
 
 // Arreglo completo — lo usa el adaptador estático para validar

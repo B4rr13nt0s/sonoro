@@ -21,6 +21,14 @@ type ProductImageProps = {
   className?: string;
   /** El ancho con que se dibuja, si no es el de una tarjeta de la rejilla (p. ej. la miniatura de 56 px del chat). */
   sizes?: string;
+  /**
+   * Escala de la foto dentro de su contenedor (entre 0 y 1; sin valor, 1): la
+   * tarjeta del catálogo achica las fotos de bocinas y subwoofers según su
+   * medida (lib/catalog/escala-foto.ts). La foto se achica desde el centro y
+   * el contenedor no cambia de tamaño. Solo se aplica a una foto, no al
+   * placeholder.
+   */
+  escala?: number;
 };
 
 export function ProductImage({
@@ -29,6 +37,7 @@ export function ProductImage({
   dark = false,
   className,
   sizes = SIZES_REJILLA,
+  escala,
 }: ProductImageProps) {
   const [imagen] = imagenes;
 
@@ -51,6 +60,7 @@ export function ProductImage({
         fill
         sizes={sizes}
         className="object-contain"
+        style={escala !== undefined && escala !== 1 ? { transform: `scale(${escala})` } : undefined}
       />
     </div>
   );

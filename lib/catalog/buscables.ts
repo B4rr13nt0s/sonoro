@@ -25,6 +25,7 @@ export function tarjetasBuscables(productos: readonly Producto[]): ProductoBusca
     destacado: producto.destacado,
     imagenes: producto.imagenes,
     specsDestacadas: producto.specsDestacadas,
+    ...(producto.escalaFoto ? { escalaFoto: producto.escalaFoto } : {}),
     // Los atributos como palabras de búsqueda (`12"`, `4ohm`, `clase-d`…):
     // unas pocas por producto, en lugar de mandar `atributos` entero.
     claves: clavesDeAtributos(producto.atributos),
