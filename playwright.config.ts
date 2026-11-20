@@ -66,6 +66,15 @@ export default defineConfig({
       // El chat va tras esta bandera, que se lee al compilar: sin ella el
       // build no trae el lanzador y e2e/chat.spec.ts no tiene qué probar.
       NEXT_PUBLIC_CHAT_ENABLED: "true",
+      // Next carga `.env.local` del desarrollador, pero no pisa una variable ya
+      // definida, ni siquiera vacía. Sin esto, correr los e2e en local reenviaba
+      // cada evento del chat y cada cotización de prueba al Apps Script REAL
+      // (la hoja de producción) y mandaba visitas a Google Analytics. Vacías:
+      // `decideQuoteLogForward` / `decideChatLogForward` no reenvían y el
+      // componente de Analytics no se monta.
+      QUOTE_LOG_URL: "",
+      QUOTE_LOG_TOKEN: "",
+      NEXT_PUBLIC_GA_MEASUREMENT_ID: "",
     },
   },
 });

@@ -35,8 +35,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
-.env*.local
+# env files: todo `.env*` (`.env`, `.env.production`, `.env.vercel`…) guarda
+# secretos reales; solo la plantilla se versiona.
+.env*
+!.env.example
 
 # vercel
 .vercel
