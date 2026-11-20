@@ -270,8 +270,15 @@ export function responderVehiculo(
   const gens = generaciones(datos.vehiculos, marca.slug, modelo.slug);
 
   if (r.anio === null) {
+    // El id del botón lleva el año de INICIO, así que dos generaciones que
+    // empiezan el mismo año con otro final (Nissan Titan 2004–2007 y
+    // 2004–2005, versiones distintas) darían dos botones con el mismo id: la
+    // misma elección, y claves repetidas en el panel. Una sola, la más ancha
+    // (`generaciones` las ordena así); la pregunta de versión que sigue ya
+    // separa las filas de cada rango.
+    const unicas = gens.filter((g, i) => gens.findIndex((o) => o.desde === g.desde) === i);
     const botonesAnio = botones(
-      gens.map((g) => ({
+      unicas.map((g) => ({
         id: idOpcionVehiculo({ sel: { ...base, anio: g.desde }, rango: true, ver: null }),
         etiqueta: etiquetaGeneracion(g),
       })),
@@ -284,7 +291,7 @@ export function responderVehiculo(
         whatsapp(),
       ]);
     }
-    if (gens.length === 1) {
+    if (unicas.length === 1) {
       return responderVehiculo(
         { sel: { ...base, anio: gens[0].desde }, rango: true, ver: pedido.ver },
         datos,

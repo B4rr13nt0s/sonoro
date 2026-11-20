@@ -12,7 +12,7 @@ import {
   necesitaCatalogo,
   responder,
 } from "./motor.ts";
-import { TEMA_NOMBRE, bloquesDeTema } from "./respuestas.ts";
+import { TEMA_NOMBRE, TEXTO_PEDIR_PRODUCTO, bloquesDeTema } from "./respuestas.ts";
 import type { Bloque, Contexto, Entrada, Estado, OpcionId, Tema } from "./tipos.ts";
 
 /** Lo que el estado tenía antes de la memoria: la consulta y el tema para «Hablar con Sonoro». */
@@ -981,6 +981,15 @@ test("conversación: «ese» con varios en pantalla no es referencia", () => {
   const [, r2] = conversar(["subwoofers", "¿cuánto cuesta ese?"]);
   assert.ok(!textos(r2.bloques).some((t) => t.includes(" cuesta Q")));
   assert.equal(r2.estado.enfoque ?? null, null);
+});
+
+test("conversación: «¿cuánto cuesta?» sin producto pide cuál y no borra lo mostrado", () => {
+  const [r1, r2, r3] = conversar(["subwoofers", "¿cuánto cuesta?", "¿cuánto cuesta el primero?"]);
+  assert.ok((r1.estado.mostrados?.length ?? 0) > 1);
+  assert.equal(textos(r2.bloques)[0], TEXTO_PEDIR_PRODUCTO);
+  assert.deepEqual(r2.estado.mostrados, r1.estado.mostrados);
+  // Y «el primero» sigue apuntando a lo que se mostró.
+  assert.ok(textos(r3.bloques).some((t) => t.includes(" cuesta Q")));
 });
 
 test("conversación: la frase de presentación rota con el turno", () => {
