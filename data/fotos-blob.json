@@ -1899,40 +1899,45 @@
     "hash": "5f4468404d07",
     "bytes": 82278
   },
-  "VPAS12_cenital.webp": {
-    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_cenital.073a6035bf04.webp",
+  "VPAS12_frontal.webp": {
+    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_frontal.073a6035bf04.webp",
     "hash": "073a6035bf04",
     "bytes": 187630
   },
-  "VPAS12_diagonalderecha.webp": {
-    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_diagonalderecha.857b22d32197.webp",
+  "VPAS12_lateral1.webp": {
+    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_lateral1.857b22d32197.webp",
     "hash": "857b22d32197",
     "bytes": 63574
   },
-  "VPAS12_diagonalizquierda.webp": {
-    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_diagonalizquierda.4774ee41ae95.webp",
-    "hash": "4774ee41ae95",
-    "bytes": 94138
-  },
-  "VPAS12_frontal.webp": {
-    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_frontal.a047fd571b8d.webp",
+  "VPAS12_lateral2.webp": {
+    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_lateral2.a047fd571b8d.webp",
     "hash": "a047fd571b8d",
     "bytes": 134670
   },
-  "VR10_diagonalderecha.webp": {
-    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_diagonalderecha.2d2d060ea073.webp",
+  "VPAS12_lateral3.webp": {
+    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_lateral3.4774ee41ae95.webp",
+    "hash": "4774ee41ae95",
+    "bytes": 94138
+  },
+  "VR10_frontal.webp": {
+    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_frontal.c3ac2c0c7fe5.webp",
+    "hash": "c3ac2c0c7fe5",
+    "bytes": 229650
+  },
+  "VR10_lateral1.webp": {
+    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_lateral1.2d2d060ea073.webp",
     "hash": "2d2d060ea073",
     "bytes": 45292
   },
-  "VR10_diagonalizquierda.webp": {
-    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_diagonalizquierda.f8b5b427b2c7.webp",
-    "hash": "f8b5b427b2c7",
-    "bytes": 37286
-  },
-  "VR10_frontal.webp": {
-    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_frontal.b6f3ef4325f6.webp",
+  "VR10_lateral2.webp": {
+    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_lateral2.b6f3ef4325f6.webp",
     "hash": "b6f3ef4325f6",
     "bytes": 44966
+  },
+  "VR10_lateral3.webp": {
+    "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_lateral3.f8b5b427b2c7.webp",
+    "hash": "f8b5b427b2c7",
+    "bytes": 37286
   },
   "WAVY FOAM_frontal.webp": {
     "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/WAVY%20FOAM_frontal.26488d3ea934.webp",

@@ -191,7 +191,9 @@ export function leerVehiculo(
   // respuesta la pregunta o la búsqueda sigue su camino.
   if (candidatos.length > 0) return null;
 
-  const marca = modelos.find((m) => contiene(escrito, m.palabrasMarca));
+  // Con la misma regla que `elegirModelo`: «mercedes 2010» nombra a
+  // «Mercedes-Benz» con una de sus palabras largas, no con la marca entera.
+  const marca = modelos.find((m) => nombraMarca(escrito, m));
   if (!marca) return null;
   // Una marca que también es parte de un producto («Mini» en «Convertidor
   // SYNCLINK Mini LOC») necesita un año, como los modelos ambiguos: sin él, el
@@ -253,12 +255,16 @@ export function nombresAmbiguos(
   for (const m of modelosDe(vehiculos)) {
     const v = vehiculos.find((x) => x.modeloSlug === m.modeloSlug);
     if (!v) continue;
-    const resultado = buscar(productos, normalizar(v.modelo), compararRelevancia);
+    const resultado = buscar(productos, normalizar(v.modelo), compararRelevancia, {
+      soloExacta: true,
+    });
     if (resultado.modo === "exacta" && resultado.productos.length > 0) ambiguos.add(m.modeloSlug);
   }
   const marcas = new Map(vehiculos.map((v) => [v.marcaSlug, v.marca]));
   for (const [slug, nombre] of marcas) {
-    const resultado = buscar(productos, normalizar(nombre), compararRelevancia);
+    const resultado = buscar(productos, normalizar(nombre), compararRelevancia, {
+      soloExacta: true,
+    });
     if (resultado.modo === "exacta" && resultado.productos.length > 0) {
       ambiguos.add(llaveMarca(slug));
     }

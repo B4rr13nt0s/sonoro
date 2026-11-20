@@ -8,7 +8,7 @@
 // la red, y el nombre en Blob lleva el hash del contenido, así que una foto
 // reemplazada sube con otra URL y la vieja sigue ahí (no se borran blobs).
 // Diseño: docs/superpowers/specs/2026-11-17-fotos-blob-design.md.
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -20,6 +20,7 @@ import {
   serializarManifiesto,
   type ManifiestoFotos,
 } from "../../lib/catalog/fotos-blob.ts";
+import { esNombreDeFoto } from "../../lib/catalog/photos.ts";
 import {
   leerHashesDeFotos,
   leerManifiesto,
@@ -44,8 +45,28 @@ if (!process.env.BLOB_READ_WRITE_TOKEN) {
 // El paquete es CommonJS (sin "type": "module"): tsx no admite await en el
 // nivel superior, así que el trabajo va en una función.
 async function subir() {
-  const enDisco = leerHashesDeFotos(CARPETA);
+  // Solo lo que parece una foto de producto: la tienda Blob es pública, y
+  // un archivo cualquiera dejado en la carpeta (un .psd, un .zip, un .env) no
+  // debe acabar en una URL abierta.
+  const todos = leerHashesDeFotos(CARPETA);
+  const enDisco = new Map([...todos].filter(([archivo]) => esNombreDeFoto(archivo)));
+  const omitidos = [...todos.keys()].filter((archivo) => !enDisco.has(archivo));
+  if (omitidos.length > 0) {
+    console.warn(
+      `Se omiten ${omitidos.length} archivo(s) que no son «SKU_vista.jpg|jpeg|png|webp»: ${omitidos.join(", ")}`,
+    );
+  }
   const manifiesto: ManifiestoFotos = leerManifiesto(RUTA_MANIFIESTO);
+  // Una carpeta vacía o ausente (otra copia del repo sin los originales, una
+  // unidad sin montar) no significa «no hay fotos»: quitaría del manifiesto
+  // todas las entradas y el siguiente build publicaría el sitio sin fotos.
+  if (enDisco.size === 0 && Object.keys(manifiesto).length > 0) {
+    console.error(
+      `No hay fotos en ${CARPETA}, pero el manifiesto trae ${Object.keys(manifiesto).length}. ` +
+        "No se toca nada: si de verdad se quitaron todas, vacía data/fotos-blob.json a mano.",
+    );
+    process.exit(1);
+  }
   const pendientes = pendientesDeSubir(enDisco, manifiesto);
 
   let subidas = 0;
@@ -74,7 +95,11 @@ async function subir() {
         quitadas += 1;
       }
     }
-    writeFileSync(RUTA_MANIFIESTO, serializarManifiesto(manifiesto));
+    // Escritura atómica: un corte a mitad de writeFileSync dejaría el
+    // manifiesto truncado, y un JSON roto tira el build (next.config.ts).
+    const temporal = `${RUTA_MANIFIESTO}.tmp`;
+    writeFileSync(temporal, serializarManifiesto(manifiesto));
+    renameSync(temporal, RUTA_MANIFIESTO);
     console.log(
       `${subidas} subida(s), ${enDisco.size - pendientes.length} ya estaban, ${quitadas} entrada(s) quitada(s), ` +
         `${(bytesSubidos / 1048576).toFixed(1)} MB subidos.`,

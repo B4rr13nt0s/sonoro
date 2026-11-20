@@ -177,6 +177,40 @@ test("modelo sin año: un botón por generación, del más nuevo al más viejo",
   ]);
 });
 
+test("dos generaciones que empiezan el mismo año no repiten el id del botón", () => {
+  // Nissan Titan 2004–2007 y 2004–2005 (versiones distintas): el id lleva el
+  // año de inicio, así que serían dos botones iguales.
+  const datos: DatosVehiculos = {
+    ...DATOS,
+    vehiculos: [
+      vehiculo({
+        modelo: "Tres",
+        modeloSlug: "tres",
+        desde: 2004,
+        hasta: 2007,
+        version: "A",
+        versionSlug: "a",
+      }),
+      vehiculo({
+        modelo: "Tres",
+        modeloSlug: "tres",
+        desde: 2004,
+        hasta: 2005,
+        version: "B",
+        versionSlug: "b",
+      }),
+      vehiculo({ modelo: "Tres", modeloSlug: "tres", desde: 2010, hasta: 2012 }),
+    ],
+  };
+  const { bloques } = responderVehiculo(pedido({ marca: "prueba", modelo: "tres" }), datos);
+  const ops = opciones(bloques);
+  assert.deepEqual(
+    ops.map((o) => o.etiqueta),
+    ["2010–2012", "2004–2007"],
+  );
+  assert.equal(new Set(ops.map((o) => o.id)).size, ops.length);
+});
+
 test("un modelo con una sola generación no pregunta el año", () => {
   const { bloques, titulo } = responderVehiculo(pedido({ marca: "prueba", modelo: "dos" }), DATOS);
   assert.equal(titulo, "Prueba Dos 2010–2014");

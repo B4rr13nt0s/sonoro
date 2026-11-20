@@ -3566,20 +3566,20 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_frontal.a047fd571b8d.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_frontal.073a6035bf04.webp",
         "alt": "Subwoofer amplificado de 12\" VPAS12 — frontal"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_cenital.073a6035bf04.webp",
-        "alt": "Subwoofer amplificado de 12\" VPAS12 — cenital"
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_lateral1.857b22d32197.webp",
+        "alt": "Subwoofer amplificado de 12\" VPAS12 — lateral1"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_diagonalderecha.857b22d32197.webp",
-        "alt": "Subwoofer amplificado de 12\" VPAS12 — diagonalderecha"
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_lateral2.a047fd571b8d.webp",
+        "alt": "Subwoofer amplificado de 12\" VPAS12 — lateral2"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_diagonalizquierda.4774ee41ae95.webp",
-        "alt": "Subwoofer amplificado de 12\" VPAS12 — diagonalizquierda"
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_lateral3.4774ee41ae95.webp",
+        "alt": "Subwoofer amplificado de 12\" VPAS12 — lateral3"
       }
     ],
     "destacado": false,
@@ -3658,16 +3658,20 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_frontal.b6f3ef4325f6.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_frontal.c3ac2c0c7fe5.webp",
         "alt": "Subwoofer amplificado de 10\" VR10 — frontal"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_diagonalderecha.2d2d060ea073.webp",
-        "alt": "Subwoofer amplificado de 10\" VR10 — diagonalderecha"
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_lateral1.2d2d060ea073.webp",
+        "alt": "Subwoofer amplificado de 10\" VR10 — lateral1"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_diagonalizquierda.f8b5b427b2c7.webp",
-        "alt": "Subwoofer amplificado de 10\" VR10 — diagonalizquierda"
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_lateral2.b6f3ef4325f6.webp",
+        "alt": "Subwoofer amplificado de 10\" VR10 — lateral2"
+      },
+      {
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_lateral3.f8b5b427b2c7.webp",
+        "alt": "Subwoofer amplificado de 10\" VR10 — lateral3"
       }
     ],
     "destacado": true,

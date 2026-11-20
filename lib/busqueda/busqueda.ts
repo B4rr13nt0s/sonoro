@@ -760,6 +760,20 @@ export interface ResultadoBusqueda {
   cercania: string | null;
 }
 
+export interface OpcionesBusqueda {
+  /**
+   * La búsqueda de la consulta corregida no verifica a su vez su propia
+   * corrección (uso interno de `buscar`).
+   */
+  verificarCorreccion?: boolean;
+  /**
+   * Solo interesa si hay coincidencia exacta: sin ella devuelve vacío, sin
+   * correcciones ni niveles aproximados. `modo === "exacta"` con productos
+   * vale lo mismo que en la búsqueda completa.
+   */
+  soloExacta?: boolean;
+}
+
 const SIN_RESULTADOS: ResultadoBusqueda = {
   productos: [],
   modo: "exacta",
@@ -818,6 +832,28 @@ function reescribir(original: string, cambios: ReadonlyMap<string, string>): str
       return cambios.get(palabra) ?? token;
     })
     .join(" ");
+}
+
+/**
+ * Una corrección solo se ofrece si de verdad cambia algo y lleva a algún lado:
+ * «clase h» no puede proponerse a sí misma («Quizá quisiste decir “clase h”»), y
+ * «lancha rolo» → «lancha rollo» da 0 resultados porque el filtro marino deja
+ * fuera todo lo que trae «rollo». Ofrecer un botón que lleva a «Sin
+ * resultados» es peor que no ofrecer nada.
+ *
+ * `cuantos` corre la búsqueda de la consulta corregida (con la verificación
+ * apagada, para que no se llame a sí misma). Con `verificar` en false se
+ * devuelve la corrección tal cual, sin esa búsqueda.
+ */
+function correccionUtil(
+  propuesta: string,
+  original: string,
+  cuantos: () => number,
+  verificar: boolean,
+): string | null {
+  if (normalizar(propuesta).replace(/\s+/g, " ") === original) return null;
+  if (verificar && cuantos() === 0) return null;
+  return propuesta;
 }
 
 interface Puntuado {
@@ -1015,7 +1051,9 @@ export function buscar(
   productos: readonly ProductoBuscable[],
   consulta: string,
   desempate: (a: ProductoBuscable, b: ProductoBuscable) => number = () => 0,
+  opciones: OpcionesBusqueda = {},
 ): ResultadoBusqueda {
+  const { verificarCorreccion = true, soloExacta = false } = opciones;
   const normalizada = normalizar(consulta).replace(/\s+/g, " ");
   const c = compilar(normalizada);
   const { terminos, aplicados, usos } = c;
@@ -1075,6 +1113,10 @@ export function buscar(
     };
   }
 
+  // Quien solo pregunta «¿hay coincidencia exacta?» no paga la corrección ni
+  // los niveles aproximados, que son lo caro de una búsqueda sin resultados.
+  if (soloExacta) return SIN_RESULTADOS;
+
   // En todo el catálogo, no solo en lo que pasó los filtros: una palabra bien
   // escrita lo sigue estando aunque el filtro deje fuera a quien la trae.
   const enCatalogo = new Set(
@@ -1082,7 +1124,17 @@ export function buscar(
   );
   const conErrores = (e: Entrada, t: Termino) => nivelConErrores(e, t, enCatalogo);
   const cambios = corregir(productos, terminos, enCatalogo);
-  const correccion = cambios ? reescribir(c.original, cambios) : null;
+  const correccion = cambios
+    ? correccionUtil(
+        reescribir(c.original, cambios),
+        normalizada,
+        () =>
+          buscar(productos, reescribir(c.original, cambios), desempate, {
+            verificarCorreccion: false,
+          }).productos.length,
+        verificarCorreccion,
+      )
+    : null;
 
   const aproximados: Puntuado[] = [];
   for (const e of lista) {

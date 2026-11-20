@@ -664,10 +664,25 @@ function responderDato(
   visible: string,
   textoVisible: string,
   contexto: Contexto,
+  previo?: Estado,
 ): Respuesta {
   const estado: Estado = { ultimaConsulta: textoVisible, ultimoTema: null };
   if (consulta === "") {
-    return { estado, bloques: [{ tipo: "texto", texto: TEXTO_PEDIR_PRODUCTO }], evento: null };
+    // «¿Cuánto cuesta?» sin producto: se pide cuál. No es una búsqueda nueva,
+    // así que la memoria de la conversación (lo mostrado, el producto del que
+    // se hablaba) sigue: antes se borraba y un «el primero» o «ese» después
+    // ya no encontraba a qué se refería.
+    const memoria: Estado = {
+      ...estado,
+      ...(previo?.mostrados ? { mostrados: previo.mostrados } : {}),
+      ...(previo?.enfoque !== undefined ? { enfoque: previo.enfoque } : {}),
+      ...(previo?.ultimosCampos ? { ultimosCampos: previo.ultimosCampos } : {}),
+    };
+    return {
+      estado: memoria,
+      bloques: [{ tipo: "texto", texto: TEXTO_PEDIR_PRODUCTO }],
+      evento: null,
+    };
   }
   const { productos } = contexto;
   if (productos === null) return sinCatalogo(estado);
@@ -1026,6 +1041,7 @@ function responderSinMemoria(estado: Estado, entrada: Entrada, contexto: Context
         intencion.visible,
         consultaVisible(texto),
         contexto,
+        estado,
       );
     case "busqueda":
       return responderBusqueda(

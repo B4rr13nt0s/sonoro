@@ -235,6 +235,18 @@ test("CartProvider: adopta lo que otra pestaña guardó, sin reescribirlo, y lo 
     );
     assert.equal(escrituras.length, antesDelEvento, "no reescribe lo que llegó de otra pestaña");
 
+    // El aviso de lo corregido sale UNA vez: /carrito lo muestra y llama a
+    // descartarCambios(). Sin escribir (es lo que evita el bucle entre
+    // pestañas), pero la diferencia tiene que desaparecer: si no, el aviso
+    // volvía en cada visita a /carrito hasta el primer cambio propio.
+    assert.ok((probeState.valor?.cambios.length ?? 0) > 0, "hay un precio corregido que avisar");
+    await act(async () => {
+      probeState.valor?.descartarCambios();
+    });
+    assert.equal(probeState.valor?.cambios.length, 0, "el aviso no reaparece");
+    assert.equal(escrituras.length, antesDelEvento, "descartar tampoco reescribe");
+    assert.equal(probeState.valor?.items[1].unitPriceCents, 118000);
+
     // Un cambio propio guarda el carrito ENTERO, con lo de la otra pestaña.
     await act(async () => {
       probeState.valor?.addItem({

@@ -194,6 +194,10 @@ test("leerVehiculo: la marca escrita manda cuando el modelo está en varias marc
   });
   assert.deepEqual(leer("toyota pickup 1990"), { marca: "toyota", modelo: "pickup", anio: 1990 });
   assert.equal(leer("volkswagen fox 2008")?.marca, "volkswagen");
+  // La marca sola, con una de sus palabras largas («mercedes» por
+  // «Mercedes-Benz»), abre el flujo igual que escrita entera.
+  assert.deepEqual(leer("mercedes 2010"), { marca: "mercedes-benz", anio: 2010 });
+  assert.deepEqual(leer("mercedes benz 2010"), { marca: "mercedes-benz", anio: 2010 });
 });
 
 test("leerVehiculo: sin marca, el año decide entre marcas que comparten el modelo", () => {

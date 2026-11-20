@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { construirImagenes, emparejarFotosConSkus } from "./photos.ts";
+import { construirImagenes, emparejarFotosConSkus, esNombreDeFoto } from "./photos.ts";
 
 test("emparejarFotosConSkus: sku simple sin espacios", () => {
   const { porSku, ignorados } = emparejarFotosConSkus(["SRX62_frontal.jpg"], new Set(["SRX62"]));
@@ -161,4 +161,21 @@ test("emparejarFotosConSkus: la vista completo va antes que la frontal", () => {
     porSku.get("165 AS")?.map((f) => f.vista),
     ["completo", "frontal", "lateral"],
   );
+});
+
+test("esNombreDeFoto: solo «SKU_vista.ext» con extensión de imagen soportada", () => {
+  for (const ok of ["SRX62_frontal.webp", "ACX 165_frontal.JPG", "A_b_c.png", "X_1.jpeg"]) {
+    assert.equal(esNombreDeFoto(ok), true, ok);
+  }
+  for (const mal of [
+    ".env",
+    "SRX62.webp",
+    "SRX62_frontal.psd",
+    "SRX62_frontal.zip",
+    "_frontal.webp",
+    "SRX62_.webp",
+    "notas.txt",
+  ]) {
+    assert.equal(esNombreDeFoto(mal), false, mal);
+  }
 });

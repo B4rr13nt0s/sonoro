@@ -174,7 +174,9 @@ export const modelUrl = (id: ModelId) => `/models/${MODELS[id].archivo}`;
 // quedar vacío. La genera scripts/carrusel/posters.mjs capturando el propio
 // carrusel en reposo, así que hay que volver a correrlo cuando cambia un
 // .glb, la luz del estudio o el encuadre. Lleva el nombre del .glb, versión
-// incluida, porque /models/* se sirve con caché `immutable`.
+// incluida, pero NO es inmutable: se regenera con el mismo nombre (el giro de
+// reposo las cambió), así que next.config.ts las sirve con una caché corta y
+// no con la `immutable` de los .glb.
 //
 // Los nueve son el MISMO recorte central del cuadro de escritorio
 // (1184 × 470 px): 60 % del ancho y 84 % del alto. Recortar cada modelo a su

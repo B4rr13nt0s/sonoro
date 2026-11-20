@@ -764,6 +764,37 @@ test("«Quizá quisiste decir» conserva los filtros de la consulta", () => {
   assert.deepEqual(skus(bien), skus(r));
 });
 
+test("«Quizá quisiste decir» no ofrece una consulta que da 0 resultados ni la misma consulta", () => {
+  const ROLLO = producto("Rollo de insonorización RIN1", "Sonoro", "RIN1", {
+    categoria: "Insonorización",
+    uso: ["carro"],
+  });
+  // «rollo» existe, pero el filtro marino deja fuera todo lo que lo trae: el
+  // botón llevaría a «Sin resultados».
+  const r = buscar([SUB2, ROLLO], "lancha rolo");
+  assert.equal(r.productos.length, 0);
+  assert.equal(r.correccion, null);
+  // Sin filtro que lo impida, la corrección sí se ofrece.
+  const libre = buscar([SUB2, ROLLO], "rolo");
+  assert.equal(libre.correccion, "rollo");
+  // Una corrección que reescribe la consulta idéntica no es una corrección.
+  for (const q of ["subwoofer", "clase h", "COR2-124D"]) {
+    const c = buscar([COR, SUB2], q).correccion;
+    assert.ok(c === null || normalizar(c) !== normalizar(q), q);
+  }
+});
+
+test("soloExacta: igual que la búsqueda completa en lo exacto, vacío en el resto", () => {
+  for (const q of ["subwoofer", "memphis", "COR2-124D", "subwofer", "zzzz", "bocinas 7 pulgadas"]) {
+    const completa = buscar(CATALOGO, q);
+    const rapida = buscar(CATALOGO, q, undefined, { soloExacta: true });
+    const exacta = (r: typeof completa) => r.modo === "exacta" && r.productos.length > 0;
+    assert.equal(exacta(rapida), exacta(completa), q);
+    if (exacta(completa)) assert.deepEqual(skus(rapida), skus(completa), q);
+    else assert.equal(rapida.productos.length > 0 && rapida.modo !== "exacta", false, q);
+  }
+});
+
 test("la puntuación pegada a una palabra no rompe el filtro de uso ni se lee como errata", () => {
   const MAR = producto('Bocina marina 6.5" MAR65', "KBT", "MAR65", { uso: ["marino"] });
   for (const q of [
