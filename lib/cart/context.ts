@@ -281,10 +281,15 @@ export function CartProvider({
   // render y la llamada pudo entrar un cambio.
   const descartarCambios = useCallback(() => {
     // Un carrito que escribió otra pestaña ya viene corregido contra el
-    // catálogo de ella: sus diferencias con el de esta se muestran, pero no se
-    // guardan (ver `#deOtraPestaña`). El primer cambio propio lo suelta.
-    if (almacen.deOtraPestaña()) return;
-    aplicar({ type: "hydrate", cart: reconcile(almacen.leer().guardado, catalogo).cart }, true);
+    // catálogo de ella: la corrección de ESTA pestaña se aplica en memoria pero
+    // no se guarda (ver `#deOtraPestaña`), así no hay bucle entre pestañas. Sí
+    // hay que aplicarla: si solo se omitiera, la diferencia seguiría ahí y los
+    // avisos reaparecerían en cada visita a /carrito hasta el primer cambio
+    // propio. El primer cambio propio guarda el carrito ya corregido.
+    aplicar(
+      { type: "hydrate", cart: reconcile(almacen.leer().guardado, catalogo).cart },
+      !almacen.deOtraPestaña(),
+    );
   }, [almacen, aplicar, catalogo]);
 
   // Lo que reconcile() quitaría no entra, aunque un botón se olvide de
