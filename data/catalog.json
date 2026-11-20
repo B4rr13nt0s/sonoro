@@ -2,7 +2,7 @@
   {
     "sku": "TS-W312D4",
     "slug": "pioneer-ts-w312d4",
-    "nombre": "Subwoofer Champion Series 12\" TS-W312D4",
+    "nombre": "Subwoofer Champion Series de 12\" TS-W312D4",
     "marca": "Pioneer",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina para caja sellada o ventilada",
@@ -75,11 +75,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/TS-W312D4_frontal.d5a666254ea7.webp",
-        "alt": "Subwoofer Champion Series 12\" TS-W312D4 — frontal"
+        "alt": "Subwoofer Champion Series de 12\" TS-W312D4 — frontal"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/TS-W312D4_trasera.5f4468404d07.webp",
-        "alt": "Subwoofer Champion Series 12\" TS-W312D4 — trasera"
+        "alt": "Subwoofer Champion Series de 12\" TS-W312D4 — trasera"
       }
     ],
     "destacado": true,
@@ -675,10 +675,10 @@
   {
     "sku": "COR-S124D",
     "slug": "kbt-cor-s124d",
-    "nombre": "Subwoofer Coronel de 12\" COR-S124D",
+    "nombre": "Subwoofer Coronel plano de 12\" COR-S124D",
     "marca": "KBT",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm de la línea Coronel, perfil plano para espacios reducidos",
+    "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm de la línea Coronel, de perfil plano para espacios reducidos",
     "uso": [
       "carro"
     ],
@@ -751,10 +751,10 @@
   {
     "sku": "COR-S104D",
     "slug": "kbt-cor-s104d",
-    "nombre": "Subwoofer Coronel de 10\" COR-S104D",
+    "nombre": "Subwoofer Coronel plano de 10\" COR-S104D",
     "marca": "KBT",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 10 pulgadas de doble bobina de 4 ohm de la línea Coronel, perfil plano para espacios reducidos",
+    "descripcionCorta": "Subwoofer de 10 pulgadas de doble bobina de 4 ohm de la línea Coronel, de perfil plano para espacios reducidos",
     "uso": [
       "carro"
     ],
@@ -827,10 +827,10 @@
   {
     "sku": "SGT-S124D",
     "slug": "kbt-sgt-s124d",
-    "nombre": "Subwoofer Sergeant de 12\" SGT-S124D",
+    "nombre": "Subwoofer Sergeant plano de 12\" SGT-S124D",
     "marca": "KBT",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm de la línea Sergeant, perfil plano para espacios reducidos",
+    "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm de la línea Sergeant, de perfil plano para espacios reducidos",
     "uso": [
       "carro"
     ],
@@ -903,10 +903,10 @@
   {
     "sku": "SGT-S104D",
     "slug": "kbt-sgt-s104d",
-    "nombre": "Subwoofer Sergeant de 10\" SGT-S104D",
+    "nombre": "Subwoofer Sergeant plano de 10\" SGT-S104D",
     "marca": "KBT",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 10 pulgadas de doble bobina de 4 ohm de la línea Sergeant, perfil plano para espacios reducidos",
+    "descripcionCorta": "Subwoofer de 10 pulgadas de doble bobina de 4 ohm de la línea Sergeant, de perfil plano para espacios reducidos",
     "uso": [
       "carro"
     ],
@@ -1629,7 +1629,7 @@
   {
     "sku": "PRXS1224",
     "slug": "memphis-prxs1224",
-    "nombre": "Subwoofer Slim Power Reference de 12\" PRXS1224",
+    "nombre": "Subwoofer Power Reference plano de 12\" PRXS1224",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de perfil delgado con impedancia seleccionable de 2 u 4 ohm",
@@ -1710,7 +1710,7 @@
   {
     "sku": "PRXS1024",
     "slug": "memphis-prxs1024",
-    "nombre": "Subwoofer Slim Power Reference de 10\" PRXS1024",
+    "nombre": "Subwoofer Power Reference plano de 10\" PRXS1024",
     "marca": "Memphis",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 10 pulgadas de perfil delgado con impedancia seleccionable de 2 u 4 ohm",
@@ -2599,10 +2599,10 @@
   {
     "sku": "T1S2-10S",
     "slug": "rockford-fosgate-t1s2-10s",
-    "nombre": "Subwoofer Power T1 Slim de 10\" T1S2-10S",
+    "nombre": "Subwoofer Power plano de 10\" T1S2-10S",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 10 pulgadas de perfil bajo y bobina simple de 2 ohm, optimizado para caja sellada",
+    "descripcionCorta": "Subwoofer de 10 pulgadas de perfil plano y bobina simple de 2 ohm, optimizado para caja sellada",
     "uso": [
       "carro"
     ],
@@ -2672,23 +2672,23 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1S2-10S_frontal1.5df372e62888.webp",
-        "alt": "Subwoofer Power T1 Slim de 10\" T1S2-10S — frontal1"
+        "alt": "Subwoofer Power plano de 10\" T1S2-10S — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1S2-10S_frontal2.2034e179d3e0.webp",
-        "alt": "Subwoofer Power T1 Slim de 10\" T1S2-10S — frontal2"
+        "alt": "Subwoofer Power plano de 10\" T1S2-10S — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1S2-10S_lateral1.73a949bc83a3.webp",
-        "alt": "Subwoofer Power T1 Slim de 10\" T1S2-10S — lateral1"
+        "alt": "Subwoofer Power plano de 10\" T1S2-10S — lateral 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1S2-10S_lateral2.5f49773cbd6b.webp",
-        "alt": "Subwoofer Power T1 Slim de 10\" T1S2-10S — lateral2"
+        "alt": "Subwoofer Power plano de 10\" T1S2-10S — lateral 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1S2-10S_posterior.249c4ee793b5.webp",
-        "alt": "Subwoofer Power T1 Slim de 10\" T1S2-10S — posterior"
+        "alt": "Subwoofer Power plano de 10\" T1S2-10S — posterior"
       }
     ],
     "destacado": false,
@@ -2705,7 +2705,7 @@
   {
     "sku": "P3D4-15",
     "slug": "rockford-fosgate-p3d4-15",
-    "nombre": "Subwoofer Punch P3 de 15\" P3D4-15",
+    "nombre": "Subwoofer Punch de 15\" P3D4-15",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 15 pulgadas de doble bobina de 4 ohm",
@@ -2774,19 +2774,19 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3D4-15_frontal1.fbeea1e040bd.webp",
-        "alt": "Subwoofer Punch P3 de 15\" P3D4-15 — frontal1"
+        "alt": "Subwoofer Punch de 15\" P3D4-15 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3D4-15_frontal2.d8a3caedafb0.webp",
-        "alt": "Subwoofer Punch P3 de 15\" P3D4-15 — frontal2"
+        "alt": "Subwoofer Punch de 15\" P3D4-15 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3D4-15_lateral.38df3b5bf558.webp",
-        "alt": "Subwoofer Punch P3 de 15\" P3D4-15 — lateral"
+        "alt": "Subwoofer Punch de 15\" P3D4-15 — lateral"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3D4-15_posterior.26ee7e00c167.webp",
-        "alt": "Subwoofer Punch P3 de 15\" P3D4-15 — posterior"
+        "alt": "Subwoofer Punch de 15\" P3D4-15 — posterior"
       }
     ],
     "destacado": false,
@@ -2803,7 +2803,7 @@
   {
     "sku": "P3D4-12",
     "slug": "rockford-fosgate-p3d4-12",
-    "nombre": "Subwoofer Punch P3 de 12\" P3D4-12",
+    "nombre": "Subwoofer Punch de 12\" P3D4-12",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm",
@@ -2868,19 +2868,19 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3D4-12_frontal1.efb28d91d5b9.webp",
-        "alt": "Subwoofer Punch P3 de 12\" P3D4-12 — frontal1"
+        "alt": "Subwoofer Punch de 12\" P3D4-12 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3D4-12_frontal2.36d3a251c43f.webp",
-        "alt": "Subwoofer Punch P3 de 12\" P3D4-12 — frontal2"
+        "alt": "Subwoofer Punch de 12\" P3D4-12 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3D4-12_lateral.fc6be06b322d.webp",
-        "alt": "Subwoofer Punch P3 de 12\" P3D4-12 — lateral"
+        "alt": "Subwoofer Punch de 12\" P3D4-12 — lateral"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3D4-12_posterior.222196b3e666.webp",
-        "alt": "Subwoofer Punch P3 de 12\" P3D4-12 — posterior"
+        "alt": "Subwoofer Punch de 12\" P3D4-12 — posterior"
       }
     ],
     "destacado": false,
@@ -2897,10 +2897,10 @@
   {
     "sku": "P3SD4-12",
     "slug": "rockford-fosgate-p3sd4-12",
-    "nombre": "Subwoofer Punch P3S de 12\" P3SD4-12",
+    "nombre": "Subwoofer Punch plano de 12\" P3SD4-12",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 12 pulgadas de perfil bajo y doble bobina de 4 ohm",
+    "descripcionCorta": "Subwoofer de 12 pulgadas de perfil plano y doble bobina de 4 ohm",
     "uso": [
       "carro"
     ],
@@ -2966,19 +2966,19 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3SD4-12_frontal1.61a2d12696ee.webp",
-        "alt": "Subwoofer Punch P3S de 12\" P3SD4-12 — frontal1"
+        "alt": "Subwoofer Punch plano de 12\" P3SD4-12 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3SD4-12_frontal2.ceef010877e7.webp",
-        "alt": "Subwoofer Punch P3S de 12\" P3SD4-12 — frontal2"
+        "alt": "Subwoofer Punch plano de 12\" P3SD4-12 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3SD4-12_lateral.f69e563024ab.webp",
-        "alt": "Subwoofer Punch P3S de 12\" P3SD4-12 — lateral"
+        "alt": "Subwoofer Punch plano de 12\" P3SD4-12 — lateral"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3SD4-12_posterior.81e373ce1544.webp",
-        "alt": "Subwoofer Punch P3S de 12\" P3SD4-12 — posterior"
+        "alt": "Subwoofer Punch plano de 12\" P3SD4-12 — posterior"
       }
     ],
     "destacado": true,
@@ -2995,10 +2995,10 @@
   {
     "sku": "P3SD4-10",
     "slug": "rockford-fosgate-p3sd4-10",
-    "nombre": "Subwoofer Punch P3S de 10\" P3SD4-10",
+    "nombre": "Subwoofer Punch plano de 10\" P3SD4-10",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 10 pulgadas de perfil bajo y doble bobina de 4 ohm",
+    "descripcionCorta": "Subwoofer de 10 pulgadas de perfil plano y doble bobina de 4 ohm",
     "uso": [
       "carro"
     ],
@@ -3064,19 +3064,19 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3SD4-10_frontal1.f162b639422c.webp",
-        "alt": "Subwoofer Punch P3S de 10\" P3SD4-10 — frontal1"
+        "alt": "Subwoofer Punch plano de 10\" P3SD4-10 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3SD4-10_frontal2.964dcd606b97.webp",
-        "alt": "Subwoofer Punch P3S de 10\" P3SD4-10 — frontal2"
+        "alt": "Subwoofer Punch plano de 10\" P3SD4-10 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3SD4-10_lateral.cff079a225ee.webp",
-        "alt": "Subwoofer Punch P3S de 10\" P3SD4-10 — lateral"
+        "alt": "Subwoofer Punch plano de 10\" P3SD4-10 — lateral"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P3SD4-10_posterior.efaea020318c.webp",
-        "alt": "Subwoofer Punch P3S de 10\" P3SD4-10 — posterior"
+        "alt": "Subwoofer Punch plano de 10\" P3SD4-10 — posterior"
       }
     ],
     "destacado": false,
@@ -3093,7 +3093,7 @@
   {
     "sku": "P2D4-12",
     "slug": "rockford-fosgate-p2d4-12",
-    "nombre": "Subwoofer Punch P2 de 12\" P2D4-12",
+    "nombre": "Subwoofer Punch de 12\" P2D4-12",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer de 12 pulgadas de doble bobina de 4 ohm",
@@ -3166,19 +3166,19 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P2D4-12_frontal1.892374cc0e1d.webp",
-        "alt": "Subwoofer Punch P2 de 12\" P2D4-12 — frontal1"
+        "alt": "Subwoofer Punch de 12\" P2D4-12 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P2D4-12_frontal2.5204251d1305.webp",
-        "alt": "Subwoofer Punch P2 de 12\" P2D4-12 — frontal2"
+        "alt": "Subwoofer Punch de 12\" P2D4-12 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P2D4-12_lateral.eb3b1b562e0c.webp",
-        "alt": "Subwoofer Punch P2 de 12\" P2D4-12 — lateral"
+        "alt": "Subwoofer Punch de 12\" P2D4-12 — lateral"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P2D4-12_posterior.8b8d2e215f01.webp",
-        "alt": "Subwoofer Punch P2 de 12\" P2D4-12 — posterior"
+        "alt": "Subwoofer Punch de 12\" P2D4-12 — posterior"
       }
     ],
     "destacado": false,
@@ -3195,10 +3195,10 @@
   {
     "sku": "R2SD4-12",
     "slug": "rockford-fosgate-r2sd4-12",
-    "nombre": "Subwoofer Prime R2 de 12\" R2SD4-12",
+    "nombre": "Subwoofer Prime plano de 12\" R2SD4-12",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 12 pulgadas de perfil bajo y doble bobina de 4 ohm",
+    "descripcionCorta": "Subwoofer de 12 pulgadas de perfil plano y doble bobina de 4 ohm",
     "uso": [
       "carro"
     ],
@@ -3268,15 +3268,15 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R2SD4-12_frontal.9ad78e6952a5.webp",
-        "alt": "Subwoofer Prime R2 de 12\" R2SD4-12 — frontal"
+        "alt": "Subwoofer Prime plano de 12\" R2SD4-12 — frontal"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R2SD4-12_lateral.285ba7fc0c47.webp",
-        "alt": "Subwoofer Prime R2 de 12\" R2SD4-12 — lateral"
+        "alt": "Subwoofer Prime plano de 12\" R2SD4-12 — lateral"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R2SD4-12_posterior.3ca5ecdce342.webp",
-        "alt": "Subwoofer Prime R2 de 12\" R2SD4-12 — posterior"
+        "alt": "Subwoofer Prime plano de 12\" R2SD4-12 — posterior"
       }
     ],
     "destacado": false,
@@ -3293,10 +3293,10 @@
   {
     "sku": "R2SD4-10",
     "slug": "rockford-fosgate-r2sd4-10",
-    "nombre": "Subwoofer Prime R2 de 10\" R2SD4-10",
+    "nombre": "Subwoofer Prime plano de 10\" R2SD4-10",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 10 pulgadas de perfil bajo y doble bobina de 4 ohm",
+    "descripcionCorta": "Subwoofer de 10 pulgadas de perfil plano y doble bobina de 4 ohm",
     "uso": [
       "carro"
     ],
@@ -3366,15 +3366,15 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R2SD4-10_frontal1.109bf8a12733.webp",
-        "alt": "Subwoofer Prime R2 de 10\" R2SD4-10 — frontal1"
+        "alt": "Subwoofer Prime plano de 10\" R2SD4-10 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R2SD4-10_lateral.741b4ca2caa3.webp",
-        "alt": "Subwoofer Prime R2 de 10\" R2SD4-10 — lateral"
+        "alt": "Subwoofer Prime plano de 10\" R2SD4-10 — lateral"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R2SD4-10_posterior.8d0e9e05c9d3.webp",
-        "alt": "Subwoofer Prime R2 de 10\" R2SD4-10 — posterior"
+        "alt": "Subwoofer Prime plano de 10\" R2SD4-10 — posterior"
       }
     ],
     "destacado": false,
@@ -3391,7 +3391,7 @@
   {
     "sku": "M2D4-10IB",
     "slug": "rockford-fosgate-m2d4-10ib",
-    "nombre": "Subwoofer Marine M2 de 10\" M2D4-10IB",
+    "nombre": "Subwoofer Marine de 10\" M2D4-10IB",
     "marca": "Rockford Fosgate",
     "categoria": "Subwoofers",
     "descripcionCorta": "Subwoofer marino de 10 pulgadas de doble bobina de 4 ohm",
@@ -3465,27 +3465,27 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2D4-10IB_frontal1.09f9b3a012c6.webp",
-        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — frontal1"
+        "alt": "Subwoofer Marine de 10\" M2D4-10IB — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2D4-10IB_frontal2.9a77bdf7b912.webp",
-        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — frontal2"
+        "alt": "Subwoofer Marine de 10\" M2D4-10IB — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2D4-10IB_lateral1.b9de47b9676c.webp",
-        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — lateral1"
+        "alt": "Subwoofer Marine de 10\" M2D4-10IB — lateral 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2D4-10IB_lateral2.3e987a60ddcb.webp",
-        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — lateral2"
+        "alt": "Subwoofer Marine de 10\" M2D4-10IB — lateral 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2D4-10IB_piezas.7fb7f612da8c.webp",
-        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — piezas"
+        "alt": "Subwoofer Marine de 10\" M2D4-10IB — piezas"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2D4-10IB_posterior.d0afcd33a066.webp",
-        "alt": "Subwoofer Marine M2 de 10\" M2D4-10IB — posterior"
+        "alt": "Subwoofer Marine de 10\" M2D4-10IB — posterior"
       }
     ],
     "destacado": false,
@@ -3571,15 +3571,15 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_lateral1.857b22d32197.webp",
-        "alt": "Subwoofer amplificado de 12\" VPAS12 — lateral1"
+        "alt": "Subwoofer amplificado de 12\" VPAS12 — lateral 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_lateral2.a047fd571b8d.webp",
-        "alt": "Subwoofer amplificado de 12\" VPAS12 — lateral2"
+        "alt": "Subwoofer amplificado de 12\" VPAS12 — lateral 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VPAS12_lateral3.4774ee41ae95.webp",
-        "alt": "Subwoofer amplificado de 12\" VPAS12 — lateral3"
+        "alt": "Subwoofer amplificado de 12\" VPAS12 — lateral 3"
       }
     ],
     "destacado": false,
@@ -3663,15 +3663,15 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_lateral1.2d2d060ea073.webp",
-        "alt": "Subwoofer amplificado de 10\" VR10 — lateral1"
+        "alt": "Subwoofer amplificado de 10\" VR10 — lateral 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_lateral2.b6f3ef4325f6.webp",
-        "alt": "Subwoofer amplificado de 10\" VR10 — lateral2"
+        "alt": "Subwoofer amplificado de 10\" VR10 — lateral 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/VR10_lateral3.f8b5b427b2c7.webp",
-        "alt": "Subwoofer amplificado de 10\" VR10 — lateral3"
+        "alt": "Subwoofer amplificado de 10\" VR10 — lateral 3"
       }
     ],
     "destacado": true,
@@ -3759,7 +3759,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP12D4_lateral2.92f5438e7184.webp",
-        "alt": "Subwoofer CVP de 12\" CVP12D4 — lateral2"
+        "alt": "Subwoofer CVP de 12\" CVP12D4 — lateral 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP12D4_posterior.814feb88a893.webp",
@@ -3856,7 +3856,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP10D4_lateral2.2d18b04e1a04.webp",
-        "alt": "Subwoofer CVP de 10\" CVP10D4 — lateral2"
+        "alt": "Subwoofer CVP de 10\" CVP10D4 — lateral 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP10D4_posterior.932ed69acdf2.webp",
@@ -4337,7 +4337,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/165%20AS3_frontal2.1fbfe0b50504.webp",
-        "alt": "Componente Access de 6.5\" 165 AS3 — frontal2"
+        "alt": "Componente Access de 6.5\" 165 AS3 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/165%20AS3_lateral.9b2a22c45055.webp",
@@ -4455,7 +4455,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/165%20AS_lateral2.53904963d241.webp",
-        "alt": "Componente Access de 6.5\" 165 AS — lateral2"
+        "alt": "Componente Access de 6.5\" 165 AS — lateral 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/165%20AS_posterior.f673a20466c9.webp",
@@ -4561,7 +4561,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/165%20AC_lateral2.31bcaae51e88.webp",
-        "alt": "Bocinas coaxiales Access de 6.5\" 165 AC — lateral2"
+        "alt": "Bocinas coaxiales Access de 6.5\" 165 AC — lateral 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/165%20AC_posterior.0454aa88f7ca.webp",
@@ -4658,12 +4658,16 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/ASE%20165_completo.192d40b0b70e.jpg",
+        "alt": "Componente Auditor de 6.5\" ASE 165 — completo"
+      },
+      {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/ASE%20165_frontal.c1112979917a.webp",
         "alt": "Componente Auditor de 6.5\" ASE 165 — frontal"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/ASE%20165_frontal2.8bc8157a2165.webp",
-        "alt": "Componente Auditor de 6.5\" ASE 165 — frontal2"
+        "alt": "Componente Auditor de 6.5\" ASE 165 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/ASE%20165_lateral.8941e6214651.webp",
@@ -4773,7 +4777,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/ACX%20165_frontal2.3497a30b6ca8.webp",
-        "alt": "Bocinas coaxiales Auditor de 6.5\" ACX 165 — frontal2"
+        "alt": "Bocinas coaxiales Auditor de 6.5\" ACX 165 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/ACX%20165_lateral.c144cc4eb81c.webp",
@@ -4981,7 +4985,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/ACX%20100_frontal2.95cfe519ba97.webp",
-        "alt": "Bocinas coaxiales Auditor de 4\" ACX 100 — frontal2"
+        "alt": "Bocinas coaxiales Auditor de 4\" ACX 100 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/ACX%20100_lateral.92ee0a34c33f.webp",
@@ -9585,15 +9589,15 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/STADIUM%20192T_frontal2.65c173ca8c73.webp",
-        "alt": "Tweeters Stadium de 3/4\" STADIUM 192T — frontal2"
+        "alt": "Tweeters Stadium de 3/4\" STADIUM 192T — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/STADIUM%20192T_lateral1.b5e336eaf0fb.webp",
-        "alt": "Tweeters Stadium de 3/4\" STADIUM 192T — lateral1"
+        "alt": "Tweeters Stadium de 3/4\" STADIUM 192T — lateral 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/STADIUM%20192T_lateral2.556044df1668.webp",
-        "alt": "Tweeters Stadium de 3/4\" STADIUM 192T — lateral2"
+        "alt": "Tweeters Stadium de 3/4\" STADIUM 192T — lateral 2"
       }
     ],
     "destacado": false,
@@ -9686,11 +9690,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CLUB%206520_frontal1.5c47d20e3368.webp",
-        "alt": "Bocinas coaxiales Club de 6.5\" CLUB 6520 — frontal1"
+        "alt": "Bocinas coaxiales Club de 6.5\" CLUB 6520 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CLUB%206520_frontal2.cb5f7f46048c.webp",
-        "alt": "Bocinas coaxiales Club de 6.5\" CLUB 6520 — frontal2"
+        "alt": "Bocinas coaxiales Club de 6.5\" CLUB 6520 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CLUB%206520_lateral.d79fcf2051bf.webp",
@@ -9784,11 +9788,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/STAGE2%20634_frontal1.c10c3ba191d3.webp",
-        "alt": "Bocinas coaxiales Stage de 6.5\" STAGE2 634 — frontal1"
+        "alt": "Bocinas coaxiales Stage de 6.5\" STAGE2 634 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/STAGE2%20634_frontal2.5e5fc08348c3.webp",
-        "alt": "Bocinas coaxiales Stage de 6.5\" STAGE2 634 — frontal2"
+        "alt": "Bocinas coaxiales Stage de 6.5\" STAGE2 634 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/STAGE2%20634_lateral.d7653478c29a.webp",
@@ -9885,11 +9889,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/STAGE2%2045F_frontal1.f19898eef4d9.webp",
-        "alt": "Bocinas coaxiales de 4\" STAGE2 45F — frontal1"
+        "alt": "Bocinas coaxiales de 4\" STAGE2 45F — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/STAGE2%2045F_frontal2.363fa6ca7f9f.webp",
-        "alt": "Bocinas coaxiales de 4\" STAGE2 45F — frontal2"
+        "alt": "Bocinas coaxiales de 4\" STAGE2 45F — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/STAGE2%2045F_lateral.ac9d97aae2e7.webp",
@@ -9998,11 +10002,11 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T2652-S_frontal1.327bc18a8402.webp",
-        "alt": "Componentes Power T2 de 6.5\" T2652-S — frontal1"
+        "alt": "Componentes Power T2 de 6.5\" T2652-S — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T2652-S_frontal2.6c0db3c3a961.webp",
-        "alt": "Componentes Power T2 de 6.5\" T2652-S — frontal2"
+        "alt": "Componentes Power T2 de 6.5\" T2652-S — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T2652-S_lateral.25d51ebdbbe8.webp",
@@ -10108,11 +10112,11 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1650-S_frontal1.1072d4370d13.webp",
-        "alt": "Componentes Power T1 de 6.5\" T1650-S — frontal1"
+        "alt": "Componentes Power T1 de 6.5\" T1650-S — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1650-S_frontal2.7ef7fcc7ee1a.webp",
-        "alt": "Componentes Power T1 de 6.5\" T1650-S — frontal2"
+        "alt": "Componentes Power T1 de 6.5\" T1650-S — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1650-S_lateral.6294cde06b92.webp",
@@ -10214,11 +10218,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1693_frontal1.925cc0db5bee.webp",
-        "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — frontal1"
+        "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1693_frontal2.16c45d17c2af.webp",
-        "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — frontal2"
+        "alt": "Bocinas coaxiales Power T1 de 6x9\" T1693 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1693_grupal.46e2e0719abf.webp",
@@ -10328,11 +10332,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1650_frontal1.3707b1404b64.webp",
-        "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — frontal1"
+        "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1650_frontal2.df93a18e4878.webp",
-        "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — frontal2"
+        "alt": "Bocinas coaxiales Power T1 de 6.5\" T1650 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1650_grupal.9d4d154d1479.webp",
@@ -10434,11 +10438,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1T-S_frontal1.f1fe4a6c5931.webp",
-        "alt": "Tweeters Power T1 de 1\" T1T-S — frontal1"
+        "alt": "Tweeters Power T1 de 1\" T1T-S — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1T-S_frontal2.0dcdd6dcf3fb.webp",
-        "alt": "Tweeters Power T1 de 1\" T1T-S — frontal2"
+        "alt": "Tweeters Power T1 de 1\" T1T-S — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/T1T-S_grupal.e5830fc13d23.webp",
@@ -10866,11 +10870,11 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P165-SE_frontal1.ae22c43debec.webp",
-        "alt": "Componentes Punch de 6.5\" P165-SE — frontal1"
+        "alt": "Componentes Punch de 6.5\" P165-SE — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P165-SE_frontal2.31e9bf419ca9.webp",
-        "alt": "Componentes Punch de 6.5\" P165-SE — frontal2"
+        "alt": "Componentes Punch de 6.5\" P165-SE — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P165-SE_lateral.535ad834e30d.webp",
@@ -10972,11 +10976,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P1694_frontal1.88ea1f3a2d16.webp",
-        "alt": "Bocinas coaxiales Punch P1 de 6x9\" P1694 — frontal1"
+        "alt": "Bocinas coaxiales Punch P1 de 6x9\" P1694 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P1694_frontal2.9a2ccceb4d0f.webp",
-        "alt": "Bocinas coaxiales Punch P1 de 6x9\" P1694 — frontal2"
+        "alt": "Bocinas coaxiales Punch P1 de 6x9\" P1694 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P1694_grupal.5c4c98226416.webp",
@@ -11082,11 +11086,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P1650_frontal1.af58f699defb.webp",
-        "alt": "Bocinas coaxiales Punch P1 de 6.5\" P1650 — frontal1"
+        "alt": "Bocinas coaxiales Punch P1 de 6.5\" P1650 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P1650_frontal2.ca63bbe9c302.webp",
-        "alt": "Bocinas coaxiales Punch P1 de 6.5\" P1650 — frontal2"
+        "alt": "Bocinas coaxiales Punch P1 de 6.5\" P1650 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P1650_grupal.f9da94c1bba5.webp",
@@ -11612,11 +11616,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PPS4-8_frontal1.268e0f5f258e.webp",
-        "alt": "Bocina de medio rango Punch Pro de 8\" PPS4-8 — frontal1"
+        "alt": "Bocina de medio rango Punch Pro de 8\" PPS4-8 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PPS4-8_frontal2.482a80fd65ab.webp",
-        "alt": "Bocina de medio rango Punch Pro de 8\" PPS4-8 — frontal2"
+        "alt": "Bocina de medio rango Punch Pro de 8\" PPS4-8 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PPS4-8_lateral.bc632f56d1d9.webp",
@@ -11718,11 +11722,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PPS4-6_frontal1.9f2808517c06.webp",
-        "alt": "Bocina de medio rango Punch Pro de 6.5\" PPS4-6 — frontal1"
+        "alt": "Bocina de medio rango Punch Pro de 6.5\" PPS4-6 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PPS4-6_frontal2.afad2fa0335b.webp",
-        "alt": "Bocina de medio rango Punch Pro de 6.5\" PPS4-6 — frontal2"
+        "alt": "Bocina de medio rango Punch Pro de 6.5\" PPS4-6 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PPS4-6_lateral.0a8c1b63b6c0.webp",
@@ -11926,11 +11930,11 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R165-S_frontal1.2aecedbe4e5e.webp",
-        "alt": "Componentes Prime de 6.5\" R165-S — frontal1"
+        "alt": "Componentes Prime de 6.5\" R165-S — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R165-S_frontal2.6127c50ca819.webp",
-        "alt": "Componentes Prime de 6.5\" R165-S — frontal2"
+        "alt": "Componentes Prime de 6.5\" R165-S — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R165-S_lateral.863c9854d354.webp",
@@ -12032,11 +12036,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R169X3_frontal1.425a04a8fe30.webp",
-        "alt": "Bocinas coaxiales Prime de 6x9\" R169X3 — frontal1"
+        "alt": "Bocinas coaxiales Prime de 6x9\" R169X3 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R169X3_frontal2.7667759cadcc.webp",
-        "alt": "Bocinas coaxiales Prime de 6x9\" R169X3 — frontal2"
+        "alt": "Bocinas coaxiales Prime de 6x9\" R169X3 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R169X3_grupal.61f802f976e7.webp",
@@ -12142,11 +12146,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R165X3_frontal1.c7a54834b72a.webp",
-        "alt": "Bocinas coaxiales Prime de 6.5\" R165X3 — frontal1"
+        "alt": "Bocinas coaxiales Prime de 6.5\" R165X3 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R165X3_frontal2.de2f8c9f94fe.webp",
-        "alt": "Bocinas coaxiales Prime de 6.5\" R165X3 — frontal2"
+        "alt": "Bocinas coaxiales Prime de 6.5\" R165X3 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R165X3_grupal.8b78f82f2114.webp",
@@ -12252,11 +12256,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R1525X2_frontal1.f3ec6d4fc379.webp",
-        "alt": "Bocinas coaxiales Prime de 5.25\" R1525X2 — frontal1"
+        "alt": "Bocinas coaxiales Prime de 5.25\" R1525X2 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R1525X2_frontal2.873713b47ab7.webp",
-        "alt": "Bocinas coaxiales Prime de 5.25\" R1525X2 — frontal2"
+        "alt": "Bocinas coaxiales Prime de 5.25\" R1525X2 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R1525X2_grupal.4154c9905698.webp",
@@ -12362,11 +12366,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R14X2_frontal1.7cb2de9f6721.webp",
-        "alt": "Bocinas coaxiales Prime de 4\" R14X2 — frontal1"
+        "alt": "Bocinas coaxiales Prime de 4\" R14X2 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R14X2_frontal2.c9696f8c44b7.webp",
-        "alt": "Bocinas coaxiales Prime de 4\" R14X2 — frontal2"
+        "alt": "Bocinas coaxiales Prime de 4\" R14X2 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/R14X2_grupal.90dbbe628562.webp",
@@ -12583,11 +12587,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2WL-8HB_frontal1.9ce153515b25.webp",
-        "alt": "Bocinas de torre Marine M2 de 8\" M2WL-8HB — frontal1"
+        "alt": "Bocinas de torre Marine M2 de 8\" M2WL-8HB — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2WL-8HB_frontal2.6e231470735a.webp",
-        "alt": "Bocinas de torre Marine M2 de 8\" M2WL-8HB — frontal2"
+        "alt": "Bocinas de torre Marine M2 de 8\" M2WL-8HB — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2WL-8HB_grupal.2db4c2341002.webp",
@@ -12697,11 +12701,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2WL-65MB_frontal1.609a24f846db.webp",
-        "alt": "Bocinas Moto-Can Color Optix M2 de 6.5\" M2WL-65MB — frontal1"
+        "alt": "Bocinas Moto-Can Color Optix M2 de 6.5\" M2WL-65MB — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2WL-65MB_frontal2.cef1ac192ac6.webp",
-        "alt": "Bocinas Moto-Can Color Optix M2 de 6.5\" M2WL-65MB — frontal2"
+        "alt": "Bocinas Moto-Can Color Optix M2 de 6.5\" M2WL-65MB — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2WL-65MB_grupal.aed23c887087.webp",
@@ -12819,11 +12823,11 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2-65B_frontal1.85ee26114971.webp",
-        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — frontal1"
+        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2-65B_frontal2.045591a8f1c2.webp",
-        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — frontal2"
+        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2-65B_grupal.935373d52b29.webp",
@@ -12831,11 +12835,11 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2-65B_lateral1.025192f17b1d.webp",
-        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — lateral1"
+        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — lateral 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M2-65B_lateral2.14a9d67010fc.webp",
-        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — lateral2"
+        "alt": "Bocinas coaxiales Marine de 6.5\" M2 — lateral 2"
       }
     ],
     "destacado": false,
@@ -13040,7 +13044,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/HEDPS69_frontal2.f4f2f475b427.webp",
-        "alt": "Bocinas coaxiales HED Pro Style de 6x9\" HEDPS69 — frontal2"
+        "alt": "Bocinas coaxiales HED Pro Style de 6x9\" HEDPS69 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/HEDPS69_lateral.0024719a7991.webp",
@@ -13142,7 +13146,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/HEDPS65_frontal2.300b7a2e44e7.webp",
-        "alt": "Bocinas coaxiales HED Pro Style de 6.5\" HEDPS65 — frontal2"
+        "alt": "Bocinas coaxiales HED Pro Style de 6.5\" HEDPS65 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/HEDPS65_lateral.fefbb20a71dc.webp",
@@ -13248,7 +13252,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX8_frontal2.804014621ae0.webp",
-        "alt": "Bocinas CVPX de 8\" CVPX8 — frontal2"
+        "alt": "Bocinas CVPX de 8\" CVPX8 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX8_lateral.85c04b802ff8.webp",
@@ -13256,7 +13260,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX8_lateral2.5eb998f91c1a.webp",
-        "alt": "Bocinas CVPX de 8\" CVPX8 — lateral2"
+        "alt": "Bocinas CVPX de 8\" CVPX8 — lateral 2"
       }
     ],
     "destacado": false,
@@ -13354,7 +13358,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX69_frontal2.edbbb74b9ad9.webp",
-        "alt": "Bocinas CVPX de 6x9\" CVPX69 — frontal2"
+        "alt": "Bocinas CVPX de 6x9\" CVPX69 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX69_lateral.9508b827a614.webp",
@@ -13362,7 +13366,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX69_lateral2.42dffe69d688.webp",
-        "alt": "Bocinas CVPX de 6x9\" CVPX69 — lateral2"
+        "alt": "Bocinas CVPX de 6x9\" CVPX69 — lateral 2"
       }
     ],
     "destacado": false,
@@ -13460,7 +13464,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX1_lateral2.451ab57e4e1f.webp",
-        "alt": "Tweeter de bocina CVPX de 1\" CVPX1 — lateral2"
+        "alt": "Tweeter de bocina CVPX de 1\" CVPX1 — lateral 2"
       }
     ],
     "destacado": true,
@@ -14252,11 +14256,11 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/XED57_frontal2.0822d4872477.webp",
-        "alt": "Bocinas coaxiales XED de 5x7\" XED57 — frontal2"
+        "alt": "Bocinas coaxiales XED de 5x7\" XED57 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/XED57_frontalposterior.f9f3394430d8.webp",
-        "alt": "Bocinas coaxiales XED de 5x7\" XED57 — frontalposterior"
+        "alt": "Bocinas coaxiales XED de 5x7\" XED57 — frontal y posterior"
       }
     ],
     "destacado": false,
@@ -14562,7 +14566,7 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/XED42_frontal2.79529f909392.webp",
-        "alt": "Bocinas coaxiales XED de 4\" XED42 — frontal2"
+        "alt": "Bocinas coaxiales XED de 4\" XED42 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/XED42_lateral.2d43ac3c8ad6.webp",
@@ -17841,19 +17845,19 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P400X4_frontal1.69a34b57fac0.webp",
-        "alt": "Amplificador Punch de 4 canales P400X4 — frontal1"
+        "alt": "Amplificador Punch de 4 canales P400X4 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P400X4_frontal2.64d2784734bc.webp",
-        "alt": "Amplificador Punch de 4 canales P400X4 — frontal2"
+        "alt": "Amplificador Punch de 4 canales P400X4 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P400X4_frontal3.28d2fb125aae.webp",
-        "alt": "Amplificador Punch de 4 canales P400X4 — frontal3"
+        "alt": "Amplificador Punch de 4 canales P400X4 — frontal 3"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P400X4_frontal4.d9a7b09ec623.webp",
-        "alt": "Amplificador Punch de 4 canales P400X4 — frontal4"
+        "alt": "Amplificador Punch de 4 canales P400X4 — frontal 4"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/P400X4_lateral.a077d0d322e2.webp",
@@ -17959,19 +17963,19 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PBR300X1_frontal1.772db19566af.webp",
-        "alt": "Amplificador Punch monoblock compacto PBR300X1 — frontal1"
+        "alt": "Amplificador Punch monoblock compacto PBR300X1 — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PBR300X1_frontal2.89d2e9837af7.webp",
-        "alt": "Amplificador Punch monoblock compacto PBR300X1 — frontal2"
+        "alt": "Amplificador Punch monoblock compacto PBR300X1 — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PBR300X1_lateral1.fb7639ac10f4.webp",
-        "alt": "Amplificador Punch monoblock compacto PBR300X1 — lateral1"
+        "alt": "Amplificador Punch monoblock compacto PBR300X1 — lateral 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PBR300X1_lateral2.57a8e919bfdf.webp",
-        "alt": "Amplificador Punch monoblock compacto PBR300X1 — lateral2"
+        "alt": "Amplificador Punch monoblock compacto PBR300X1 — lateral 2"
       }
     ],
     "destacado": false,
@@ -18078,19 +18082,19 @@
     "imagenes": [
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PBR400X4D_frontal1.8a990aec43ec.webp",
-        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — frontal1"
+        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — frontal 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PBR400X4D_frontal2.def1d4c2ca2f.webp",
-        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — frontal2"
+        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — frontal 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PBR400X4D_lateral1.5d8589788324.webp",
-        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — lateral1"
+        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — lateral 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PBR400X4D_lateral2.ffae03b2e4ea.webp",
-        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — lateral2"
+        "alt": "Amplificador Punch de 4 canales compacto PBR400X4D — lateral 2"
       }
     ],
     "destacado": false,
@@ -18915,15 +18919,15 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M5-1500X5_lateral1.9b603726c2b4.webp",
-        "alt": "Amplificador Marine de 5 canales M5-1500X5 — lateral1"
+        "alt": "Amplificador Marine de 5 canales M5-1500X5 — lateral 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M5-1500X5_lateral2.c6cb23f2c267.webp",
-        "alt": "Amplificador Marine de 5 canales M5-1500X5 — lateral2"
+        "alt": "Amplificador Marine de 5 canales M5-1500X5 — lateral 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/M5-1500X5_lateral3.8d934ccd0f5d.webp",
-        "alt": "Amplificador Marine de 5 canales M5-1500X5 — lateral3"
+        "alt": "Amplificador Marine de 5 canales M5-1500X5 — lateral 3"
       }
     ],
     "destacado": false,
@@ -20486,11 +20490,11 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PMX-HD9813_instalada1.2b7c8461f04e.webp",
-        "alt": "Receptor para Harley-Davidson PMX-HD9813 — instalada1"
+        "alt": "Receptor para Harley-Davidson PMX-HD9813 — instalada 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PMX-HD9813_instalada2.bc0c355cca59.jpg",
-        "alt": "Receptor para Harley-Davidson PMX-HD9813 — instalada2"
+        "alt": "Receptor para Harley-Davidson PMX-HD9813 — instalada 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/PMX-HD9813_lateral.94e42ac60aed.webp",
@@ -22151,7 +22155,7 @@
     "specsDestacadas": [
       {
         "etiqueta": "Calibre",
-        "valor": "4 AWG"
+        "valor": "0 AWG"
       },
       {
         "etiqueta": "Material del conductor",
@@ -22165,7 +22169,7 @@
     "specsFicha": [
       {
         "etiqueta": "Calibre",
-        "valor": "4 AWG"
+        "valor": "0 AWG"
       },
       {
         "etiqueta": "Material del conductor",
@@ -22207,7 +22211,7 @@
     "destacado": false,
     "activo": true,
     "atributos": {
-      "calibre_awg": 4,
+      "calibre_awg": 0,
       "material_conductor": "cca",
       "capacidad_w": 2500
     }
@@ -22671,8 +22675,8 @@
         "valor": "Cobre"
       },
       {
-        "etiqueta": "Portafusible",
-        "valor": "Tipo AGU, con fusible de 60 A"
+        "etiqueta": "Capacidad recomendada",
+        "valor": "Hasta 1,200 W"
       }
     ],
     "specsFicha": [
@@ -22683,6 +22687,10 @@
       {
         "etiqueta": "Material del conductor",
         "valor": "Cobre"
+      },
+      {
+        "etiqueta": "Capacidad recomendada",
+        "valor": "Hasta 1,200 W"
       },
       {
         "etiqueta": "Portafusible",
@@ -22726,7 +22734,8 @@
     "activo": true,
     "atributos": {
       "calibre_awg": 8,
-      "material_conductor": "cobre"
+      "material_conductor": "cobre",
+      "capacidad_w": 1200
     }
   },
   {
@@ -26857,15 +26866,15 @@
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/RZR19PXP-STG6_instalado1.28d87bfe52ad.webp",
-        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — instalado1"
+        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — instalado 1"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/RZR19PXP-STG6_instalado2.5f7c0fcf9e3b.jpg",
-        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — instalado2"
+        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — instalado 2"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/RZR19PXP-STG6_instalado3.714444c572f5.webp",
-        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — instalado3"
+        "alt": "Sistema Stage 6 para Polaris RZR Pro XP — instalado 3"
       },
       {
         "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/RZR19PXP-STG6_localizaciones.1f7325d1c10c.webp",
@@ -27188,7 +27197,7 @@
     "categoriasSecundarias": [
       "Subwoofers"
     ],
-    "descripcionCorta": "Cajón ventilado con dos subwoofers de 12 pulgadas e impedancia seleccionable",
+    "descripcionCorta": "Cajón con dos subwoofers de 12 pulgadas e impedancia seleccionable",
     "uso": [
       "carro"
     ],
@@ -27260,7 +27269,7 @@
     "categoriasSecundarias": [
       "Subwoofers"
     ],
-    "descripcionCorta": "Cajón ventilado con un subwoofer de 12 pulgadas e impedancia seleccionable",
+    "descripcionCorta": "Cajón con un subwoofer de 12 pulgadas e impedancia seleccionable",
     "uso": [
       "carro"
     ],
@@ -27332,7 +27341,7 @@
     "categoriasSecundarias": [
       "Subwoofers"
     ],
-    "descripcionCorta": "Cajón ventilado con dos subwoofers de 12 pulgadas y amplificador SRX600.1V incluido",
+    "descripcionCorta": "Cajón con dos subwoofers de 12 pulgadas y amplificador SRX600.1V incluido",
     "uso": [
       "carro"
     ],
@@ -27400,7 +27409,7 @@
     "categoriasSecundarias": [
       "Subwoofers"
     ],
-    "descripcionCorta": "Cajón ventilado con subwoofer de 12 pulgadas y amplificador de 300 W integrado",
+    "descripcionCorta": "Cajón con subwoofer de 12 pulgadas y amplificador de 300 W integrado",
     "uso": [
       "carro"
     ],
