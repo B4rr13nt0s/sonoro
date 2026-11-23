@@ -1,8 +1,8 @@
 {
   "catalogo": {
-    "total": 320,
+    "total": 319,
     "porFiltro": {
-      "cerwin-vega": 44,
+      "cerwin-vega": 43,
       "focal": 7,
       "jbl": 4,
       "kbt": 74,
@@ -40,9 +40,9 @@
       }
     },
     "subwoofers": {
-      "total": 56,
+      "total": 55,
       "porFiltro": {
-        "cerwin-vega": 5,
+        "cerwin-vega": 4,
         "focal": 0,
         "jbl": 0,
         "kbt": 14,
@@ -133,10 +133,10 @@
   },
   "marcas": {
     "cerwin-vega": {
-      "total": 44,
+      "total": 43,
       "porFiltro": {
         "bocinas": 17,
-        "subwoofers": 5,
+        "subwoofers": 4,
         "amplificadores": 0,
         "receptores": 0,
         "ecualizadores": 4,

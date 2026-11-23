@@ -80,5 +80,11 @@
     "nombre": "Rings V3 - Kit de sellado para bocinas",
     "motivo": "Código corregido a SPEAKER RINGS en el libro (octubre de 2026); el slug no cambió.",
     "reemplazo": "soundskins-spk-rings-v3"
+  },
+  {
+    "sku": "CVP10D4",
+    "slug": "cerwin-vega-cvp10d4",
+    "nombre": "Subwoofer CVP de 10\" CVP10D4",
+    "motivo": "Sonoro dejó de manejarlo (noviembre de 2026); su fila salió del libro."
   }
 ]

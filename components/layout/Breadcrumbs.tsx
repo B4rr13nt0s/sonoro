@@ -17,8 +17,12 @@ export type Miga = { label: string; href?: string };
 //
 // Emite también el BreadcrumbList en JSON-LD, desde la misma lista: así
 // nunca marca algo distinto de lo que se ve.
-export function Breadcrumbs({ items }: { items: Miga[] }) {
-  const jsonLd = buildBreadcrumbJsonLd(items);
+//
+// `conJsonLd={false}` es para la segunda copia de una misma ruta en la misma
+// página (la ficha de producto dibuja una copia solo para móvil encima de las
+// fotos): dos BreadcrumbList idénticos son marcado duplicado.
+export function Breadcrumbs({ items, conJsonLd = true }: { items: Miga[]; conJsonLd?: boolean }) {
+  const jsonLd = conJsonLd ? buildBreadcrumbJsonLd(items) : null;
 
   return (
     <div className="text-texto-terciario font-mono text-[11px] tracking-[0.14em] uppercase">

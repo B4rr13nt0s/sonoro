@@ -74,11 +74,11 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/TS-W312D4_frontal.d5a666254ea7.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/TS-W312D4_frontal.b1ebb21d4f3b.webp",
         "alt": "Subwoofer Champion Series de 12\" TS-W312D4 — frontal"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/TS-W312D4_trasera.5f4468404d07.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/TS-W312D4_trasera.e9830f0fd663.webp",
         "alt": "Subwoofer Champion Series de 12\" TS-W312D4 — trasera"
       }
     ],
@@ -3750,19 +3750,19 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP12D4_frontal.9a386a3282cf.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP12D4_frontal.5a5884adf1df.webp",
         "alt": "Subwoofer CVP de 12\" CVP12D4 — frontal"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP12D4_lateral.aa8c86ac2b1c.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP12D4_lateral.ecc6cbbe320c.webp",
         "alt": "Subwoofer CVP de 12\" CVP12D4 — lateral"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP12D4_lateral2.92f5438e7184.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP12D4_lateral2.221d4282535b.webp",
         "alt": "Subwoofer CVP de 12\" CVP12D4 — lateral 2"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP12D4_posterior.814feb88a893.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP12D4_posterior.20216eeca8b6.webp",
         "alt": "Subwoofer CVP de 12\" CVP12D4 — posterior"
       }
     ],
@@ -3774,104 +3774,6 @@
       "impedancia_ohm": 4,
       "bobinas": "doble",
       "sensibilidad_db": 86.8
-    }
-  },
-  {
-    "sku": "CVP10D4",
-    "slug": "cerwin-vega-cvp10d4",
-    "nombre": "Subwoofer CVP de 10\" CVP10D4",
-    "marca": "Cerwin Vega",
-    "categoria": "Subwoofers",
-    "descripcionCorta": "Subwoofer de 10 pulgadas de doble bobina de 4 ohm",
-    "uso": [
-      "carro"
-    ],
-    "specsDestacadas": [
-      {
-        "etiqueta": "Diámetro",
-        "valor": "10\" (25 cm)"
-      },
-      {
-        "etiqueta": "Potencia RMS",
-        "valor": "150 W"
-      },
-      {
-        "etiqueta": "Impedancia",
-        "valor": "Doble bobina de 4 Ω"
-      }
-    ],
-    "specsFicha": [
-      {
-        "etiqueta": "Diámetro",
-        "valor": "10\" (25 cm)"
-      },
-      {
-        "etiqueta": "Potencia RMS",
-        "valor": "150 W"
-      },
-      {
-        "etiqueta": "Impedancia",
-        "valor": "Doble bobina de 4 Ω"
-      },
-      {
-        "etiqueta": "Profundidad de montaje",
-        "valor": "128 mm"
-      },
-      {
-        "etiqueta": "Sensibilidad",
-        "valor": "87.1 dB"
-      },
-      {
-        "etiqueta": "Potencia máxima",
-        "valor": "450 W"
-      },
-      {
-        "etiqueta": "Construcción",
-        "valor": "Canasta de acero estampado, imán de ferrita"
-      },
-      {
-        "etiqueta": "Línea",
-        "valor": "CVP"
-      },
-      {
-        "etiqueta": "Diámetro de corte",
-        "valor": "236 mm"
-      },
-      {
-        "etiqueta": "Respuesta en frecuencia",
-        "valor": "34 Hz – 500 Hz"
-      }
-    ],
-    "precioCents": 95000,
-    "moneda": "GTQ",
-    "disponibilidad": "disponible",
-    "imagenes": [
-      {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP10D4_frontal.f1fba5fa0cb7.webp",
-        "alt": "Subwoofer CVP de 10\" CVP10D4 — frontal"
-      },
-      {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP10D4_lateral.9e4a4d3f69c5.webp",
-        "alt": "Subwoofer CVP de 10\" CVP10D4 — lateral"
-      },
-      {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP10D4_lateral2.2d18b04e1a04.webp",
-        "alt": "Subwoofer CVP de 10\" CVP10D4 — lateral 2"
-      },
-      {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVP10D4_posterior.932ed69acdf2.webp",
-        "alt": "Subwoofer CVP de 10\" CVP10D4 — posterior"
-      }
-    ],
-    "destacado": false,
-    "activo": true,
-    "atributos": {
-      "medida": "10\"",
-      "potencia_rms_w": 150,
-      "impedancia_ohm": 4,
-      "bobinas": "doble",
-      "profundidad_mm": 128,
-      "sensibilidad_db": 87.1
     }
   },
   {
@@ -13353,19 +13255,19 @@
     "disponibilidad": "disponible",
     "imagenes": [
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX69_frontal.e3b8e3f1dc09.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX69_frontal.2ad73142a0f6.webp",
         "alt": "Bocinas CVPX de 6x9\" CVPX69 — frontal"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX69_frontal2.edbbb74b9ad9.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX69_frontal2.9f3ec2a08ccc.webp",
         "alt": "Bocinas CVPX de 6x9\" CVPX69 — frontal 2"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX69_lateral.9508b827a614.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX69_lateral.de84ce51ee8e.webp",
         "alt": "Bocinas CVPX de 6x9\" CVPX69 — lateral"
       },
       {
-        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX69_lateral2.42dffe69d688.webp",
+        "url": "https://b7hb9bqpa9tgh6mi.public.blob.vercel-storage.com/productos/CVPX69_lateral2.afa3cdfcb7a6.webp",
         "alt": "Bocinas CVPX de 6x9\" CVPX69 — lateral 2"
       }
     ],
@@ -27197,7 +27099,7 @@
     "categoriasSecundarias": [
       "Subwoofers"
     ],
-    "descripcionCorta": "Cajón con dos subwoofers de 12 pulgadas e impedancia seleccionable",
+    "descripcionCorta": "Cajón ventilado con dos subwoofers de 12 pulgadas e impedancia seleccionable",
     "uso": [
       "carro"
     ],
@@ -27269,7 +27171,7 @@
     "categoriasSecundarias": [
       "Subwoofers"
     ],
-    "descripcionCorta": "Cajón con un subwoofer de 12 pulgadas e impedancia seleccionable",
+    "descripcionCorta": "Cajón ventilado con un subwoofer de 12 pulgadas e impedancia seleccionable",
     "uso": [
       "carro"
     ],
@@ -27341,7 +27243,7 @@
     "categoriasSecundarias": [
       "Subwoofers"
     ],
-    "descripcionCorta": "Cajón con dos subwoofers de 12 pulgadas y amplificador SRX600.1V incluido",
+    "descripcionCorta": "Cajón ventilado con dos subwoofers de 12 pulgadas y amplificador SRX600.1V incluido",
     "uso": [
       "carro"
     ],
@@ -27409,7 +27311,7 @@
     "categoriasSecundarias": [
       "Subwoofers"
     ],
-    "descripcionCorta": "Cajón con subwoofer de 12 pulgadas y amplificador de 300 W integrado",
+    "descripcionCorta": "Cajón ventilado con subwoofer de 12 pulgadas y amplificador de 300 W integrado",
     "uso": [
       "carro"
     ],
