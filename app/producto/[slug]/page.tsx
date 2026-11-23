@@ -147,6 +147,23 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
   // orden del arreglo, sin reordenar.
   const tarjetas = [...producto.specsDestacadas, { etiqueta: "Código", valor: producto.sku }];
 
+  // CLAUDE.md § Breadcrumbs: "en ficha de producto terminan en la marca, no en
+  // el nombre del producto" — a diferencia de /catalogo/[categoria] y
+  // /marcas/[marca], ningún segmento acá es "la página actual" (esta es la
+  // ficha del producto, no la de categoría ni la de marca), así que los tres
+  // son navegables.
+  const migas = [
+    { label: "Inicio", href: "/" },
+    {
+      label: producto.categoria,
+      href: categoriaSlug ? buildCatalogHref(categoriaSlug, {}) : undefined,
+    },
+    {
+      label: producto.marca,
+      href: marcaSlug ? buildMarcaHref(marcaSlug, {}) : undefined,
+    },
+  ];
+
   return (
     <div className="flex flex-col">
       <script {...jsonLdScriptProps(buildProductJsonLd(producto))} />
@@ -163,28 +180,23 @@ export default async function ProductoPage(props: PageProps<"/producto/[slug]">)
           todo se apila en este orden. El ancho máximo y los márgenes dejan el
           contenido centrado, no pegado a las orillas. */}
       <div className="mx-auto grid w-full max-w-[1520px] grid-cols-1 gap-x-12 px-6 py-8 sm:px-12 lg:grid-cols-[minmax(0,600px)_minmax(0,1fr)] lg:gap-x-20">
+        {/* Móvil: la ruta va ARRIBA de las fotos (pedido del negocio,
+            noviembre de 2026). En escritorio esta copia no se dibuja y la ruta
+            sigue donde estaba, en el panel de información. Son dos copias
+            porque la rejilla apila en el orden del documento y el panel viene
+            después de la galería; solo una se ve a la vez (`hidden`/`lg:hidden`
+            las sacan del árbol de accesibilidad) y solo la del panel lleva el
+            JSON-LD. */}
+        <div className="pb-4 lg:hidden">
+          <Breadcrumbs items={migas} conJsonLd={false} />
+        </div>
+
         <ProductGallery imagenes={producto.imagenes} nombre={producto.nombre} />
 
         <div className="flex flex-col gap-5 pt-6 lg:col-start-2 lg:row-start-1 lg:pt-3">
-          {/* CLAUDE.md § Breadcrumbs: "en ficha de producto terminan en la
-              marca, no en el nombre del producto" — a diferencia de
-              /catalogo/[categoria] y /marcas/[marca], ningún segmento acá
-              es "la página actual" (esta es la ficha del producto, no la
-              de categoría ni la de marca), así que los tres son
-              navegables. */}
-          <Breadcrumbs
-            items={[
-              { label: "Inicio", href: "/" },
-              {
-                label: producto.categoria,
-                href: categoriaSlug ? buildCatalogHref(categoriaSlug, {}) : undefined,
-              },
-              {
-                label: producto.marca,
-                href: marcaSlug ? buildMarcaHref(marcaSlug, {}) : undefined,
-              },
-            ]}
-          />
+          <div className="hidden lg:block">
+            <Breadcrumbs items={migas} />
+          </div>
 
           <h1 className="text-40 leading-[1.1] font-semibold tracking-[-0.03em]">
             {producto.nombre}

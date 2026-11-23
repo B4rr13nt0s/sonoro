@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { LanzadorChat } from "@/components/chat/LanzadorChat";
-import { BotonVolver } from "@/components/layout/BotonVolver";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { CartProvider } from "@/lib/cart/index.ts";
@@ -137,9 +136,6 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             Saltar al contenido
           </a>
           <SiteHeader />
-          {/* Fuera de <main>: el enlace «Saltar al contenido» cae directo en lo
-              que vino a leer, no en este botón. */}
-          <BotonVolver />
           <main id="contenido" className="flex flex-1 flex-col">
             {children}
           </main>
