@@ -5,7 +5,6 @@
 // unitario Y total de la línea, y no lleva Ref ni se registra en la hoja. Por
 // eso tiene su propia línea y no reusa `formatearLinea` (lib/whatsapp), que
 // pone el sku entre paréntesis y el unitario solo si hay más de una unidad.
-import { ENVIO_POR_COBRAR, envioGratis } from "../cart/envio.ts";
 import { marcaDisponibilidad } from "../catalog/disponibilidad.ts";
 import type { Disponibilidad } from "../catalog/types.ts";
 import { formatQ } from "../format/precio.ts";
@@ -29,14 +28,17 @@ function nombreConCodigo(nombre: string, sku: string): string {
   return nombre.toUpperCase().includes(sku.toUpperCase()) ? nombre : `${nombre} ${sku}`;
 }
 
-export function lineaCotizacion(linea: LineaCotizacion): string {
-  const total = linea.qty * linea.unitPriceCents;
+// `mostrarPrecios` en false (la casilla «Mostrar precios individuales» del
+// cotizador, apagada) deja la línea en cantidad y nombre: el cliente ve solo el
+// total de abajo, útil para cotizar un paquete sin desglose. La marca de
+// «bajo pedido» se queda, porque no es un precio.
+export function lineaCotizacion(linea: LineaCotizacion, mostrarPrecios = true): string {
   const estado = marcaDisponibilidad(linea.disponibilidad);
   const marca = estado ? ` · ${estado}` : "";
-  return (
-    `${linea.qty}x ${nombreConCodigo(linea.nombre, linea.sku)}` +
-    ` — ${formatQ(linea.unitPriceCents)} c/u — ${formatQ(total)}${marca}`
-  );
+  const producto = `${linea.qty}x ${nombreConCodigo(linea.nombre, linea.sku)}`;
+  if (!mostrarPrecios) return `${producto}${marca}`;
+  const total = linea.qty * linea.unitPriceCents;
+  return `${producto} — ${formatQ(linea.unitPriceCents)} c/u — ${formatQ(total)}${marca}`;
 }
 
 // Una sola línea y de largo acotado: un salto de línea en el campo «Cliente»
@@ -49,21 +51,23 @@ function normalizarCliente(cliente: string): string {
 export function buildQuoteMessage(params: {
   cliente: string;
   lineas: readonly LineaCotizacion[];
+  /** Por defecto `true`. En `false`, las líneas van sin precio y solo queda el total. */
+  mostrarPrecios?: boolean;
 }): string {
-  const { lineas } = params;
+  const { lineas, mostrarPrecios = true } = params;
   if (lineas.length === 0) return "";
 
   const cliente = normalizarCliente(params.cliente);
-  const subtotal = lineas.reduce((suma, l) => suma + l.qty * l.unitPriceCents, 0);
+  const total = lineas.reduce((suma, l) => suma + l.qty * l.unitPriceCents, 0);
 
+  // El pie es solo el total: sin subtotal, sin línea de envío y sin la leyenda
+  // del IVA (decisión de Byron, noviembre de 2026). El precio sigue siendo con
+  // IVA; lo que ya no hace el mensaje es decirlo.
   return [
     cliente ? `Cotización Sonoro para ${cliente}:` : "Cotización Sonoro:",
     "",
-    ...lineas.map(lineaCotizacion),
+    ...lineas.map((linea) => lineaCotizacion(linea, mostrarPrecios)),
     "",
-    `Subtotal: ${formatQ(subtotal)}`,
-    `Envío: ${envioGratis(subtotal) ? "gratis" : ENVIO_POR_COBRAR}`,
-    `Total: ${formatQ(subtotal)}`,
-    "Precios con IVA incluido.",
+    `Total: ${formatQ(total)}`,
   ].join("\n");
 }

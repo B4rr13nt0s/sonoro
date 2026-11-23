@@ -72,7 +72,10 @@ test("con la contraseña correcta se arma la cotización y se copia", async ({ p
   await expect(page.getByRole("button", { name: "Copiado" })).toBeVisible();
   const portapapeles = await page.evaluate(() => navigator.clipboard.readText());
   expect(portapapeles).toMatch(LINEA);
-  expect(portapapeles).toContain("Precios con IVA incluido.");
+  // El pie es solo el total: sin subtotal, sin envío y sin la leyenda del IVA.
+  // (Windows devuelve los saltos del portapapeles como \r\n.)
+  expect(portapapeles).toMatch(/\r?\n\r?\nTotal: Q\s[\d,]+\.\d{2}$/);
+  expect(portapapeles).not.toMatch(/Subtotal|Env[ií]o|IVA/);
 });
 
 test("recargar conserva el borrador", async ({ page }) => {
@@ -80,11 +83,58 @@ test("recargar conserva el borrador", async ({ page }) => {
   await agregarProducto(page);
   await expect(cuadroMensaje(page)).toHaveValue(LINEA);
   await expect
-    .poll(() => page.evaluate(() => localStorage.getItem("sonoro:cotizador")))
+    .poll(() => page.evaluate(() => sessionStorage.getItem("sonoro:cotizador")))
     .toContain("TS-W312D4");
 
   await page.reload();
   await expect(cuadroMensaje(page)).toHaveValue(LINEA);
+});
+
+// Cada pestaña del navegador es una cotización aparte: el borrador vive en
+// sessionStorage, que no se comparte entre pestañas (localStorage sí, y ahí la
+// última en guardar pisaba a las demás). Las dos pestañas son del MISMO
+// contexto: comparten cookie de sesión y localStorage, como dos pestañas reales.
+test("dos pestañas son dos cotizaciones distintas", async ({ page, context }) => {
+  await entrar(page);
+  await page.getByLabel("Cliente (opcional)").fill("Ana");
+  await agregarProducto(page);
+  await expect(cuadroMensaje(page)).toHaveValue(/^Cotización Sonoro para Ana:/);
+
+  const otra = await context.newPage();
+  await otra.route(/\/_next\/image/, (ruta) => ruta.abort());
+  await otra.goto("/cotizador");
+  await expect(otra.getByRole("textbox", { name: "Buscar productos" })).toBeVisible();
+  // La pestaña nueva arranca vacía: no hereda la cotización de la primera.
+  await expect(cuadroMensaje(otra)).toHaveValue("");
+  await expect(otra.getByLabel("Cliente (opcional)")).toHaveValue("");
+
+  await otra.getByLabel("Cliente (opcional)").fill("Beto");
+  await agregarProducto(otra);
+  await expect(cuadroMensaje(otra)).toHaveValue(/^Cotización Sonoro para Beto:/);
+
+  // Recargar cada una devuelve SU cotización, no la de la otra.
+  await page.reload();
+  await expect(cuadroMensaje(page)).toHaveValue(/^Cotización Sonoro para Ana:/);
+  await otra.reload();
+  await expect(cuadroMensaje(otra)).toHaveValue(/^Cotización Sonoro para Beto:/);
+});
+
+// El borrador de antes vivía en localStorage. Una pestaña nueva no debe
+// heredarlo, y se borra para no dejar para siempre en el navegador una
+// cotización —con el nombre de un cliente— que nada vuelve a leer.
+test("el borrador viejo de localStorage no se hereda y se borra", async ({ page }) => {
+  await entrar(page);
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "sonoro:cotizador",
+      JSON.stringify({ cliente: "Viejo", lineas: [{ sku: "TS-W312D4", qty: 1 }] }),
+    ),
+  );
+
+  await page.reload();
+  await expect(page.getByRole("textbox", { name: "Buscar productos" })).toBeVisible();
+  await expect(cuadroMensaje(page)).toHaveValue("");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("sonoro:cotizador"))).toBeNull();
 });
 
 test("vaciar deja el mensaje en blanco y Copiar deshabilitado", async ({ page }) => {
@@ -95,6 +145,35 @@ test("vaciar deja el mensaje en blanco y Copiar deshabilitado", async ({ page })
   await page.getByRole("button", { name: "Vaciar" }).click();
   await expect(cuadroMensaje(page)).toHaveValue("");
   await expect(page.getByRole("button", { name: "Copiar" })).toBeDisabled();
+});
+
+test("la casilla de precios individuales quita los precios de las líneas, no el total", async ({
+  page,
+}) => {
+  await entrar(page);
+  await agregarProducto(page);
+  const casilla = page.getByRole("checkbox", { name: "Mostrar precios individuales" });
+  // Activada de entrada: así se veía la cotización antes de la casilla.
+  await expect(casilla).toBeChecked();
+  await expect(cuadroMensaje(page)).toHaveValue(LINEA);
+
+  await casilla.uncheck();
+  await expect(cuadroMensaje(page)).toHaveValue(new RegExp(`^.*\\n\\n1x ${escapar(PRODUCTO)}\\n`));
+  const mensaje = await cuadroMensaje(page).inputValue();
+  expect(mensaje).not.toContain("c/u");
+  expect(mensaje).toContain("Total: Q");
+
+  // Es parte de la cotización de ESTA pestaña: recargar la conserva...
+  await expect
+    .poll(() => page.evaluate(() => sessionStorage.getItem("sonoro:cotizador")))
+    .toContain('"mostrarPrecios":false');
+  await page.reload();
+  await expect(casilla).not.toBeChecked();
+  await expect(cuadroMensaje(page)).not.toHaveValue(/c\/u/);
+
+  // ...y «Vaciar» empieza una cotización nueva, que vuelve a mostrar los precios.
+  await page.getByRole("button", { name: "Vaciar" }).click();
+  await expect(casilla).toBeChecked();
 });
 
 test("salir cierra la sesión", async ({ page }) => {

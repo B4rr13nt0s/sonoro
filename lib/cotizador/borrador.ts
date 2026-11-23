@@ -5,7 +5,8 @@
 // un precio viejo (docs/superpowers/specs/2026-11-16-cotizador-design.md).
 //
 // No toca el carrito: es un estado aparte, con su propia clave de
-// localStorage. El reductor es puro; leer y guardar reciben el almacén como
+// sessionStorage (una cotización por pestaña; lo decide quien llama, componente
+// Cotizador). El reductor es puro; leer y guardar reciben el almacén como
 // argumento para probarlos sin navegador.
 import { z } from "zod";
 
@@ -14,15 +15,21 @@ import { MAX_CANTIDAD_POR_LINEA } from "../cart/types.ts";
 import { MAX_CLIENTE, type LineaCotizacion } from "./mensaje.ts";
 
 export type LineaBorrador = { sku: string; qty: number };
-export type Borrador = { cliente: string; lineas: LineaBorrador[] };
+export type Borrador = {
+  cliente: string;
+  lineas: LineaBorrador[];
+  /** La casilla «Mostrar precios individuales»: apagada, las líneas del mensaje van sin precio. */
+  mostrarPrecios: boolean;
+};
 
-export const BORRADOR_VACIO: Borrador = { cliente: "", lineas: [] };
+export const BORRADOR_VACIO: Borrador = { cliente: "", lineas: [], mostrarPrecios: true };
 
 export type AccionBorrador =
   | { type: "agregar"; sku: string }
   | { type: "cantidad"; sku: string; qty: number }
   | { type: "quitar"; sku: string }
   | { type: "cliente"; texto: string }
+  | { type: "precios"; mostrar: boolean }
   | { type: "vaciar" }
   | { type: "cargar"; borrador: Borrador };
 
@@ -54,7 +61,10 @@ export function borradorReducer(borrador: Borrador, accion: AccionBorrador): Bor
       return { ...borrador, lineas: borrador.lineas.filter((l) => l.sku !== accion.sku) };
     case "cliente":
       return { ...borrador, cliente: accion.texto.slice(0, MAX_CLIENTE) };
+    case "precios":
+      return { ...borrador, mostrarPrecios: accion.mostrar };
     case "vaciar":
+      // Una cotización nueva: también vuelve a mostrar los precios.
       return BORRADOR_VACIO;
     case "cargar":
       return accion.borrador;
@@ -113,6 +123,9 @@ const BorradorSchema = z.object({
       }),
     )
     .max(MAX_LINEAS),
+  // Un borrador guardado antes de que existiera la casilla no trae el campo:
+  // se lee como «mostrar», que es como se veía.
+  mostrarPrecios: z.boolean().default(true),
 });
 
 /** Nunca lanza: modo privado, JSON corrupto o cantidades fuera de rango dan el borrador vacío. */

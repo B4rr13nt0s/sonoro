@@ -43,7 +43,7 @@ test("agregar suma de a una unidad y crea la línea en 1", () => {
 });
 
 test("una línea no pasa de 99 unidades", () => {
-  let b: Borrador = { cliente: "", lineas: [{ sku: "A1", qty: 99 }] };
+  let b: Borrador = { cliente: "", lineas: [{ sku: "A1", qty: 99 }], mostrarPrecios: true };
   b = borradorReducer(b, { type: "agregar", sku: "A1" });
   assert.equal(b.lineas[0].qty, 99);
   b = borradorReducer(b, { type: "cantidad", sku: "A1", qty: 150 });
@@ -51,7 +51,7 @@ test("una línea no pasa de 99 unidades", () => {
 });
 
 test("cantidad cambia la línea; 0 o menos la quita; sobre una línea inexistente no hace nada", () => {
-  const base: Borrador = { cliente: "", lineas: [{ sku: "A1", qty: 3 }] };
+  const base: Borrador = { cliente: "", lineas: [{ sku: "A1", qty: 3 }], mostrarPrecios: true };
   assert.deepEqual(borradorReducer(base, { type: "cantidad", sku: "A1", qty: 5 }).lineas, [
     { sku: "A1", qty: 5 },
   ]);
@@ -67,6 +67,7 @@ test("quitar saca la línea", () => {
       { sku: "A1", qty: 1 },
       { sku: "B2", qty: 2 },
     ],
+    mostrarPrecios: true,
   };
   assert.deepEqual(borradorReducer(base, { type: "quitar", sku: "A1" }).lineas, [
     { sku: "B2", qty: 2 },
@@ -78,14 +79,37 @@ test("el cliente se corta a 80 caracteres", () => {
   assert.equal(b.cliente.length, 80);
 });
 
-test("vaciar borra las líneas y también el cliente", () => {
-  const base: Borrador = { cliente: "Juan", lineas: [{ sku: "A1", qty: 2 }] };
+test("vaciar borra las líneas y el cliente, y vuelve a mostrar los precios", () => {
+  const base: Borrador = {
+    cliente: "Juan",
+    lineas: [{ sku: "A1", qty: 2 }],
+    mostrarPrecios: false,
+  };
   assert.deepEqual(borradorReducer(base, { type: "vaciar" }), BORRADOR_VACIO);
 });
 
 test("cargar reemplaza el borrador", () => {
-  const cargado: Borrador = { cliente: "Ana", lineas: [{ sku: "B2", qty: 4 }] };
+  const cargado: Borrador = {
+    cliente: "Ana",
+    lineas: [{ sku: "B2", qty: 4 }],
+    mostrarPrecios: false,
+  };
   assert.deepEqual(borradorReducer(BORRADOR_VACIO, { type: "cargar", borrador: cargado }), cargado);
+});
+
+test("una cotización nueva muestra los precios individuales", () => {
+  assert.equal(BORRADOR_VACIO.mostrarPrecios, true);
+});
+
+test("precios apaga y enciende los precios individuales sin tocar lo demás", () => {
+  const base: Borrador = {
+    cliente: "Juan",
+    lineas: [{ sku: "A1", qty: 2 }],
+    mostrarPrecios: true,
+  };
+  const sin = borradorReducer(base, { type: "precios", mostrar: false });
+  assert.deepEqual(sin, { ...base, mostrarPrecios: false });
+  assert.deepEqual(borradorReducer(sin, { type: "precios", mostrar: true }), base);
 });
 
 // --- resolver ---------------------------------------------------------------
@@ -98,6 +122,7 @@ test("el precio, el nombre y la disponibilidad salen del catálogo, no del borra
         { sku: "B2", qty: 2 },
         { sku: "A1", qty: 1 },
       ],
+      mostrarPrecios: true,
     },
     CATALOGO,
   );
@@ -129,6 +154,7 @@ test("un sku que no está en el catálogo o que se agotó va a quitados", () => 
         { sku: "NO-EXISTE", qty: 1 },
         { sku: "C3", qty: 2 },
       ],
+      mostrarPrecios: true,
     },
     CATALOGO,
   );
@@ -143,10 +169,36 @@ test("un sku que no está en el catálogo o que se agotó va a quitados", () => 
 
 test("guardar y leer dan el mismo borrador", () => {
   const almacen = almacenFalso();
-  const borrador: Borrador = { cliente: "Juan Pérez", lineas: [{ sku: "A1", qty: 3 }] };
+  const borrador: Borrador = {
+    cliente: "Juan Pérez",
+    lineas: [{ sku: "A1", qty: 3 }],
+    mostrarPrecios: true,
+  };
   guardarBorrador(almacen, borrador);
   assert.ok(CLAVE_BORRADOR in almacen.datos);
   assert.deepEqual(leerBorrador(almacen), borrador);
+});
+
+test("la casilla de precios apagada también se guarda y se lee", () => {
+  const almacen = almacenFalso();
+  const borrador: Borrador = {
+    cliente: "",
+    lineas: [{ sku: "A1", qty: 1 }],
+    mostrarPrecios: false,
+  };
+  guardarBorrador(almacen, borrador);
+  assert.deepEqual(leerBorrador(almacen), borrador);
+});
+
+test("un borrador guardado antes de la casilla (sin el campo) muestra los precios", () => {
+  const almacen = almacenFalso({
+    [CLAVE_BORRADOR]: JSON.stringify({ cliente: "Ana", lineas: [{ sku: "A1", qty: 2 }] }),
+  });
+  assert.deepEqual(leerBorrador(almacen), {
+    cliente: "Ana",
+    lineas: [{ sku: "A1", qty: 2 }],
+    mostrarPrecios: true,
+  });
 });
 
 test("sin nada guardado, el borrador es el vacío", () => {
@@ -168,7 +220,7 @@ test("un almacenamiento que lanza al leer o al guardar no propaga el error", () 
     },
   };
   assert.deepEqual(leerBorrador(roto), BORRADOR_VACIO);
-  assert.doesNotThrow(() => guardarBorrador(roto, { cliente: "", lineas: [] }));
+  assert.doesNotThrow(() => guardarBorrador(roto, BORRADOR_VACIO));
 });
 
 test("lo guardado que está corrupto o fuera de rango se descarta entero", () => {
@@ -186,6 +238,8 @@ test("lo guardado que está corrupto o fuera de rango se descarta entero", () =>
     { cliente: "", lineas: muchas },
     { cliente: 42, lineas: [] },
     { cliente: "x".repeat(81), lineas: [] },
+    { cliente: "", lineas: [], mostrarPrecios: "no" },
+    { cliente: "", lineas: [], mostrarPrecios: null },
   ];
   for (const malo of malos) {
     const crudo = typeof malo === "string" ? malo : JSON.stringify(malo);

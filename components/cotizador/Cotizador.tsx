@@ -13,6 +13,7 @@ import { etiquetaDisponibilidad } from "@/lib/catalog/disponibilidad.ts";
 import { compararRelevancia } from "@/lib/catalog/orden.ts";
 import {
   BORRADOR_VACIO,
+  CLAVE_BORRADOR,
   borradorReducer,
   guardarBorrador,
   leerBorrador,
@@ -27,14 +28,28 @@ import { formatQ } from "@/lib/format/precio.ts";
 
 const MAX_RESULTADOS = 12;
 
-// localStorage puede lanzar con solo tocarlo (modo privado, datos de sitio
-// bloqueados): sin almacén la cotización funciona igual, solo no sobrevive a
-// una recarga.
-function almacenLocal(): Storage | null {
+// El borrador vive en sessionStorage, que es PROPIO de cada pestaña: así cada
+// pestaña con /cotizador abierta es una cotización distinta. Sobrevive a una
+// recarga, pero no a cerrar la pestaña. (Con localStorage, que se comparte, la
+// última pestaña en guardar pisaba a las demás.)
+//
+// Puede lanzar con solo tocarlo (modo privado, datos de sitio bloqueados): sin
+// almacén la cotización funciona igual, solo no sobrevive a una recarga.
+function almacenDePestana(): Storage | null {
   try {
-    return window.localStorage;
+    return window.sessionStorage;
   } catch {
     return null;
+  }
+}
+
+// Hasta noviembre de 2026 el borrador era uno solo, en localStorage. Ya nada lo
+// lee, y guarda el nombre de un cliente: se borra en vez de dejarlo para siempre.
+function borrarBorradorViejo(): void {
+  try {
+    window.localStorage.removeItem(CLAVE_BORRADOR);
+  } catch {
+    // Sin localStorage no hay nada que borrar.
   }
 }
 
@@ -79,13 +94,14 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    despachar({ type: "cargar", borrador: leerBorrador(almacenLocal()) });
+    despachar({ type: "cargar", borrador: leerBorrador(almacenDePestana()) });
+    borrarBorradorViejo();
   }, []);
 
   // Hasta leer lo guardado NO se guarda: el borrador inicial es el vacío, y
   // escribirlo pisaría la cotización que quedó de la visita anterior.
   useEffect(() => {
-    if (hidratado) guardarBorrador(almacenLocal(), borrador);
+    if (hidratado) guardarBorrador(almacenDePestana(), borrador);
   }, [borrador, hidratado]);
 
   useEffect(
@@ -118,7 +134,11 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
   const encontrados = resultado?.productos ?? [];
   const resultados = verTodos ? encontrados : encontrados.slice(0, MAX_RESULTADOS);
 
-  const mensaje = buildQuoteMessage({ cliente: borrador.cliente, lineas });
+  const mensaje = buildQuoteMessage({
+    cliente: borrador.cliente,
+    lineas,
+    mostrarPrecios: borrador.mostrarPrecios,
+  });
 
   // «Copiado» solo vale para el mensaje que se copió: si la cotización cambia
   // en los 2 s siguientes, el botón vuelve a «Copiar» (el portapapeles tiene la
@@ -329,6 +349,16 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
             </li>
           ))}
         </ul>
+
+        <label className="flex cursor-pointer items-center gap-3 text-[14px]">
+          <input
+            type="checkbox"
+            checked={borrador.mostrarPrecios}
+            onChange={(evento) => despachar({ type: "precios", mostrar: evento.target.checked })}
+            className="accent-negro h-5 w-5 cursor-pointer"
+          />
+          <span>Mostrar precios individuales</span>
+        </label>
 
         <label className="flex flex-col gap-2 text-[14px]">
           <span className="text-texto-secundario">Mensaje</span>
