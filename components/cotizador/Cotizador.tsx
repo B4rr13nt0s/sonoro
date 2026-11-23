@@ -134,7 +134,11 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
   const encontrados = resultado?.productos ?? [];
   const resultados = verTodos ? encontrados : encontrados.slice(0, MAX_RESULTADOS);
 
-  const mensaje = buildQuoteMessage({ cliente: borrador.cliente, lineas });
+  const mensaje = buildQuoteMessage({
+    cliente: borrador.cliente,
+    lineas,
+    mostrarPrecios: borrador.mostrarPrecios,
+  });
 
   // «Copiado» solo vale para el mensaje que se copió: si la cotización cambia
   // en los 2 s siguientes, el botón vuelve a «Copiar» (el portapapeles tiene la
@@ -345,6 +349,16 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
             </li>
           ))}
         </ul>
+
+        <label className="flex cursor-pointer items-center gap-3 text-[14px]">
+          <input
+            type="checkbox"
+            checked={borrador.mostrarPrecios}
+            onChange={(evento) => despachar({ type: "precios", mostrar: evento.target.checked })}
+            className="accent-negro h-5 w-5 cursor-pointer"
+          />
+          <span>Mostrar precios individuales</span>
+        </label>
 
         <label className="flex flex-col gap-2 text-[14px]">
           <span className="text-texto-secundario">Mensaje</span>

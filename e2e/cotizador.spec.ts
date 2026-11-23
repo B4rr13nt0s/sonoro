@@ -144,6 +144,36 @@ test("vaciar deja el mensaje en blanco y Copiar deshabilitado", async ({ page })
   await expect(page.getByRole("button", { name: "Copiar" })).toBeDisabled();
 });
 
+test("la casilla de precios individuales quita los precios de las líneas, no los totales", async ({
+  page,
+}) => {
+  await entrar(page);
+  await agregarProducto(page);
+  const casilla = page.getByRole("checkbox", { name: "Mostrar precios individuales" });
+  // Activada de entrada: así se veía la cotización antes de la casilla.
+  await expect(casilla).toBeChecked();
+  await expect(cuadroMensaje(page)).toHaveValue(LINEA);
+
+  await casilla.uncheck();
+  await expect(cuadroMensaje(page)).toHaveValue(new RegExp(`^.*\\n\\n1x ${escapar(PRODUCTO)}\\n`));
+  const mensaje = await cuadroMensaje(page).inputValue();
+  expect(mensaje).not.toContain("c/u");
+  expect(mensaje).toContain("Subtotal: Q");
+  expect(mensaje).toContain("Total: Q");
+
+  // Es parte de la cotización de ESTA pestaña: recargar la conserva...
+  await expect
+    .poll(() => page.evaluate(() => sessionStorage.getItem("sonoro:cotizador")))
+    .toContain('"mostrarPrecios":false');
+  await page.reload();
+  await expect(casilla).not.toBeChecked();
+  await expect(cuadroMensaje(page)).not.toHaveValue(/c\/u/);
+
+  // ...y «Vaciar» empieza una cotización nueva, que vuelve a mostrar los precios.
+  await page.getByRole("button", { name: "Vaciar" }).click();
+  await expect(casilla).toBeChecked();
+});
+
 test("salir cierra la sesión", async ({ page }) => {
   await entrar(page);
   await page.getByRole("button", { name: "Salir" }).click();
