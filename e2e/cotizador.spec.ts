@@ -80,11 +80,58 @@ test("recargar conserva el borrador", async ({ page }) => {
   await agregarProducto(page);
   await expect(cuadroMensaje(page)).toHaveValue(LINEA);
   await expect
-    .poll(() => page.evaluate(() => localStorage.getItem("sonoro:cotizador")))
+    .poll(() => page.evaluate(() => sessionStorage.getItem("sonoro:cotizador")))
     .toContain("TS-W312D4");
 
   await page.reload();
   await expect(cuadroMensaje(page)).toHaveValue(LINEA);
+});
+
+// Cada pestaña del navegador es una cotización aparte: el borrador vive en
+// sessionStorage, que no se comparte entre pestañas (localStorage sí, y ahí la
+// última en guardar pisaba a las demás). Las dos pestañas son del MISMO
+// contexto: comparten cookie de sesión y localStorage, como dos pestañas reales.
+test("dos pestañas son dos cotizaciones distintas", async ({ page, context }) => {
+  await entrar(page);
+  await page.getByLabel("Cliente (opcional)").fill("Ana");
+  await agregarProducto(page);
+  await expect(cuadroMensaje(page)).toHaveValue(/^Cotización Sonoro para Ana:/);
+
+  const otra = await context.newPage();
+  await otra.route(/\/_next\/image/, (ruta) => ruta.abort());
+  await otra.goto("/cotizador");
+  await expect(otra.getByRole("textbox", { name: "Buscar productos" })).toBeVisible();
+  // La pestaña nueva arranca vacía: no hereda la cotización de la primera.
+  await expect(cuadroMensaje(otra)).toHaveValue("");
+  await expect(otra.getByLabel("Cliente (opcional)")).toHaveValue("");
+
+  await otra.getByLabel("Cliente (opcional)").fill("Beto");
+  await agregarProducto(otra);
+  await expect(cuadroMensaje(otra)).toHaveValue(/^Cotización Sonoro para Beto:/);
+
+  // Recargar cada una devuelve SU cotización, no la de la otra.
+  await page.reload();
+  await expect(cuadroMensaje(page)).toHaveValue(/^Cotización Sonoro para Ana:/);
+  await otra.reload();
+  await expect(cuadroMensaje(otra)).toHaveValue(/^Cotización Sonoro para Beto:/);
+});
+
+// El borrador de antes vivía en localStorage. Una pestaña nueva no debe
+// heredarlo, y se borra para no dejar para siempre en el navegador una
+// cotización —con el nombre de un cliente— que nada vuelve a leer.
+test("el borrador viejo de localStorage no se hereda y se borra", async ({ page }) => {
+  await entrar(page);
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "sonoro:cotizador",
+      JSON.stringify({ cliente: "Viejo", lineas: [{ sku: "TS-W312D4", qty: 1 }] }),
+    ),
+  );
+
+  await page.reload();
+  await expect(page.getByRole("textbox", { name: "Buscar productos" })).toBeVisible();
+  await expect(cuadroMensaje(page)).toHaveValue("");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("sonoro:cotizador"))).toBeNull();
 });
 
 test("vaciar deja el mensaje en blanco y Copiar deshabilitado", async ({ page }) => {

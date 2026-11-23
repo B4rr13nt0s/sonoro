@@ -5,7 +5,8 @@
 // un precio viejo (docs/superpowers/specs/2026-11-16-cotizador-design.md).
 //
 // No toca el carrito: es un estado aparte, con su propia clave de
-// localStorage. El reductor es puro; leer y guardar reciben el almacén como
+// sessionStorage (una cotización por pestaña; lo decide quien llama, componente
+// Cotizador). El reductor es puro; leer y guardar reciben el almacén como
 // argumento para probarlos sin navegador.
 import { z } from "zod";
 
