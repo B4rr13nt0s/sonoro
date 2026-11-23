@@ -21,11 +21,11 @@
 // Los tamaños que el negocio no nombró (3.5", 4.5", 6.75"…) caen entre los dos
 // vecinos en vez de saltar de un escalón al siguiente.
 const CURVA: readonly (readonly [number, number])[] = [
-  [1, 0.55], // tweeters y bocinas chicas: de 55 %...
-  [3.5, 0.65], // ...a 65 % justo antes de las de 4"
-  [4, 0.7], // 4" y 4x6"
-  [5.25, 0.75], // 5.25" y 5x7"
-  [6.5, 0.8], // 6.5" y 6x9"
+  [1, 0.45], // tweeters de 1" o menos: 45 %...
+  [3.5, 0.65], // ...hasta 65 % justo antes de las de 4"
+  [4, 0.7], // 4"
+  [5.25, 0.75], // 5.25"
+  [6.5, 0.8], // 6.5"
   [8, 0.85],
   [10, 0.9],
   [12, 0.95],
@@ -49,6 +49,16 @@ const OVALADAS: Readonly<Record<string, number>> = {
   "5x7": 5.25,
   "6x9": 6.5,
 };
+
+// Las ovaladas (4x6", 5x7", 6x9"…) se dibujan 10 puntos más grandes que la
+// redonda de su clase (noviembre de 2026): 4x6" 80 %, 5x7" 85 %, 6x9" 90 %. Es
+// un suplemento en puntos sobre la curva, con 1 como techo. Las redondas no
+// cambian.
+const SUPLEMENTO_OVALADAS = 0.1;
+
+function suplementoDeMedida(medida: string): number {
+  return /^\d+(?:\.\d+)?x\d/.test(medida.trim()) ? SUPLEMENTO_OVALADAS : 0;
+}
 
 /** La medida del catálogo (`6.5"`, `4x6"`, `3/4"`, `40 mm`) en pulgadas redondas equivalentes. */
 export function pulgadasEquivalentes(medida: string): number | undefined {
@@ -79,7 +89,7 @@ function interpolar(pulgadas: number): number {
 }
 
 /**
- * La escala (entre 0.55 y 1) con que se dibuja la foto de la tarjeta, o
+ * La escala (entre 0.45 y 1) con que se dibuja la foto de la tarjeta, o
  * `undefined` si el producto no la lleva: otra categoría, un componente, o una
  * medida que no se puede leer. Sin valor, la tarjeta dibuja la foto al tamaño
  * de siempre.
@@ -94,5 +104,6 @@ export function escalaFotoCatalogo(producto: {
   if (configuracion && CONFIGURACIONES_SIN_ESCALA.includes(configuracion)) return undefined;
   const pulgadas = pulgadasEquivalentes(medida);
   if (pulgadas === undefined) return undefined;
-  return Math.round(interpolar(pulgadas) * 1000) / 1000;
+  const escala = Math.min(1, interpolar(pulgadas) + suplementoDeMedida(medida));
+  return Math.round(escala * 1000) / 1000;
 }
