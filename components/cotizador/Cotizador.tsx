@@ -138,6 +138,7 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
     cliente: borrador.cliente,
     lineas,
     mostrarPrecios: borrador.mostrarPrecios,
+    soloSku: borrador.soloSku,
   });
 
   // «Copiado» solo vale para el mensaje que se copió: si la cotización cambia
@@ -350,15 +351,26 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
           ))}
         </ul>
 
-        <label className="flex cursor-pointer items-center gap-3 text-[14px]">
-          <input
-            type="checkbox"
-            checked={borrador.mostrarPrecios}
-            onChange={(evento) => despachar({ type: "precios", mostrar: evento.target.checked })}
-            className="accent-negro h-5 w-5 cursor-pointer"
-          />
-          <span>Mostrar precios individuales</span>
-        </label>
+        <div className="flex flex-col gap-3">
+          <label className="flex cursor-pointer items-center gap-3 text-[14px]">
+            <input
+              type="checkbox"
+              checked={borrador.mostrarPrecios}
+              onChange={(evento) => despachar({ type: "precios", mostrar: evento.target.checked })}
+              className="accent-negro h-5 w-5 cursor-pointer"
+            />
+            <span>Mostrar precios individuales</span>
+          </label>
+          <label className="flex cursor-pointer items-center gap-3 text-[14px]">
+            <input
+              type="checkbox"
+              checked={borrador.soloSku}
+              onChange={(evento) => despachar({ type: "soloSku", activo: evento.target.checked })}
+              className="accent-negro h-5 w-5 cursor-pointer"
+            />
+            <span>Escribir solo el SKU</span>
+          </label>
+        </div>
 
         <label className="flex flex-col gap-2 text-[14px]">
           <span className="text-texto-secundario">Mensaje</span>
