@@ -120,17 +120,26 @@ test("sin líneas, el mensaje es vacío", () => {
 // --- sin precios individuales ----------------------------------------------
 
 test("sin precios individuales, la línea lleva solo cantidad y nombre", () => {
-  assert.equal(lineaCotizacion(SUB, false), '1x Subwoofer Champion Series 12" TS-W312D4');
-  assert.equal(lineaCotizacion(BOCINA, false), '2x Memphis PRX 6.5" PRX60C');
+  assert.equal(
+    lineaCotizacion(SUB, { mostrarPrecios: false }),
+    '1x Subwoofer Champion Series 12" TS-W312D4',
+  );
+  assert.equal(lineaCotizacion(BOCINA, { mostrarPrecios: false }), '2x Memphis PRX 6.5" PRX60C');
 });
 
 test("sin precios individuales, el código se agrega igual si el nombre no lo trae", () => {
-  const linea = lineaCotizacion({ ...BOCINA, nombre: 'Bocinas Memphis de 6.5"' }, false);
+  const linea = lineaCotizacion(
+    { ...BOCINA, nombre: 'Bocinas Memphis de 6.5"' },
+    { mostrarPrecios: false },
+  );
   assert.equal(linea, '2x Bocinas Memphis de 6.5" PRX60C');
 });
 
 test("sin precios individuales, lo bajo pedido sigue marcado: no es un precio", () => {
-  const linea = lineaCotizacion({ ...SUB, disponibilidad: "bajo_pedido" }, false);
+  const linea = lineaCotizacion(
+    { ...SUB, disponibilidad: "bajo_pedido" },
+    { mostrarPrecios: false },
+  );
   assert.equal(linea, '1x Subwoofer Champion Series 12" TS-W312D4 · bajo pedido');
 });
 
@@ -145,8 +154,8 @@ test("sin precios individuales, el mensaje conserva el total", () => {
     [
       "Cotización Sonoro para Juan Pérez:",
       "",
-      lineaCotizacion(SUB, false),
-      lineaCotizacion(BOCINA, false),
+      lineaCotizacion(SUB, { mostrarPrecios: false }),
+      lineaCotizacion(BOCINA, { mostrarPrecios: false }),
       "",
       `Total: ${formatQ(324500)}`,
     ].join("\n"),
@@ -166,4 +175,63 @@ test("por defecto, y con mostrarPrecios en true, las líneas llevan sus precios"
 
 test("sin precios individuales y sin líneas, el mensaje sigue vacío", () => {
   assert.equal(buildQuoteMessage({ cliente: "Juan", lineas: [], mostrarPrecios: false }), "");
+});
+
+// --- solo el SKU ------------------------------------------------------------
+
+test("con solo SKU, la línea lleva el código en lugar del nombre", () => {
+  assert.equal(
+    lineaCotizacion(SUB, { soloSku: true }),
+    `1x TS-W312D4 — ${formatQ(88500)} c/u — ${formatQ(88500)}`,
+  );
+  assert.equal(
+    lineaCotizacion(BOCINA, { soloSku: true }),
+    `2x PRX60C — ${formatQ(118000)} c/u — ${formatQ(236000)}`,
+  );
+});
+
+test("con solo SKU, el nombre del producto no aparece ni a medias", () => {
+  const linea = lineaCotizacion(SUB, { soloSku: true });
+  assert.ok(!linea.includes("Subwoofer"));
+  assert.ok(!linea.includes("Champion"));
+  // El código tal cual lo publica el fabricante, con sus separadores.
+  assert.ok(
+    lineaCotizacion({ ...SUB, sku: "ACX 165" }, { soloSku: true }).startsWith("1x ACX 165 —"),
+  );
+});
+
+test("con solo SKU, lo bajo pedido sigue marcado", () => {
+  const linea = lineaCotizacion({ ...SUB, disponibilidad: "bajo_pedido" }, { soloSku: true });
+  assert.ok(linea.endsWith(" · bajo pedido"));
+});
+
+test("con solo SKU y sin precios, la línea es solo cantidad y código", () => {
+  assert.equal(lineaCotizacion(SUB, { soloSku: true, mostrarPrecios: false }), "1x TS-W312D4");
+  assert.equal(lineaCotizacion(BOCINA, { soloSku: true, mostrarPrecios: false }), "2x PRX60C");
+});
+
+test("con solo SKU, el mensaje completo usa los códigos y conserva el total", () => {
+  const mensaje = buildQuoteMessage({
+    cliente: "Juan Pérez",
+    lineas: [SUB, BOCINA],
+    soloSku: true,
+  });
+  assert.equal(
+    mensaje,
+    [
+      "Cotización Sonoro para Juan Pérez:",
+      "",
+      lineaCotizacion(SUB, { soloSku: true }),
+      lineaCotizacion(BOCINA, { soloSku: true }),
+      "",
+      `Total: ${formatQ(324500)}`,
+    ].join("\n"),
+  );
+});
+
+test("por defecto, y con solo SKU en false, las líneas llevan el nombre", () => {
+  const sin = buildQuoteMessage({ cliente: "", lineas: [SUB] });
+  const con = buildQuoteMessage({ cliente: "", lineas: [SUB], soloSku: false });
+  assert.equal(sin, con);
+  assert.ok(sin.includes("Champion Series"));
 });

@@ -28,14 +28,28 @@ function nombreConCodigo(nombre: string, sku: string): string {
   return nombre.toUpperCase().includes(sku.toUpperCase()) ? nombre : `${nombre} ${sku}`;
 }
 
+/** Las dos casillas del cotizador que cambian cómo se escribe cada línea. */
+export type OpcionesLinea = {
+  /** Por defecto `true`. En `false`, la línea no lleva precios. */
+  mostrarPrecios?: boolean;
+  /** Por defecto `false`. En `true`, la línea lleva el código (SKU) y no el nombre. */
+  soloSku?: boolean;
+};
+
 // `mostrarPrecios` en false (la casilla «Mostrar precios individuales» del
-// cotizador, apagada) deja la línea en cantidad y nombre: el cliente ve solo el
-// total de abajo, útil para cotizar un paquete sin desglose. La marca de
-// «bajo pedido» se queda, porque no es un precio.
-export function lineaCotizacion(linea: LineaCotizacion, mostrarPrecios = true): string {
+// cotizador, apagada) deja la línea en cantidad y producto: el cliente ve solo
+// el total de abajo, útil para cotizar un paquete sin desglose. `soloSku` en
+// true (la casilla «Escribir solo el SKU») escribe el código del fabricante en
+// lugar del nombre: «1x PRXE12SFT». La marca de «bajo pedido» se queda en los
+// dos casos, porque no es un precio ni parte del nombre.
+export function lineaCotizacion(
+  linea: LineaCotizacion,
+  { mostrarPrecios = true, soloSku = false }: OpcionesLinea = {},
+): string {
   const estado = marcaDisponibilidad(linea.disponibilidad);
   const marca = estado ? ` · ${estado}` : "";
-  const producto = `${linea.qty}x ${nombreConCodigo(linea.nombre, linea.sku)}`;
+  const nombre = soloSku ? linea.sku : nombreConCodigo(linea.nombre, linea.sku);
+  const producto = `${linea.qty}x ${nombre}`;
   if (!mostrarPrecios) return `${producto}${marca}`;
   const total = linea.qty * linea.unitPriceCents;
   return `${producto} — ${formatQ(linea.unitPriceCents)} c/u — ${formatQ(total)}${marca}`;
@@ -53,8 +67,10 @@ export function buildQuoteMessage(params: {
   lineas: readonly LineaCotizacion[];
   /** Por defecto `true`. En `false`, las líneas van sin precio y solo queda el total. */
   mostrarPrecios?: boolean;
+  /** Por defecto `false`. En `true`, las líneas llevan el SKU en lugar del nombre. */
+  soloSku?: boolean;
 }): string {
-  const { lineas, mostrarPrecios = true } = params;
+  const { lineas, mostrarPrecios = true, soloSku = false } = params;
   if (lineas.length === 0) return "";
 
   const cliente = normalizarCliente(params.cliente);
@@ -66,7 +82,7 @@ export function buildQuoteMessage(params: {
   return [
     cliente ? `Cotización Sonoro para ${cliente}:` : "Cotización Sonoro:",
     "",
-    ...lineas.map((linea) => lineaCotizacion(linea, mostrarPrecios)),
+    ...lineas.map((linea) => lineaCotizacion(linea, { mostrarPrecios, soloSku })),
     "",
     `Total: ${formatQ(total)}`,
   ].join("\n");

@@ -20,9 +20,16 @@ export type Borrador = {
   lineas: LineaBorrador[];
   /** La casilla «Mostrar precios individuales»: apagada, las líneas del mensaje van sin precio. */
   mostrarPrecios: boolean;
+  /** La casilla «Escribir solo el SKU»: encendida, las líneas llevan el código y no el nombre. */
+  soloSku: boolean;
 };
 
-export const BORRADOR_VACIO: Borrador = { cliente: "", lineas: [], mostrarPrecios: true };
+export const BORRADOR_VACIO: Borrador = {
+  cliente: "",
+  lineas: [],
+  mostrarPrecios: true,
+  soloSku: false,
+};
 
 export type AccionBorrador =
   | { type: "agregar"; sku: string }
@@ -30,6 +37,7 @@ export type AccionBorrador =
   | { type: "quitar"; sku: string }
   | { type: "cliente"; texto: string }
   | { type: "precios"; mostrar: boolean }
+  | { type: "soloSku"; activo: boolean }
   | { type: "vaciar" }
   | { type: "cargar"; borrador: Borrador };
 
@@ -63,8 +71,10 @@ export function borradorReducer(borrador: Borrador, accion: AccionBorrador): Bor
       return { ...borrador, cliente: accion.texto.slice(0, MAX_CLIENTE) };
     case "precios":
       return { ...borrador, mostrarPrecios: accion.mostrar };
+    case "soloSku":
+      return { ...borrador, soloSku: accion.activo };
     case "vaciar":
-      // Una cotización nueva: también vuelve a mostrar los precios.
+      // Una cotización nueva: también vuelve a mostrar los precios y los nombres.
       return BORRADOR_VACIO;
     case "cargar":
       return accion.borrador;
@@ -126,6 +136,8 @@ const BorradorSchema = z.object({
   // Un borrador guardado antes de que existiera la casilla no trae el campo:
   // se lee como «mostrar», que es como se veía.
   mostrarPrecios: z.boolean().default(true),
+  // Igual con la casilla del SKU: sin el campo se lee como «nombre completo».
+  soloSku: z.boolean().default(false),
 });
 
 /** Nunca lanza: modo privado, JSON corrupto o cantidades fuera de rango dan el borrador vacío. */
