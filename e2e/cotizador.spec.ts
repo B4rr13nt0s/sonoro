@@ -72,7 +72,10 @@ test("con la contraseña correcta se arma la cotización y se copia", async ({ p
   await expect(page.getByRole("button", { name: "Copiado" })).toBeVisible();
   const portapapeles = await page.evaluate(() => navigator.clipboard.readText());
   expect(portapapeles).toMatch(LINEA);
-  expect(portapapeles).toContain("Precios con IVA incluido.");
+  // El pie es solo el total: sin subtotal, sin envío y sin la leyenda del IVA.
+  // (Windows devuelve los saltos del portapapeles como \r\n.)
+  expect(portapapeles).toMatch(/\r?\n\r?\nTotal: Q\s[\d,]+\.\d{2}$/);
+  expect(portapapeles).not.toMatch(/Subtotal|Env[ií]o|IVA/);
 });
 
 test("recargar conserva el borrador", async ({ page }) => {
@@ -144,7 +147,7 @@ test("vaciar deja el mensaje en blanco y Copiar deshabilitado", async ({ page })
   await expect(page.getByRole("button", { name: "Copiar" })).toBeDisabled();
 });
 
-test("la casilla de precios individuales quita los precios de las líneas, no los totales", async ({
+test("la casilla de precios individuales quita los precios de las líneas, no el total", async ({
   page,
 }) => {
   await entrar(page);
@@ -158,7 +161,6 @@ test("la casilla de precios individuales quita los precios de las líneas, no lo
   await expect(cuadroMensaje(page)).toHaveValue(new RegExp(`^.*\\n\\n1x ${escapar(PRODUCTO)}\\n`));
   const mensaje = await cuadroMensaje(page).inputValue();
   expect(mensaje).not.toContain("c/u");
-  expect(mensaje).toContain("Subtotal: Q");
   expect(mensaje).toContain("Total: Q");
 
   // Es parte de la cotización de ESTA pestaña: recargar la conserva...
