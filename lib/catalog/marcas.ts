@@ -49,6 +49,43 @@ export const LOGOS: Record<string, { src: string; ancho: number; alto: number }>
 
 export type Logo = (typeof LOGOS)[string];
 
+// Los logos que se dibujan MÁS GRANDES que el resto (decisión del negocio,
+// noviembre de 2026): Rockford Fosgate y Memphis, en la portada y en /marcas.
+// Rockford es el más alargado (960 × 151, casi 6.4 a 1): con el tope de ancho de
+// los demás queda de unos 24 px de alto y se lee mucho menos. Memphis (851 ×
+// 202, 4.2 a 1) se pidió igual, pero un poco menos grande que Rockford.
+//
+// Cada marca trae su tope de alto y de ancho por lugar, más el `sizes` de
+// next/image (el mismo ancho que el `max-w`). En la portada el tamaño crece
+// solo cuando la caja lo permite —las cajas miden 156 px en móvil y tableta, y
+// 216 en lg—: más ancho se salía de la caja y pisaba al vecino. En /marcas el
+// tope es `min(…, 100%)` de la caja. Las clases van escritas completas, no
+// armadas, para que Tailwind las vea.
+export type TamanoLogo = { clase: string; sizes: string };
+export type LugarLogo = "portada" | "marcas";
+
+export const LOGOS_AMPLIADOS: Readonly<Record<string, Record<LugarLogo, TamanoLogo>>> = {
+  "rockford-fosgate": {
+    portada: {
+      clase: "max-h-[64px] max-w-[150px] lg:max-w-[190px] xl:max-w-[240px]",
+      sizes: "(min-width: 1280px) 240px, (min-width: 1024px) 190px, 150px",
+    },
+    marcas: { clase: "max-h-[84px] max-w-[min(300px,100%)]", sizes: "300px" },
+  },
+  memphis: {
+    portada: {
+      clase: "max-h-[64px] max-w-[150px] lg:max-w-[172px] xl:max-w-[200px]",
+      sizes: "(min-width: 1280px) 200px, (min-width: 1024px) 172px, 150px",
+    },
+    marcas: { clase: "max-h-[84px] max-w-[min(260px,100%)]", sizes: "260px" },
+  },
+};
+
+/** El tamaño ampliado de una marca en un lugar, o `undefined` si no se amplía. */
+export function tamanoAmpliado(slug: string, lugar: LugarLogo): TamanoLogo | undefined {
+  return Object.hasOwn(LOGOS_AMPLIADOS, slug) ? LOGOS_AMPLIADOS[slug][lugar] : undefined;
+}
+
 export function logoDeMarca(marca: Pick<Brand, "slug">): Logo | null {
   return Object.hasOwn(LOGOS, marca.slug) ? LOGOS[marca.slug] : null;
 }

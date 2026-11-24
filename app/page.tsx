@@ -311,7 +311,7 @@ export default async function Home() {
                 aria-label={marca.nombre}
                 className="border-borde-tarjeta rounded-card flex h-[104px] items-center justify-center border px-6"
               >
-                <LogoMarca marca={marca} />
+                <LogoMarca marca={marca} lugar="portada" />
               </Link>
             </li>
           ))}
