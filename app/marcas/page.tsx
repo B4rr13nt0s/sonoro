@@ -5,7 +5,7 @@ import { LogoMarca } from "@/components/catalog/LogoMarca";
 import { listBrands } from "@/lib/catalog/index.ts";
 import { ordenarMarcas } from "@/lib/catalog/marcas.ts";
 import { metadataPagina } from "@/lib/seo/metadata.ts";
-import { DISTRIBUIDORES_OFICIALES, textosMarcas, tituloMarcas } from "@/lib/seo/textos.ts";
+import { TEXTO_MARCAS, textosMarcas, tituloMarcas } from "@/lib/seo/textos.ts";
 
 export async function generateMetadata(): Promise<Metadata> {
   const marcas = await listBrands();
@@ -26,13 +26,12 @@ export default async function MarcasPage() {
         <div className="text-texto-terciario font-mono text-[12px] tracking-[0.18em] uppercase">
           Marcas
         </div>
-        <div className="flex max-w-[820px] flex-col gap-5">
-          <h1 className="text-44 sm:text-64 leading-[1.05] font-semibold tracking-[-0.035em] text-balance">
+        <div className="flex flex-col gap-5">
+          <h1 className="text-44 sm:text-64 max-w-[820px] leading-[1.05] font-semibold tracking-[-0.035em] text-balance">
             {titulo}
           </h1>
-          <p className="text-texto-secundario max-w-[760px] text-[18px] leading-[1.5] sm:text-[20px]">
-            {DISTRIBUIDORES_OFICIALES} Nuestra diversidad de marcas nos permite cubrir equipos de
-            audio para carro, marino y motorsports.
+          <p className="text-texto-secundario text-justify text-[18px] leading-[1.5] hyphens-auto sm:text-[20px]">
+            {TEXTO_MARCAS}
           </p>
         </div>
       </section>
@@ -44,7 +43,12 @@ export default async function MarcasPage() {
             className="rounded-card-lg border-borde-tarjeta flex flex-col overflow-hidden border"
           >
             <div className="bg-fondo-alt flex h-[180px] items-center justify-center px-8">
-              <LogoMarca marca={marca} className="max-h-[84px] max-w-[220px]" sizes="220px" />
+              <LogoMarca
+                marca={marca}
+                className="max-h-[84px] max-w-[220px]"
+                sizes="220px"
+                lugar="marcas"
+              />
             </div>
             <div className="flex flex-1 flex-col gap-2 p-6">
               {/* País de origen: sin dato real (data/brands.json no lo

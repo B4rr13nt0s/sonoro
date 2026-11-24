@@ -241,6 +241,9 @@ export function tituloMarcas(cantidad: number): string {
 export const DISTRIBUIDORES_OFICIALES =
   "Somos los distribuidores oficiales de Memphis, Rockford Fosgate, KBT y SoundSkins para toda Guatemala, además de complementar con marcas de alta calidad como lo son Pioneer, Cerwin Vega, Focal y JBL.";
 
+// El párrafo completo de las marcas, igual en /marcas y en /nosotros.
+export const TEXTO_MARCAS = `${DISTRIBUIDORES_OFICIALES} Nuestra diversidad de marcas nos permite cubrir equipos de audio para carro, marino y motorsports.`;
+
 export function textosMarcas(marcas: string[]): Textos {
   return {
     titulo: `Marcas de ${LEMA.toLowerCase()}`,
