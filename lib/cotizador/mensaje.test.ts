@@ -235,3 +235,61 @@ test("por defecto, y con solo SKU en false, las líneas llevan el nombre", () =>
   assert.equal(sin, con);
   assert.ok(sin.includes("Champion Series"));
 });
+
+// --- solo precios individuales ----------------------------------------------
+
+test("con solo precios individuales, la línea es una viñeta con el precio unitario", () => {
+  assert.equal(
+    lineaCotizacion(
+      { ...SUB, sku: "PRXE12SFT", nombre: "Cajón PRXE12SFT" },
+      { soloPrecioIndividual: true },
+    ),
+    `- Cajón PRXE12SFT — ${formatQ(88500)}`,
+  );
+  assert.equal(
+    lineaCotizacion(SUB, { soloPrecioIndividual: true, soloSku: true }),
+    `- TS-W312D4 — ${formatQ(88500)}`,
+  );
+});
+
+test("con solo precios individuales y varias unidades, conserva la cantidad y dice c/u", () => {
+  assert.equal(
+    lineaCotizacion(BOCINA, { soloPrecioIndividual: true, soloSku: true }),
+    `- 2x PRX60C — ${formatQ(118000)} c/u`,
+  );
+});
+
+test("con solo precios individuales, lo bajo pedido sigue marcado", () => {
+  const linea = lineaCotizacion(
+    { ...SUB, disponibilidad: "bajo_pedido" },
+    { soloPrecioIndividual: true, soloSku: true },
+  );
+  assert.equal(linea, `- TS-W312D4 — ${formatQ(88500)} · bajo pedido`);
+});
+
+test("sin precios, solo precios individuales no hace nada", () => {
+  assert.equal(
+    lineaCotizacion(SUB, { mostrarPrecios: false, soloPrecioIndividual: true, soloSku: true }),
+    "1x TS-W312D4",
+  );
+});
+
+test("con solo precios individuales, el mensaje conserva el total", () => {
+  const mensaje = buildQuoteMessage({
+    cliente: "",
+    lineas: [SUB, BOCINA],
+    soloSku: true,
+    soloPrecioIndividual: true,
+  });
+  assert.equal(
+    mensaje,
+    [
+      "Cotización Sonoro:",
+      "",
+      `- TS-W312D4 — ${formatQ(88500)}`,
+      `- 2x PRX60C — ${formatQ(118000)} c/u`,
+      "",
+      `Total: ${formatQ(324500)}`,
+    ].join("\n"),
+  );
+});

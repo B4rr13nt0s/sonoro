@@ -18,10 +18,12 @@ export type LineaBorrador = { sku: string; qty: number };
 export type Borrador = {
   cliente: string;
   lineas: LineaBorrador[];
-  /** La casilla «Mostrar precios individuales»: apagada, las líneas del mensaje van sin precio. */
+  /** La casilla «Mostrar precios»: apagada, las líneas del mensaje van sin precio. */
   mostrarPrecios: boolean;
-  /** La casilla «Escribir solo el SKU»: encendida, las líneas llevan el código y no el nombre. */
+  /** La casilla «Mostrar sólo SKU»: encendida, las líneas llevan el código y no el nombre. */
   soloSku: boolean;
+  /** «Mostrar sólo precios individuales» (solo con los precios encendidos): líneas en viñeta con el precio unitario. */
+  soloPrecioIndividual: boolean;
 };
 
 export const BORRADOR_VACIO: Borrador = {
@@ -29,6 +31,7 @@ export const BORRADOR_VACIO: Borrador = {
   lineas: [],
   mostrarPrecios: true,
   soloSku: false,
+  soloPrecioIndividual: false,
 };
 
 export type AccionBorrador =
@@ -38,6 +41,7 @@ export type AccionBorrador =
   | { type: "cliente"; texto: string }
   | { type: "precios"; mostrar: boolean }
   | { type: "soloSku"; activo: boolean }
+  | { type: "soloPrecioIndividual"; activo: boolean }
   | { type: "vaciar" }
   | { type: "cargar"; borrador: Borrador };
 
@@ -73,6 +77,8 @@ export function borradorReducer(borrador: Borrador, accion: AccionBorrador): Bor
       return { ...borrador, mostrarPrecios: accion.mostrar };
     case "soloSku":
       return { ...borrador, soloSku: accion.activo };
+    case "soloPrecioIndividual":
+      return { ...borrador, soloPrecioIndividual: accion.activo };
     case "vaciar":
       // Una cotización nueva: también vuelve a mostrar los precios y los nombres.
       return BORRADOR_VACIO;
@@ -138,6 +144,8 @@ const BorradorSchema = z.object({
   mostrarPrecios: z.boolean().default(true),
   // Igual con la casilla del SKU: sin el campo se lee como «nombre completo».
   soloSku: z.boolean().default(false),
+  // Y con la opción de solo precios individuales.
+  soloPrecioIndividual: z.boolean().default(false),
 });
 
 /** Nunca lanza: modo privado, JSON corrupto o cantidades fuera de rango dan el borrador vacío. */
