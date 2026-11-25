@@ -34,23 +34,37 @@ export type OpcionesLinea = {
   mostrarPrecios?: boolean;
   /** Por defecto `false`. En `true`, la línea lleva el código (SKU) y no el nombre. */
   soloSku?: boolean;
+  /**
+   * Por defecto `false`. En `true` (y con precios), la línea es una viñeta con el
+   * producto y su precio unitario, sin el total de la línea. Sin precios no hace nada.
+   */
+  soloPrecioIndividual?: boolean;
 };
 
-// `mostrarPrecios` en false (la casilla «Mostrar precios individuales» del
-// cotizador, apagada) deja la línea en cantidad y producto: el cliente ve solo
-// el total de abajo, útil para cotizar un paquete sin desglose. `soloSku` en
-// true (la casilla «Escribir solo el SKU») escribe el código del fabricante en
-// lugar del nombre: «1x PRXE12SFT». La marca de «bajo pedido» se queda en los
-// dos casos, porque no es un precio ni parte del nombre.
+// `mostrarPrecios` en false (la casilla «Mostrar precios», apagada) deja la
+// línea en cantidad y producto: el cliente ve solo el total de abajo, útil para
+// cotizar un paquete sin desglose. `soloSku` en true (la casilla «Mostrar sólo
+// SKU») escribe el código del fabricante en lugar del nombre: «1x PRXE12SFT».
+// `soloPrecioIndividual` (la opción «Mostrar sólo precios individuales», que solo
+// existe con los precios encendidos) cambia el formato a una viñeta con el
+// precio unitario: «- PRXE12SFT — Q 3,995.00». Con más de una unidad la línea
+// conserva la cantidad y dice «c/u» («- 2x PRX60C — Q 1,180.00 c/u»): sin ella
+// el total de abajo no cuadraría con lo que se lee. La marca de «bajo pedido» se
+// queda en todos los casos, porque no es un precio ni parte del nombre.
 export function lineaCotizacion(
   linea: LineaCotizacion,
-  { mostrarPrecios = true, soloSku = false }: OpcionesLinea = {},
+  { mostrarPrecios = true, soloSku = false, soloPrecioIndividual = false }: OpcionesLinea = {},
 ): string {
   const estado = marcaDisponibilidad(linea.disponibilidad);
   const marca = estado ? ` · ${estado}` : "";
   const nombre = soloSku ? linea.sku : nombreConCodigo(linea.nombre, linea.sku);
   const producto = `${linea.qty}x ${nombre}`;
   if (!mostrarPrecios) return `${producto}${marca}`;
+  if (soloPrecioIndividual) {
+    const varias = linea.qty > 1;
+    const cantidad = varias ? `${linea.qty}x ` : "";
+    return `- ${cantidad}${nombre} — ${formatQ(linea.unitPriceCents)}${varias ? " c/u" : ""}${marca}`;
+  }
   const total = linea.qty * linea.unitPriceCents;
   return `${producto} — ${formatQ(linea.unitPriceCents)} c/u — ${formatQ(total)}${marca}`;
 }
@@ -69,8 +83,10 @@ export function buildQuoteMessage(params: {
   mostrarPrecios?: boolean;
   /** Por defecto `false`. En `true`, las líneas llevan el SKU en lugar del nombre. */
   soloSku?: boolean;
+  /** Por defecto `false`. En `true`, las líneas son viñetas con solo el precio unitario. */
+  soloPrecioIndividual?: boolean;
 }): string {
-  const { lineas, mostrarPrecios = true, soloSku = false } = params;
+  const { lineas, mostrarPrecios = true, soloSku = false, soloPrecioIndividual = false } = params;
   if (lineas.length === 0) return "";
 
   const cliente = normalizarCliente(params.cliente);
@@ -82,7 +98,9 @@ export function buildQuoteMessage(params: {
   return [
     cliente ? `Cotización Sonoro para ${cliente}:` : "Cotización Sonoro:",
     "",
-    ...lineas.map((linea) => lineaCotizacion(linea, { mostrarPrecios, soloSku })),
+    ...lineas.map((linea) =>
+      lineaCotizacion(linea, { mostrarPrecios, soloSku, soloPrecioIndividual }),
+    ),
     "",
     `Total: ${formatQ(total)}`,
   ].join("\n");

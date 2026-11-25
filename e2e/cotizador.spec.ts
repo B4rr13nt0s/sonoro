@@ -147,12 +147,10 @@ test("vaciar deja el mensaje en blanco y Copiar deshabilitado", async ({ page })
   await expect(page.getByRole("button", { name: "Copiar" })).toBeDisabled();
 });
 
-test("la casilla de precios individuales quita los precios de las líneas, no el total", async ({
-  page,
-}) => {
+test("la casilla de precios quita los precios de las líneas, no el total", async ({ page }) => {
   await entrar(page);
   await agregarProducto(page);
-  const casilla = page.getByRole("checkbox", { name: "Mostrar precios individuales" });
+  const casilla = page.getByRole("checkbox", { name: "Mostrar precios", exact: true });
   // Activada de entrada: así se veía la cotización antes de la casilla.
   await expect(casilla).toBeChecked();
   await expect(cuadroMensaje(page)).toHaveValue(LINEA);
@@ -179,7 +177,7 @@ test("la casilla de precios individuales quita los precios de las líneas, no el
 test("la casilla de solo SKU escribe el código en lugar del nombre", async ({ page }) => {
   await entrar(page);
   await agregarProducto(page);
-  const soloSku = page.getByRole("checkbox", { name: "Escribir solo el SKU" });
+  const soloSku = page.getByRole("checkbox", { name: "Mostrar sólo SKU" });
   // Apagada de entrada: el mensaje lleva el nombre completo, como siempre.
   await expect(soloSku).not.toBeChecked();
   await expect(cuadroMensaje(page)).toHaveValue(LINEA);
@@ -191,7 +189,7 @@ test("la casilla de solo SKU escribe el código en lugar del nombre", async ({ p
   expect(await cuadroMensaje(page).inputValue()).not.toContain(PRODUCTO);
 
   // Se combina con la casilla de precios: solo cantidad y código.
-  await page.getByRole("checkbox", { name: "Mostrar precios individuales" }).uncheck();
+  await page.getByRole("checkbox", { name: "Mostrar precios", exact: true }).uncheck();
   await expect(cuadroMensaje(page)).toHaveValue(/\n1x TS-W312D4\n/);
 
   // Es parte de la cotización de ESTA pestaña: recargar la conserva...
@@ -205,6 +203,30 @@ test("la casilla de solo SKU escribe el código en lugar del nombre", async ({ p
   // ...y «Vaciar» empieza una cotización nueva, con el nombre completo.
   await page.getByRole("button", { name: "Vaciar" }).click();
   await expect(soloSku).not.toBeChecked();
+});
+
+test("solo precios individuales cambia las líneas a viñetas con el precio unitario", async ({
+  page,
+}) => {
+  await entrar(page);
+  await agregarProducto(page);
+  const precios = page.getByRole("checkbox", { name: "Mostrar precios", exact: true });
+  const individuales = page.getByRole("checkbox", { name: "Mostrar sólo precios individuales" });
+  await expect(individuales).not.toBeChecked();
+
+  await page.getByRole("checkbox", { name: "Mostrar sólo SKU" }).check();
+  await individuales.check();
+  await expect(cuadroMensaje(page)).toHaveValue(/\n- TS-W312D4 — Q\s[\d,]+\.\d{2}\n/);
+  expect(await cuadroMensaje(page).inputValue()).not.toContain("c/u");
+
+  // Sin precios la opción desaparece y las líneas vuelven a cantidad y código.
+  await precios.uncheck();
+  await expect(individuales).toBeHidden();
+  await expect(cuadroMensaje(page)).toHaveValue(/\n1x TS-W312D4\n/);
+
+  // «Vaciar» empieza una cotización nueva, sin la opción.
+  await page.getByRole("button", { name: "Vaciar" }).click();
+  await expect(individuales).not.toBeChecked();
 });
 
 test("salir cierra la sesión", async ({ page }) => {

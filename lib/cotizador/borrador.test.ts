@@ -48,6 +48,7 @@ test("una línea no pasa de 99 unidades", () => {
     lineas: [{ sku: "A1", qty: 99 }],
     mostrarPrecios: true,
     soloSku: false,
+    soloPrecioIndividual: false,
   };
   b = borradorReducer(b, { type: "agregar", sku: "A1" });
   assert.equal(b.lineas[0].qty, 99);
@@ -61,6 +62,7 @@ test("cantidad cambia la línea; 0 o menos la quita; sobre una línea inexistent
     lineas: [{ sku: "A1", qty: 3 }],
     mostrarPrecios: true,
     soloSku: false,
+    soloPrecioIndividual: false,
   };
   assert.deepEqual(borradorReducer(base, { type: "cantidad", sku: "A1", qty: 5 }).lineas, [
     { sku: "A1", qty: 5 },
@@ -79,6 +81,7 @@ test("quitar saca la línea", () => {
     ],
     mostrarPrecios: true,
     soloSku: false,
+    soloPrecioIndividual: false,
   };
   assert.deepEqual(borradorReducer(base, { type: "quitar", sku: "A1" }).lineas, [
     { sku: "B2", qty: 2 },
@@ -96,6 +99,7 @@ test("vaciar borra las líneas y el cliente, y vuelve a mostrar los precios y lo
     lineas: [{ sku: "A1", qty: 2 }],
     mostrarPrecios: false,
     soloSku: true,
+    soloPrecioIndividual: true,
   };
   assert.deepEqual(borradorReducer(base, { type: "vaciar" }), BORRADOR_VACIO);
 });
@@ -106,6 +110,7 @@ test("cargar reemplaza el borrador", () => {
     lineas: [{ sku: "B2", qty: 4 }],
     mostrarPrecios: false,
     soloSku: false,
+    soloPrecioIndividual: false,
   };
   assert.deepEqual(borradorReducer(BORRADOR_VACIO, { type: "cargar", borrador: cargado }), cargado);
 });
@@ -124,10 +129,24 @@ test("soloSku enciende y apaga el SKU sin tocar lo demás", () => {
     lineas: [{ sku: "A1", qty: 2 }],
     mostrarPrecios: false,
     soloSku: false,
+    soloPrecioIndividual: false,
   };
   const con = borradorReducer(base, { type: "soloSku", activo: true });
   assert.deepEqual(con, { ...base, soloSku: true });
   assert.deepEqual(borradorReducer(con, { type: "soloSku", activo: false }), base);
+});
+
+test("una cotización nueva no limita las líneas a los precios individuales", () => {
+  assert.equal(BORRADOR_VACIO.soloPrecioIndividual, false);
+});
+
+test("soloPrecioIndividual enciende y apaga la opción sin tocar lo demás", () => {
+  const con = borradorReducer(BORRADOR_VACIO, { type: "soloPrecioIndividual", activo: true });
+  assert.deepEqual(con, { ...BORRADOR_VACIO, soloPrecioIndividual: true });
+  assert.deepEqual(
+    borradorReducer(con, { type: "soloPrecioIndividual", activo: false }),
+    BORRADOR_VACIO,
+  );
 });
 
 test("precios apaga y enciende los precios individuales sin tocar lo demás", () => {
@@ -136,6 +155,7 @@ test("precios apaga y enciende los precios individuales sin tocar lo demás", ()
     lineas: [{ sku: "A1", qty: 2 }],
     mostrarPrecios: true,
     soloSku: false,
+    soloPrecioIndividual: false,
   };
   const sin = borradorReducer(base, { type: "precios", mostrar: false });
   assert.deepEqual(sin, { ...base, mostrarPrecios: false });
@@ -154,6 +174,7 @@ test("el precio, el nombre y la disponibilidad salen del catálogo, no del borra
       ],
       mostrarPrecios: true,
       soloSku: false,
+      soloPrecioIndividual: false,
     },
     CATALOGO,
   );
@@ -187,6 +208,7 @@ test("un sku que no está en el catálogo o que se agotó va a quitados", () => 
       ],
       mostrarPrecios: true,
       soloSku: false,
+      soloPrecioIndividual: false,
     },
     CATALOGO,
   );
@@ -206,6 +228,7 @@ test("guardar y leer dan el mismo borrador", () => {
     lineas: [{ sku: "A1", qty: 3 }],
     mostrarPrecios: true,
     soloSku: false,
+    soloPrecioIndividual: false,
   };
   guardarBorrador(almacen, borrador);
   assert.ok(CLAVE_BORRADOR in almacen.datos);
@@ -219,6 +242,7 @@ test("la casilla de precios apagada también se guarda y se lee", () => {
     lineas: [{ sku: "A1", qty: 1 }],
     mostrarPrecios: false,
     soloSku: false,
+    soloPrecioIndividual: false,
   };
   guardarBorrador(almacen, borrador);
   assert.deepEqual(leerBorrador(almacen), borrador);
@@ -231,6 +255,7 @@ test("la casilla de solo SKU encendida también se guarda y se lee", () => {
     lineas: [{ sku: "A1", qty: 1 }],
     mostrarPrecios: true,
     soloSku: true,
+    soloPrecioIndividual: false,
   };
   guardarBorrador(almacen, borrador);
   assert.deepEqual(leerBorrador(almacen), borrador);
@@ -245,6 +270,7 @@ test("un borrador guardado antes de la casilla (sin el campo) muestra los precio
     lineas: [{ sku: "A1", qty: 2 }],
     mostrarPrecios: true,
     soloSku: false,
+    soloPrecioIndividual: false,
   });
 });
 

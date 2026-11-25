@@ -139,6 +139,7 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
     lineas,
     mostrarPrecios: borrador.mostrarPrecios,
     soloSku: borrador.soloSku,
+    soloPrecioIndividual: borrador.soloPrecioIndividual,
   });
 
   // «Copiado» solo vale para el mensaje que se copió: si la cotización cambia
@@ -359,8 +360,21 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
               onChange={(evento) => despachar({ type: "precios", mostrar: evento.target.checked })}
               className="accent-negro h-5 w-5 cursor-pointer"
             />
-            <span>Mostrar precios individuales</span>
+            <span>Mostrar precios</span>
           </label>
+          {borrador.mostrarPrecios ? (
+            <label className="flex cursor-pointer items-center gap-3 pl-8 text-[14px]">
+              <input
+                type="checkbox"
+                checked={borrador.soloPrecioIndividual}
+                onChange={(evento) =>
+                  despachar({ type: "soloPrecioIndividual", activo: evento.target.checked })
+                }
+                className="accent-negro h-5 w-5 cursor-pointer"
+              />
+              <span>Mostrar sólo precios individuales</span>
+            </label>
+          ) : null}
           <label className="flex cursor-pointer items-center gap-3 text-[14px]">
             <input
               type="checkbox"
@@ -368,7 +382,7 @@ export function Cotizador({ productos }: { productos: ProductoBuscable[] }) {
               onChange={(evento) => despachar({ type: "soloSku", activo: evento.target.checked })}
               className="accent-negro h-5 w-5 cursor-pointer"
             />
-            <span>Escribir solo el SKU</span>
+            <span>Mostrar sólo SKU</span>
           </label>
         </div>
 
